@@ -62,8 +62,7 @@ dashboardPage(
           column(9,
             box(width = 12,
               h4("Besøgsgrafer"),
-              plotlyOutput("plot"),
-              plotlyOutput("lineplot")
+              plotlyOutput("plot")
             ),
             box(width = 12,
               DT::dataTableOutput("tablekpivisits")

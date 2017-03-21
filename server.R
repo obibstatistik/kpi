@@ -17,19 +17,10 @@ shinyServer(function(input, output) {
   # visits
   
   output$plot <- renderPlotly({
-    plot_ly(
-      x = kpivisits$location,
-      y = kpivisits$antal,
-      name = "SF Zoo",
-      type = "bar"
-    )
-  })
-
-  output$lineplot <- renderPlotly({
-    plot_ly(kpivisits, x = kpivisits$month) %>%
-      add_trace(y = kpivisits$antal, name = 'trace 0', mode = 'lines') %>%
-      add_trace(y = kpivisits$antal, name = 'trace 1', mode = 'lines+markers') %>%
-      add_trace(y = kpivisits$antal, name = 'trace 2', mode = 'markers')
+    plot_ly(kpivisits, x = kpivisits$location, y = kpivisits$antal2015, type = 'bar', name = '2015') %>%
+    add_trace(y = kpivisits$antal2016, name = '2016') %>%
+    add_trace(y = kpivisits$antal2017, name = '2017') %>%
+    layout(yaxis = list(title = 'Antal'), barmode = 'group')
   })
 
   output$tablekpivisits <- DT::renderDataTable(DT::datatable({
@@ -42,7 +33,7 @@ shinyServer(function(input, output) {
   }, 
   class = 'cell-border stripe',
   rownames = FALSE,
-  colnames = c('Måned', 'Filial', 'Antal')
+  colnames = c('Måned', 'Filial', 'Antal2015', 'Antal2016', 'Antal2017')
   ))
   
   # reserveringer
