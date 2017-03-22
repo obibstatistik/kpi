@@ -19,6 +19,8 @@ dashboardPage(
       menuItem("Besøgstal", tabName = "visits", icon = icon("database", lib="font-awesome")),
       menuItem("Fysiske Materialer", tabName = "fysmat", icon = icon("database", lib="font-awesome")),
       menuItem("Elektroniske Materialer", tabName = "emat", icon = icon("database", lib="font-awesome")),
+      menuItem("Web", tabName = "web", icon = icon("database", lib="font-awesome")),
+      menuItem("Arrangementer", tabName = "arrangementer", icon = icon("database", lib="font-awesome")),
       menuItem("Dokumentation", tabName = "dokumentation", icon = icon("file-text-o", lib="font-awesome")
       )
     )
@@ -75,7 +77,7 @@ dashboardPage(
               
         box(width = 12,
           h3("Fysiske materialer"),
-          "Målet er, at der max er 3 reserveringer pr. eksemplar. Dette gælder dog ikke bestsellere, film og lydbøger." 
+          "Udlån, reserveringer og fornyelser" 
         ),
               
         fluidRow(
@@ -91,8 +93,7 @@ dashboardPage(
           ),
           column(9,
             box(width = 6,
-              h4("Fordeling"),
-              plotOutput("plotres")
+              "plot"
             ),
             box(width = 12,
               DT::dataTableOutput("table")
