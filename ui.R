@@ -1,11 +1,4 @@
 source("global.R")
-source("~/.postpass")
-drv <- dbDriver("PostgreSQL")
-con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
-
-kpi_visits_location <- dbGetQuery(con, "select distinct location from datamart.kpi_visits")
-
-dbDisconnect(con)
 
 dashboardPage(
   skin = "black",
@@ -67,7 +60,8 @@ dashboardPage(
               plotlyOutput("plot")
             ),
             box(width = 12,
-              DT::dataTableOutput("tablekpivisits")
+              h4("Samlet"),  
+              dataTableOutput('table')
             )   
           )
         )
@@ -92,11 +86,11 @@ dashboardPage(
             )
           ),
           column(9,
-            box(width = 6,
-              "plot"
+            box(width = 12,
+                "placeholder"
             ),
             box(width = 12,
-              DT::dataTableOutput("table")
+              tableOutput('tableloan')
             )
           )
         )
@@ -106,7 +100,7 @@ dashboardPage(
               
         box(width = 12,
           h3("Elektroniske Materialer"),
-          "Der må max gå 24 timer fra et materiale er bestilt til det er afsendt" 
+          "Elektroniske materialer" 
         ),
         
         fluidRow(
@@ -122,16 +116,82 @@ dashboardPage(
           ),
           column(9,
             box(width = 6,
-              plotOutput("plotbes")
+                "placeholder"
             ),
             box(width = 6,
-              plotOutput("plotbes2")
+                "placeholder"
             ),
             box(width = 12,
-              DT::dataTableOutput("tablebes")
+                "placeholder"
             )
           )
         )
+      ),
+      
+      
+      tabItem(tabName = "web",
+              
+              box(width = 12,
+                  h3("Web"),
+                  "Web" 
+              ),
+              
+              fluidRow(
+                column(3,
+                       box(width = 12,     
+                           column(12,
+                                  h4("Filtre")
+                           ),
+                           column(12,
+                                  selectInput("year", "År:", c("Alle" = "All", "2017" = "2017","2016" = "2016","2015" = "2015" ))
+                           )
+                       )
+                ),
+                column(9,
+                       box(width = 6,
+                           "placeholder"
+                       ),
+                       box(width = 6,
+                           "placeholder"
+                       ),
+                       box(width = 12,
+                           "placeholder"
+                       )
+                )
+              )
+      ),
+      
+      
+      tabItem(tabName = "arrangementer",
+              
+              box(width = 12,
+                  h3("Arrangementer"),
+                  "Arrangementer" 
+              ),
+              
+              fluidRow(
+                column(3,
+                       box(width = 12,     
+                           column(12,
+                                  h4("Filtre")
+                           ),
+                           column(12,
+                                  selectInput("year", "År:", c("Alle" = "All", "2017" = "2017","2016" = "2016","2015" = "2015" ))
+                           )
+                       )
+                ),
+                column(9,
+                       box(width = 6,
+                           "placeholder"
+                       ),
+                       box(width = 6,
+                           "placeholder"
+                       ),
+                       box(width = 12,
+                           "placeholder"
+                       )
+                )
+              )
       ),
       
       tabItem(tabName = "dokumentation",

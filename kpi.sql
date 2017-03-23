@@ -6,21 +6,24 @@ select month, location, sum(antal2017) as visits2017, sum(antal2016) as visits20
   when count > 0 and location in ('hb','bo','vo','mus','kor','ta','da','kor') and year = 2017 then count
   when count > 0 and location in ('hoj') and year = 2017 then (sum(count) + 1527)
   when count > 0 and location in ('ho') and year = 2017 then (sum(count) + 2490)
-  when count <0 then 0	 	
+  when count <0 then 0
+  else 0	 	
   end
   ) as antal2017,
   (case
   when count > 0 and location in ('hb','bo','vo','mus','kor','ta','da','kor') and year = 2016 then count
   when count > 0 and location in ('hoj') and year = 2016 then (sum(count) + 1583)
   when count > 0 and location in ('ho') and year = 2016 then (sum(count) + 2420)
-  when count <0 then 0	 	
+  when count <0 then 0
+  else 0	 	
   end
   ) as antal2016,
   (case
   when count > 0 and location in ('hb','bo','vo','mus','kor','ta','da','kor') and year = 2015 then count
   when count > 0 and location in ('hoj') and year = 2015 then (sum(count) + 1647)
   when count > 0 and location in ('ho') and year = 2015 then (sum(count) + 2423)
-  when count <0 then 0	 	
+  when count <0 then 0
+  else 0	 	
   end
   ) as antal2015 
 from 
