@@ -55,14 +55,17 @@ dashboardPage(
             )
           ),
           column(9,
-            box(width = 12,
-              h4("Besøgsgrafer"),
-              plotlyOutput("plot")
-            ),
-            box(width = 12,
-              h4("Samlet"),  
-              dataTableOutput('table')
-            )   
+            box(width = 12, h4("Besøgsgrafer"), plotlyOutput("plot")),
+            box(width = 12, h4("Samlet"), formattableOutput("tableformat")),
+            box(width = 6, h4("Bolbro"), formattableOutput('tablebo')),
+            box(width = 6, h4("Dalum"), formattableOutput('tableda')),
+            box(width = 6, h4("Hovedbibliotek"), formattableOutput('tablehb')),
+            box(width = 6, h4("Holluf Pile"), formattableOutput('tableho')),
+            box(width = 6, h4("Højby"), formattableOutput('tablehoj')),
+            box(width = 6, h4("Korup"), formattableOutput('tablekor')),
+            box(width = 6, h4("Musikbiblioteket"), formattableOutput('tablemus')),
+            box(width = 6, h4("Tarup"), formattableOutput('tableta')),
+            box(width = 6, h4("Vollsmose"), formattableOutput('tablevo'))
           )
         )
       ),
