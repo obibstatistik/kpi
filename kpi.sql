@@ -33,3 +33,5 @@ group by month, location, year, y.count order by location, month) as z
 
 group by month, location
 order by location, month;
+
+SELECT * FROM datamart.kpi_visits;
