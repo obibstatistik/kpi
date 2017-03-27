@@ -1,6 +1,8 @@
 ﻿drop table if exists datamart.kpi_visits;
 
-select month, location, visits2017, 
+select month, location, visits2017,
+sum(visits2017) OVER (PARTITION BY location ORDER BY month) AS visits2017cum,
+ 
 (
 case
 when visits2017 = 0 or visits2016 = 0 then 0
@@ -8,13 +10,17 @@ else ((visits2017-visits2016)/visits2016)
 end
 ) as diff1716,
 visits2016, 
+sum(visits2016) OVER (PARTITION BY location ORDER BY month) AS visits2016cum,
 (
 case
 when visits2016 = 0 or visits2015 = 0 then 0
 else ((visits2016-visits2015)/visits2015)
 end
 ) as diff1615,
-visits2015 into datamart.kpi_visits from 
+visits2015,
+sum(visits2015) OVER (PARTITION BY location ORDER BY month) AS visits2015cum
+
+into datamart.kpi_visits from 
 
 (select month, location, sum(antal2017) as visits2017, sum(antal2016) as visits2016, sum(antal2015) as visits2015 from 
 
@@ -50,3 +56,5 @@ group by month, location, year, y.count order by location, month) as z
 
 group by month, location
 order by location, month) as x;
+
+ 

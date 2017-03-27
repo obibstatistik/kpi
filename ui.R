@@ -30,31 +30,7 @@ dashboardPage(
           ),
         
         fluidRow(
-          column(3,
-            box(width = 12,
-              column(12,
-                h4("Filtre")
-              ),
-              column(12,
-                selectInput("filial", "Filial:", c(
-                  "Alle" = "All", 
-                  "Bolbro" = "bo",
-                  "Dalum" = "da",
-                  "Holluf Pile" = "ho",
-                  "Hovedbiblioteket" = "hb",
-                  "Højby" = "hoj",
-                  "Korup" = "kor",
-                  "Musikbiblioteket" = "mus",
-                  "Tarup" = "ta",
-                  "Vollsmose" = "vo")
-                )
-              ),
-              column(12,
-                dateRangeInput('periode', label = 'Periode', start = Sys.Date() - 365, end = Sys.Date() + 0)
-              )     
-            )
-          ),
-          column(9,
+          column(12,
             box(width = 12, h4("Besøgsgrafer"), plotlyOutput("plot")),
             box(width = 12, h4("Samlet"), formattableOutput("tableformat")),
             box(width = 6, h4("Bolbro"), formattableOutput('tablebo')),
