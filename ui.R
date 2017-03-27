@@ -69,7 +69,7 @@ dashboardPage(
                 "placeholder"
             ),
             box(width = 12,
-              tableOutput('tableloan')
+              "placeholder"
             )
           )
         )
