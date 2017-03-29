@@ -21,8 +21,8 @@ shinyServer(function(input, output) {
   kpivisitskor <- dbGetQuery(con, "SELECT month, visits2017, visits2017cum, diff1716, visits2016, visits2016cum, diff1615, visits2015, visits2015cum FROM datamart.kpi_visits where location = 'kor'")
   kpivisitsvo <- dbGetQuery(con, "SELECT month, visits2017, visits2017cum, diff1716, visits2016, visits2016cum, diff1615, visits2015, visits2015cum FROM datamart.kpi_visits where location = 'vo'")
   
-  kpiloan <- dbGetQuery(con, "SELECT * FROM datamart.kpi_loan")
-  kpiloanbo <- dbGetQuery(con, "SELECT * FROM datamart.kpi_loan where bibliotek = 'Bolbro Bibliotek'")
+  #kpiloan <- dbGetQuery(con, "SELECT * FROM datamart.kpi_loan")
+  #kpiloanbo <- dbGetQuery(con, "SELECT * FROM datamart.kpi_loan where bibliotek = 'Bolbro Bibliotek'")
   
   dbDisconnect(con)
   
@@ -67,8 +67,6 @@ shinyServer(function(input, output) {
   colnames(kpivisitshoj) <- c("Måned", "2017", "2017 akum","17><16", "2016", "2016 akum", "16><15", "2015", "2015 akum")
   colnames(kpivisitskor) <- c("Måned", "2017", "2017 akum","17><16", "2016", "2016 akum", "16><15", "2015", "2015 akum")
   colnames(kpivisitsvo) <- c("Måned", "2017", "2017 akum","17><16", "2016", "2016 akum", "16><15", "2015", "2015 akum")
-  
-  
   
   output$tableformat <- renderFormattable({formattable(kpivisits, list(
     "17><16" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
@@ -129,8 +127,28 @@ shinyServer(function(input, output) {
   )
   )})
   
-
+  #fysiske ressourcer
   
+  
+  
+  #elektroniske ressourcer 
+  
+  #hjemmesider
+  
+  r <- GET("https://ws.webtrends.com/v3/Reporting/profiles/77605/reports/VSlaqtDP0P6/?totals=all&start_period=current_year-2&end_period=current_year&period_type=indv&measures=0*1&format=json", authenticate(webtrendsusername, webtrendspassword, type = "basic"))
+  json <- content(r, "text")
+
+  jsonitems <- json %>%
+    enter_object("data") %>%
+    gather_array %>%
+    spread_values(Årstal = jstring("start_date")) %>%
+    enter_object("measures") %>%
+    spread_values(Besøgende = jstring("ActiveVisits")) %>%
+    select(Årstal, Besøgende)
+  
+  output$table <- renderTable(jsonitems)
+  
+  #arrangementer
   
   
 })

@@ -83,25 +83,15 @@ dashboardPage(
         ),
         
         fluidRow(
-          column(3,
-            box(width = 12,     
-              column(12,
-                h4("Filtre")
-              ),
-              column(12,
-                selectInput("year", "År:", c("Alle" = "All", "2017" = "2017","2016" = "2016","2015" = "2015" ))
-              )
-            )
-          ),
-          column(9,
-            box(width = 6,
-                "placeholder"
-            ),
-            box(width = 6,
-                "placeholder"
+          column(12,
+            box(width = 12,
+                "ereolen og ereolen go"
             ),
             box(width = 12,
-                "placeholder"
+                "filmstriben"
+            ),
+            box(width = 12,
+                "netbaser"
             )
           )
         )
@@ -110,34 +100,19 @@ dashboardPage(
       
       tabItem(tabName = "web",
               
-              box(width = 12,
-                  h3("Web"),
-                  "Web" 
-              ),
-              
-              fluidRow(
-                column(3,
-                       box(width = 12,     
-                           column(12,
-                                  h4("Filtre")
-                           ),
-                           column(12,
-                                  selectInput("year", "År:", c("Alle" = "All", "2017" = "2017","2016" = "2016","2015" = "2015" ))
-                           )
-                       )
-                ),
-                column(9,
-                       box(width = 6,
-                           "placeholder"
-                       ),
-                       box(width = 6,
-                           "placeholder"
-                       ),
-                       box(width = 12,
-                           "placeholder"
-                       )
-                )
-              )
+        box(width = 12,
+          h3("Web"),
+          "Webstatistik for Odensebib.dk" 
+        ),
+        
+        fluidRow(
+          column(12,
+            box(width = 12,
+            "Besøgende",
+            tableOutput('table')
+            )
+          )
+        )
       ),
       
       
