@@ -107,9 +107,13 @@ dashboardPage(
         
         fluidRow(
           column(12,
-            box(width = 12,
-            "Besøgende",
-            tableOutput('table')
+            box(width = 6,
+              tableOutput('table')
+            ),
+            box(width = 6,
+              "Besøgende",
+              #plotlyOutput("webplot")
+              tableOutput('table2')
             )
           )
         )
@@ -117,35 +121,23 @@ dashboardPage(
       
       
       tabItem(tabName = "arrangementer",
-              
-              box(width = 12,
-                  h3("Arrangementer"),
-                  "Arrangementer" 
-              ),
-              
-              fluidRow(
-                column(3,
-                       box(width = 12,     
-                           column(12,
-                                  h4("Filtre")
-                           ),
-                           column(12,
-                                  selectInput("year", "År:", c("Alle" = "All", "2017" = "2017","2016" = "2016","2015" = "2015" ))
-                           )
-                       )
-                ),
-                column(9,
-                       box(width = 6,
-                           "placeholder"
-                       ),
-                       box(width = 6,
-                           "placeholder"
-                       ),
-                       box(width = 12,
-                           "placeholder"
-                       )
-                )
-              )
+        box(width = 12,
+          h3("Arrangementer"),
+          "Arrangementer på Odense Bibliotekerne" 
+        ),
+        fluidRow(
+          column(12,
+            box(width = 4,
+              "Hvor tilfredse er borgerne med arrangementerne"
+            ),
+            box(width = 4,
+              "Antal arrangementer"
+            ),
+            box(width = 4,
+              "Besøgende til arrangementer"
+            )
+          )
+        )
       ),
       
       tabItem(tabName = "dokumentation",

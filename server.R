@@ -135,20 +135,41 @@ shinyServer(function(input, output) {
   
   #hjemmesider
   
-  r <- GET("https://ws.webtrends.com/v3/Reporting/profiles/77605/reports/VSlaqtDP0P6/?totals=all&start_period=current_year-2&end_period=current_year&period_type=indv&measures=0*1&format=json", authenticate(webtrendsusername, webtrendspassword, type = "basic"))
+  r <- GET("https://ws.webtrends.com/v3/Reporting/profiles/77605/reports/VSlaqtDP0P6/?totals=all&start_period=current_year-2&end_period=current_year&period_type=indv&format=json", authenticate(webtrendsusername, webtrendspassword, type = "basic"))
   json <- content(r, "text")
-
-  jsonitems <- json %>%
+  json2 <- content(r, "text")
+  
+  jsontable <- json %>%
     enter_object("data") %>%
     gather_array %>%
     spread_values(Årstal = jstring("start_date")) %>%
     enter_object("measures") %>%
-    spread_values(Besøgende = jstring("ActiveVisits")) %>%
-    select(Årstal, Besøgende)
+    spread_values(Besøg = jstring("ActiveVisits")) %>%
+    spread_values(Sidevisninger = jstring("PageViews")) %>%
+    spread_values(Klik = jstring("Clickthroughs")) %>%
+    spread_values(Besøgende = jstring("DailyVisitors")) %>%
+    spread_values(Ugentligebesøgende = jstring("WeeklyVisitors")) %>%
+    spread_values(Månedligebesøgende = jstring("MonthlyVisitors")) %>%
+    spread_values(Kvartalsvisbesøgende = jstring("QuarterlyVisitors")) %>%
+    spread_values(Årligebesøgende = jstring("YearlyVisitors")) %>%
+    spread_values(Enkeltsidebesøgende = jstring("SinglePageViewVisits")) %>%
+    spread_values(Forsidevisning = jstring("EntryPageVisits")) %>%
+    spread_values(Afvisningsrate = jstring("BounceRate")) %>%
+    select(Årstal, Besøg, Sidevisninger, Besøgende)
+  output$table <- renderTable(jsontable, width = "100%")
   
-  output$table <- renderTable(jsonitems)
+  jsontable2 <- json2 %>%
+    enter_object("data") %>%
+    gather_array %>%
+    spread_values(start_date = jstring("start_date")) %>%
+    enter_object("SubRows") %>%
+    gather_array 
+    #gather_array %>%
+    #spread_values(y = jstring("measures","ActiveVisits")) 
+  output$table2 <- renderTable(jsontable2)
   
   #arrangementer
+  
   
   
 })
