@@ -54,23 +54,21 @@ dashboardPage(
         ),
               
         fluidRow(
-          column(3,
+          column(12,
             box(width = 12,
-              column(12,
-                h4("Filtre")
-              ),
-              column(12,
-                selectInput("sprog", "Sprog:", c("All" = "All", "Dansk" = "dan","Norsk" = "nor"))
-              )
-            )
-          ),
-          column(9,
-            box(width = 12,
-                "placeholder"
+              h4("Udlån"), 
+              plotlyOutput("loanplot")
             ),
-            box(width = 12,
-              "placeholder"
-            )
+            box(width = 12, h4("Samlet"), formattableOutput("loantableall")),
+            box(width = 6, h4("Bolbro"), formattableOutput('loanbo')),
+            box(width = 6, h4("Dalum"), formattableOutput('loanda')),
+            box(width = 6, h4("Hovedbibliotek"), formattableOutput('loanhb')),
+            box(width = 6, h4("Holluf Pile"), formattableOutput('loanho')),
+            box(width = 6, h4("Højby"), formattableOutput('loanhoj')),
+            box(width = 6, h4("Korup"), formattableOutput('loankor')),
+            box(width = 6, h4("Musikbiblioteket"), formattableOutput('loanmus')),
+            box(width = 6, h4("Tarup"), formattableOutput('loanta')),
+            box(width = 6, h4("Vollsmose"), formattableOutput('loanvo'))
           )
         )
       ),
