@@ -32,16 +32,16 @@ dashboardPage(
         fluidRow(
           column(12,
             box(width = 12, h4("Besøgsgrafer"), plotlyOutput("plot")),
-            box(width = 12, h4("Samlet"), formattableOutput("tableformat")),
-            box(width = 6, h4("Bolbro"), formattableOutput('tablebo')),
-            box(width = 6, h4("Dalum"), formattableOutput('tableda')),
-            box(width = 6, h4("Hovedbibliotek"), formattableOutput('tablehb')),
-            box(width = 6, h4("Holluf Pile"), formattableOutput('tableho')),
-            box(width = 6, h4("Højby"), formattableOutput('tablehoj')),
-            box(width = 6, h4("Korup"), formattableOutput('tablekor')),
-            box(width = 6, h4("Musikbiblioteket"), formattableOutput('tablemus')),
-            box(width = 6, h4("Tarup"), formattableOutput('tableta')),
-            box(width = 6, h4("Vollsmose"), formattableOutput('tablevo'))
+            box(width = 12, h4("Samlet"), formattableOutput("tablevisits")),
+            box(width = 6, h4("Bolbro"), formattableOutput('tablebo'), tableOutput("bo")),
+            box(width = 6, h4("Dalum"), formattableOutput('tableda'), tableOutput("da")),
+            box(width = 6, h4("Hovedbibliotek"), formattableOutput('tablehb'), tableOutput("hb")),
+            box(width = 6, h4("Holluf Pile"), formattableOutput('tableho'), tableOutput("ho")),
+            box(width = 6, h4("Højby"), formattableOutput('tablehoj'), tableOutput("hoj")),
+            box(width = 6, h4("Korup"), formattableOutput('tablekor'), tableOutput("kor")),
+            box(width = 6, h4("Musikbiblioteket"), formattableOutput('tablemus'), tableOutput("mus")),
+            box(width = 6, h4("Tarup"), formattableOutput('tableta'), tableOutput("ta")),
+            box(width = 6, h4("Vollsmose"), formattableOutput('tablevo'), tableOutput("vo"))
           )
         )
       ),
