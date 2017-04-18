@@ -61,14 +61,14 @@ dashboardPage(
             ),
             box(width = 12, h4("Samlet"), formattableOutput("loantableall")),
             box(width = 6, h4("Bolbro"), formattableOutput('loanbo')),
-            box(width = 6, h4("Dalum"), formattableOutput('loanda')),
-            box(width = 6, h4("Hovedbibliotek"), formattableOutput('loanhb')),
-            box(width = 6, h4("Holluf Pile"), formattableOutput('loanho')),
-            box(width = 6, h4("Højby"), formattableOutput('loanhoj')),
-            box(width = 6, h4("Korup"), formattableOutput('loankor')),
-            box(width = 6, h4("Musikbiblioteket"), formattableOutput('loanmus')),
-            box(width = 6, h4("Tarup"), formattableOutput('loanta')),
-            box(width = 6, h4("Vollsmose"), formattableOutput('loanvo'))
+            box(width = 6, h4("Dalum"), formattableOutput('loantableda')),
+            box(width = 6, h4("Hovedbibliotek"), formattableOutput('loantablehb')),
+            box(width = 6, h4("Holluf Pile"), formattableOutput('loantableho')),
+            box(width = 6, h4("Højby"), formattableOutput('loantablehoj')),
+            box(width = 6, h4("Korup"), formattableOutput('loantablekor')),
+            box(width = 6, h4("Musikbiblioteket"), formattableOutput('loantablemus')),
+            box(width = 6, h4("Tarup"), formattableOutput('loantableta')),
+            box(width = 6, h4("Vollsmose"), formattableOutput('loantablevo'))
           )
         )
       ),
