@@ -31,7 +31,7 @@ dashboardPage(
         
         fluidRow(
           column(12,
-            box(width = 12, h4("Besøgsgrafer"), plotlyOutput("plot")),
+            box(width = 12, h4("Besøgsgraf"), plotlyOutput("plot")),
             box(width = 12, h4("Samlet"), formattableOutput("tablevisits")),
             box(width = 6, h4("Bolbro"), formattableOutput('tablebo'), tableOutput("bo")),
             box(width = 6, h4("Dalum"), formattableOutput('tableda'), tableOutput("da")),
@@ -60,15 +60,15 @@ dashboardPage(
               plotlyOutput("loanplot")
             ),
             box(width = 12, h4("Samlet"), formattableOutput("loantableall")),
-            box(width = 6, h4("Bolbro"), formattableOutput('loanbo')),
-            box(width = 6, h4("Dalum"), formattableOutput('loantableda')),
-            box(width = 6, h4("Hovedbibliotek"), formattableOutput('loantablehb')),
-            box(width = 6, h4("Holluf Pile"), formattableOutput('loantableho')),
-            box(width = 6, h4("Højby"), formattableOutput('loantablehoj')),
-            box(width = 6, h4("Korup"), formattableOutput('loantablekor')),
-            box(width = 6, h4("Musikbiblioteket"), formattableOutput('loantablemus')),
-            box(width = 6, h4("Tarup"), formattableOutput('loantableta')),
-            box(width = 6, h4("Vollsmose"), formattableOutput('loantablevo'))
+            box(width = 6, h4("Bolbro"), formattableOutput('loantableBol')),
+            box(width = 6, h4("Dalum"), formattableOutput('loantableDal')),
+            box(width = 6, h4("Hovedbibliotek"), formattableOutput('loantableHov')),
+            box(width = 6, h4("Holluf Pile"), formattableOutput('loantableHol')),
+            box(width = 6, h4("Højby"), formattableOutput('loantableHøj')),
+            box(width = 6, h4("Korup"), formattableOutput('loantableKor')),
+            box(width = 6, h4("Musikbiblioteket"), formattableOutput('loantableMus')),
+            box(width = 6, h4("Tarup"), formattableOutput('loantableTar')),
+            box(width = 6, h4("Vollsmose"), formattableOutput('loantableVol'))
           )
         )
       ),
@@ -108,10 +108,10 @@ dashboardPage(
             box(width = 6,
               tableOutput('table')
             ),
-            box(width = 6,
-              "Besøgende",
+            box(width = 6
+              #"Besøgende",
               #plotlyOutput("webplot")
-              tableOutput('table2')
+              #tableOutput('table2')
             )
           )
         )

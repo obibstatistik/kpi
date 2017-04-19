@@ -2,18 +2,20 @@ source("global.R")
 
 shinyServer(function(input, output) {
   
-  ### db queries ###
+  ### DB QUERIES ###
   
   source("~/.postpass")
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
   
   visits <- dbGetQuery(con, "SELECT * FROM public.people_counter")
-  loan <- dbGetQuery(con, "SELECT * FROM datamart.kpi_loan")
+  sqlloan <- dbGetQuery(con, "SELECT * FROM datamart.kpi_loan")
   
   dbDisconnect(con)
   
-  ### visits plot ###
+  ### VISITORS ###
+  
+  # visits plot #
   visitsplot <- visits %>%
     mutate(year = format(date, "%y"), v2017 = ifelse(year == "17", count, 0), v2016 = ifelse(year == "16", count, 0), v2015 = ifelse(year == "15", count, 0)) %>%
     group_by(location) %>%
@@ -21,16 +23,13 @@ shinyServer(function(input, output) {
     select(location,v2017,v2016,v2015)
   
   output$plot <- renderPlotly({
-    plot_ly(visitsplot, x = visitsplot$location, 
-            y = visitsplot$v2015, type = 'bar', name = '2015', text = text, #gold
-            marker = list(color = 'gold')
-    ) %>%
-      add_trace(y = visitsplot$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>% #mediumseargb(63,168,123) 
-      add_trace(y = visitsplot$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% #darkslateblue
-      layout(yaxis = list(title = 'Antal'), barmode = 'group')
+    plot_ly(visitsplot, x = visitsplot$location, y = visitsplot$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
+    add_trace(y = visitsplot$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
+    add_trace(y = visitsplot$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
+    layout(yaxis = list(title = 'Antal'), barmode = 'group')
   })
   
-  ### visitor tables all ###
+  # visitor tables all #
   visitsall <- visits %>%
     mutate(month = format(date, "%m"), year = format(date, "%y"), visits2017 = ifelse(year == "17", count, 0), visits2016 = ifelse(year == "16", count, 0), visits2015 = ifelse(year == "15", count, 0)) %>%
     arrange(month) %>%
@@ -46,7 +45,7 @@ shinyServer(function(input, output) {
     "16><15" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
   ))})
   
-  ### visitor tables branch ###
+  # visitor tables branch #
   visitslocations <- visits %>% distinct(location) %>% filter(location != "lok")
   
   visitsbranch <- visits %>%
@@ -63,6 +62,8 @@ shinyServer(function(input, output) {
       plotname <- paste0("table",my_i)
       visitsbranch <- visitsbranch %>% 
         filter(location == my_i) %>%
+        group_by(month) %>%
+        summarize(visits2017, visits2016, visits2015, diff1716, diff1615) %>%
         mutate (cumsum2017 = cumsum(visits2017), cumsum2016 = cumsum(visits2016), cumsum2015 = cumsum(visits2015)) %>%
         select(month, visits2017, cumsum2017, diff1716, visits2016, cumsum2016, diff1615, visits2015, cumsum2015)
       colnames(visitsbranch) <- c("Måned", "2017", "2017 akum","17><16", "2016", "2016 akum", "16><15", "2015", "2015 akum")
@@ -73,32 +74,29 @@ shinyServer(function(input, output) {
     })
   }
   
-  #fysiske ressourcer
+  ### LOAN & RENEWALS ###
   
-  #loan initial pivot
-  loan <- loan %>%
+  # loan initial pivot #
+  loan <- sqlloan %>%
     mutate(loan2017 = ifelse(year == "2017", count, 0), loan2016 = ifelse(year == "2016", count, 0), loan2015 = ifelse(year == "2015", count, 0)) %>%
     select(month, library, loan2017, loan2016, loan2015) %>%
     group_by(month, library) %>%
     summarise(loan2017 = sum(loan2017), loan2016 = sum(loan2016), loan2015 = sum(loan2015))  
   
-  #loan plot
+  # loan plot #
   loanplot <- loan %>%
     group_by(library) %>%
     summarise(loan2017 = sum(loan2017), loan2016 = sum(loan2016), loan2015 = sum(loan2015)) %>%
     select(library, loan2017, loan2016, loan2015)
   
   output$loanplot <- renderPlotly({
-    plot_ly(loanplot, x = loanplot$library, 
-            y = loanplot$loan2015, type = 'bar', name = '2015', text = text, #gold
-            marker = list(color = 'gold')
-    ) %>%
-      add_trace(y = loanplot$loan2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>% #mediumseargb(63,168,123) 
-      add_trace(y = loanplot$loan2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% #darkslateblue
-      layout(yaxis = list(title = 'Antal'), barmode = 'group')
+    plot_ly(loanplot, x = loanplot$library, y = loanplot$loan2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
+    add_trace(y = loanplot$loan2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>% #mediumseargb(63,168,123) 
+    add_trace(y = loanplot$loan2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% #darkslateblue
+    layout(yaxis = list(title = 'Antal'), barmode = 'group')
   })
   
-  #loan all libraries
+  # loan all libraries #
   loanall <- loan %>%
     group_by(month) %>%
     summarise(loan2017 = sum(loan2017), loan2016 = sum(loan2016), loan2015 = sum(loan2015)) %>%
@@ -114,56 +112,31 @@ shinyServer(function(input, output) {
   )
   )})
   
-  #individual libraries
-  kpiloanindividual <- loan %>%
-    group_by(month) %>%
-    mutate(diff1716 = percent((loan2017-loan2016)/loan2016), diff1615 = percent((loan2016-loan2015)/loan2015), cumsum2017 = cumsum(loan2017), cumsum2016 = cumsum(loan2016), cumsum2015 = cumsum(loan2015))
-    
-  kpiloanbo <- filter(kpiloanindividual, library == "Bolbro Bibliotek")
-  kpiloanbo <- kpiloanbo %>%
-    select (month, loan2017,cumsum2017,diff1716,loan2016,cumsum2016,diff1615,loan2015,cumsum2015)
-  colnames(kpiloanbo) <- c("Måned", "2017", "2017 akum","17><16", "2016", "2016 akum", "16><15", "2015", "2015 akum")
-  
-    
-  output$loanbo <- renderFormattable({formattable(kpiloanbo, list(
-    "17><16" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
-    "17><16" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
-  )
-  )})
-  
-  kpiloanda <- filter(kpiloanindividual, library == "Dalum Bibliotek")
-  colnames(kpiloanda) <- c("Måned", "Bibliotek","2017", "2017 akum","17><16", "2016", "2016 akum", "16><15", "2015", "2015 akum")
-  output$loanda <- renderFormattable({formattable(kpiloanda, list(
-    "17><16" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
-    "17><16" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
-  )
-  )})
-  
-  
-  ###
-  loanlibrary <- loan %>% distinct(library) %>% select(library)
-  
+  # loan individual libraries #
+  loanlibrary <- sqlloan %>% distinct(library)
   loanbranch <- loan
   
   foreach(i = loanlibrary$library) %do% {
     local ({
       my_i <- i
-      plotname <- paste0("loantable",my_i)
-      loanbranch <- loanbranch #%>% 
-        #filter(library == my_i) %>%
-        #mutate (cumsum2017 = cumsum(loan2017), cumsum2016 = cumsum(loan2016), cumsum2015 = cumsum(loan2015)) %>%
-        #select(month, visits2017, cumsum2017, diff1716, visits2016, cumsum2016, diff1615, visits2015, cumsum2015)
-      #colnames(visitsbranch) <- c("Måned", "2017", "2017 akum","17><16", "2016", "2016 akum", "16><15", "2015", "2015 akum")
+      plotname <- paste0("loantable",substr(my_i, 1, 3))
+      loanbranch <- loanbranch %>% 
+        filter(library == my_i) %>%
+        group_by(month) %>%
+        summarize(loan2017, loan2016, loan2015) %>%
+        mutate (diff1716 = percent((loan2017-loan2016)/loan2016), diff1615 = percent((loan2016-loan2015)/loan2015), cumsum2017 = cumsum(loan2017), cumsum2016 = cumsum(loan2016), cumsum2015 = cumsum(loan2015)) %>%
+        select(month, loan2017, cumsum2017, diff1716, loan2016, cumsum2016, diff1615, loan2015, cumsum2015)
+      colnames(loanbranch) <- c("Måned", "2017", "2017 akum","17><16", "2016", "2016 akum", "16><15", "2015", "2015 akum")
       output[[plotname]] <- renderFormattable({formattable(loanbranch, list(
-        #"17><16" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
-        #"16><15" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
+        "17><16" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
+        "16><15" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
       ))})
     })
   }
   
-  #elektroniske ressourcer 
+  ### E-RESSOURCES ### 
   
-  #hjemmesider
+  ### WEBSITES ###
   
   r <- GET("https://ws.webtrends.com/v3/Reporting/profiles/77605/reports/VSlaqtDP0P6/?totals=all&start_period=current_year-2&end_period=current_year&period_type=indv&format=json", authenticate(webtrendsusername, webtrendspassword, type = "basic"))
   json <- content(r, "text")
@@ -198,7 +171,7 @@ shinyServer(function(input, output) {
     #spread_values(y = jstring("measures","ActiveVisits")) 
   output$table2 <- renderTable(jsontable2)
   
-  #arrangementer
+  ### EVENTS ###
   
   
   
