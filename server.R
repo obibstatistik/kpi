@@ -45,6 +45,16 @@ shinyServer(function(input, output) {
     "16><15" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
   ))})
   
+  output$downloadData <- downloadHandler(
+    
+    filename = function() {
+      paste("data-", Sys.Date(), ".xlsx", sep="")
+    },
+    content = function(file) {
+       write.xlsx(visitsall, file)
+    }
+  )
+  
   # visitor tables branch #
   visitslocations <- visits %>% distinct(location) %>% filter(location != "lok")
   

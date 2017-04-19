@@ -32,7 +32,7 @@ dashboardPage(
         fluidRow(
           column(12,
             box(width = 12, h4("Besøgsgraf"), plotlyOutput("plot")),
-            box(width = 12, h4("Samlet"), formattableOutput("tablevisits")),
+            box(width = 12, h4("Samlet"), formattableOutput("tablevisits"), downloadButton("downloadData", "Download")),
             box(width = 6, h4("Bolbro"), formattableOutput('tablebo'), tableOutput("bo")),
             box(width = 6, h4("Dalum"), formattableOutput('tableda'), tableOutput("da")),
             box(width = 6, h4("Hovedbibliotek"), formattableOutput('tablehb'), tableOutput("hb")),
@@ -59,7 +59,7 @@ dashboardPage(
               h4("Udlån"), 
               plotlyOutput("loanplot")
             ),
-            box(width = 12, h4("Samlet"), formattableOutput("loantableall")),
+            box(width = 12, h4("Samlet"), formattableOutput("loantableall")), 
             box(width = 6, h4("Bolbro"), formattableOutput('loantableBol')),
             box(width = 6, h4("Dalum"), formattableOutput('loantableDal')),
             box(width = 6, h4("Hovedbibliotek"), formattableOutput('loantableHov')),
