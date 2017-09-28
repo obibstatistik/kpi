@@ -10,6 +10,7 @@ shinyServer(function(input, output) {
   
   visits <- dbGetQuery(con, "SELECT * FROM public.people_counter")
   sqlloan <- dbGetQuery(con, "SELECT * FROM datamart.kpi_loan")
+  events <- dbGetQuery(con, "SELECT * FROM datamart.arrangementer")
   
   dbDisconnect(con)
   
@@ -183,6 +184,36 @@ shinyServer(function(input, output) {
   
   ### EVENTS ###
   
+  output$eventtable <- renderFormattable({formattable(events, list(
+  )
+  )})
+  
+  eventsplot <- events %>%
+    mutate(year = format(dato, "%y"), 
+      e2013 = ifelse ((year == "13") , 1, 0),
+      e2014 = ifelse ((year == "14") , 1, 0),
+      e2015 = ifelse ((year == "15") , 1, 0),
+      e2016 = ifelse ((year == "16") , 1, 0),
+      e2017 = ifelse ((year == "17") , 1, 0)) %>%
+    select (year,e2013,e2014,e2015)
+    group_by(year)
+    #group_by(toString(year)) %>%
+    #summarise(ec2017 = count(e2017), ec2016 = count(e2016), ec2015 = count(e2015)) %>%
+    #select(year,ec2017, ec2016)
+    
+    #       , e2017 = ifelse(year == "17", count, 0), e2016 = ifelse(year == "16", count, 0), e2015 = ifelse(year == "15", count, 0)) #%>%
+    #group_by(year) %>%
+    #summarise(v2017 = count(v2017), v2016 = count(v2016), v2015 = count(v2015)) %>%
+    #select(year,v2017,v2016,v2015)
+  
+  output$event2table <- renderFormattable({formattable(eventsplot, list(  ))})
+  
+  #output$eventsplot <- renderPlotly({
+  #  plot_ly(eventsplot, x = eventsplot$year, y = eventsplot$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
+  #    add_trace(y = eventsplot$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
+  #    add_trace(y = eventsplot$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
+  #    layout(yaxis = list(title = 'Antal'), barmode = 'group')
+  #})
   
   
 })

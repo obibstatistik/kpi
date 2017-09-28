@@ -10,7 +10,7 @@ dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem("Besøgstal", tabName = "visits", icon = icon("database", lib="font-awesome")),
-      menuItem("Fysiske Materialer", tabName = "fysmat", icon = icon("database", lib="font-awesome")),
+      menuItem("Udlån", tabName = "fysmat", icon = icon("database", lib="font-awesome")),
       menuItem("Elektroniske Materialer", tabName = "emat", icon = icon("database", lib="font-awesome")),
       menuItem("Web", tabName = "web", icon = icon("database", lib="font-awesome")),
       menuItem("Arrangementer", tabName = "arrangementer", icon = icon("database", lib="font-awesome")),
@@ -49,7 +49,7 @@ dashboardPage(
       tabItem(tabName = "fysmat",
               
         box(width = 12,
-          h3("Fysiske materialer"),
+          h3("Udlån"),
           "Udlån, reserveringer og fornyelser" 
         ),
               
@@ -125,6 +125,10 @@ dashboardPage(
         ),
         fluidRow(
           column(12,
+            box (width = 12,
+              #plotlyOutput("eventsplot"),
+              formattableOutput('event2table')
+            ),     
             box(width = 4,
               "Hvor tilfredse er borgerne med arrangementerne"
             ),
