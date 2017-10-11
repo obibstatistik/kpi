@@ -1,16 +1,23 @@
 source("global.R")
+source("~/.postpass")
 
 shinyServer(function(input, output) {
   
+  ### Google Analytics API
+  
+  token <- Auth(client.id,client.secret)
+  save(token,file="./token_file")
+  load("./token_file")
+  
   ### DB QUERIES ###
   
-  source("~/.postpass")
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
   
   visits <- dbGetQuery(con, "SELECT * FROM public.people_counter")
   sqlloan <- dbGetQuery(con, "SELECT * FROM datamart.kpi_loan")
-  events <- dbGetQuery(con, "SELECT * FROM datamart.arrangementer")
+  #events <- dbGetQuery(con, "SELECT * FROM datamart.arrangementer")
+  acquisition <- dbGetQuery(con, "SELECT * FROM public.imusic")
   
   dbDisconnect(con)
   
@@ -145,6 +152,23 @@ shinyServer(function(input, output) {
     })
   }
   
+  
+  ### ACQUISITION ###
+  
+  acquisition2017 <- acquisition %>%
+    filter(dateordered > '2017-01-01 00:00:00')
+    
+  is.not.null <- function(x) ! is.null(x) ## defines a is.not function
+  
+  sum2017 <- acquisition2017 %>%
+    mutate(number = ifelse (is.not.null(orderid) , 1, 0), ordered_nbr = ifelse (is.null(dateinvoiced) , 1, 0), ordered = ifelse (is.null(dateinvoiced) , materialprice, 2), payd = ifelse (is.not.null(dateinvoiced) , materialprice, 0)) %>%
+    select(kind, number, materialprice, ordered_nbr, ordered, payd) %>%
+    group_by(kind) %>%
+    summarize(format(sum(number), digits=1), sum(materialprice),sum(ordered_nbr), sum(ordered), sum(payd))
+  colnames(sum2017) <- c("Materialetype","Antal", "Forbrug kr.","Antal bestilte","I bestilling","Faktureret")
+  
+  output$acquisitionsumtable <- renderTable(sum2017) 
+    
   ### E-RESSOURCES ### 
   
   ### WEBSITES ###
@@ -188,15 +212,15 @@ shinyServer(function(input, output) {
   )
   )})
   
-  eventsplot <- events %>%
-    mutate(year = format(dato, "%y"), 
-      e2013 = ifelse ((year == "13") , 1, 0),
-      e2014 = ifelse ((year == "14") , 1, 0),
-      e2015 = ifelse ((year == "15") , 1, 0),
-      e2016 = ifelse ((year == "16") , 1, 0),
-      e2017 = ifelse ((year == "17") , 1, 0)) %>%
-    select (year,e2013,e2014,e2015)
-    group_by(year)
+  #eventsplot <- events %>%
+    #mutate(year = format(dato, "%y"), 
+      #e2013 = ifelse ((year == "13") , 1, 0),
+      #e2014 = ifelse ((year == "14") , 1, 0),
+      #e2015 = ifelse ((year == "15") , 1, 0),
+      #e2016 = ifelse ((year == "16") , 1, 0),
+      #e2017 = ifelse ((year == "17") , 1, 0)) %>%
+    #select (year,e2013,e2014,e2015)
+    #group_by(year)
     #group_by(toString(year)) %>%
     #summarise(ec2017 = count(e2017), ec2016 = count(e2016), ec2015 = count(e2015)) %>%
     #select(year,ec2017, ec2016)
@@ -206,7 +230,7 @@ shinyServer(function(input, output) {
     #summarise(v2017 = count(v2017), v2016 = count(v2016), v2015 = count(v2015)) %>%
     #select(year,v2017,v2016,v2015)
   
-  output$event2table <- renderFormattable({formattable(eventsplot, list(  ))})
+  #output$event2table <- renderFormattable({formattable(eventsplot, list(  ))})
   
   #output$eventsplot <- renderPlotly({
   #  plot_ly(eventsplot, x = eventsplot$year, y = eventsplot$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
@@ -214,6 +238,20 @@ shinyServer(function(input, output) {
   #    add_trace(y = eventsplot$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
   #    layout(yaxis = list(title = 'Antal'), barmode = 'group')
   #})
+  
+  
+  ### Web ###
+  
+  query1.init <- Init(start.date = "2017-01-01",
+                     end.date = "2017-12-31",
+                     metrics = c("ga:users"),
+                     table.id = "ga:6064370")
+  
+  query1 <- QueryBuilder(query1.init)
+  data1 <- GetReportData(query1, token)
+  
+  output$tableanalytics <- renderTable(data1)
+  
   
   
 })

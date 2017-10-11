@@ -1,0 +1,15 @@
+.skin-black .left-side, .skin-black .main-sidebar, .skin-black .wrapper {
+  background-color: white;
+}
+
+.skin-black .sidebar-menu>li>.treeview-menu {
+  margin: 0 0 0 3px;
+}
+
+.sidebar-menu .treeview-menu>li>a {
+  padding: 12px 5px 12px 35px;
+}
+
+.skin-black .sidebar a {
+  color: #555;
+}

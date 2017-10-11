@@ -4,23 +4,53 @@ dashboardPage(
   skin = "black",
   
   dashboardHeader(
-    title = "KPI"
+    title = "Whitebook"
   ),
   
   dashboardSidebar(
     sidebarMenu(
-      menuItem("Besøgstal", tabName = "visits", icon = icon("database", lib="font-awesome")),
-      menuItem("Udlån", tabName = "fysmat", icon = icon("database", lib="font-awesome")),
+      menuItem("Forside", tabName = "frontpage", icon = icon("home", lib="font-awesome")),
+      menuItem("Arrangementer", tabName = "events", icon = icon("calendar", lib="font-awesome")),
+      menuItem("Det fysiske rum", tabName = "space", icon = icon("building-o", lib="font-awesome"),
+               menuItem("Besøgstal", tabName = "visits"),
+               menuItem("Smart City", tabName = "smartcity")
+               ),
+      menuItem("Online", tabName = "online", icon = icon("laptop", lib="font-awesome"), 
+               menuItem("Oversigt", tabName = "weboverview"),
+               menuItem("Odensebib.dk", tabName = "odensebib", badgeLabel = "New", badgeColor = "green"),
+               menuItem("Biblioteket App", tabName = "app")
+               ),
+      menuItem("Fysiske Materialer", tabName = "emat", icon = icon("book", lib="font-awesome"),
+               menuItem("Udlån", tabName = "fysmat"),
+               menuItem("Materialeindkøb", tabName = "acquisition"),
+               menuItem("Materialeomsætning", tabName = "flow")
+               ),
       menuItem("Elektroniske Materialer", tabName = "emat", icon = icon("database", lib="font-awesome")),
-      menuItem("Web", tabName = "web", icon = icon("database", lib="font-awesome")),
-      menuItem("Arrangementer", tabName = "arrangementer", icon = icon("database", lib="font-awesome")),
-      menuItem("Dokumentation", tabName = "dokumentation", icon = icon("file-text-o", lib="font-awesome")
+      
+      menuItem("Brugere", tabName = "users", icon = icon("database", lib="font-awesome")),
+      
+      menuItem("Økonomi", tabName = "economy", icon = icon("database", lib="font-awesome")),
+      menuItem("Personale", tabName = "staff", icon = icon("database", lib="font-awesome")),
+      
+      menuItem("Datakilder", tabName = "data", icon = icon("database", lib="font-awesome")),
+      menuItem("Datasikkerhed", tabName = "security", icon = icon("shield", lib="font-awesome")),
+      menuItem("Dokumentation", tabName = "documentation", icon = icon("file-text-o", lib="font-awesome")
       )
     )
   ),
   
   dashboardBody(
+    tags$head(
+      tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
+    ),
+    
     tabItems(
+      
+      tabItem(tabName = "frontpage",
+        box(width = 12,
+          h3("Whitebook")
+        )
+      ),
       
       tabItem(tabName = "visits",
         
@@ -73,6 +103,28 @@ dashboardPage(
         )
       ),
       
+      tabItem(tabName = "acquisition",
+        box(width = 12,
+          h3("Materialeindkøb"),
+          p("Opgørelse over materialeindkøb fra Imusic")
+        ),
+        
+        fluidRow(
+          column(12,
+            box(width = 12,
+              tableOutput('acquisitionsumtable')
+             ),
+             box(width = 12,
+                 "Test"
+             ),
+             box(width = 12,
+                 "Test"
+             )
+          )
+        )
+        
+      ),
+      
       tabItem(tabName = "emat",
               
         box(width = 12,
@@ -95,28 +147,41 @@ dashboardPage(
         )
       ),
       
+      ### Online
       
-      tabItem(tabName = "web",
+      tabItem(tabName = "weboverview",
+              
+              box(width = 12,
+                  includeMarkdown("www/weboverview.md")
+              )
+      ),
+      tabItem(tabName = "odensebib",
               
         box(width = 12,
-          h3("Web"),
-          "Webstatistik for Odensebib.dk" 
+          h3("Odensebib.dk")
         ),
         
         fluidRow(
           column(12,
-            box(width = 6,
-              tableOutput('table')
-            ),
-            box(width = 6
-              #"Besøgende",
-              #plotlyOutput("webplot")
-              #tableOutput('table2')
+            tabBox(width = 12,
+              # The id lets us use input$tabset1 on the server to find the current tab
+              id = "tabset1", height = "250px",
+              tabPanel("Generelt", tableOutput('tableanalytics')),
+              tabPanel("Indholdsgrupper", "Data er der. Skal programmeres i Whitebook"),
+              tabPanel("Kampagner", "Der skal sættes kampagne op på Drupal siden")
             )
           )
         )
       ),
+      tabItem(tabName = "app",
+        box(width = 12,
+            h3("Biblioteket App"),
+            p("KPI'er skal identificeres"),
+            p("Det mangler data fra Redia")
+        )
+      ),
       
+      ###
       
       tabItem(tabName = "arrangementer",
         box(width = 12,
@@ -141,8 +206,57 @@ dashboardPage(
           )
         )
       ),
-      
-      tabItem(tabName = "dokumentation",
+      tabItem(tabName = "events",
+        box(width = 12,
+            h3("Arrangementer"),
+            p("Borgerfeedback"),
+            p("Arrangementsdatabasen"),
+            p("Place2book")
+        )        
+      ),
+      tabItem(tabName = "libraryspace",
+        box(width = 12,
+            h3("Det fysiske rum"),
+            "<ul></ul>"
+        )        
+      ),
+      tabItem(tabName = "regionlibrary",
+        box(width = 12,
+            h3("Centralbibliotek"),
+            "Hello World"
+        )        
+      ),
+      tabItem(tabName = "users",
+        box(width = 12,
+            h3("Brugere"),
+            p("Voksne i kommunen (29-09-2017): 72766"),
+            p("Voksne udenfor kommunen (29-09-2017): 23169"),
+            p("Børn i kommunen (29-09-2017): 5489"),
+            p("Børn udenfor kommunen (29-09-2017): 493"),
+            p("Metode: Der kan ikke trækkes noget automatisk. Man kan på langsommelig måde godt hente CSV lister ud. Navn, Lånernummer, Adresse, Postnummer & by, Telefon	E-mail")
+        )        
+      ),
+      tabItem(tabName = "smartcity",
+        box(width = 12,
+          h3("Smartcity"),
+          "Hello World"
+        )        
+      ),
+      tabItem(tabName = "economy",
+        box(width = 12,
+          h3("Økonomi"),
+          "Hello World"
+        )
+      ),
+      tabItem(tabName = "staff",
+        box(width = 12,
+          h3("Personale"),
+          p("Opdeling/tiladelser på brugere"),
+          p("Brugermæssig relevans"),
+          p("Kobles på som beregningsfane")
+        )
+      ),
+      tabItem(tabName = "documentation",
           
         box(width = 12,
           includeMarkdown("www/doc.md")
