@@ -1,8 +1,9 @@
 source("global.R")
-source("~/.postpass")
 
 shinyServer(function(input, output) {
-  
+
+  source("~/.postpass")
+    
   ### Google Analytics API
   
   token <- Auth(client.id,client.secret)
@@ -242,15 +243,36 @@ shinyServer(function(input, output) {
   
   ### Web ###
   
-  query1.init <- Init(start.date = "2017-01-01",
+  query1.init <- Init(start.date = "2015-01-01",
                      end.date = "2017-12-31",
-                     metrics = c("ga:users"),
+                     metrics = c("ga:pageviews"),
+                     dimensions =c("ga:year"),
                      table.id = "ga:6064370")
-  
   query1 <- QueryBuilder(query1.init)
   data1 <- GetReportData(query1, token)
   
-  output$tableanalytics <- renderTable(data1)
+  output$tableplot1 <- renderTable(data1)
+  
+  #
+  query2.init <- Init(start.date = "2017-01-01",
+                      end.date = "2017-12-31",
+                      metrics = c("ga:sessions"),
+                      dimensions =c("ga:deviceCategory"),
+                      table.id = "ga:6064370")
+  query2 <- QueryBuilder(query2.init)
+  data2 <- GetReportData(query2, token)
+  
+  output$plot2 <- renderPlotly({
+    plot_ly(data2, labels = ~deviceCategory, values = ~sessions) %>%
+    add_pie(hole = 0.6) %>%
+    layout(title = "Platform",  showlegend = F,
+      xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+      yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+  })
+  
+  #
+  
+  
   
   
   

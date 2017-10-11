@@ -166,7 +166,23 @@ dashboardPage(
             tabBox(width = 12,
               # The id lets us use input$tabset1 on the server to find the current tab
               id = "tabset1", height = "250px",
-              tabPanel("Generelt", tableOutput('tableanalytics')),
+              tabPanel("Generelt", 
+                       fluidRow(
+                         column(12,
+                                box(width = 4,
+                                    plotlyOutput("plot2")
+                                ),
+                                box(width = 4,
+                                    tableOutput("tableplot1")
+                                ),
+                                box(width = 4,
+                                    "netbaser"
+                                )
+                         )
+                       )   
+                       
+            
+                        ),
               tabPanel("Indholdsgrupper", "Data er der. Skal programmeres i Whitebook"),
               tabPanel("Kampagner", "Der skal sættes kampagne op på Drupal siden")
             )
