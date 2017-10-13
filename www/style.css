@@ -13,3 +13,8 @@
 .skin-black .sidebar a {
   color: #555;
 }
+
+
+.nav-tabs-custom>.nav-tabs>li.active {
+    border-top-color: #233;
+}

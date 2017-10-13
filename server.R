@@ -243,17 +243,28 @@ shinyServer(function(input, output) {
   
   ### Web ###
   
+  # pageviews
   query1.init <- Init(start.date = "2015-01-01",
                      end.date = "2017-12-31",
                      metrics = c("ga:pageviews"),
-                     dimensions =c("ga:year"),
+                     dimensions =c("ga:year, ga:month"),
+                     max.results = 100,
                      table.id = "ga:6064370")
   query1 <- QueryBuilder(query1.init)
-  data1 <- GetReportData(query1, token)
+  data1 <- GetReportData(query1, token) %>%
+    mutate(p2017 = ifelse(year == "2017", pageviews, 0), p2016 = ifelse(year == "2016", pageviews, 0), p2015 = ifelse(year == "2015", pageviews, 0)) %>%
+    arrange(year,month) %>%
+    select(year, month, p2015, p2016, p2017)
   
-  output$tableplot1 <- renderTable(data1)
+  output$plot1 <- renderPlotly({
+    plot_ly(data1, x = ~month, y = ~p2015, type = "scatter", mode = 'lines', name = '2015', line = list(shape = "spline")) %>%
+      add_trace(y = ~p2016, name = '2016', mode = 'lines', connectgaps = TRUE) %>%
+      add_trace(y = ~p2017, name = '2017', mode = 'lines') %>%
+      layout(showlegend = T)  
+  })
+  output$tableplot1 <- renderDataTable(data1)
   
-  #
+  # device
   query2.init <- Init(start.date = "2017-01-01",
                       end.date = "2017-12-31",
                       metrics = c("ga:sessions"),
@@ -265,12 +276,23 @@ shinyServer(function(input, output) {
   output$plot2 <- renderPlotly({
     plot_ly(data2, labels = ~deviceCategory, values = ~sessions) %>%
     add_pie(hole = 0.6) %>%
-    layout(title = "Platform",  showlegend = F,
+    layout(showlegend = T,
       xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
       yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
   
-  #
+  # top10 pages 2017
+  query3.init <- Init(start.date = "2017-01-01",
+                      end.date = "2017-12-31",
+                      metrics = c("ga:pageviews"),
+                      dimensions =c("ga:pagePath"),
+                      sort = c("-ga:pageviews"),
+                      max.results = 10,
+                      table.id = "ga:6064370")
+  query3 <- QueryBuilder(query3.init)
+  data3 <- GetReportData(query3, token)
+  
+  output$tableplot3 <- renderTable(data3)
   
   
   

@@ -26,13 +26,9 @@ dashboardPage(
                menuItem("Materialeomsætning", tabName = "flow")
                ),
       menuItem("Elektroniske Materialer", tabName = "emat", icon = icon("database", lib="font-awesome")),
-      
-      menuItem("Brugere", tabName = "users", icon = icon("database", lib="font-awesome")),
-      
-      menuItem("Økonomi", tabName = "economy", icon = icon("database", lib="font-awesome")),
-      menuItem("Personale", tabName = "staff", icon = icon("database", lib="font-awesome")),
-      
-      menuItem("Datakilder", tabName = "data", icon = icon("database", lib="font-awesome")),
+      menuItem("Brugere", tabName = "users", icon = icon("users", lib="font-awesome")),
+      menuItem("Økonomi", tabName = "economy", icon = icon("usd", lib="font-awesome")),
+      menuItem("Datakilder", tabName = "sources", icon = icon("database", lib="font-awesome")),
       menuItem("Datasikkerhed", tabName = "security", icon = icon("shield", lib="font-awesome")),
       menuItem("Dokumentation", tabName = "documentation", icon = icon("file-text-o", lib="font-awesome")
       )
@@ -167,21 +163,22 @@ dashboardPage(
               # The id lets us use input$tabset1 on the server to find the current tab
               id = "tabset1", height = "250px",
               tabPanel("Generelt", 
-                       fluidRow(
-                         column(12,
-                                box(width = 4,
-                                    plotlyOutput("plot2")
-                                ),
-                                box(width = 4,
-                                    tableOutput("tableplot1")
-                                ),
-                                box(width = 4,
-                                    "netbaser"
-                                )
-                         )
-                       )   
-                       
-            
+                 fluidRow(
+                   column(12,
+                      column(width = 4,
+                        h4("Sidevisninger"), 
+                        plotlyOutput("plot1")
+                      ),
+                      column(width = 4,
+                        h4("Enheder"),  
+                        plotlyOutput("plot2")
+                      ),
+                      column(width = 4,
+                        h4("Top 10 sider 2017"), 
+                        tableOutput("tableplot3")
+                      )
+                    )
+                  )   
                         ),
               tabPanel("Indholdsgrupper", "Data er der. Skal programmeres i Whitebook"),
               tabPanel("Kampagner", "Der skal sættes kampagne op på Drupal siden")
@@ -252,30 +249,26 @@ dashboardPage(
             p("Metode: Der kan ikke trækkes noget automatisk. Man kan på langsommelig måde godt hente CSV lister ud. Navn, Lånernummer, Adresse, Postnummer & by, Telefon	E-mail")
         )        
       ),
-      tabItem(tabName = "smartcity",
-        box(width = 12,
-          h3("Smartcity"),
-          "Hello World"
-        )        
-      ),
       tabItem(tabName = "economy",
         box(width = 12,
           h3("Økonomi"),
-          "Hello World"
+          "6bytal"
         )
       ),
-      tabItem(tabName = "staff",
+      tabItem(tabName = "sources",
+          
         box(width = 12,
-          h3("Personale"),
-          p("Opdeling/tiladelser på brugere"),
-          p("Brugermæssig relevans"),
-          p("Kobles på som beregningsfane")
+          includeMarkdown("www/sources.md")
+        )
+      ),
+      tabItem(tabName = "security",
+        box(width = 12,
+            includeMarkdown("www/security.md")
         )
       ),
       tabItem(tabName = "documentation",
-          
         box(width = 12,
-          includeMarkdown("www/doc.md")
+            includeMarkdown("www/doc.md")
         )
       )
       
