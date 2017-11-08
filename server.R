@@ -6,21 +6,66 @@ shinyServer(function(input, output) {
     
   ### Google Analytics API
   
-  token <- Auth(client.id,client.secret)
-  save(token,file="./token_file")
-  load("./token_file")
+  #token <- Auth(client.id,client.secret)
+  #save(token,file="./token_file")
+  #load("./token_file")
   
   ### DB QUERIES ###
   
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
   
+  eventsmaalgruppe <- dbGetQuery(con, "select extract(year from dato) as year, maalgruppe, count(*) from datamart.arrangementer group by maalgruppe, year")
+  eventsyear <- dbGetQuery(con, "select extract(year from dato) as year, count(*) from datamart.arrangementer where extract(year from dato) > 2012 group by year order by year")
+  eventsdeltagere <- dbGetQuery(con, "select sum(deltagere), extract(year from dato) as year from datamart.arrangementer where extract(year from dato) > 2012 group by year order by year")
+  eventssted <- dbGetQuery(con, "select lokation, extract(year from dato) as year, count(*) from datamart.arrangementer group by lokation, year")
+  eventskategori <- dbGetQuery(con, "select kategori, extract(year from dato) as year, count(*) from datamart.arrangementer group by kategori, year")
+  ga_pageviews <- dbGetQuery(con, "SELECT * FROM datamart.ga_pageviews")
   visits <- dbGetQuery(con, "SELECT * FROM public.people_counter")
   sqlloan <- dbGetQuery(con, "SELECT * FROM datamart.kpi_loan")
-  #events <- dbGetQuery(con, "SELECT * FROM datamart.arrangementer")
+  events <- dbGetQuery(con, "SELECT * FROM datamart.arrangementer")
   acquisition <- dbGetQuery(con, "SELECT * FROM public.imusic")
+  sites <- dbGetQuery(con, "SELECT * FROM datamart.sites")
+  ereolentype <- dbGetQuery(con, "SELECT type, count(type) FROM public.ereolen group by type")
+  ereolenhist <- dbGetQuery(con, "select to_char(dato, 'iyyy-iw') as date, count(type = 'Lydbog') as lydbog, count(type = 'E-bog') as ebog from public.ereolen group by date;")
+  ereolenalder <- dbGetQuery(con, "select extract(year from date_trunc('year',age(birth))) as alder, count(extract(year from date_trunc('year',age(birth)))) as antal, (case when mod((substring(laanernummer from 10 for 1))::integer,2) = 1 then 'mand' else 'kvinde' end) as sex from public.ereolen join public.patron on public.patron.patronno = laanernummer group by alder, sex;")
   
   dbDisconnect(con)
+  
+  ### EVENTS ### 
+  
+  # målgruppe #
+  output$eventsmaalgruppeplot <- renderPlotly({
+    if (input$year != "alle") {eventsmaalgruppe <- eventsmaalgruppe %>% filter(year == input$year)}
+    plot_ly(eventsmaalgruppe, labels = ~maalgruppe, values = ~count) %>%
+      add_pie(hole = 0.0) %>%
+      layout(showlegend = T,
+             xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+             yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+  })
+  
+  # antal arrangementer #
+  output$eventsyearplot <- renderPlotly({
+    if (input$year != "alle") {eventssted <- eventssted %>% filter(year == input$year)}
+    plot_ly(eventsyear, x = eventsyear$year, y = eventsyear$count, type = 'bar', text = text) 
+  })
+  
+  # antal deltagere #
+  output$eventsdeltagereplot <- renderPlotly({
+    plot_ly(eventsdeltagere, x = eventsdeltagere$year, y = eventsdeltagere$sum, type = 'bar', text = text) 
+  })
+  
+  # sted #
+  output$eventsstedplot <- renderPlotly({
+    if (input$year != "alle") {eventssted <- eventssted %>% filter(year == input$year)}
+    plot_ly(eventssted, x = eventssted$lokation, y = eventssted$count, type = 'bar', text = text) 
+  })
+  
+  # kategori #
+  output$eventskategoriplot <- renderPlotly({
+    if (input$year != "alle") {eventskategori <- eventskategori %>% filter(year == input$year)}
+    plot_ly(eventskategori, x = eventskategori$kategori, y = eventskategori$count, type = 'bar', text = text) 
+  })
   
   ### VISITORS ###
   
@@ -172,6 +217,39 @@ shinyServer(function(input, output) {
     
   ### E-RESSOURCES ### 
   
+  ereolentype <- ereolentype
+  output$ereolentable <- renderTable(ereolentype)
+  
+  output$ereolentypeplot <- renderPlotly({
+    plot_ly(ereolentype, labels = ~type, values = ~count) %>%
+      add_pie(hole = 0.6) %>%
+      layout(showlegend = T,
+             xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+             yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+  })
+  
+  ereolenalderkvinde <- ereolenalder %>%
+    filter(alder > 0) %>%
+    filter(alder < 100) %>%
+    filter(sex == 'kvinde')
+  ereolenaldermand <- ereolenalder %>%
+    filter(alder > 0) %>%
+    filter(alder < 100) %>%
+    filter(sex == 'mand')
+  
+  p1 <- plot_ly(ereolenalderkvinde, x = ~antal, y = ~alder, type = 'bar', orientation = 'h', name = 'kvinde') %>%
+    layout(yaxis = list(side = 'left', range = c(0, 100)), xaxis = list(range = c(0, 2000)))
+  p2 <- plot_ly(ereolenaldermand, x = ~antal, y = ~alder, type = 'bar', orientation = 'h', name = 'mand') %>%
+    layout(yaxis = list(side = 'left', range = c(0, 100)), xaxis = list(range = c(0, 2000)))
+  output$ereolenaldersubplot <- renderPlotly({subplot(p1, p2)})
+  
+  
+  output$p <- renderPlotly({
+    plot_ly(ereolenhist, x = ~date, y = ~lydbog, type = 'bar', name = 'Lydbog') %>%
+      add_trace(y = ~ebog, name = 'E-bog') %>%
+      layout(yaxis = list(title = 'antal udlån'), barmode = 'stack')
+  })
+  
   ### WEBSITES ###
   
   r <- GET("https://ws.webtrends.com/v3/Reporting/profiles/77605/reports/VSlaqtDP0P6/?totals=all&start_period=current_year-2&end_period=current_year&period_type=indv&format=json", authenticate(webtrendsusername, webtrendspassword, type = "basic"))
@@ -209,9 +287,7 @@ shinyServer(function(input, output) {
   
   ### EVENTS ###
   
-  output$eventtable <- renderFormattable({formattable(events, list(
-  )
-  )})
+  output$eventstable <- renderTable(events)
   
   #eventsplot <- events %>%
     #mutate(year = format(dato, "%y"), 
@@ -220,18 +296,15 @@ shinyServer(function(input, output) {
       #e2015 = ifelse ((year == "15") , 1, 0),
       #e2016 = ifelse ((year == "16") , 1, 0),
       #e2017 = ifelse ((year == "17") , 1, 0)) %>%
-    #select (year,e2013,e2014,e2015)
-    #group_by(year)
-    #group_by(toString(year)) %>%
-    #summarise(ec2017 = count(e2017), ec2016 = count(e2016), ec2015 = count(e2015)) %>%
-    #select(year,ec2017, ec2016)
-    
-    #       , e2017 = ifelse(year == "17", count, 0), e2016 = ifelse(year == "16", count, 0), e2015 = ifelse(year == "15", count, 0)) #%>%
+    #select (as.character(year),e2015,e2016,e2017) %>%
+    #group_by(year) %>%
+    #summarise(ec2017 = count(e2017), ec2016 = count(e2016), ec2015 = count(e2015)) #%>%
+    #select(year,ec2017, ec2016, e2017 = ifelse(year == "17", count, 0), e2016 = ifelse(year == "16", count, 0), e2015 = ifelse(year == "15", count, 0)) %>%
     #group_by(year) %>%
     #summarise(v2017 = count(v2017), v2016 = count(v2016), v2015 = count(v2015)) %>%
     #select(year,v2017,v2016,v2015)
   
-  #output$event2table <- renderFormattable({formattable(eventsplot, list(  ))})
+  output$event2table <- renderFormattable({formattable(eventsplot, list(  ))})
   
   #output$eventsplot <- renderPlotly({
   #  plot_ly(eventsplot, x = eventsplot$year, y = eventsplot$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
@@ -240,39 +313,30 @@ shinyServer(function(input, output) {
   #    layout(yaxis = list(title = 'Antal'), barmode = 'group')
   #})
   
-  
   ### Web ###
   
+  # sites
+  
+  sites <- sites %>% select("Organisation" = titel, "URL" = url)
+  output$tablesites <- renderTable(sites)
+
   # pageviews
-  query1.init <- Init(start.date = "2015-01-01",
-                     end.date = "2017-12-31",
-                     metrics = c("ga:pageviews"),
-                     dimensions =c("ga:year, ga:month"),
-                     max.results = 100,
-                     table.id = "ga:6064370")
-  query1 <- QueryBuilder(query1.init)
-  data1 <- GetReportData(query1, token) %>%
-    mutate(p2017 = ifelse(year == "2017", pageviews, 0), p2016 = ifelse(year == "2016", pageviews, 0), p2015 = ifelse(year == "2015", pageviews, 0)) %>%
-    arrange(year,month) %>%
-    select(year, month, p2015, p2016, p2017)
+  
+  ga_pageviews <- ga_pageviews %>%
+    mutate(pv2017 = ifelse(aar == "2017", pageviews, 0), pv2016 = ifelse(aar == "2016", pageviews, 0), pv2015 = ifelse(aar == "2015", pageviews, 0)) %>%
+    select(maaned,pv2015,pv2016,pv2017) %>%
+    group_by(maaned) %>%
+    summarise(v2017 = sum(pv2017), v2016 = sum(pv2016), v2015 = sum(pv2015))
   
   output$plot1 <- renderPlotly({
-    plot_ly(data1, x = ~month, y = ~p2015, type = "scatter", mode = 'lines', name = '2015', line = list(shape = "spline")) %>%
-      add_trace(y = ~p2016, name = '2016', mode = 'lines', connectgaps = TRUE) %>%
-      add_trace(y = ~p2017, name = '2017', mode = 'lines') %>%
-      layout(showlegend = T)  
+    plot_ly(ga_pageviews, x = ~maaned , y = ~v2015 , type = "scatter", mode = 'lines', name = '2015', line = list(shape = "spline")) %>%
+      add_trace(y = ~v2016, name = '2016', mode = 'lines') %>%
+      add_trace(y = ~v2017, name = '2017', mode = 'lines') %>%
+      layout(showlegend = T, xaxis = list(tickmode="linear", title = "Måned"), yaxis = list(title = "Antal"))  
   })
-  output$tableplot1 <- renderDataTable(data1)
   
   # device
-  query2.init <- Init(start.date = "2017-01-01",
-                      end.date = "2017-12-31",
-                      metrics = c("ga:sessions"),
-                      dimensions =c("ga:deviceCategory"),
-                      table.id = "ga:6064370")
-  query2 <- QueryBuilder(query2.init)
-  data2 <- GetReportData(query2, token)
-  
+
   output$plot2 <- renderPlotly({
     plot_ly(data2, labels = ~deviceCategory, values = ~sessions) %>%
     add_pie(hole = 0.6) %>%
@@ -282,15 +346,15 @@ shinyServer(function(input, output) {
   })
   
   # top10 pages 2017
-  query3.init <- Init(start.date = "2017-01-01",
-                      end.date = "2017-12-31",
-                      metrics = c("ga:pageviews"),
-                      dimensions =c("ga:pagePath"),
-                      sort = c("-ga:pageviews"),
-                      max.results = 10,
-                      table.id = "ga:6064370")
-  query3 <- QueryBuilder(query3.init)
-  data3 <- GetReportData(query3, token)
+  #query3.init <- Init(start.date = "2017-01-01",
+  #                    end.date = "2017-12-31",
+  #                    metrics = c("ga:pageviews"),
+  #                    dimensions =c("ga:pagePath"),
+  #                    sort = c("-ga:pageviews"),
+  #                    max.results = 10,
+  #                    table.id = "ga:6064370")
+  #query3 <- QueryBuilder(query3.init)
+  #data3 <- GetReportData(query3, token)
   
   output$tableplot3 <- renderTable(data3)
   
