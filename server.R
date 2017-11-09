@@ -21,6 +21,8 @@ shinyServer(function(input, output) {
   eventssted <- dbGetQuery(con, "select lokation, extract(year from dato) as year, count(*) from datamart.arrangementer group by lokation, year")
   eventskategori <- dbGetQuery(con, "select kategori, extract(year from dato) as year, count(*) from datamart.arrangementer group by kategori, year")
   ga_pageviews <- dbGetQuery(con, "SELECT * FROM datamart.ga_pageviews")
+  ga_device <- dbGetQuery(con, "select device, sum(users) as users from datamart.ga_device group by device")
+  ga_top10 <- dbGetQuery(con, "SELECT * FROM datamart.ga_top10 order by pageviews desc limit 20")
   visits <- dbGetQuery(con, "SELECT * FROM public.people_counter")
   sqlloan <- dbGetQuery(con, "SELECT * FROM datamart.kpi_loan")
   events <- dbGetQuery(con, "SELECT * FROM datamart.arrangementer")
@@ -337,8 +339,8 @@ shinyServer(function(input, output) {
   
   # device
 
-  output$plot2 <- renderPlotly({
-    plot_ly(data2, labels = ~deviceCategory, values = ~sessions) %>%
+  output$ga_device_plot <- renderPlotly({
+    plot_ly(ga_device, labels = ~device, values = ~users) %>%
     add_pie(hole = 0.6) %>%
     layout(showlegend = T,
       xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
@@ -356,7 +358,7 @@ shinyServer(function(input, output) {
   #query3 <- QueryBuilder(query3.init)
   #data3 <- GetReportData(query3, token)
   
-  output$tableplot3 <- renderTable(data3)
+  output$tableplot3 <- renderTable(ga_top10)
   
   
   

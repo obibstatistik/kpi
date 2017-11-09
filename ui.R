@@ -23,8 +23,7 @@ dashboardPage(
       ),
       menuItem("Materialer", tabName = "emat", icon = icon("book", lib="font-awesome"),
         menuItem("Udlån", tabName = "fysmat"),
-        menuItem("Materialeindkøb", tabName = "acquisition"),
-        menuItem("Materialeomsætning", tabName = "flow")
+        menuItem("Materialeindkøb", tabName = "acquisition")
       ),
       menuItem("E-Ressourcer", tabName = "emat", icon = icon("database", lib="font-awesome"),
         menuItem("E-Bøger", tabName = "ebooks"),
@@ -41,49 +40,52 @@ dashboardPage(
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
     ),
-    
     tabItems(
       tabItem(tabName = "frontpage",
         box(width = 12,
           h3("Whitebook")
         )
       ),
-    
       tabItem(tabName = "events",
         box(width = 12,
           h3("Arrangementer")
         ),
-
+        fluidRow(
+          column(12,
+            box(width = 12,
+              column(width = 6,
+                     h4("Arrangementer pr. år"),
+                     p("Hvor mange arrangementer har der været pr. år de sidste 5 år"),
+                     plotlyOutput("eventsyearplot")
+              ),
+              column(width = 6,
+                     h4("Deltagere pr. år"),
+                     p("Hvor mange deltagere har der været pr. år de sidste 5 år"),
+                     plotlyOutput("eventsdeltagereplot")
+              )
+            )
+          )
+        ),
         fluidRow(
           column(2,
             box(width = 12,
-              h4("Input"),
-              selectInput("year", "År:", c('alle','2013','2014','2015','2016','2017'))
+              h4("Afgræns pr. år"),
+              selectInput("year", "",c('alle','2013','2014','2015','2016','2017'))
             )
           ),
           column(10,
              box(width = 12,
-               column(width = 6,
-                  h4("Arrangementer pr. år"),
-                  p("Hvor mange arrangementer har der været pr. år de sidste 5 år"),
-                  plotlyOutput("eventsyearplot")
-               ),
-               column(width = 6,
-                  h4("Deltagere pr. år"),
-                  p("Hvor mange deltagere har der været pr. år de sidste 5 år"),
-                  plotlyOutput("eventsdeltagereplot")
-               ),
-               column(width = 6,
+                column(width = 4,
                   h4("Arrangementer børn/voksen"),
                   p("Hvor mange arrangementer er målrettet hhv. børn og voksne i perioden"),
                   plotlyOutput("eventsmaalgruppeplot")
                ),
-               column(width = 6,
+               column(width = 4,
                   h4("Sted"),
                   p("Hvor mange arrangementer har der været på de enkelte biblioteker i en given periode"),
                   plotlyOutput("eventsstedplot")
                ),
-               column(width = 6,
+               column(width = 4,
                   h4("Kategori"),
                   p("Hvor mange arrangementer er målrettet hhv. arrangementer og læring/undervisning i en given periode"),
                   plotlyOutput("eventskategoriplot")
@@ -91,13 +93,6 @@ dashboardPage(
              )
           )
         )
-        
-        
-        
-        
-        
-        
-        
         
       ),  
         
@@ -181,12 +176,12 @@ dashboardPage(
                                                        tableOutput("ga_pageviewstable")
                                                 ),
                                                 column(width = 4,
-                                                       h4("Enheder")#,  
-                                                       #plotlyOutput("plot2")
+                                                       h4("Enheder"),  
+                                                       plotlyOutput("ga_device_plot")
                                                 ),
                                                 column(width = 4,
-                                                       h4("Top 10 sider 2017")#, 
-                                                       #tableOutput("tableplot3")
+                                                       h4("Top 10 sider 2017"), 
+                                                       tableOutput("tableplot3")
                                                 )
                                          )
                                        )   
