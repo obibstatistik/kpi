@@ -3,12 +3,6 @@ source("global.R")
 shinyServer(function(input, output) {
 
   source("~/.postpass")
-    
-  ### Google Analytics API
-  
-  #token <- Auth(client.id,client.secret)
-  #save(token,file="./token_file")
-  #load("./token_file")
   
   ### DB QUERIES ###
   
@@ -17,13 +11,16 @@ shinyServer(function(input, output) {
   
   eventsmaalgruppe <- dbGetQuery(con, "select extract(year from dato) as year, maalgruppe, count(*) from datamart.arrangementer group by maalgruppe, year")
   eventsyear <- dbGetQuery(con, "select extract(year from dato) as year, count(*) from datamart.arrangementer where extract(year from dato) > 2012 group by year order by year")
+  eventsmonth <- dbGetQuery(con, "select extract(month from dato) as month, count(*) from datamart.arrangementer where extract(year from dato) > 2012 group by month order by month")
   eventsdeltagere <- dbGetQuery(con, "select sum(deltagere), extract(year from dato) as year from datamart.arrangementer where extract(year from dato) > 2012 group by year order by year")
+  eventsparticipantmonth <- dbGetQuery(con, "select sum(deltagere), extract(month from dato) as month from datamart.arrangementer where extract(year from dato) > 2012 group by month order by month")
   eventssted <- dbGetQuery(con, "select lokation, extract(year from dato) as year, count(*) from datamart.arrangementer group by lokation, year")
   eventskategori <- dbGetQuery(con, "select kategori, extract(year from dato) as year, count(*) from datamart.arrangementer group by kategori, year")
+  eventsratio <- dbGetQuery(con, "select titel, arrangementstype, deltagere, forberedelsestid from datamart.arrangementer")
+  visits <- dbGetQuery(con, "SELECT * FROM public.people_counter")
   ga_pageviews <- dbGetQuery(con, "SELECT * FROM datamart.ga_pageviews")
   ga_device <- dbGetQuery(con, "select device, sum(users) as users from datamart.ga_device group by device")
   ga_top10 <- dbGetQuery(con, "SELECT * FROM datamart.ga_top10 order by pageviews desc limit 20")
-  visits <- dbGetQuery(con, "SELECT * FROM public.people_counter")
   sqlloan <- dbGetQuery(con, "SELECT * FROM datamart.kpi_loan")
   events <- dbGetQuery(con, "SELECT * FROM datamart.arrangementer")
   acquisition <- dbGetQuery(con, "SELECT * FROM public.imusic")
@@ -36,37 +33,75 @@ shinyServer(function(input, output) {
   
   ### EVENTS ### 
   
+  
+  # arrangementer pr aar #
+  output$eventsyearplot <- renderPlotly({
+    plot_ly(eventsyear, x = eventsyear$year, y = eventsyear$count, type = 'bar', text = text) 
+  })
+  # arrangementer pr maaned #
+  output$eventsmonthplot <- renderPlotly({
+    plot_ly(eventsmonth, x = eventsmonth$month, y = eventsmonth$count, type = 'bar', text = text) 
+  })
+  
+  # deltagere pr aar #
+  output$eventsparticipantyearplot <- renderPlotly({
+    plot_ly(eventsdeltagere, x = eventsdeltagere$year, y = eventsdeltagere$sum, type = 'bar', text = text) 
+  })
+  
+  # deltagere pr maaned #
+  output$eventsparticipantmonthplot <- renderPlotly({
+    plot_ly(eventsparticipantmonth, x = eventsparticipantmonth$month, y = eventsparticipantmonth$sum, type = 'bar', text = text) 
+  })
+  
   # målgruppe #
   output$eventsmaalgruppeplot <- renderPlotly({
-    if (input$year != "alle") {eventsmaalgruppe <- eventsmaalgruppe %>% filter(year == input$year)}
+    if (input$year != "Alle") {eventsmaalgruppe <- eventsmaalgruppe %>% filter(year == input$year)}
+    if (input$year == "Alle") {eventsmaalgruppe <- eventsmaalgruppe %>% filter(year %in% c("2013","2014","2015","2016","2017"))}
     plot_ly(eventsmaalgruppe, labels = ~maalgruppe, values = ~count) %>%
       add_pie(hole = 0.0) %>%
       layout(showlegend = T,
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
-  
-  # antal arrangementer #
-  output$eventsyearplot <- renderPlotly({
-    if (input$year != "alle") {eventssted <- eventssted %>% filter(year == input$year)}
-    plot_ly(eventsyear, x = eventsyear$year, y = eventsyear$count, type = 'bar', text = text) 
-  })
-  
-  # antal deltagere #
-  output$eventsdeltagereplot <- renderPlotly({
-    plot_ly(eventsdeltagere, x = eventsdeltagere$year, y = eventsdeltagere$sum, type = 'bar', text = text) 
-  })
-  
+
   # sted #
+  eventssted <- eventssted %>%
+    mutate(
+      sted = case_when(
+        eventssted$lokation == "Tarup bibliotek" ~ "Tarup Bibliotek",
+        eventssted$lokation == "Dalum bibliotek" ~ "Dalum Bibliotek",
+        eventssted$lokation == "Hovedbiblioteket - Voksen" ~ "Hovedbiblioteket",
+        eventssted$lokation == "Hovedbiblioteket - Børn" ~ "Hovedbiblioteket",
+        eventssted$lokation == "Hovedbiblioteket - Opsøgende" ~ "Hovedbiblioteket",
+        eventssted$lokation == "Holluf Pile bibliotek" ~ "Holluf Pile Bibliotek",
+        eventssted$lokation == "Korup bibliotek" ~ "Korup Bibliotek",
+        eventssted$lokation == "Højby bibliotek" ~ "Højby Bibliotek",
+        eventssted$lokation == "Bolbro bibliotek" ~ "Bolbro Bibliotek",
+        eventssted$lokation == "Vollsmose bibliotek" ~ "Vollsmose Bibliotek",
+        eventssted$lokation == "Musikbiblioteket" ~ "Musikbiblioteket",
+        eventssted$lokation == "lokalhistorisk" ~ "Lokalhistorisk",
+        eventssted$lokation == "Næsby bibliotek" ~ "Næsby Bibliotek",
+        eventssted$lokation == "Andet..." ~ "Andet"
+      ) 
+    ) 
+
   output$eventsstedplot <- renderPlotly({
-    if (input$year != "alle") {eventssted <- eventssted %>% filter(year == input$year)}
-    plot_ly(eventssted, x = eventssted$lokation, y = eventssted$count, type = 'bar', text = text) 
+    if (input$year != "Alle") {eventssted <- eventssted %>% filter(year == input$year)}
+    plot_ly(eventssted, x = eventssted$sted, y = eventssted$count, type = 'bar', text = text) %>%
+      layout(margin = list(b = 125), xaxis = list(title = ""), yaxis = list(title =""))
   })
   
   # kategori #
   output$eventskategoriplot <- renderPlotly({
-    if (input$year != "alle") {eventskategori <- eventskategori %>% filter(year == input$year)}
+    if (input$year != "Alle") {eventskategori <- eventskategori %>% filter(year == input$year)}
     plot_ly(eventskategori, x = eventskategori$kategori, y = eventskategori$count, type = 'bar', text = text) 
+  })
+  
+  # ratio #
+  output$eventsratioplot <- renderPlotly({
+    if (input$year != "Alle") {eventskategori <- eventskategori %>% filter(year == input$year)}
+    plot_ly(eventsratio, x = eventsratio$deltagere, y = eventsratio$forberedelsestid, text = eventsratio$titel, color = eventsratio$arrangementstype) %>%
+      layout(xaxis = list(title = "deltagere", range = c(0, 500)), yaxis = list(title ="forberedelsestid"))
   })
   
   ### VISITORS ###
@@ -78,12 +113,48 @@ shinyServer(function(input, output) {
     summarise(v2017 = sum(v2017), v2016 = sum(v2016), v2015 = sum(v2015)) %>%
     select(location,v2017,v2016,v2015)
   
+  
+    
+  
   output$plot <- renderPlotly({
     plot_ly(visitsplot, x = visitsplot$location, y = visitsplot$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
     add_trace(y = visitsplot$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
     add_trace(y = visitsplot$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
     layout(yaxis = list(title = 'Antal'), barmode = 'group')
   })
+  
+  output$plotvisitbo <- renderPlotly({
+    visitsplotbo <- visitsplot %>% filter(location == "bo")
+    plot_ly(visitsplotbo, x = visitsplotbo$location, y = visitsplotbo$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
+      add_trace(y = visitsplotbo$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
+      add_trace(y = visitsplotbo$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
+      layout(yaxis = list(title = 'Antal'), barmode = 'group')
+  })
+  
+  output$plotvisitda <- renderPlotly({
+    visitsplotda <- visitsplot %>% filter(location == "da")
+    plot_ly(visitsplotda, x = visitsplotda$location, y = visitsplotda$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
+      add_trace(y = visitsplotda$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
+      add_trace(y = visitsplotda$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
+      layout(yaxis = list(title = 'Antal'), barmode = 'group')
+  })
+  
+  output$plotvisithb <- renderPlotly({
+    visitsplothb <- visitsplot %>% filter(location == "hb")
+    plot_ly(visitsplothb, x = visitsplothb$location, y = visitsplothb$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
+      add_trace(y = visitsplothb$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
+      add_trace(y = visitsplothb$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
+      layout(yaxis = list(title = 'Antal'), barmode = 'group')
+  })
+  
+  output$plotvisitda <- renderPlotly({
+    visitsplotda <- visitsplot %>% filter(location == "da")
+    plot_ly(visitsplotda, x = visitsplotda$location, y = visitsplotda$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
+      add_trace(y = visitsplotda$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
+      add_trace(y = visitsplotda$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
+      layout(yaxis = list(title = 'Antal'), barmode = 'group')
+  })
+  
   
   # visitor tables all #
   visitsall <- visits %>%
