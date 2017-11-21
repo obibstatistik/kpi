@@ -10,31 +10,31 @@ dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem("Forside", tabName = "frontpage", icon = icon("home", lib="font-awesome")),
-      menuItem("Arrangementer", tabName = "events", icon = icon("calendar", lib="font-awesome")),
+      menuItem("Arrangementer", tabName = "events", icon = icon("calendar", lib="font-awesome"), badgeLabel = "Klar", badgeColor = "green"),
       menuItem("Det fysiske rum", tabName = "space", icon = icon("building-o", lib="font-awesome"),
-        menuItem("Besøgende", tabName = "visits"),
-        menuItem("Mødelokaler", tabName = "meetingrooms"),
-        menuItem("Smart City", tabName = "smartcity")
+        menuItem("Besøgende", tabName = "visits", badgeLabel = "WIP", badgeColor = "orange"),
+        menuItem("Mødelokaler", tabName = "meetingrooms", badgeLabel = "Todo", badgeColor = "red"),
+        menuItem("Smart City", tabName = "smartcity", badgeLabel = "Todo", badgeColor = "red")
       ),
       menuItem("Online", tabName = "online", icon = icon("laptop", lib="font-awesome"), 
-        menuItem("Sites", tabName = "weboverview"),
-        menuItem("Odensebib.dk", tabName = "odensebib", badgeLabel = "New", badgeColor = "green")#,
-        #menuItem("Biblioteket App", tabName = "app")
+        menuItem("Sites", tabName = "weboverview", badgeLabel = "Klar", badgeColor = "green"),
+        menuItem("Odensebib.dk", tabName = "odensebib", badgeLabel = "Klar", badgeColor = "green"),
+        menuItem("Biblioteket App", tabName = "app", badgeLabel = "Todo", badgeColor = "red")
       ),
       menuItem("Materialer", tabName = "emat", icon = icon("book", lib="font-awesome"),
-        menuItem("Udlån", tabName = "fysmat"),
-        menuItem("Materialeindkøb", tabName = "acquisition")
+        menuItem("Udlån", tabName = "fysmat", badgeLabel = "WIP", badgeColor = "orange"),
+        menuItem("Materialeindkøb", tabName = "acquisition", badgeLabel = "WIP", badgeColor = "orange")
       ),
       menuItem("E-Ressourcer", tabName = "emat", icon = icon("database", lib="font-awesome"),
-        menuItem("E-Bøger", tabName = "ebooks"),
-        menuItem("E-Film", tabName = "emovies"),
-        menuItem("E-Baser", tabName = "edatabases")
+        menuItem("E-Bøger", tabName = "ebooks", badgeLabel = "WIP", badgeColor = "orange"),
+        menuItem("E-Film", tabName = "emovies", badgeLabel = "Todo", badgeColor = "red"),
+        menuItem("E-Baser", tabName = "edatabases", badgeLabel = "Todo", badgeColor = "red")
       ),
-      menuItem("Brugere", tabName = "users", icon = icon("users", lib="font-awesome"))#,
-      #menuItem("Økonomi", tabName = "economy", icon = icon("usd", lib="font-awesome")),
-      #menuItem("Personale", tabName = "personal", icon = icon("users", lib="font-awesome")),
-      #menuItem("Datakilder", tabName = "datasources", icon = icon("database", lib="font-awesome")),
-      #menuItem("Datasikkerhed", tabName = "datasecurity", icon = icon("database", lib="font-awesome"))
+      menuItem("Brugere", tabName = "users", icon = icon("users", lib="font-awesome"), badgeLabel = "WIP", badgeColor = "orange"),
+      menuItem("Økonomi", tabName = "economy", icon = icon("usd", lib="font-awesome"), badgeLabel = "Todo", badgeColor = "red"),
+      menuItem("Personale", tabName = "personal", icon = icon("users", lib="font-awesome"), badgeLabel = "Todo", badgeColor = "red"),
+      menuItem("Datakilder", tabName = "datasources", icon = icon("database", lib="font-awesome"), badgeLabel = "Todo", badgeColor = "red"),
+      menuItem("Datasikkerhed", tabName = "datasecurity", icon = icon("database", lib="font-awesome"), badgeLabel = "Todo", badgeColor = "red")
     )
   ),
   
@@ -217,8 +217,8 @@ dashboardPage(
                                          )
                                        )   
                               ),
-                              tabPanel("Indholdsgrupper", "Data er der. Skal programmeres i Whitebook"),
-                              tabPanel("Kampagner", "Der skal sættes kampagne op på Drupal siden")
+                              tabPanel("Indholdsgrupper", ""),
+                              tabPanel("Kampagner", "")
                        )
                 )
               )

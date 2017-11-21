@@ -18,9 +18,9 @@ shinyServer(function(input, output) {
   eventskategori <- dbGetQuery(con, "select kategori, extract(year from dato) as year, count(*) from datamart.arrangementer group by kategori, year")
   eventsratio <- dbGetQuery(con, "select titel, arrangementstype, deltagere, forberedelsestid from datamart.arrangementer")
   visits <- dbGetQuery(con, "SELECT * FROM public.people_counter")
-  ga_pageviews <- dbGetQuery(con, "SELECT * FROM datamart.ga_pageviews")
+  ga_pageviews <- dbGetQuery(con, "SELECT * FROM datamart.ga_pageviews where pageviews > 0")
   ga_device <- dbGetQuery(con, "select device, sum(users) as users from datamart.ga_device group by device")
-  ga_top10 <- dbGetQuery(con, "SELECT * FROM datamart.ga_top10 order by pageviews desc limit 20")
+  ga_top10 <- dbGetQuery(con, "SELECT title, pageviews FROM datamart.ga_top10 order by pageviews desc limit 11 offset 1")
   sqlloan <- dbGetQuery(con, "SELECT * FROM datamart.kpi_loan")
   events <- dbGetQuery(con, "SELECT * FROM datamart.arrangementer")
   acquisition <- dbGetQuery(con, "SELECT * FROM public.imusic")
@@ -400,11 +400,12 @@ shinyServer(function(input, output) {
     select(maaned,pv2015,pv2016,pv2017) %>%
     group_by(maaned) %>%
     summarise(v2017 = sum(pv2017), v2016 = sum(pv2016), v2015 = sum(pv2015))
+  is.na(ga_pageviews) <- !ga_pageviews
   
   output$plot1 <- renderPlotly({
     plot_ly(ga_pageviews, x = ~maaned , y = ~v2015 , type = "scatter", mode = 'lines', name = '2015', line = list(shape = "spline")) %>%
       add_trace(y = ~v2016, name = '2016', mode = 'lines') %>%
-      add_trace(y = ~v2017, name = '2017', mode = 'lines') %>%
+      add_trace(y = ~v2017, name = '2017', mode = 'lines', connectgaps = FALSE) %>%
       layout(showlegend = T, xaxis = list(tickmode="linear", title = "Måned"), yaxis = list(title = "Antal"))  
   })
   
@@ -419,15 +420,10 @@ shinyServer(function(input, output) {
   })
   
   # top10 pages 2017
-  #query3.init <- Init(start.date = "2017-01-01",
-  #                    end.date = "2017-12-31",
-  #                    metrics = c("ga:pageviews"),
-  #                    dimensions =c("ga:pagePath"),
-  #                    sort = c("-ga:pageviews"),
-  #                    max.results = 10,
-  #                    table.id = "ga:6064370")
-  #query3 <- QueryBuilder(query3.init)
-  #data3 <- GetReportData(query3, token)
+  
+  ga_top10 <- ga_top10 %>% 
+    filter(title != "Adgang nægtet | Odense Bibliotekerne") %>%
+    rename(Titel = title, Sidevisninger = pageviews )
   
   output$tableplot3 <- renderTable(ga_top10)
   
