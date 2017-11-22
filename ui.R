@@ -12,7 +12,7 @@ dashboardPage(
       menuItem("Forside", tabName = "frontpage", icon = icon("home", lib="font-awesome")),
       menuItem("Arrangementer", tabName = "events", icon = icon("calendar", lib="font-awesome"), badgeLabel = "Klar", badgeColor = "green"),
       menuItem("Det fysiske rum", tabName = "space", icon = icon("building-o", lib="font-awesome"),
-        menuItem("Besøgende", tabName = "visits", badgeLabel = "WIP", badgeColor = "orange"),
+        menuItem("Besøgende", tabName = "visits", badgeLabel = "WIP", badgeColor = "green"),
         menuItem("Mødelokaler", tabName = "meetingrooms", badgeLabel = "Todo", badgeColor = "red"),
         menuItem("Smart City", tabName = "smartcity", badgeLabel = "Todo", badgeColor = "red")
       ),
@@ -135,13 +135,22 @@ dashboardPage(
               id = "tabset1",
               tabPanel("Generelt", 
                  fluidRow(
-                   column(12,
-                      p("Biblioteker med fremgang/tilbagegang")    
+                   column(6,
+                      h4("Samlet besøgstal"),
+                      p("Samlet besøgstal for alle biblioteker de seneste 3 år. Nb: Hovedbiblioteket lukket december 2016 til november 2017."),
+                      plotlyOutput("visitsplotall")
                    ),
-                   column(12,
+                   column(6,
+                      h4("Biblioteker med flere/færre besøgende"),
+                      p("Flere/færre besøgende 2016/2017"),
+                      plotlyOutput("visitsplotcompare")
+                   ),
+                   column(6,
+                      h4("Besøgende pr. bibliotek"),
                       plotlyOutput("plot")    
                    ),
-                   column(12,
+                   column(6,
+                      h4("Samlet besøgstal i detaljer"),
                       formattableOutput("tablevisits"), downloadButton("downloadData", "Download"
                    )
                  )   

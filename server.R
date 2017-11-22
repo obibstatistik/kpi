@@ -18,6 +18,8 @@ shinyServer(function(input, output) {
   eventskategori <- dbGetQuery(con, "select kategori, extract(year from dato) as year, count(*) from datamart.arrangementer group by kategori, year")
   eventsratio <- dbGetQuery(con, "select titel, arrangementstype, deltagere, forberedelsestid from datamart.arrangementer")
   visits <- dbGetQuery(con, "SELECT * FROM public.people_counter")
+  visitsoverview <- dbGetQuery(con, "SELECT extract(year from date)::text as year, sum(count) FROM public.people_counter WHERE extract(year from date) in ('2015','2016','2017') group by year order by year")
+  visitscompare <- dbGetQuery(con, "SELECT extract(year from date) as year, location, sum(count)n FROM public.people_counter WHERE extract(year from date) in ('2016','2017')  group by year, location")
   ga_pageviews <- dbGetQuery(con, "SELECT * FROM datamart.ga_pageviews where pageviews > 0")
   ga_device <- dbGetQuery(con, "select device, sum(users) as users from datamart.ga_device group by device")
   ga_top10 <- dbGetQuery(con, "SELECT title, pageviews FROM datamart.ga_top10 order by pageviews desc limit 11 offset 1")
@@ -105,8 +107,26 @@ shinyServer(function(input, output) {
   
   ### FYSISKE RUM ###
   
-  # Besøgende #
-
+  # 2017 overview #
+  output$visitsplotall <- renderPlotly({
+    plot_ly(visitsoverview, x = visitsoverview$year, y = visitsoverview$sum, type = 'bar', text = text) %>%
+      layout(yaxis = list(title = 'Antal'))
+  })
+  
+  
+  # 2017/2016 compare #
+  
+  library <- c('Tilbagegang','Fremgang')
+  antal <- c(1, 11)
+  startdate <- as.Date(c('2010-11-1','2008-3-25'))
+  data <- data.frame(library, antal, startdate)
+  
+  output$visitsplotcompare <- renderPlotly({
+    plot_ly(data, labels = ~library, values = ~antal, type = 'pie') %>%
+      layout(xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+             yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+  })
+  
   # visits plot #
   visitsplot <- visits %>%
     mutate(year = format(date, "%y"), v2017 = ifelse(year == "17", count, 0), v2016 = ifelse(year == "16", count, 0), v2015 = ifelse(year == "15", count, 0)) %>%
@@ -115,9 +135,9 @@ shinyServer(function(input, output) {
     select(location,v2017,v2016,v2015)
 
   output$plot <- renderPlotly({
-    plot_ly(visitsplot, x = visitsplot$location, y = visitsplot$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
-    add_trace(y = visitsplot$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
-    add_trace(y = visitsplot$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
+    plot_ly(visitsplot, x = visitsplot$location, y = visitsplot$v2015, type = 'bar', name = '2015', text = text) %>%
+    add_trace(y = visitsplot$v2016, name = '2016') %>%  
+    add_trace(y = visitsplot$v2017, name = '2017') %>% 
     layout(yaxis = list(title = 'Antal'), barmode = 'group')
   })
   
