@@ -149,7 +149,7 @@ dashboardPage(
               tabPanel("Bolbro", plotlyOutput("plotvisitbo"),formattableOutput('tablebo')),
               tabPanel("Dalum", plotlyOutput("plotvisitda"),formattableOutput('tableda')),
               tabPanel("Borgernes Hus", plotlyOutput("plotvisithb"),formattableOutput('tablehb')),
-              tabPanel("Holluf Pile", plotlyOutput("plotvisitho"),formattableOutput('tableho')),
+              tabPanel("Holluf Pile", plotlyOutput("plotvisithol"),formattableOutput('tableho')),
               tabPanel("Højby", plotlyOutput("plotvisithoj"),formattableOutput('tablehoj')),
               tabPanel("Tarup", plotlyOutput("plotvisitta"),formattableOutput('tableta')),
               tabPanel("Vollsmose", plotlyOutput("plotvisitvo"),formattableOutput('tablevo'))

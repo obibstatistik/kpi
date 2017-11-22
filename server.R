@@ -33,7 +33,6 @@ shinyServer(function(input, output) {
   
   ### EVENTS ### 
   
-  
   # arrangementer pr aar #
   output$eventsyearplot <- renderPlotly({
     plot_ly(eventsyear, x = eventsyear$year, y = eventsyear$count, type = 'bar', text = text) 
@@ -104,18 +103,17 @@ shinyServer(function(input, output) {
       layout(xaxis = list(title = "deltagere", range = c(0, 500)), yaxis = list(title ="forberedelsestid"))
   })
   
-  ### VISITORS ###
+  ### FYSISKE RUM ###
   
+  # Besøgende #
+
   # visits plot #
   visitsplot <- visits %>%
     mutate(year = format(date, "%y"), v2017 = ifelse(year == "17", count, 0), v2016 = ifelse(year == "16", count, 0), v2015 = ifelse(year == "15", count, 0)) %>%
     group_by(location) %>%
     summarise(v2017 = sum(v2017), v2016 = sum(v2016), v2015 = sum(v2015)) %>%
     select(location,v2017,v2016,v2015)
-  
-  
-    
-  
+
   output$plot <- renderPlotly({
     plot_ly(visitsplot, x = visitsplot$location, y = visitsplot$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
     add_trace(y = visitsplot$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
@@ -123,6 +121,7 @@ shinyServer(function(input, output) {
     layout(yaxis = list(title = 'Antal'), barmode = 'group')
   })
   
+  # besøgende bolbro #
   output$plotvisitbo <- renderPlotly({
     visitsplotbo <- visitsplot %>% filter(location == "bo")
     plot_ly(visitsplotbo, x = visitsplotbo$location, y = visitsplotbo$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
@@ -131,6 +130,7 @@ shinyServer(function(input, output) {
       layout(yaxis = list(title = 'Antal'), barmode = 'group')
   })
   
+  # besøgende dalum #
   output$plotvisitda <- renderPlotly({
     visitsplotda <- visitsplot %>% filter(location == "da")
     plot_ly(visitsplotda, x = visitsplotda$location, y = visitsplotda$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
@@ -139,6 +139,7 @@ shinyServer(function(input, output) {
       layout(yaxis = list(title = 'Antal'), barmode = 'group')
   })
   
+  # besøgende borgernes hus #
   output$plotvisithb <- renderPlotly({
     visitsplothb <- visitsplot %>% filter(location == "hb")
     plot_ly(visitsplothb, x = visitsplothb$location, y = visitsplothb$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
@@ -147,13 +148,44 @@ shinyServer(function(input, output) {
       layout(yaxis = list(title = 'Antal'), barmode = 'group')
   })
   
-  output$plotvisitda <- renderPlotly({
-    visitsplotda <- visitsplot %>% filter(location == "da")
-    plot_ly(visitsplotda, x = visitsplotda$location, y = visitsplotda$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
-      add_trace(y = visitsplotda$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
-      add_trace(y = visitsplotda$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
+  # besøgende holluf pile 
+  output$plotvisithol <- renderPlotly({
+    visitsplothol <- visitsplot %>% filter(location == "ho")
+    plot_ly(visitsplothol, x = visitsplothol$location, y = visitsplothol$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
+      add_trace(y = visitsplothol$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
+      add_trace(y = visitsplothol$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
       layout(yaxis = list(title = 'Antal'), barmode = 'group')
   })
+  
+  # besøgende højby 
+  output$plotvisithoj <- renderPlotly({
+    visitsplothoj <- visitsplot %>% filter(location == "hoj")
+    plot_ly(visitsplothoj, x = visitsplothoj$location, y = visitsplothoj$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
+      add_trace(y = visitsplothoj$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
+      add_trace(y = visitsplothoj$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
+      layout(yaxis = list(title = 'Antal'), barmode = 'group')
+  })
+  
+  # besøgende tarup
+  output$plotvisitta <- renderPlotly({
+    visitsplotta <- visitsplot %>% filter(location == "ta")
+    plot_ly(visitsplotta, x = visitsplotta$location, y = visitsplotta$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
+      add_trace(y = visitsplotta$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
+      add_trace(y = visitsplotta$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
+      layout(yaxis = list(title = 'Antal'), barmode = 'group')
+  })
+  
+  # besøgende vollsmose
+  output$plotvisitvo <- renderPlotly({
+    visitsplotvo <- visitsplot %>% filter(location == "vo")
+    plot_ly(visitsplotvo, x = visitsplotvo$location, y = visitsplotvo$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
+      add_trace(y = visitsplotvo$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
+      add_trace(y = visitsplotvo$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
+      layout(yaxis = list(title = 'Antal'), barmode = 'group')
+  })
+  
+
+  
   
   
   # visitor tables all #
