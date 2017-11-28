@@ -23,14 +23,14 @@ dashboardPage(
       ),
       menuItem("Materialer", tabName = "emat", icon = icon("book", lib="font-awesome"),
         menuItem("Udlån", tabName = "fysmat", badgeLabel = "WIP", badgeColor = "orange"),
-        menuItem("Materialeindkøb", tabName = "acquisition", badgeLabel = "WIP", badgeColor = "orange")
+        menuItem("Materialeindkøb", tabName = "acquisition", badgeLabel = "Klar", badgeColor = "green")
       ),
       menuItem("E-Ressourcer", tabName = "emat", icon = icon("database", lib="font-awesome"),
-        menuItem("E-Bøger", tabName = "ebooks", badgeLabel = "WIP", badgeColor = "orange"),
+        menuItem("E-Bøger", tabName = "ebooks", badgeLabel = "Klar", badgeColor = "green"),
         menuItem("E-Film", tabName = "emovies", badgeLabel = "Todo", badgeColor = "red"),
         menuItem("E-Baser", tabName = "edatabases", badgeLabel = "Todo", badgeColor = "red")
       ),
-      menuItem("Brugere", tabName = "users", icon = icon("users", lib="font-awesome"), badgeLabel = "WIP", badgeColor = "orange"),
+      menuItem("Brugere", tabName = "users", icon = icon("users", lib="font-awesome"), badgeLabel = "Klar", badgeColor = "green"),
       menuItem("Økonomi", tabName = "economy", icon = icon("usd", lib="font-awesome"), badgeLabel = "Todo", badgeColor = "red"),
       menuItem("Personale", tabName = "personal", icon = icon("users", lib="font-awesome"), badgeLabel = "Todo", badgeColor = "red"),
       menuItem("Datakilder", tabName = "datasources", icon = icon("database", lib="font-awesome"), badgeLabel = "Todo", badgeColor = "red"),
@@ -278,19 +278,18 @@ dashboardPage(
       tabItem(tabName = "acquisition",
         box(width = 12,
           h3("Materialeindkøb"),
-          p("Opgørelse over materialeindkøb fra Imusic")
+          p("Opgørelse over materialeindkøb fra Imusic i 2017")
         ),
         
         fluidRow(
           column(12,
-            box(width = 12,
+             box(width = 12,
+              h4("Indkøb"),
               tableOutput('acquisitionsumtable')
              ),
              box(width = 12,
-                 "Test"
-             ),
-             box(width = 12,
-                 "Test"
+              h4("Klargøring"),
+              plotlyOutput("acquisitionplotpreparation")   
              )
           )
         )
@@ -302,7 +301,8 @@ dashboardPage(
       tabItem(tabName = "ebooks",
               
         box(width = 12,
-          h3("Elektroniske Ressourcer")
+          h3("Elektroniske Ressourcer"),
+          p("januar 2014 - februar 2016")
         ),
         
         fluidRow(
@@ -342,13 +342,9 @@ dashboardPage(
       tabItem(tabName = "users",
         box(width = 12,
           h3("Brugere"),
-          p("Voksne i kommunen (29-09-2017): 72766"),
-          p("Voksne udenfor kommunen (29-09-2017): 23169"),
-          p("Børn i kommunen (29-09-2017): 5489"),
-          p("Børn udenfor kommunen (29-09-2017): 493"),
-          p("Brugere i bibliotekssystemet, e-ressourcer, hjemmesiden, i huset"),
-          p("Datakilde: Der kan ikke trækkes noget automatisk. Man kan på langsommelig måde godt hente CSV lister ud. Navn, Lånernummer, Adresse, Postnummer & by, Telefon	E-mail")
-          )        
+          p("Aktive brugere de seneste 5 år"),
+          tableOutput('tableloaners')
+        )        
       ),
       
       ### ØKONOMI ###

@@ -30,6 +30,14 @@ shinyServer(function(input, output) {
   ereolentype <- dbGetQuery(con, "SELECT type, count(type) FROM public.ereolen group by type")
   ereolenhist <- dbGetQuery(con, "select to_char(dato, 'iyyy-iw') as date, count(type = 'Lydbog') as lydbog, count(type = 'E-bog') as ebog from public.ereolen group by date;")
   ereolenalder <- dbGetQuery(con, "select extract(year from date_trunc('year',age(birth))) as alder, count(extract(year from date_trunc('year',age(birth)))) as antal, (case when mod((substring(laanernummer from 10 for 1))::integer,2) = 1 then 'mand' else 'kvinde' end) as sex from public.ereolen join public.patron on public.patron.patronno = laanernummer group by alder, sex;")
+  loaners <- dbGetQuery(con, "select sum(loaner_stat_count)::text as Antal, case 
+    when Name like '0%'::text OR Name like '0%'::text OR Name like '1%'::text OR Name like '2%'::text OR Name like '3%'::text OR Name like '4%'::text OR Name like '5%'::text OR Name like '6%'::text OR Name like '7%'::text then 'Skole'::text
+    when Name = 'Voksen, Odense kommune' then 'Voksen, Odense kommune'
+    when Name = 'Barn, Odense kommune' then 'Barn, Odense kommune'
+    when Name = 'Voksen, udenfor Odense Kommune' then 'Voksen, udenfor Odense kommune'
+    when Name = 'Barn, udenfor Odense Kommune' then 'Barn, udenfor Odense kommune'  
+    else 'Andre' end as Kategori  
+  from cicero.aktive_laanere group by Kategori")
   
   dbDisconnect(con)
   
@@ -328,17 +336,39 @@ shinyServer(function(input, output) {
   
   acquisition2017 <- acquisition %>%
     filter(dateordered > '2017-01-01 00:00:00')
-    
+  
   is.not.null <- function(x) ! is.null(x) ## defines a is.not function
   
   sum2017 <- acquisition2017 %>%
-    mutate(number = ifelse (is.not.null(orderid) , 1, 0), ordered_nbr = ifelse (is.null(dateinvoiced) , 1, 0), ordered = ifelse (is.null(dateinvoiced) , materialprice, 2), payd = ifelse (is.not.null(dateinvoiced) , materialprice, 0)) %>%
-    select(kind, number, materialprice, ordered_nbr, ordered, payd) %>%
+    mutate(undervejs = ifelse (is.na(dateshipped), 1, 0), leveret = ifelse (is.na(dateshipped), 0, 1), number = ifelse (is.not.null(orderid), 1, 0) , disponeret = ifelse (is.na(dateinvoiced), materialprice, 0), payd = ifelse (is.na(dateinvoiced), 0, materialprice)) %>%
+    select(kind, undervejs, leveret, number, disponeret, payd, materialprice) %>%
     group_by(kind) %>%
-    summarize(format(sum(number), digits=1), sum(materialprice),sum(ordered_nbr), sum(ordered), sum(payd))
-  colnames(sum2017) <- c("Materialetype","Antal", "Forbrug kr.","Antal bestilte","I bestilling","Faktureret")
+    summarize(format(sum(undervejs), digits=1), format(sum(leveret), digits=1), format(sum(number), digits=1), sum(disponeret), sum(payd), sum(materialprice))
+  colnames(sum2017) <- c("Materialetype", "Antal undervejs" , "Antal leveret", "Samlet bestilt", "Disponeret kr.", "Faktureret kr.", "Samlet Forbrug kr.")
   
   output$acquisitionsumtable <- renderTable(sum2017) 
+  
+  # 2017/2016 compare #
+  
+  acquisition2017prepared <- acquisition2017 %>%
+    mutate (number = ifelse (prepared == TRUE, 1, 0)) %>%
+    select (preparation, number) %>%
+    group_by(preparation) %>%
+    summarize(sum(number))
+  colnames(acquisition2017prepared) <- c("preparation", "sum")
+  acquisition2017prepared <- acquisition2017prepared %>%  filter (sum > 100)
+  
+  output$acquisitionpreparationtable <- renderTable(acquisition2017prepared) 
+  
+  output$acquisitionplotpreparation <- renderPlotly({
+    plot_ly(acquisition2017prepared, labels = ~preparation, values = ~sum, type = 'pie') %>%
+      layout(xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+             yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+  })
+  
+  
+  
+  
     
   ### E-RESSOURCES ### 
   
@@ -479,8 +509,8 @@ shinyServer(function(input, output) {
   
   output$tableplot3 <- renderTable(ga_top10)
   
+  ### USERS ###
   
-  
-  
+  output$tableloaners <- renderTable(loaners)
   
 })
