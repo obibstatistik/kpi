@@ -386,7 +386,6 @@ dashboardPage(
     
       tabItem(tabName = "datasources",
         box(width = 12,
-            grVizOutput('diagram', width = "100%", height = "760px") ,
           img(src='datakilder.png')
         )
       )
