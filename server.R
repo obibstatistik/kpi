@@ -38,8 +38,28 @@ shinyServer(function(input, output) {
     when Name = 'Barn, udenfor Odense Kommune' then 'Barn, udenfor Odense kommune'  
     else 'Andre' end as Kategori  
   from cicero.aktive_laanere group by Kategori")
+  loaners <- dbGetQuery(con, "select case 
+  when cicero.aktive_laanere.Name like '0%'::text OR cicero.aktive_laanere.Name like '0%'::text 
+                        OR cicero.aktive_laanere.Name like '1%'::text OR cicero.aktive_laanere.Name like '2%'::text 
+                        OR cicero.aktive_laanere.Name like '3%'::text OR cicero.aktive_laanere.Name like '4%'::text 
+                        OR cicero.aktive_laanere.Name like '5%'::text OR cicero.aktive_laanere.Name like '6%'::text 
+                        OR cicero.aktive_laanere.Name like '7%'::text then 'Skole'::text
+                        when cicero.aktive_laanere.Name = 'Voksen, Odense kommune' then 'Voksen, Odense kommune'
+                        when cicero.aktive_laanere.Name = 'Barn, Odense kommune' then 'Barn, Odense kommune'
+                        when cicero.aktive_laanere.Name = 'Voksen, udenfor Odense Kommune' then 'Voksen, udenfor Odense kommune'
+                        when cicero.aktive_laanere.Name = 'Barn, udenfor Odense Kommune' then 'Barn, udenfor Odense kommune'  
+                        else 'Andre' end as Kategori, 
+                        sum(cicero.aktive_laanere.loaner_stat_count)::text as Aktive, 
+                        (sum(cicero.inaktive_laanere.loaner_stat_count)-sum(cicero.aktive_laanere.loaner_stat_count))::text as Inaktive, 
+                        (sum(cicero.inaktive_laanere.loaner_stat_count))::text as Alle
+                        from cicero.aktive_laanere 
+                        join cicero.inaktive_laanere on cicero.aktive_laanere.Name = cicero.inaktive_laanere.Name
+                        group by kategori")
   
   dbDisconnect(con)
+  
+  ### COLORS ###
+  
   
   ### EVENTS ### 
   
@@ -49,7 +69,7 @@ shinyServer(function(input, output) {
   })
   # arrangementer pr maaned #
   output$eventsmonthplot <- renderPlotly({
-    plot_ly(eventsmonth, x = eventsmonth$month, y = eventsmonth$count, type = 'bar', text = text) 
+    plot_ly(eventsmonth, x = factor(month.abb[eventsmonth$month],levels=month.abb), y = eventsmonth$count, type = 'bar', text = text) 
   })
   
   # deltagere pr aar #
@@ -59,7 +79,7 @@ shinyServer(function(input, output) {
   
   # deltagere pr maaned #
   output$eventsparticipantmonthplot <- renderPlotly({
-    plot_ly(eventsparticipantmonth, x = eventsparticipantmonth$month, y = eventsparticipantmonth$sum, type = 'bar', text = text) 
+    plot_ly(eventsparticipantmonth, x = factor(month.abb[eventsparticipantmonth$month],levels=month.abb), y = eventsparticipantmonth$sum, type = 'bar', text = text) 
   })
   
   # målgruppe #
@@ -124,13 +144,13 @@ shinyServer(function(input, output) {
   
   # 2017/2016 compare #
   
-  library <- c('Tilbagegang','Fremgang')
+  library <- c('Færre besøgende','Flere besøgende')
   antal <- c(1, 11)
   startdate <- as.Date(c('2010-11-1','2008-3-25'))
   data <- data.frame(library, antal, startdate)
   
   output$visitsplotcompare <- renderPlotly({
-    plot_ly(data, labels = ~library, values = ~antal, type = 'pie') %>%
+    plot_ly(data, labels = ~library, values = ~antal, text = ~antal, textinfo = text, type = 'pie') %>%
       layout(xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
@@ -143,6 +163,8 @@ shinyServer(function(input, output) {
     select(location,v2017,v2016,v2015)
 
   output$plot <- renderPlotly({
+    if (input$library == "Uden Hovedbiblioteket") {visitsplot <- visitsplot %>% filter(visitsplot$location %in% c("bo","da","ho","hoj","kor","lok","mus","ta","vo"))}
+    if (input$library == "Med Hovedbiblioteket") {visitsplot <- visitsplot %>% filter(visitsplot$location %in% c("bo","da","hb","ho","hoj","kor","lok","mus","ta","vo"))}
     plot_ly(visitsplot, x = visitsplot$location, y = visitsplot$v2015, type = 'bar', name = '2015', text = text) %>%
     add_trace(y = visitsplot$v2016, name = '2016') %>%  
     add_trace(y = visitsplot$v2017, name = '2017') %>% 
@@ -343,7 +365,7 @@ shinyServer(function(input, output) {
     mutate(undervejs = ifelse (is.na(dateshipped), 1, 0), leveret = ifelse (is.na(dateshipped), 0, 1), number = ifelse (is.not.null(orderid), 1, 0) , disponeret = ifelse (is.na(dateinvoiced), materialprice, 0), payd = ifelse (is.na(dateinvoiced), 0, materialprice)) %>%
     select(kind, undervejs, leveret, number, disponeret, payd, materialprice) %>%
     group_by(kind) %>%
-    summarize(format(sum(undervejs), digits=1), format(sum(leveret), digits=1), format(sum(number), digits=1), sum(disponeret), sum(payd), sum(materialprice))
+    summarize(format(sum(undervejs), digits=1), format(sum(leveret), digits=1), format(sum(number), digits=1), format(sum(disponeret), digits=2), format(sum(payd), digits=2), format(sum(materialprice), digits=2))
   colnames(sum2017) <- c("Materialetype", "Antal undervejs" , "Antal leveret", "Samlet bestilt", "Disponeret kr.", "Faktureret kr.", "Samlet Forbrug kr.")
   
   output$acquisitionsumtable <- renderTable(sum2017) 
@@ -511,6 +533,48 @@ shinyServer(function(input, output) {
   
   ### USERS ###
   
+  colnames(loaners) <- c("Kategori", "Aktive", "Inaktive","Alle")
   output$tableloaners <- renderTable(loaners)
+  
+  ### STAFF ###
+  
+  # gender # 
+  
+  years <- c("2012", "2013", "2014", "2015", "2016")
+  male <- c(38, 37, 35, 37, 38)
+  female <- c(62, 63, 65, 63, 62)
+  data <- data.frame(years, male, female)
+
+  output$peopleplot <- renderPlotly({
+    plot_ly(data, x = ~years, y = ~male, type = 'bar', name = 'Mænd') %>%
+      add_trace(y = ~female, name = 'Kvinder') %>%
+      layout(xaxis = list(title = 'Årstal'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
+  })
+  
+  # age # 
+  
+  years <- c("2012", "2013", "2014", "2015", "2016")
+  first <- c(19,17,12,12,12)
+  second <- c(18,21,27,27,26)
+  third <- c(39,37,34,33,31)
+  fourth <- c(60,56,54,56,56)
+  data <- data.frame(years, first, second, third, fourth) %>%
+    mutate(sum = (first + second + third + fourth)) %>%
+    mutate(firstp = ((first/sum)*100), secondp = ((second/sum)*100), thirdp = ((third/sum)*100), fourthp = ((fourth/sum)*100))
+  
+  output$peopleplotage <- renderPlotly({
+    plot_ly(data, x = ~years, y = ~firstp, type = 'bar', text = c(19,17,12,12,12), name = '25-34') %>%
+      add_trace(y = ~secondp, text = toString(second), name = '35-44') %>%
+      add_trace(y = ~thirdp, name = '45-54') %>%
+      add_trace(y = ~fourthp, name = '55+') %>%
+      layout(xaxis = list(title = 'Årstal'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
+  })
+  
+  output$peopleagetable <- renderTable(data)
+  
+  ### Datasources ### 
+  
+  
+  
   
 })

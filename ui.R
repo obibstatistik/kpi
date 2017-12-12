@@ -31,10 +31,10 @@ dashboardPage(
         menuItem("E-Baser", tabName = "edatabases", badgeLabel = "Todo", badgeColor = "red")
       ),
       menuItem("Brugere", tabName = "users", icon = icon("users", lib="font-awesome"), badgeLabel = "Klar", badgeColor = "green"),
-      menuItem("Økonomi", tabName = "economy", icon = icon("usd", lib="font-awesome"), badgeLabel = "Todo", badgeColor = "red"),
-      menuItem("Personale", tabName = "personal", icon = icon("users", lib="font-awesome"), badgeLabel = "Todo", badgeColor = "red"),
-      menuItem("Datakilder", tabName = "datasources", icon = icon("database", lib="font-awesome"), badgeLabel = "Todo", badgeColor = "red"),
-      menuItem("Datasikkerhed", tabName = "datasecurity", icon = icon("database", lib="font-awesome"), badgeLabel = "Todo", badgeColor = "red")
+      #menuItem("Økonomi", tabName = "economy", icon = icon("usd", lib="font-awesome"), badgeLabel = "Todo", badgeColor = "red"),
+      menuItem("Personale", tabName = "personal", icon = icon("users", lib="font-awesome"), badgeLabel = "WIP", badgeColor = "orange"),
+      menuItem("Datakilder", tabName = "datasources", icon = icon("database", lib="font-awesome"), badgeLabel = "WIP", badgeColor = "orange")#,
+      #menuItem("Datasikkerhed", tabName = "datasecurity", icon = icon("database", lib="font-awesome"), badgeLabel = "Todo", badgeColor = "red")
     )
   ),
   
@@ -147,6 +147,7 @@ dashboardPage(
                    ),
                    column(6,
                       h4("Besøgende pr. bibliotek"),
+                      selectInput("library", "",c('Med Hovedbiblioteket','Uden Hovedbiblioteket')),
                       plotlyOutput("plot")    
                    ),
                    column(6,
@@ -174,7 +175,7 @@ dashboardPage(
         h3("Mødelokaler")
       ),
       box(width = 12,
-        p("Mangler kpi'er og data fra Consierge")
+        p("")
       )
     ),
     
@@ -185,7 +186,7 @@ dashboardPage(
         h3("Smartcity")
       ),
       box(width = 12,
-        p("Mangler kpi'er og data")
+        p("")
       )
     ),
       
@@ -275,25 +276,35 @@ dashboardPage(
                     tabPanel("Tarup", formattableOutput('loantableTar')),
                     tabPanel("Vollsmose", formattableOutput('loantableVol'))
         ))),
+    
+      ### MATERIALEINDKØB ###
+        
       tabItem(tabName = "acquisition",
         box(width = 12,
-          h3("Materialeindkøb"),
-          p("Opgørelse over materialeindkøb fra Imusic i 2017")
+          h3("Materialeindkøb - Imusic 2017")
         ),
         
         fluidRow(
           column(12,
-             box(width = 12,
-              h4("Indkøb"),
-              tableOutput('acquisitionsumtable')
-             ),
-             box(width = 12,
-              h4("Klargøring"),
-              plotlyOutput("acquisitionplotpreparation")   
-             )
+            tabBox(width = 12,
+              id = "tabset4",
+              tabPanel("Generelt",      
+                fluidRow(width = 12,
+                  column(width = 12,
+                    tableOutput('acquisitionsumtable')
+                  )                
+                )
+              ),
+              tabPanel("Klargøring",
+                fluidRow(width = 12,
+                  column(width = 12,       
+                    plotlyOutput("acquisitionplotpreparation")   
+                  )              
+                )
+              )
+            )
           )
         )
-        
       ),
       
       ### E-RESSOURCER ###
@@ -342,30 +353,41 @@ dashboardPage(
       tabItem(tabName = "users",
         box(width = 12,
           h3("Brugere"),
-          p("Aktive brugere de seneste 5 år"),
+          p("Oversigt over antallet af:"), 
+          p("- Aktive lånere: lånere som har lånt på biblioteket indenfor det seneste år"), 
+          p("- Inaktive lånere: lånere som har lånt på biblioteket for mere end et år siden og seneste for 5 år siden"),
+          p("-Fordelt på kategorier, som er sammentrækninger af en større mængde lånekategorier"),
           tableOutput('tableloaners')
         )        
-      ),
-      
-      ### ØKONOMI ###
-      
-      tabItem(tabName = "economy",
-        box(width = 12,
-          h3("Økonomi"),
-          p("Generelle økonomital fordelt på år"),
-          p("6bytal"),
-          p("Datakilde: ?")
-        )
       ),
       
       ### PERSONALE ###
       
       tabItem(tabName = "personal",
+        
         box(width = 12,
-          h3("Personale"),
-          p("Inspiration fra SDU:"),
-          p("Årsværk fordelt efter årstal, arbejdssted og stillingskategori. Har desuden faneblade med alder og køn"),
-          p("Datakilde: ?")
+            h3("Personale")
+        ),      
+              
+        box(width = 12,
+          column(6, 
+            h4("Kønsfordeling"),
+            plotlyOutput("peopleplot")),
+          column(6, 
+            h4("Aldersfordeling"),
+            plotlyOutput("peopleplotage"),
+            tableOutput('peopleagetable')
+            )
+            
+        )
+      ),
+    
+      ### DATAKILDER ###
+    
+      tabItem(tabName = "datasources",
+        box(width = 12,
+            grVizOutput('diagram', width = "100%", height = "760px") ,
+          img(src='datakilder.png')
         )
       )
     )

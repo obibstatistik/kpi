@@ -1,0 +1,23 @@
+source("global.R")
+nodes <-
+  create_nodes(nodes = c("a", "b", "c", "d"),
+               label = FALSE,
+               type = "lower",
+               style = "filled",
+               color = "aqua",
+               shape = c("circle", "circle",
+                         "rectangle", "rectangle"),
+               data = c(3.5, 2.6, 9.4, 2.7))
+
+edges <-
+  create_edges(from = c("a", "b", "c"),
+               to = c("d", "c", "a"),
+               relationship = "leading_to")
+
+
+graph <-
+  create_graph(nodes_df = nodes,
+               edges_df = edges,
+               node_attrs = "fontname = Helvetica",
+               edge_attrs = c("color = blue",
+                              "arrowsize = 2"))
