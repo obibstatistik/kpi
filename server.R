@@ -574,7 +574,8 @@ shinyServer(function(input, output) {
   
   ### Datasources ### 
   
-  
-  
+  output$frame <- renderUI({ 
+    print(iframe(width = "100%", height = "750", url_link = "https://www.draw.io/?lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1#G1lR8IO-7YVGdRtxzC3AFyfFDlZdRWWX69") ) 
+  })
   
 })

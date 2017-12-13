@@ -33,8 +33,7 @@ dashboardPage(
       menuItem("Brugere", tabName = "users", icon = icon("users", lib="font-awesome"), badgeLabel = "Klar", badgeColor = "green"),
       #menuItem("Økonomi", tabName = "economy", icon = icon("usd", lib="font-awesome"), badgeLabel = "Todo", badgeColor = "red"),
       menuItem("Personale", tabName = "personal", icon = icon("users", lib="font-awesome"), badgeLabel = "WIP", badgeColor = "orange"),
-      menuItem("Datakilder", tabName = "datasources", icon = icon("database", lib="font-awesome"), badgeLabel = "WIP", badgeColor = "orange")#,
-      #menuItem("Datasikkerhed", tabName = "datasecurity", icon = icon("database", lib="font-awesome"), badgeLabel = "Todo", badgeColor = "red")
+      menuItem("Datakilder", tabName = "datasources", icon = icon("database", lib="font-awesome"), badgeLabel = "Klar", badgeColor = "green")
     )
   ),
   
@@ -386,7 +385,8 @@ dashboardPage(
     
       tabItem(tabName = "datasources",
         box(width = 12,
-          img(src='datakilder.png')
+          h3("Datakilder"),  
+          htmlOutput("frame")
         )
       )
     )
