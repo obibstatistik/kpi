@@ -570,7 +570,71 @@ shinyServer(function(input, output) {
       layout(xaxis = list(title = 'Årstal'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
   })
   
-  output$peopleagetable <- renderTable(data)
+  # ageupper # 
+  
+  years <- c("2012", "2013", "2014", "2015", "2016")
+  first <- c(36,35,33,27,28)
+  second <- c(21,19,19,25,25)
+  third <- c(3,2,2,4,3)
+  data2 <- data.frame(years, first, second, third) %>%
+    mutate(sum = (first + second + third)) %>%
+    mutate(firstp = ((first/sum)*100), secondp = ((second/sum)*100), thirdp = ((third/sum)*100))
+  
+  output$peopleplotageupper <- renderPlotly({
+    plot_ly(data2, x = ~years, y = ~firstp, type = 'bar', text = c(19,17,12,12,12), name = '55-59') %>%
+      add_trace(y = ~secondp, text = toString(second), name = '60-64') %>%
+      add_trace(y = ~thirdp, name = '65+') %>%
+      layout(xaxis = list(title = 'Årstal'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
+  })
+  
+  # ageupper2016 # 
+  
+  years <- c("2012", "2013", "2014", "2015", "2016")
+  first <- c(36,35,33,27,28)
+  second <- c(21,19,19,25,25)
+  third <- c(3,2,2,4,3)
+  data3 <- data.frame(years, first, second, third) %>%
+    mutate(sum = (first + second + third)) %>%
+    mutate(firstp = ((first/sum)*100), secondp = ((second/sum)*100), thirdp = ((third/sum)*100))
+  
+  output$peopleplotageupper <- renderPlotly({
+    plot_ly(data3, x = ~years, y = ~firstp, type = 'bar', text = c(19,17,12,12,12), name = '55-59') %>%
+      add_trace(y = ~secondp, text = toString(second), name = '60-64') %>%
+      add_trace(y = ~thirdp, name = '65+') %>%
+      layout(xaxis = list(title = 'Årstal'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
+  })
+  
+  # faggrupper # 
+  
+  years <- c("2012", "2013", "2014", "2015", "2016")
+  first <- c(60,58,57,56,55)
+  second <- c(65,60,59,60,58)
+  third <- c(8,9,8,8,8)
+  fourth <- c(3,4,3,4,4)
+  data4 <- data.frame(years, first, second, third, fourth) %>%
+    mutate(sum = (first + second + third + fourth)) %>%
+    mutate(firstp = ((first/sum)*100), secondp = ((second/sum)*100), thirdp = ((third/sum)*100), fourthp = ((fourth/sum)*100))
+  
+  output$peopleplotfag <- renderPlotly({
+    plot_ly(data4, x = ~years, y = ~firstp, type = 'bar', text = c(19,17,12,12,12), name = 'BF') %>%
+      add_trace(y = ~secondp, text = toString(second), name = 'HK') %>%
+      add_trace(y = ~thirdp, name = 'Øvrige AC') %>%
+      add_trace(y = ~fourthp, name = 'FOA_3F') %>%
+      layout(xaxis = list(title = 'Årstal'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
+  })
+  
+  # faggrupper gennemsnitsalder # 
+  
+  years <- c("test1", "test2")
+  first <- c(60,58)
+  second <- c(60,58)
+  data5 <- data.frame(years, first, second) 
+  
+  output$peopleplotfaggem <- renderPlotly({
+    plot_ly(data5, x = ~years, y = ~first, type = 'bar', text = c(19,17,12,12,12), name = 'BF') %>%
+      layout(xaxis = list(title = 'Årstal'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
+  })
+  
   
   ### Datasources ### 
   

@@ -374,10 +374,24 @@ dashboardPage(
             plotlyOutput("peopleplot")),
           column(6, 
             h4("Aldersfordeling"),
-            plotlyOutput("peopleplotage"),
-            tableOutput('peopleagetable')
-            )
+            plotlyOutput("peopleplotage")
+            ),
+          column(6, 
+            h4("Fordeling i øvre aldersinterval"),
+            plotlyOutput("peopleplotageupper")
+          ),
+          column(6, 
+            h4("Faggrupper"),
+            plotlyOutput("peopleplotfag")
+          ),
+          column(6, 
+            h4("Faggrupper gennemsnitsalder"),
+            plotlyOutput("peopleplotfaggem")
+          )
             
+          
+          
+          
         )
       ),
     
