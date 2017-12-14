@@ -4,7 +4,7 @@ dashboardPage(
   skin = "black",
   
   dashboardHeader(
-    title = "Whitebook"
+    title = "Hvidbog"
   ),
   
   dashboardSidebar(
@@ -31,8 +31,7 @@ dashboardPage(
         menuItem("E-Baser", tabName = "edatabases", badgeLabel = "Todo", badgeColor = "red")
       ),
       menuItem("Brugere", tabName = "users", icon = icon("users", lib="font-awesome"), badgeLabel = "Klar", badgeColor = "green"),
-      #menuItem("Økonomi", tabName = "economy", icon = icon("usd", lib="font-awesome"), badgeLabel = "Todo", badgeColor = "red"),
-      menuItem("Personale", tabName = "personal", icon = icon("users", lib="font-awesome"), badgeLabel = "WIP", badgeColor = "orange"),
+      menuItem("Personale", tabName = "personal", icon = icon("users", lib="font-awesome"), badgeLabel = "Klar", badgeColor = "green"),
       menuItem("Datakilder", tabName = "datasources", icon = icon("database", lib="font-awesome"), badgeLabel = "Klar", badgeColor = "green")
     )
   ),
@@ -253,28 +252,41 @@ dashboardPage(
           column(12,
                  
              tabBox(width = 12,
-                    id = "tabset2",
-                    tabPanel("Generelt", 
-                             fluidRow(
-                               column(12,
-                                      h4("Udlån")    
-                               ),
-                               column(12,
-                                      plotlyOutput("loanplot")    
-                               ),
-                               column(12,
-                                      formattableOutput("loantableall"))
-                                      )
-                               )   
-                             ),
-                    tabPanel("Bolbro", formattableOutput('loantableBol')),
-                    tabPanel("Dalum", formattableOutput('loantableDal')),
-                    tabPanel("Borgernes Hus", formattableOutput('loantableHov')),
-                    tabPanel("Holluf Pile", formattableOutput('loantableHol')),
-                    tabPanel("Højby", formattableOutput('loantableHøj')),
-                    tabPanel("Tarup", formattableOutput('loantableTar')),
-                    tabPanel("Vollsmose", formattableOutput('loantableVol'))
-        ))),
+              id = "tabset2",
+              tabPanel("Generelt", 
+                     fluidRow(
+                       column(2,
+                         checkboxGroupInput("checkGroup", "Vælg",
+                          choices = list(
+                            "Bolbro Bibliotek" = "Bolbro Bibliotek",
+                            "Dalum Bibliotek" = "Dalum Bibliotek",
+                            "Fornyelser" = "Fornyelser",
+                            "Højby Bibliotek" = "Højby Bibliotek",
+                            "Historiens Hus" = "Historiens Hus",
+                            "Holluf Pile Bibliotek" = "Holluf Pile Bibliotek",
+                            "Hovedbiblioteket" = "Hovedbiblioteket",
+                            "Korup Bibliotek" = "Korup Bibliotek",
+                            "Musikbiblioteket" = "Musikbiblioteket",
+                            "Opsøgende afdeling" = "Opsøgende afdeling",
+                            "Tarup Bibliotek" = "Tarup Bibliotek",
+                            "Vollsmose Bibliotek" = "Vollsmose Bibliotek"
+                          ),selected = list("Bolbro Bibliotek","Dalum Bibliotek","Fornyelser","Højby Bibliotek","Historiens Hus","Holluf Pile Bibliotek","Hovedbiblioteket","Korup Bibliotek","Musikbiblioteket","Opsøgende afdeling","Tarup Bibliotek","Vollsmose Bibliotek"))
+                       ),
+                       column(10,
+                         plotlyOutput("loanplot")    
+                       ),
+                       column(12,
+                         formattableOutput("loantableall"))
+                       )
+                      ),
+              tabPanel("Bolbro", formattableOutput('loantableBol')),
+              tabPanel("Dalum", formattableOutput('loantableDal')),
+              tabPanel("Borgernes Hus", formattableOutput('loantableHov')),
+              tabPanel("Holluf Pile", formattableOutput('loantableHol')),
+              tabPanel("Højby", formattableOutput('loantableHøj')),
+              tabPanel("Tarup", formattableOutput('loantableTar')),
+              tabPanel("Vollsmose", formattableOutput('loantableVol'))
+        )))),
     
       ### MATERIALEINDKØB ###
         
@@ -377,21 +389,29 @@ dashboardPage(
             plotlyOutput("peopleplotage")
             ),
           column(6, 
-            h4("Fordeling i øvre aldersinterval"),
+            h4("Fordeling i øvre aldersinterval 2012-2016"),
             plotlyOutput("peopleplotageupper")
           ),
           column(6, 
-            h4("Faggrupper"),
+            h4("Antal i øvre aldersinterval 2016"),
+            plotlyOutput("peopleplotageupper2")
+          ),
+          column(6, 
+            h4("Fordeling på faggrupper 2012-2016"),
             plotlyOutput("peopleplotfag")
           ),
           column(6, 
+            h4("Antal i faggrupper 2016"),
+            plotlyOutput("peopleplotfag2")
+          ),
+          column(6, 
             h4("Faggrupper gennemsnitsalder"),
+            plotlyOutput("peopleplotfaggemall")
+          ),
+          column(6, 
+            h4("Faggrupper gennemsnitsalder 2016"),
             plotlyOutput("peopleplotfaggem")
           )
-            
-          
-          
-          
         )
       ),
     

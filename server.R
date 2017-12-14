@@ -234,10 +234,6 @@ shinyServer(function(input, output) {
       layout(yaxis = list(title = 'Antal'), barmode = 'group')
   })
   
-
-  
-  
-  
   # visitor tables all #
   visitsall <- visits %>%
     mutate(month = format(date, "%m"), year = format(date, "%y"), visits2017 = ifelse(year == "17", count, 0), visits2016 = ifelse(year == "16", count, 0), visits2015 = ifelse(year == "15", count, 0)) %>%
@@ -309,9 +305,10 @@ shinyServer(function(input, output) {
     select(library, loan2017, loan2016, loan2015)
   
   output$loanplot <- renderPlotly({
-    plot_ly(loanplot, x = loanplot$library, y = loanplot$loan2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
-    add_trace(y = loanplot$loan2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>% #mediumseargb(63,168,123) 
-    add_trace(y = loanplot$loan2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% #darkslateblue
+    loanplot <- loanplot %>% filter(library %in% input$checkGroup)
+    plot_ly(loanplot, x = loanplot$library, y = loanplot$loan2015, type = 'bar', name = '2015', text = text) %>%
+    add_trace(y = loanplot$loan2016, name = '2016') %>%  
+    add_trace(y = loanplot$loan2017, name = '2017') %>% 
     layout(yaxis = list(title = 'Antal'), barmode = 'group')
   })
   
@@ -604,6 +601,16 @@ shinyServer(function(input, output) {
       layout(xaxis = list(title = 'Årstal'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
   })
   
+  # ageupper2016 2 # 
+  
+  output$peopleplotageupper2 <- renderPlotly({
+    plot_ly(
+      x = c(55,56,57,58,59,60,61,62,63,64,65,66,67),
+      y = c(9,2,4,3,10,8,8,5,2,2,2,0,1),
+      name = "SF Zoo",
+      type = "bar"
+    )})
+  
   # faggrupper # 
   
   years <- c("2012", "2013", "2014", "2015", "2016")
@@ -625,16 +632,37 @@ shinyServer(function(input, output) {
   
   # faggrupper gennemsnitsalder # 
   
-  years <- c("test1", "test2")
-  first <- c(60,58)
-  second <- c(60,58)
-  data5 <- data.frame(years, first, second) 
-  
   output$peopleplotfaggem <- renderPlotly({
-    plot_ly(data5, x = ~years, y = ~first, type = 'bar', text = c(19,17,12,12,12), name = 'BF') %>%
-      layout(xaxis = list(title = 'Årstal'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
-  })
+    plot_ly(
+      x = c("BF", "HK", "Øvrige ACere", "FOA/3F", "Tjenestemænd", "Overenskomstansatte", "Ledelse", "Samlet"),
+      y = c(49.2, 45.6, 39.3, 58.5, 58.1, 46.3, 49.8, 50.1),
+      name = "SF Zoo",
+      type = "bar"
+    )})
   
+  # faggrupper gennemsnitsalder # 
+  
+  output$peopleplotfaggemall <- renderPlotly({
+    plot_ly(
+      x = c("BF", "HK", "Øvrige ACere", "FOA/3F", "Tjenestemænd", "Overenskomstansatte", "Ledelse", "Samlet"),
+      y = c(49.2, 45.6, 39.3, 58.5, 58.1, 46.3, 49.8, 50.1), name = "2016", type = "bar") %>%
+      add_trace(y = c(50.6,51.8,40.1,57.5,59.1,45.6,48.8,50.7), name = '2015') %>%
+      add_trace(y = c(50.7,51.1,39.1,56.3,58.2,45.9,47.3,49.9), name = '2014') %>%
+      add_trace(y = c(50.4,50.2,39.4,56.8,57.5,45.2,47.4,49.7), name = '2013') %>%
+      add_trace(y = c(49.9,50.7,36.9,51.0,57.4,44.5,52.3,49.7), name = '2012')
+    })
+  
+  # faggrupper gennemsnitsalder # 
+  
+  output$peopleplotfag2 <- renderPlotly({
+    plot_ly(
+      x = c("BF", "HK", "Øvrige ACere", "FOA/3F"),
+      y = c(55,58,8,4), name = "2016", type = "bar") %>%
+      add_trace(y = c(56,60,8,4), name = '2015') %>%
+      add_trace(y = c(57,59,8,3), name = '2014') %>%
+      add_trace(y = c(58,60,9,4), name = '2013') %>%
+      add_trace(y = c(60,65,8,3), name = '2012')
+  })
   
   ### Datasources ### 
   
