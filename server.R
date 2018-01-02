@@ -37,24 +37,24 @@ shinyServer(function(input, output) {
     when Name = 'Voksen, udenfor Odense Kommune' then 'Voksen, udenfor Odense kommune'
     when Name = 'Barn, udenfor Odense Kommune' then 'Barn, udenfor Odense kommune'  
     else 'Andre' end as Kategori  
-  from cicero.aktive_laanere group by Kategori")
+    from cicero.aktive_laanere group by Kategori")
   loaners <- dbGetQuery(con, "select case 
-  when cicero.aktive_laanere.Name like '0%'::text OR cicero.aktive_laanere.Name like '0%'::text 
-                        OR cicero.aktive_laanere.Name like '1%'::text OR cicero.aktive_laanere.Name like '2%'::text 
-                        OR cicero.aktive_laanere.Name like '3%'::text OR cicero.aktive_laanere.Name like '4%'::text 
-                        OR cicero.aktive_laanere.Name like '5%'::text OR cicero.aktive_laanere.Name like '6%'::text 
-                        OR cicero.aktive_laanere.Name like '7%'::text then 'Skole'::text
-                        when cicero.aktive_laanere.Name = 'Voksen, Odense kommune' then 'Voksen, Odense kommune'
-                        when cicero.aktive_laanere.Name = 'Barn, Odense kommune' then 'Barn, Odense kommune'
-                        when cicero.aktive_laanere.Name = 'Voksen, udenfor Odense Kommune' then 'Voksen, udenfor Odense kommune'
-                        when cicero.aktive_laanere.Name = 'Barn, udenfor Odense Kommune' then 'Barn, udenfor Odense kommune'  
-                        else 'Andre' end as Kategori, 
-                        sum(cicero.aktive_laanere.loaner_stat_count)::text as Aktive, 
-                        (sum(cicero.inaktive_laanere.loaner_stat_count)-sum(cicero.aktive_laanere.loaner_stat_count))::text as Inaktive, 
-                        (sum(cicero.inaktive_laanere.loaner_stat_count))::text as Alle
-                        from cicero.aktive_laanere 
-                        join cicero.inaktive_laanere on cicero.aktive_laanere.Name = cicero.inaktive_laanere.Name
-                        group by kategori")
+    when cicero.aktive_laanere.Name like '0%'::text OR cicero.aktive_laanere.Name like '0%'::text 
+    OR cicero.aktive_laanere.Name like '1%'::text OR cicero.aktive_laanere.Name like '2%'::text 
+    OR cicero.aktive_laanere.Name like '3%'::text OR cicero.aktive_laanere.Name like '4%'::text 
+    OR cicero.aktive_laanere.Name like '5%'::text OR cicero.aktive_laanere.Name like '6%'::text 
+    OR cicero.aktive_laanere.Name like '7%'::text then 'Skole'::text
+    when cicero.aktive_laanere.Name = 'Voksen, Odense kommune' then 'Voksen, Odense kommune'
+    when cicero.aktive_laanere.Name = 'Barn, Odense kommune' then 'Barn, Odense kommune'
+    when cicero.aktive_laanere.Name = 'Voksen, udenfor Odense Kommune' then 'Voksen, udenfor Odense kommune'
+    when cicero.aktive_laanere.Name = 'Barn, udenfor Odense Kommune' then 'Barn, udenfor Odense kommune'  
+    else 'Andre' end as Kategori, 
+    sum(cicero.aktive_laanere.loaner_stat_count)::text as Aktive, 
+    (sum(cicero.inaktive_laanere.loaner_stat_count)-sum(cicero.aktive_laanere.loaner_stat_count))::text as Inaktive, 
+    (sum(cicero.inaktive_laanere.loaner_stat_count))::text as Alle
+    from cicero.aktive_laanere 
+    join cicero.inaktive_laanere on cicero.aktive_laanere.Name = cicero.inaktive_laanere.Name
+    group by kategori")
   
   dbDisconnect(con)
   
@@ -426,38 +426,38 @@ shinyServer(function(input, output) {
   
   ### WEBSITES ###
   
-  r <- GET("https://ws.webtrends.com/v3/Reporting/profiles/77605/reports/VSlaqtDP0P6/?totals=all&start_period=current_year-2&end_period=current_year&period_type=indv&format=json", authenticate(webtrendsusername, webtrendspassword, type = "basic"))
-  json <- content(r, "text")
-  json2 <- content(r, "text")
+  #r <- GET("https://ws.webtrends.com/v3/Reporting/profiles/77605/reports/VSlaqtDP0P6/?totals=all&start_period=current_year-2&end_period=current_year&period_type=indv&format=json", authenticate(webtrendsusername, webtrendspassword, type = "basic"))
+  #json <- content(r, "text")
+  #json2 <- content(r, "text")
   
-  jsontable <- json %>%
-    enter_object("data") %>%
-    gather_array %>%
-    spread_values(Årstal = jstring("start_date")) %>%
-    enter_object("measures") %>%
-    spread_values(Besøg = jstring("ActiveVisits")) %>%
-    spread_values(Sidevisninger = jstring("PageViews")) %>%
-    spread_values(Klik = jstring("Clickthroughs")) %>%
-    spread_values(Besøgende = jstring("DailyVisitors")) %>%
-    spread_values(Ugentligebesøgende = jstring("WeeklyVisitors")) %>%
-    spread_values(Månedligebesøgende = jstring("MonthlyVisitors")) %>%
-    spread_values(Kvartalsvisbesøgende = jstring("QuarterlyVisitors")) %>%
-    spread_values(Årligebesøgende = jstring("YearlyVisitors")) %>%
-    spread_values(Enkeltsidebesøgende = jstring("SinglePageViewVisits")) %>%
-    spread_values(Forsidevisning = jstring("EntryPageVisits")) %>%
-    spread_values(Afvisningsrate = jstring("BounceRate")) %>%
-    select(Årstal, Besøg, Sidevisninger, Besøgende)
-  output$table <- renderTable(jsontable, width = "100%")
+  #jsontable <- json %>%
+    #enter_object("data") %>%
+    #gather_array %>%
+    #spread_values(Årstal = jstring("start_date")) %>%
+    #enter_object("measures") %>%
+    #spread_values(Besøg = jstring("ActiveVisits")) %>%
+    #spread_values(Sidevisninger = jstring("PageViews")) %>%
+    #spread_values(Klik = jstring("Clickthroughs")) %>%
+    #spread_values(Besøgende = jstring("DailyVisitors")) %>%
+    #spread_values(Ugentligebesøgende = jstring("WeeklyVisitors")) %>%
+    #spread_values(Månedligebesøgende = jstring("MonthlyVisitors")) %>%
+    #spread_values(Kvartalsvisbesøgende = jstring("QuarterlyVisitors")) %>%
+    #spread_values(Årligebesøgende = jstring("YearlyVisitors")) %>%
+    #spread_values(Enkeltsidebesøgende = jstring("SinglePageViewVisits")) %>%
+    #spread_values(Forsidevisning = jstring("EntryPageVisits")) %>%
+    #spread_values(Afvisningsrate = jstring("BounceRate")) %>%
+    #select(Årstal, Besøg, Sidevisninger, Besøgende)
+  #output$table <- renderTable(jsontable, width = "100%")
   
-  jsontable2 <- json2 %>%
-    enter_object("data") %>%
-    gather_array %>%
-    spread_values(start_date = jstring("start_date")) %>%
-    enter_object("SubRows") %>%
-    gather_array 
+  #jsontable2 <- json2 %>%
+    #enter_object("data") %>%
+    #gather_array %>%
+    #spread_values(start_date = jstring("start_date")) %>%
+    #enter_object("SubRows") %>%
+    #gather_array 
     #gather_array %>%
     #spread_values(y = jstring("measures","ActiveVisits")) 
-  output$table2 <- renderTable(jsontable2)
+  #output$table2 <- renderTable(jsontable2)
   
   ### EVENTS ###
   

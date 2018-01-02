@@ -245,7 +245,7 @@ dashboardPage(
               
         box(width = 12,
           h3("Udlån"),
-          "Udlån, reserveringer og fornyelser" 
+          "Udlån, reserveringer og fornyelser. Tal (fra DDE) frem til september 2017." 
         ),
               
         fluidRow(
