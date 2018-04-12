@@ -238,16 +238,16 @@ shinyServer(function(input, output) {
   meetingrooms <- meetingrooms %>%
     mutate(
       sted = case_when(
-        roomnumber == "lok11_borghus@odense.dk" ~ "Lokale 1.1",
-        roomnumber == "lok12_borghus@odense.dk" ~ "Lokale 1.2",
-        roomnumber == "lok21_borghus@odense.dk" ~ "Lokale 2.1",
-        roomnumber == "lok22_borghus@odense.dk" ~ "Lokale 2.2",
-        roomnumber == "lok31_borghus@odense.dk" ~ "Lokale 3.1",
-        roomnumber == "lok32_borghus@odense.dk" ~ "Lokale 3.2",
-        roomnumber == "lok33_borghus@odense.dk" ~ "Lokale 3.3",
-        roomnumber == "lok34_borghus@odense.dk" ~ "Lokale 3.4",
-        roomnumber == "lok35_borghus@odense.dk" ~ "Lokale 3.5",
-        roomnumber == "lok36_borghus@odense.dk" ~ "Lokale 3.6"
+        meetingrooms$roomnumber == "lok11_borghus@odense.dk" ~ "Lokale 1.1",
+        meetingrooms$roomnumber == "lok12_borghus@odense.dk" ~ "Lokale 1.2",
+        meetingrooms$roomnumber == "lok21_borghus@odense.dk" ~ "Lokale 2.1",
+        meetingrooms$roomnumber == "lok22_borghus@odense.dk" ~ "Lokale 2.2",
+        meetingrooms$roomnumber == "lok31_borghus@odense.dk" ~ "Lokale 3.1",
+        meetingrooms$roomnumber == "lok32_borghus@odense.dk" ~ "Lokale 3.2",
+        meetingrooms$roomnumber == "lok33_borghus@odense.dk" ~ "Lokale 3.3",
+        meetingrooms$roomnumber == "lok34_borghus@odense.dk" ~ "Lokale 3.4",
+        meetingrooms$roomnumber == "lok35_borghus@odense.dk" ~ "Lokale 3.5",
+        meetingrooms$roomnumber == "lok36_borghus@odense.dk" ~ "Lokale 3.6"
       ) 
     )
   
