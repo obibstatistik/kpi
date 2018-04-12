@@ -10,29 +10,30 @@ dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem("Forside", tabName = "frontpage", icon = icon("home", lib="font-awesome")),
-      menuItem("Arrangementer", tabName = "events", icon = icon("calendar", lib="font-awesome"), badgeLabel = "Klar", badgeColor = "green"),
+      menuItem("Arrangementer", tabName = "events", icon = icon("calendar", lib="font-awesome")),
       menuItem("Det fysiske rum", tabName = "space", icon = icon("building-o", lib="font-awesome"),
-        menuItem("Besøgende", tabName = "visits", badgeLabel = "WIP", badgeColor = "green"),
-        menuItem("Mødelokaler", tabName = "meetingrooms", badgeLabel = "Todo", badgeColor = "red"),
-        menuItem("Smart City", tabName = "smartcity", badgeLabel = "Todo", badgeColor = "red")
+        menuItem("Besøgende", tabName = "visits"),
+        menuItem("Mødelokaler", tabName = "meetingrooms"),
+        menuItem("Event områder", tabName = "eventareas"),
+        menuItem("Smart City", tabName = "smartcity")
       ),
       menuItem("Online", tabName = "online", icon = icon("laptop", lib="font-awesome"), 
-        menuItem("Sites", tabName = "weboverview", badgeLabel = "Klar", badgeColor = "green"),
-        menuItem("Odensebib.dk", tabName = "odensebib", badgeLabel = "Klar", badgeColor = "green"),
-        menuItem("Biblioteket App", tabName = "app", badgeLabel = "Todo", badgeColor = "red")
+        menuItem("Sites", tabName = "weboverview"),
+        menuItem("Odensebib.dk", tabName = "odensebib"),
+        menuItem("Biblioteket App", tabName = "app")
       ),
       menuItem("Materialer", tabName = "emat", icon = icon("book", lib="font-awesome"),
-        menuItem("Udlån", tabName = "fysmat", badgeLabel = "WIP", badgeColor = "orange"),
-        menuItem("Materialeindkøb", tabName = "acquisition", badgeLabel = "Klar", badgeColor = "green")
+        menuItem("Udlån", tabName = "fysmat"),
+        menuItem("Materialeindkøb", tabName = "acquisition")
       ),
       menuItem("E-Ressourcer", tabName = "emat", icon = icon("database", lib="font-awesome"),
-        menuItem("E-Bøger", tabName = "ebooks", badgeLabel = "Klar", badgeColor = "green"),
-        menuItem("E-Film", tabName = "emovies", badgeLabel = "Todo", badgeColor = "red"),
-        menuItem("E-Baser", tabName = "edatabases", badgeLabel = "Todo", badgeColor = "red")
+        menuItem("E-Bøger", tabName = "ebooks"),
+        menuItem("E-Film", tabName = "emovies"),
+        menuItem("E-Baser", tabName = "edatabases")
       ),
-      menuItem("Brugere", tabName = "users", icon = icon("users", lib="font-awesome"), badgeLabel = "Klar", badgeColor = "green"),
-      menuItem("Personale", tabName = "personal", icon = icon("users", lib="font-awesome"), badgeLabel = "Klar", badgeColor = "green"),
-      menuItem("Datakilder", tabName = "datasources", icon = icon("database", lib="font-awesome"), badgeLabel = "Klar", badgeColor = "green")
+      menuItem("Brugere", tabName = "users", icon = icon("users", lib="font-awesome")),
+      menuItem("Personale", tabName = "personal", icon = icon("users", lib="font-awesome")),
+      menuItem("Datakilder", tabName = "datasources", icon = icon("database", lib="font-awesome"))
     )
   ),
   
@@ -46,7 +47,10 @@ dashboardPage(
     tabItems(
       tabItem(tabName = "frontpage",
         box(width = 12,
-          h3("Whitebook")
+          h3("Whitebook"),
+          h4("Samlet besøgstal"),
+          p("Samlet besøgstal for alle biblioteker de seneste 3 år. Nb: Hovedbiblioteket lukket december 2016 til november 2017."),
+          plotlyOutput("visitsplotall")
         )
       ),
       
@@ -133,34 +137,23 @@ dashboardPage(
               id = "tabset1",
               tabPanel("Generelt", 
                  fluidRow(
-                   column(6,
-                      h4("Samlet besøgstal"),
-                      p("Samlet besøgstal for alle biblioteker de seneste 3 år. Nb: Hovedbiblioteket lukket december 2016 til november 2017."),
-                      plotlyOutput("visitsplotall")
+                   column(2,
+                      h4("Afgræns pr. år"),
+                      selectInput("fromdate", "Fra", c("2015", "2016", "2017", "2018"), selected = "2017"),
+                      selectInput("fromdate", "Til", c("2015", "2016", "2017", "2018"), selected = "2018"),
+                      selectInput("fromdate", "Bibliotek", c("2015", "2016", "2017", "2018"), selected = "2018")
                    ),
-                   column(6,
-                      h4("Biblioteker med flere/færre besøgende"),
-                      p("Flere/færre besøgende 2016/2017"),
-                      plotlyOutput("visitsplotcompare")
+                   column(10,
+                      h4("Samlet besøgstal i detaljer"),
+                      formattableOutput("tablevisits"), downloadButton("downloadData", "Download"
                    ),
-                   column(6,
+                   column(10,
                       h4("Besøgende pr. bibliotek"),
                       selectInput("library", "",c('Med Hovedbiblioteket','Uden Hovedbiblioteket')),
                       plotlyOutput("plot")    
-                   ),
-                   column(6,
-                      h4("Samlet besøgstal i detaljer"),
-                      formattableOutput("tablevisits"), downloadButton("downloadData", "Download"
                    )
                  )   
-              )),
-              tabPanel("Bolbro", plotlyOutput("plotvisitbo"),formattableOutput('tablebo')),
-              tabPanel("Dalum", plotlyOutput("plotvisitda"),formattableOutput('tableda')),
-              tabPanel("Borgernes Hus", plotlyOutput("plotvisithb"),formattableOutput('tablehb')),
-              tabPanel("Holluf Pile", plotlyOutput("plotvisithol"),formattableOutput('tableho')),
-              tabPanel("Højby", plotlyOutput("plotvisithoj"),formattableOutput('tablehoj')),
-              tabPanel("Tarup", plotlyOutput("plotvisitta"),formattableOutput('tableta')),
-              tabPanel("Vollsmose", plotlyOutput("plotvisitvo"),formattableOutput('tablevo'))
+              ))
            )
         )
       )
@@ -173,8 +166,69 @@ dashboardPage(
         h3("Mødelokaler")
       ),
       box(width = 12,
-        p("")
+        column(2,
+          h4("Periode"),
+            dateRangeInput('dateRangeMeetingrooms',
+              label = 'Vælg periode',
+              start = Sys.Date() - 90, end = Sys.Date(),
+              separator = " - "
+          )
+        ),
+        column(width = 10,
+          column(width = 6,
+            h4("Oversigtstabel"),
+            tableOutput("tablemeetingrooms_overview")
+          ),
+          column(width = 6,
+            h4("Vist på agendaskærm"), 
+            plotlyOutput("meetingrooms_agendascreen_plot")
+          ),
+          column(width = 4,
+            h4("Booker top 10"),
+            tableOutput("table_meetingrooms_booker")
+          ),
+          column(width = 8,
+            h4("Oversigtstabel"),
+            formattableOutput("tablemeetingrooms_timeslots")
+          )
+        )
       )
+    ),
+    
+    # Event områder #
+    
+    tabItem(tabName = "eventareas",
+      box(width = 12,
+        h3("Eventområder")
+      ),
+      box(width = 12,
+        column(2,
+          h4("Periode"),
+          dateRangeInput('dateRangeBhus_events',
+            label = 'Vælg periode',
+            start = Sys.Date() - 90, end = Sys.Date(),
+            separator = " - "
+            )
+            ),
+            column(width = 10,
+              column(width = 6,
+                h4("Oversigtstabel"),
+                tableOutput("tablebhus_events_overview")
+              ),
+              column(width = 6,
+                h4("Vist på agendaskærm"), 
+                plotlyOutput("bhus_events_agendascreen_plot")
+              ),
+              column(width = 4,
+                h4("Booker top 10"),
+                tableOutput("table_bhus_events_booker")
+              ),
+              column(width = 8,
+                h4("Oversigtstabel"),
+                formattableOutput("tablebhus_events")
+              )
+            )
+          )
     ),
     
     # Smart City #
@@ -220,7 +274,7 @@ dashboardPage(
                                                 ),
                                                 column(width = 4,
                                                        h4("Top 10 sider 2017"), 
-                                                       tableOutput("tableplot3")
+                                                       formattableOutput("tableplot3")
                                                 )
                                          )
                                        )   
@@ -233,9 +287,7 @@ dashboardPage(
       ),
       tabItem(tabName = "app",
               box(width = 12,
-                  h3("Biblioteket App"),
-                  p("KPI'er skal identificeres"),
-                  p("Det mangler data fra Redia")
+                  h3("Biblioteket App")
               )
       ),
       
@@ -348,14 +400,12 @@ dashboardPage(
       ),
       tabItem(tabName = "emovies",
               box(width = 12,
-                  h3("Film"),
-                  "Filmstriben, kan man få data fra DBC eller er der noget som kan lægges manuelt ind?"
+                  h3("Film")
               )
       ),
       tabItem(tabName = "edatabases",
               box(width = 12,
-                  h3("Databaser"),
-                  "Netbaser, data fra proxy mangler"
+                  h3("Databaser")
               )
       ),
       
@@ -419,8 +469,8 @@ dashboardPage(
     
       tabItem(tabName = "datasources",
         box(width = 12,
-          h3("Datakilder"),  
-          htmlOutput("frame")
+          h3("Datakilder"),
+          img(src='DatakildeOversigt.svg', width="1440px", height="100%" )
         )
       )
     )

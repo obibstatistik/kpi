@@ -10,16 +10,23 @@ shinyServer(function(input, output) {
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
   
   eventsmaalgruppe <- dbGetQuery(con, "select extract(year from dato) as year, maalgruppe, count(*) from datamart.arrangementer group by maalgruppe, year")
+  
   eventsyear <- dbGetQuery(con, "select extract(year from dato) as year, count(*) from datamart.arrangementer where extract(year from dato) > 2012 group by year order by year")
+  
   eventsmonth <- dbGetQuery(con, "select extract(month from dato) as month, count(*) from datamart.arrangementer where extract(year from dato) > 2012 group by month order by month")
   eventsdeltagere <- dbGetQuery(con, "select sum(deltagere), extract(year from dato) as year from datamart.arrangementer where extract(year from dato) > 2012 group by year order by year")
   eventsparticipantmonth <- dbGetQuery(con, "select sum(deltagere), extract(month from dato) as month from datamart.arrangementer where extract(year from dato) > 2012 group by month order by month")
   eventssted <- dbGetQuery(con, "select lokation, extract(year from dato) as year, count(*) from datamart.arrangementer group by lokation, year")
   eventskategori <- dbGetQuery(con, "select kategori, extract(year from dato) as year, count(*) from datamart.arrangementer group by kategori, year")
   eventsratio <- dbGetQuery(con, "select titel, arrangementstype, deltagere, forberedelsestid from datamart.arrangementer")
+  
   visits <- dbGetQuery(con, "SELECT * FROM public.people_counter")
   visitsoverview <- dbGetQuery(con, "SELECT extract(year from date)::text as year, sum(count) FROM public.people_counter WHERE extract(year from date) in ('2015','2016','2017') group by year order by year")
   visitscompare <- dbGetQuery(con, "SELECT extract(year from date) as year, location, sum(count)n FROM public.people_counter WHERE extract(year from date) in ('2016','2017')  group by year, location")
+  
+  meetingrooms <- dbGetQuery(con, "SELECT * FROM datamart.meetingrooms")
+  bhus_events <- dbGetQuery(con, "SELECT * FROM datamart.bhus_events")
+  
   ga_pageviews <- dbGetQuery(con, "SELECT * FROM datamart.ga_pageviews where pageviews > 0")
   ga_device <- dbGetQuery(con, "select device, sum(users) as users from datamart.ga_device group by device")
   ga_top10 <- dbGetQuery(con, "SELECT title, pageviews FROM datamart.ga_top10 order by pageviews desc limit 11 offset 1")
@@ -60,33 +67,46 @@ shinyServer(function(input, output) {
   
   ### COLORS ###
   
+  colors <- c('rgb(70,140,140)', 'rgb(174,176,81)', 'rgb(59,54,74)', 'rgb(192,57,83)', 'rgb(29,114,170)', 'rgb(0,0,0)')
+  color1 = c('rgb(70,140,140)')
+  color2 = c('rgb(174,176,81)')
+  color3 = c('rgb(59,54,74)')
+  color4 = c('rgb(192,57,83)')
+  color5 = c('rgb(29,114,170)')
+  color6 = c('rgb(0,0,0)')
+  
+  ### DATES ###
+  
+  year <- as.integer(format(Sys.Date(), "%Y"))
+  month <- as.integer(format(Sys.Date(), "%Y"))
+  day <- as.integer(format(Sys.Date(), "%Y"))
   
   ### EVENTS ### 
   
   # arrangementer pr aar #
   output$eventsyearplot <- renderPlotly({
-    plot_ly(eventsyear, x = eventsyear$year, y = eventsyear$count, type = 'bar', text = text) 
+    plot_ly(eventsyear, x = eventsyear$year, y = eventsyear$count, type = 'bar', text = text, marker = list(color = color1)) 
   })
   # arrangementer pr maaned #
   output$eventsmonthplot <- renderPlotly({
-    plot_ly(eventsmonth, x = factor(month.abb[eventsmonth$month],levels=month.abb), y = eventsmonth$count, type = 'bar', text = text) 
+    plot_ly(eventsmonth, x = factor(month.abb[eventsmonth$month],levels=month.abb), y = eventsmonth$count, type = 'bar', text = text, marker = list(color = color1)) 
   })
   
   # deltagere pr aar #
   output$eventsparticipantyearplot <- renderPlotly({
-    plot_ly(eventsdeltagere, x = eventsdeltagere$year, y = eventsdeltagere$sum, type = 'bar', text = text) 
+    plot_ly(eventsdeltagere, x = eventsdeltagere$year, y = eventsdeltagere$sum, type = 'bar', text = text, marker = list(color = color1)) 
   })
   
   # deltagere pr maaned #
   output$eventsparticipantmonthplot <- renderPlotly({
-    plot_ly(eventsparticipantmonth, x = factor(month.abb[eventsparticipantmonth$month],levels=month.abb), y = eventsparticipantmonth$sum, type = 'bar', text = text) 
+    plot_ly(eventsparticipantmonth, x = factor(month.abb[eventsparticipantmonth$month],levels=month.abb), y = eventsparticipantmonth$sum, type = 'bar', text = text, marker = list(color = color1)) 
   })
   
   # målgruppe #
   output$eventsmaalgruppeplot <- renderPlotly({
     if (input$year != "Alle") {eventsmaalgruppe <- eventsmaalgruppe %>% filter(year == input$year)}
     if (input$year == "Alle") {eventsmaalgruppe <- eventsmaalgruppe %>% filter(year %in% c("2013","2014","2015","2016","2017"))}
-    plot_ly(eventsmaalgruppe, labels = ~maalgruppe, values = ~count) %>%
+    plot_ly(eventsmaalgruppe, labels = ~maalgruppe, values = ~count, marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
       add_pie(hole = 0.0) %>%
       layout(showlegend = T,
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
@@ -116,14 +136,14 @@ shinyServer(function(input, output) {
 
   output$eventsstedplot <- renderPlotly({
     if (input$year != "Alle") {eventssted <- eventssted %>% filter(year == input$year)}
-    plot_ly(eventssted, x = eventssted$sted, y = eventssted$count, type = 'bar', text = text) %>%
+    plot_ly(eventssted, x = eventssted$sted, y = eventssted$count, type = 'bar', text = text, marker = list(color = color1)) %>%
       layout(margin = list(b = 125), xaxis = list(title = ""), yaxis = list(title =""))
   })
   
   # kategori #
   output$eventskategoriplot <- renderPlotly({
     if (input$year != "Alle") {eventskategori <- eventskategori %>% filter(year == input$year)}
-    plot_ly(eventskategori, x = eventskategori$kategori, y = eventskategori$count, type = 'bar', text = text) 
+    plot_ly(eventskategori, x = eventskategori$kategori, y = eventskategori$count, type = 'bar', text = text, marker = list(color = color1)) 
   })
   
   # ratio #
@@ -142,19 +162,6 @@ shinyServer(function(input, output) {
   })
   
   
-  # 2017/2016 compare #
-  
-  library <- c('Færre besøgende','Flere besøgende')
-  antal <- c(1, 11)
-  startdate <- as.Date(c('2010-11-1','2008-3-25'))
-  data <- data.frame(library, antal, startdate)
-  
-  output$visitsplotcompare <- renderPlotly({
-    plot_ly(data, labels = ~library, values = ~antal, text = ~antal, textinfo = text, type = 'pie') %>%
-      layout(xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-             yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
-  })
-  
   # visits plot #
   visitsplot <- visits %>%
     mutate(year = format(date, "%y"), v2017 = ifelse(year == "17", count, 0), v2016 = ifelse(year == "16", count, 0), v2015 = ifelse(year == "15", count, 0)) %>%
@@ -169,69 +176,6 @@ shinyServer(function(input, output) {
     add_trace(y = visitsplot$v2016, name = '2016') %>%  
     add_trace(y = visitsplot$v2017, name = '2017') %>% 
     layout(yaxis = list(title = 'Antal'), barmode = 'group')
-  })
-  
-  # besøgende bolbro #
-  output$plotvisitbo <- renderPlotly({
-    visitsplotbo <- visitsplot %>% filter(location == "bo")
-    plot_ly(visitsplotbo, x = visitsplotbo$location, y = visitsplotbo$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
-      add_trace(y = visitsplotbo$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
-      add_trace(y = visitsplotbo$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
-      layout(yaxis = list(title = 'Antal'), barmode = 'group')
-  })
-  
-  # besøgende dalum #
-  output$plotvisitda <- renderPlotly({
-    visitsplotda <- visitsplot %>% filter(location == "da")
-    plot_ly(visitsplotda, x = visitsplotda$location, y = visitsplotda$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
-      add_trace(y = visitsplotda$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
-      add_trace(y = visitsplotda$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
-      layout(yaxis = list(title = 'Antal'), barmode = 'group')
-  })
-  
-  # besøgende borgernes hus #
-  output$plotvisithb <- renderPlotly({
-    visitsplothb <- visitsplot %>% filter(location == "hb")
-    plot_ly(visitsplothb, x = visitsplothb$location, y = visitsplothb$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
-      add_trace(y = visitsplothb$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
-      add_trace(y = visitsplothb$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
-      layout(yaxis = list(title = 'Antal'), barmode = 'group')
-  })
-  
-  # besøgende holluf pile 
-  output$plotvisithol <- renderPlotly({
-    visitsplothol <- visitsplot %>% filter(location == "ho")
-    plot_ly(visitsplothol, x = visitsplothol$location, y = visitsplothol$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
-      add_trace(y = visitsplothol$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
-      add_trace(y = visitsplothol$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
-      layout(yaxis = list(title = 'Antal'), barmode = 'group')
-  })
-  
-  # besøgende højby 
-  output$plotvisithoj <- renderPlotly({
-    visitsplothoj <- visitsplot %>% filter(location == "hoj")
-    plot_ly(visitsplothoj, x = visitsplothoj$location, y = visitsplothoj$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
-      add_trace(y = visitsplothoj$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
-      add_trace(y = visitsplothoj$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
-      layout(yaxis = list(title = 'Antal'), barmode = 'group')
-  })
-  
-  # besøgende tarup
-  output$plotvisitta <- renderPlotly({
-    visitsplotta <- visitsplot %>% filter(location == "ta")
-    plot_ly(visitsplotta, x = visitsplotta$location, y = visitsplotta$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
-      add_trace(y = visitsplotta$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
-      add_trace(y = visitsplotta$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
-      layout(yaxis = list(title = 'Antal'), barmode = 'group')
-  })
-  
-  # besøgende vollsmose
-  output$plotvisitvo <- renderPlotly({
-    visitsplotvo <- visitsplot %>% filter(location == "vo")
-    plot_ly(visitsplotvo, x = visitsplotvo$location, y = visitsplotvo$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
-      add_trace(y = visitsplotvo$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
-      add_trace(y = visitsplotvo$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
-      layout(yaxis = list(title = 'Antal'), barmode = 'group')
   })
   
   # visitor tables all #
@@ -288,6 +232,161 @@ shinyServer(function(input, output) {
       ))})
     })
   }
+  
+  #meetingrooms
+  
+  meetingrooms <- meetingrooms %>%
+    mutate(
+      sted = case_when(
+        roomnumber == "lok11_borghus@odense.dk" ~ "Lokale 1.1",
+        roomnumber == "lok12_borghus@odense.dk" ~ "Lokale 1.2",
+        roomnumber == "lok21_borghus@odense.dk" ~ "Lokale 2.1",
+        roomnumber == "lok22_borghus@odense.dk" ~ "Lokale 2.2",
+        roomnumber == "lok31_borghus@odense.dk" ~ "Lokale 3.1",
+        roomnumber == "lok32_borghus@odense.dk" ~ "Lokale 3.2",
+        roomnumber == "lok33_borghus@odense.dk" ~ "Lokale 3.3",
+        roomnumber == "lok34_borghus@odense.dk" ~ "Lokale 3.4",
+        roomnumber == "lok35_borghus@odense.dk" ~ "Lokale 3.5",
+        roomnumber == "lok36_borghus@odense.dk" ~ "Lokale 3.6"
+      ) 
+    )
+  
+  output$tablemeetingrooms_overview <- renderTable(
+   meetingrooms_overview <- meetingrooms %>%
+     filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
+     mutate(tid = 	as.integer((enddate - startdate))) %>%
+     select(sted, tid) %>%
+     group_by(sted) %>%
+     summarise(count = n(), mean = mean(tid), median = median(tid), sum = sum(tid)/60 ) %>%
+     rename(Lokalenummer = sted, Antal = count, Gennemsnit =	mean, Middelværdi =	median, Total =	sum )  
+  )
+  
+  output$meetingrooms_agendascreen_plot <- renderPlotly({
+    meetingrooms_agendascreen <- meetingrooms %>%
+      filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
+      select(show_on_screen) %>%
+      group_by(show_on_screen) %>%
+      summarise(count = n())
+    plot_ly(meetingrooms_agendascreen, labels = c("Ikke vist på skærm","Vist på skærm"), values = ~count, marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
+      add_pie(hole = 0.6) %>%
+      layout(showlegend = T,
+             xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+             yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+  })
+  
+  output$table_meetingrooms_booker <- renderTable(
+    meetingrooms_booker <- meetingrooms %>%
+      filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
+      select(forfatter_mail) %>%
+      group_by(forfatter_mail) %>%
+      summarise(count = n()) %>%
+      arrange(desc(count)) %>%
+      head(10) %>%
+      rename(Booker = forfatter_mail, Antal = count)
+  )
+  
+  output$tablemeetingrooms_timeslots <- renderFormattable({
+    meetingrooms_timeslots <- meetingrooms %>%
+      filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
+      select(sted, startdate ) %>%
+      mutate(Tidspunkt = hour(format(as.POSIXct(startdate)))) %>%
+      group_by(sted, Tidspunkt) %>%
+      summarise(count = n()) %>%
+      spread(key = sted, value = count) %>%
+      replace(., is.na(.), "0")
+    formattable(meetingrooms_timeslots, list('Lokale 1.1' = color_tile("grey", '#468c8c')))}
+  )
+
+  #bhus_events
+  
+  output$tablebhus_events_overview <- renderTable(
+    bhus_events_overview <- bhus_events %>%
+      filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
+      mutate(tid = 	as.integer((slut - startdate))) %>%
+      select(location, tid) %>%
+      group_by(location) %>%
+      summarise(count = n(), mean = mean(tid), median = median(tid), sum = sum(tid)/60 ) %>%
+      rename(Lokation = location, Antal = count, Gennemsnit =	mean, Middelværdi =	median, Total =	sum )  
+  )
+  
+  output$bhus_events_agendascreen_plot <- renderPlotly({
+    bhus_events_agendascreen <- bhus_events %>%
+      filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
+      select(show_on_screen) %>%
+      group_by(show_on_screen) %>%
+      summarise(count = n())
+    plot_ly(bhus_events_agendascreen, labels = c("Ikke vist på skærm","Vist på skærm"), values = ~count, marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
+      add_pie(hole = 0.6) %>%
+      layout(showlegend = T,
+             xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+             yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+  })
+  
+  output$table_bhus_events_booker <- renderTable(
+    bhus_events_booker <- meetingrooms %>%
+      filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
+      select(forfatter_mail) %>%
+      group_by(forfatter_mail) %>%
+      summarise(count = n()) %>%
+      arrange(desc(count)) %>%
+      head(10) %>%
+      rename(Booker = forfatter_mail, Antal = count)
+  )
+  
+  output$tablebhus_events <- renderFormattable({
+    bhus_events_timeslots <- bhus_events %>%
+      filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
+      select(location, startdate ) %>%
+      mutate(Tidspunkt = hour(format(as.POSIXct(startdate)))) %>%
+      group_by(location, Tidspunkt) %>%
+      summarise(count = n()) %>%
+      spread(key = location, value = count) %>%
+      replace(., is.na(.), "0")
+    formattable(bhus_events_timeslots, list('Lokale 1.1' = color_tile("grey", '#468c8c')))}
+  )
+  
+  ### Web ###
+  
+  # sites
+  
+  sites <- sites %>% select("Organisation" = titel, "URL" = url)
+  output$tablesites <- renderTable(sites)
+  
+  # pageviews
+  
+  ga_pageviews <- ga_pageviews %>%
+    mutate(pv2018 = ifelse(aar == "2018", pageviews, 0), pv2017 = ifelse(aar == "2017", pageviews, 0), pv2016 = ifelse(aar == "2016", pageviews, 0), pv2015 = ifelse(aar == "2015", pageviews, 0)) %>%
+    select(maaned,pv2015,pv2016,pv2017,pv2018) %>%
+    group_by(maaned) %>%
+    summarise(v2018 = sum(pv2018), v2017 = sum(pv2017), v2016 = sum(pv2016), v2015 = sum(pv2015))
+  is.na(ga_pageviews) <- !ga_pageviews
+  
+  output$plot1 <- renderPlotly({
+    plot_ly(ga_pageviews, x = ~maaned , y = ~v2015 , type = "bar", name = '2015', marker = list(color = color1)) %>%
+      add_trace(y = ~v2016, name = '2016', marker = list(color = color2)) %>%
+      add_trace(y = ~v2017, name = '2017', marker = list(color = color3)) %>%
+      add_trace(y = ~v2018, name = '2018', marker = list(color = color4)) %>%
+      layout(showlegend = T, xaxis = list(tickmode="linear", title = "Måned"), yaxis = list(title = "Antal"))  
+  })
+  
+  # device
+  
+  output$ga_device_plot <- renderPlotly({
+    plot_ly(ga_device, labels = ~device, values = ~users, marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
+      add_pie(hole = 0.6) %>%
+      layout(showlegend = T,
+             xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+             yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+  })
+  
+  # top10 pages 2017
+  
+  ga_top10 <- ga_top10 %>% 
+    filter(title != "Adgang nægtet | Odense Bibliotekerne") %>%
+    rename(Titel = title, Sidevisninger = pageviews )
+  
+  output$tableplot3 <- renderFormattable({formattable(ga_top10)})
+  
   
   ### LOAN & RENEWALS ###
   
@@ -380,22 +479,19 @@ shinyServer(function(input, output) {
   output$acquisitionpreparationtable <- renderTable(acquisition2017prepared) 
   
   output$acquisitionplotpreparation <- renderPlotly({
-    plot_ly(acquisition2017prepared, labels = ~preparation, values = ~sum, type = 'pie') %>%
+    plot_ly(acquisition2017prepared, labels = ~preparation, values = ~sum, type = 'pie', marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
       layout(xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
   
-  
-  
-  
-    
+
   ### E-RESSOURCES ### 
   
   ereolentype <- ereolentype
   output$ereolentable <- renderTable(ereolentype)
   
   output$ereolentypeplot <- renderPlotly({
-    plot_ly(ereolentype, labels = ~type, values = ~count) %>%
+    plot_ly(ereolentype, labels = ~type, values = ~count, marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
       add_pie(hole = 0.6) %>%
       layout(showlegend = T,
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
@@ -411,122 +507,19 @@ shinyServer(function(input, output) {
     filter(alder < 100) %>%
     filter(sex == 'mand')
   
-  p1 <- plot_ly(ereolenalderkvinde, x = ~antal, y = ~alder, type = 'bar', orientation = 'h', name = 'kvinde') %>%
+  p1 <- plot_ly(ereolenalderkvinde, x = ~antal, y = ~alder, type = 'bar', orientation = 'h', name = 'kvinde', marker = list(color = color1)) %>%
     layout(yaxis = list(side = 'left', range = c(0, 100)), xaxis = list(range = c(0, 2000)))
-  p2 <- plot_ly(ereolenaldermand, x = ~antal, y = ~alder, type = 'bar', orientation = 'h', name = 'mand') %>%
+  p2 <- plot_ly(ereolenaldermand, x = ~antal, y = ~alder, type = 'bar', orientation = 'h', name = 'mand', marker = list(color = color2)) %>%
     layout(yaxis = list(side = 'left', range = c(0, 100)), xaxis = list(range = c(0, 2000)))
   output$ereolenaldersubplot <- renderPlotly({subplot(p1, p2)})
   
   
   output$p <- renderPlotly({
-    plot_ly(ereolenhist, x = ~date, y = ~lydbog, type = 'bar', name = 'Lydbog') %>%
-      add_trace(y = ~ebog, name = 'E-bog') %>%
+    plot_ly(ereolenhist, x = ~date, y = ~lydbog, type = 'bar', name = 'Lydbog', marker = list(color = color1)) %>%
+      add_trace(y = ~ebog, name = 'E-bog', marker = list(color = color2)) %>%
       layout(yaxis = list(title = 'antal udlån'), barmode = 'stack')
   })
   
-  ### WEBSITES ###
-  
-  #r <- GET("https://ws.webtrends.com/v3/Reporting/profiles/77605/reports/VSlaqtDP0P6/?totals=all&start_period=current_year-2&end_period=current_year&period_type=indv&format=json", authenticate(webtrendsusername, webtrendspassword, type = "basic"))
-  #json <- content(r, "text")
-  #json2 <- content(r, "text")
-  
-  #jsontable <- json %>%
-    #enter_object("data") %>%
-    #gather_array %>%
-    #spread_values(Årstal = jstring("start_date")) %>%
-    #enter_object("measures") %>%
-    #spread_values(Besøg = jstring("ActiveVisits")) %>%
-    #spread_values(Sidevisninger = jstring("PageViews")) %>%
-    #spread_values(Klik = jstring("Clickthroughs")) %>%
-    #spread_values(Besøgende = jstring("DailyVisitors")) %>%
-    #spread_values(Ugentligebesøgende = jstring("WeeklyVisitors")) %>%
-    #spread_values(Månedligebesøgende = jstring("MonthlyVisitors")) %>%
-    #spread_values(Kvartalsvisbesøgende = jstring("QuarterlyVisitors")) %>%
-    #spread_values(Årligebesøgende = jstring("YearlyVisitors")) %>%
-    #spread_values(Enkeltsidebesøgende = jstring("SinglePageViewVisits")) %>%
-    #spread_values(Forsidevisning = jstring("EntryPageVisits")) %>%
-    #spread_values(Afvisningsrate = jstring("BounceRate")) %>%
-    #select(Årstal, Besøg, Sidevisninger, Besøgende)
-  #output$table <- renderTable(jsontable, width = "100%")
-  
-  #jsontable2 <- json2 %>%
-    #enter_object("data") %>%
-    #gather_array %>%
-    #spread_values(start_date = jstring("start_date")) %>%
-    #enter_object("SubRows") %>%
-    #gather_array 
-    #gather_array %>%
-    #spread_values(y = jstring("measures","ActiveVisits")) 
-  #output$table2 <- renderTable(jsontable2)
-  
-  ### EVENTS ###
-  
-  output$eventstable <- renderTable(events)
-  
-  #eventsplot <- events %>%
-    #mutate(year = format(dato, "%y"), 
-      #e2013 = ifelse ((year == "13") , 1, 0),
-      #e2014 = ifelse ((year == "14") , 1, 0),
-      #e2015 = ifelse ((year == "15") , 1, 0),
-      #e2016 = ifelse ((year == "16") , 1, 0),
-      #e2017 = ifelse ((year == "17") , 1, 0)) %>%
-    #select (as.character(year),e2015,e2016,e2017) %>%
-    #group_by(year) %>%
-    #summarise(ec2017 = count(e2017), ec2016 = count(e2016), ec2015 = count(e2015)) #%>%
-    #select(year,ec2017, ec2016, e2017 = ifelse(year == "17", count, 0), e2016 = ifelse(year == "16", count, 0), e2015 = ifelse(year == "15", count, 0)) %>%
-    #group_by(year) %>%
-    #summarise(v2017 = count(v2017), v2016 = count(v2016), v2015 = count(v2015)) %>%
-    #select(year,v2017,v2016,v2015)
-  
-  output$event2table <- renderFormattable({formattable(eventsplot, list(  ))})
-  
-  #output$eventsplot <- renderPlotly({
-  #  plot_ly(eventsplot, x = eventsplot$year, y = eventsplot$v2015, type = 'bar', name = '2015', text = text, marker = list(color = 'gold')) %>%
-  #    add_trace(y = eventsplot$v2016, name = '2016', marker = list(color = 'rgb(63,168,123)')) %>%  
-  #    add_trace(y = eventsplot$v2017, name = '2017', marker = list(color = 'rgb(72,35,115)')) %>% 
-  #    layout(yaxis = list(title = 'Antal'), barmode = 'group')
-  #})
-  
-  ### Web ###
-  
-  # sites
-  
-  sites <- sites %>% select("Organisation" = titel, "URL" = url)
-  output$tablesites <- renderTable(sites)
-
-  # pageviews
-  
-  ga_pageviews <- ga_pageviews %>%
-    mutate(pv2017 = ifelse(aar == "2017", pageviews, 0), pv2016 = ifelse(aar == "2016", pageviews, 0), pv2015 = ifelse(aar == "2015", pageviews, 0)) %>%
-    select(maaned,pv2015,pv2016,pv2017) %>%
-    group_by(maaned) %>%
-    summarise(v2017 = sum(pv2017), v2016 = sum(pv2016), v2015 = sum(pv2015))
-  is.na(ga_pageviews) <- !ga_pageviews
-  
-  output$plot1 <- renderPlotly({
-    plot_ly(ga_pageviews, x = ~maaned , y = ~v2015 , type = "scatter", mode = 'lines', name = '2015', line = list(shape = "spline")) %>%
-      add_trace(y = ~v2016, name = '2016', mode = 'lines') %>%
-      add_trace(y = ~v2017, name = '2017', mode = 'lines', connectgaps = FALSE) %>%
-      layout(showlegend = T, xaxis = list(tickmode="linear", title = "Måned"), yaxis = list(title = "Antal"))  
-  })
-  
-  # device
-
-  output$ga_device_plot <- renderPlotly({
-    plot_ly(ga_device, labels = ~device, values = ~users) %>%
-    add_pie(hole = 0.6) %>%
-    layout(showlegend = T,
-      xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-      yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
-  })
-  
-  # top10 pages 2017
-  
-  ga_top10 <- ga_top10 %>% 
-    filter(title != "Adgang nægtet | Odense Bibliotekerne") %>%
-    rename(Titel = title, Sidevisninger = pageviews )
-  
-  output$tableplot3 <- renderTable(ga_top10)
   
   ### USERS ###
   
@@ -543,8 +536,8 @@ shinyServer(function(input, output) {
   data <- data.frame(years, male, female)
 
   output$peopleplot <- renderPlotly({
-    plot_ly(data, x = ~years, y = ~male, type = 'bar', name = 'Mænd') %>%
-      add_trace(y = ~female, name = 'Kvinder') %>%
+    plot_ly(data, x = ~years, y = ~male, type = 'bar', name = 'Mænd', marker = list(color = color2)) %>%
+      add_trace(y = ~female, name = 'Kvinder', marker = list(color = color3)) %>%
       layout(xaxis = list(title = 'Årstal'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
   })
   
@@ -560,10 +553,10 @@ shinyServer(function(input, output) {
     mutate(firstp = ((first/sum)*100), secondp = ((second/sum)*100), thirdp = ((third/sum)*100), fourthp = ((fourth/sum)*100))
   
   output$peopleplotage <- renderPlotly({
-    plot_ly(data, x = ~years, y = ~firstp, type = 'bar', text = c(19,17,12,12,12), name = '25-34') %>%
-      add_trace(y = ~secondp, text = toString(second), name = '35-44') %>%
-      add_trace(y = ~thirdp, name = '45-54') %>%
-      add_trace(y = ~fourthp, name = '55+') %>%
+    plot_ly(data, x = ~years, y = ~firstp, type = 'bar', text = c(19,17,12,12,12), name = '25-34', marker = list(color = color1)) %>%
+      add_trace(y = ~secondp, text = toString(second), name = '35-44', marker = list(color = color2)) %>%
+      add_trace(y = ~thirdp, name = '45-54', marker = list(color = color3)) %>%
+      add_trace(y = ~fourthp, name = '55+', marker = list(color = color4)) %>%
       layout(xaxis = list(title = 'Årstal'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
   })
   
@@ -578,9 +571,9 @@ shinyServer(function(input, output) {
     mutate(firstp = ((first/sum)*100), secondp = ((second/sum)*100), thirdp = ((third/sum)*100))
   
   output$peopleplotageupper <- renderPlotly({
-    plot_ly(data2, x = ~years, y = ~firstp, type = 'bar', text = c(19,17,12,12,12), name = '55-59') %>%
-      add_trace(y = ~secondp, text = toString(second), name = '60-64') %>%
-      add_trace(y = ~thirdp, name = '65+') %>%
+    plot_ly(data2, x = ~years, y = ~firstp, type = 'bar', text = c(19,17,12,12,12), name = '55-59', marker = list(color = color1)) %>%
+      add_trace(y = ~secondp, text = toString(second), name = '60-64', marker = list(color = color2)) %>%
+      add_trace(y = ~thirdp, name = '65+', marker = list(color = color3)) %>%
       layout(xaxis = list(title = 'Årstal'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
   })
   
@@ -595,9 +588,9 @@ shinyServer(function(input, output) {
     mutate(firstp = ((first/sum)*100), secondp = ((second/sum)*100), thirdp = ((third/sum)*100))
   
   output$peopleplotageupper <- renderPlotly({
-    plot_ly(data3, x = ~years, y = ~firstp, type = 'bar', text = c(19,17,12,12,12), name = '55-59') %>%
-      add_trace(y = ~secondp, text = toString(second), name = '60-64') %>%
-      add_trace(y = ~thirdp, name = '65+') %>%
+    plot_ly(data3, x = ~years, y = ~firstp, type = 'bar', text = c(19,17,12,12,12), name = '55-59', marker = list(color = color1)) %>%
+      add_trace(y = ~secondp, text = toString(second), name = '60-64', marker = list(color = color2)) %>%
+      add_trace(y = ~thirdp, name = '65+', marker = list(color = color3)) %>%
       layout(xaxis = list(title = 'Årstal'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
   })
   
@@ -608,7 +601,8 @@ shinyServer(function(input, output) {
       x = c(55,56,57,58,59,60,61,62,63,64,65,66,67),
       y = c(9,2,4,3,10,8,8,5,2,2,2,0,1),
       name = "SF Zoo",
-      type = "bar"
+      type = "bar",
+      marker = list(color = color1)
     )})
   
   # faggrupper # 
@@ -623,10 +617,10 @@ shinyServer(function(input, output) {
     mutate(firstp = ((first/sum)*100), secondp = ((second/sum)*100), thirdp = ((third/sum)*100), fourthp = ((fourth/sum)*100))
   
   output$peopleplotfag <- renderPlotly({
-    plot_ly(data4, x = ~years, y = ~firstp, type = 'bar', text = c(19,17,12,12,12), name = 'BF') %>%
-      add_trace(y = ~secondp, text = toString(second), name = 'HK') %>%
-      add_trace(y = ~thirdp, name = 'Øvrige AC') %>%
-      add_trace(y = ~fourthp, name = 'FOA_3F') %>%
+    plot_ly(data4, x = ~years, y = ~firstp, type = 'bar', text = c(19,17,12,12,12), name = 'BF', marker = list(color = color1)) %>%
+      add_trace(y = ~secondp, text = toString(second), name = 'HK', marker = list(color = color2)) %>%
+      add_trace(y = ~thirdp, name = 'Øvrige AC', marker = list(color = color3)) %>%
+      add_trace(y = ~fourthp, name = 'FOA_3F', marker = list(color = color4)) %>%
       layout(xaxis = list(title = 'Årstal'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
   })
   
@@ -637,7 +631,7 @@ shinyServer(function(input, output) {
       x = c("BF", "HK", "Øvrige ACere", "FOA/3F", "Tjenestemænd", "Overenskomstansatte", "Ledelse", "Samlet"),
       y = c(49.2, 45.6, 39.3, 58.5, 58.1, 46.3, 49.8, 50.1),
       name = "SF Zoo",
-      type = "bar"
+      type = "bar", marker = list(color = color1)
     )})
   
   # faggrupper gennemsnitsalder # 
@@ -645,11 +639,11 @@ shinyServer(function(input, output) {
   output$peopleplotfaggemall <- renderPlotly({
     plot_ly(
       x = c("BF", "HK", "Øvrige ACere", "FOA/3F", "Tjenestemænd", "Overenskomstansatte", "Ledelse", "Samlet"),
-      y = c(49.2, 45.6, 39.3, 58.5, 58.1, 46.3, 49.8, 50.1), name = "2016", type = "bar") %>%
-      add_trace(y = c(50.6,51.8,40.1,57.5,59.1,45.6,48.8,50.7), name = '2015') %>%
-      add_trace(y = c(50.7,51.1,39.1,56.3,58.2,45.9,47.3,49.9), name = '2014') %>%
-      add_trace(y = c(50.4,50.2,39.4,56.8,57.5,45.2,47.4,49.7), name = '2013') %>%
-      add_trace(y = c(49.9,50.7,36.9,51.0,57.4,44.5,52.3,49.7), name = '2012')
+      y = c(49.2, 45.6, 39.3, 58.5, 58.1, 46.3, 49.8, 50.1), name = "2016", type = "bar", marker = list(color = color1)) %>%
+      add_trace(y = c(50.6,51.8,40.1,57.5,59.1,45.6,48.8,50.7), name = '2015', marker = list(color = color2)) %>%
+      add_trace(y = c(50.7,51.1,39.1,56.3,58.2,45.9,47.3,49.9), name = '2014', marker = list(color = color3)) %>%
+      add_trace(y = c(50.4,50.2,39.4,56.8,57.5,45.2,47.4,49.7), name = '2013', marker = list(color = color4)) %>%
+      add_trace(y = c(49.9,50.7,36.9,51.0,57.4,44.5,52.3,49.7), name = '2012', marker = list(color = color5))
     })
   
   # faggrupper gennemsnitsalder # 
@@ -657,17 +651,15 @@ shinyServer(function(input, output) {
   output$peopleplotfag2 <- renderPlotly({
     plot_ly(
       x = c("BF", "HK", "Øvrige ACere", "FOA/3F"),
-      y = c(55,58,8,4), name = "2016", type = "bar") %>%
-      add_trace(y = c(56,60,8,4), name = '2015') %>%
-      add_trace(y = c(57,59,8,3), name = '2014') %>%
-      add_trace(y = c(58,60,9,4), name = '2013') %>%
-      add_trace(y = c(60,65,8,3), name = '2012')
+      y = c(55,58,8,4), name = "2016", type = "bar", marker = list(color = color1)) %>%
+      add_trace(y = c(56,60,8,4), name = '2015', marker = list(color = color2)) %>%
+      add_trace(y = c(57,59,8,3), name = '2014', marker = list(color = color3)) %>%
+      add_trace(y = c(58,60,9,4), name = '2013', marker = list(color = color4)) %>%
+      add_trace(y = c(60,65,8,3), name = '2012', marker = list(color = color5))
   })
+  
   
   ### Datasources ### 
   
-  output$frame <- renderUI({ 
-    print(iframe(width = "100%", height = "750", url_link = "https://www.draw.io/?lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1#G1lR8IO-7YVGdRtxzC3AFyfFDlZdRWWX69") ) 
-  })
   
 })
