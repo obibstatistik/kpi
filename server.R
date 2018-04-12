@@ -20,6 +20,8 @@ shinyServer(function(input, output) {
   eventskategori <- dbGetQuery(con, "select kategori, extract(year from dato) as year, count(*) from datamart.arrangementer group by kategori, year")
   eventsratio <- dbGetQuery(con, "select titel, arrangementstype, deltagere, forberedelsestid from datamart.arrangementer")
   
+  visitors <- dbGetQuery(con, "SELECT * FROM public.people_counter")
+  
   visits <- dbGetQuery(con, "SELECT * FROM public.people_counter")
   visitsoverview <- dbGetQuery(con, "SELECT extract(year from date)::text as year, sum(count) FROM public.people_counter WHERE extract(year from date) in ('2015','2016','2017') group by year order by year")
   visitscompare <- dbGetQuery(con, "SELECT extract(year from date) as year, location, sum(count)n FROM public.people_counter WHERE extract(year from date) in ('2016','2017')  group by year, location")
@@ -80,6 +82,10 @@ shinyServer(function(input, output) {
   year <- as.integer(format(Sys.Date(), "%Y"))
   month <- as.integer(format(Sys.Date(), "%Y"))
   day <- as.integer(format(Sys.Date(), "%Y"))
+  
+  ### LOCATIONS ###
+  
+  
   
   ### EVENTS ### 
   
@@ -154,6 +160,19 @@ shinyServer(function(input, output) {
   })
   
   ### FYSISKE RUM ###
+  
+  # visitors #
+  output$visitors_table <- renderFormattable({
+    visitors <- visitors %>%
+      select(date, count) %>%
+      mutate(month = month(date)) %>%
+      mutate(year = year(date)) %>%
+      select(count, month, year) %>%
+      group_by(month, year) %>%
+      summarise(sum = sum(count)) %>%
+      spread(key = year, value = sum)
+    formattable(visitors)
+  })
   
   # 2017 overview #
   output$visitsplotall <- renderPlotly({

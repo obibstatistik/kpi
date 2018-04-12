@@ -138,13 +138,18 @@ dashboardPage(
               tabPanel("Generelt", 
                  fluidRow(
                    column(2,
-                      h4("Afgræns pr. år"),
-                      selectInput("fromdate", "Fra", c("2015", "2016", "2017", "2018"), selected = "2017"),
-                      selectInput("fromdate", "Til", c("2015", "2016", "2017", "2018"), selected = "2018"),
-                      selectInput("fromdate", "Bibliotek", c("2015", "2016", "2017", "2018"), selected = "2018")
-                   ),
+                     h4("Afgræns pr. år"),
+                       dateRangeInput('dateRangeBhus_events',
+                         label = 'Vælg periode',
+                         start = Sys.Date() - 365, end = Sys.Date(),
+                         format = "yyyy",
+                         separator = " - ",
+                         startview = 'year', weekstart = 1
+                       )
+                    ),
                    column(10,
                       h4("Samlet besøgstal i detaljer"),
+                      formattableOutput("visitors_table"),
                       formattableOutput("tablevisits"), downloadButton("downloadData", "Download"
                    ),
                    column(10,
@@ -208,7 +213,7 @@ dashboardPage(
             label = 'Vælg periode',
             start = Sys.Date() - 90, end = Sys.Date(),
             separator = " - "
-            )
+          )
             ),
             column(width = 10,
               column(width = 6,
