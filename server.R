@@ -64,6 +64,7 @@ shinyServer(function(input, output) {
     from cicero.aktive_laanere 
     join cicero.inaktive_laanere on cicero.aktive_laanere.Name = cicero.inaktive_laanere.Name
     group by kategori")
+  datasources <- dbGetQuery(con, "SELECT * FROM dokumentation.datasources")
   
   dbDisconnect(con)
   
@@ -161,17 +162,34 @@ shinyServer(function(input, output) {
   
   ### FYSISKE RUM ###
   
+  output$visitorsfrom <- renderUI({
+    selectInput("visitors_fromyear", "Fra:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2014", "2014" = "2013"), year-1)
+  })
+  output$visitorsto <- renderUI({
+    selectInput("visitors_toyear", "Til:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2014", "2014" = "2013"), year)
+  })
+  
   # visitors #
   output$visitors_table <- renderFormattable({
     visitors <- visitors %>%
-      select(date, count) %>%
+      select(date, count, location) %>%
       mutate(month = month(date)) %>%
       mutate(year = year(date)) %>%
+      filter(year == input$visitors_fromyear | year == input$visitors_toyear ) %>%
+      filter(if(input$visitorslibrary != 'all')  (location == input$visitorslibrary) else TRUE) %>%
       select(count, month, year) %>%
       group_by(month, year) %>%
       summarise(sum = sum(count)) %>%
-      spread(key = year, value = sum)
-    formattable(visitors)
+      spread(key = year, value = sum) %>%
+      ungroup(.self) %>%
+      mutate(akku1 = cumsum(.[[2]]), akku2 = cumsum(.[[3]]), mdr = percent(.[[3]]-.[[2]])/.[[2]]) %>%
+      mutate(akk = percent((akku2-akku1)/akku1)) %>%
+      select(c(1,2,4,3,5,6,7)) %>%
+      rename(Måned = month)
+    formattable(visitors, list(
+      mdr = formatter("span", style = x ~ style(color = ifelse(x < 0 , color4, color1)), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
+      akk = formatter("span", style = x ~ style(color = ifelse(x < 0 , color4, color1)), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
+    ))
   })
   
   # 2017 overview #
@@ -196,61 +214,6 @@ shinyServer(function(input, output) {
     add_trace(y = visitsplot$v2017, name = '2017') %>% 
     layout(yaxis = list(title = 'Antal'), barmode = 'group')
   })
-  
-  # visitor tables all #
-  visitsall <- visits %>%
-    mutate(month = format(date, "%m"), year = format(date, "%y"), visits2017 = ifelse(year == "17", count, 0), visits2016 = ifelse(year == "16", count, 0), visits2015 = ifelse(year == "15", count, 0)) %>%
-    arrange(month) %>%
-    group_by(month) %>%
-    summarise(count = sum(count), visits2017 = sum(visits2017), visits2016 = sum(visits2016), visits2015 = sum(visits2015)) %>%
-    mutate(diff1716 = percent((visits2017-visits2016)/visits2016), diff1615 = percent((visits2016-visits2015)/visits2015), cumsum2017 = cumsum(visits2017), cumsum2016 = cumsum(visits2016), cumsum2015 = cumsum(visits2015)) %>%
-    select(month, visits2017, cumsum2017, diff1716, visits2016, cumsum2016, diff1615, visits2015, cumsum2015, count)
-  
-  colnames(visitsall) <- c("Måned", "2017", "2017 akum","17><16", "2016", "2016 akum", "16><15", "2015", "2015 akum", "Total")
-  
-  output$tablevisits <- renderFormattable({formattable(visitsall, list(
-    "17><16" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
-    "16><15" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
-  ))})
-  
-  output$downloadData <- downloadHandler(
-    
-    filename = function() {
-      paste("data-", Sys.Date(), ".xlsx", sep="")
-    },
-    content = function(file) {
-       write.xlsx(visitsall, file)
-    }
-  )
-  
-  # visitor tables branch #
-  visitslocations <- visits %>% distinct(location) %>% filter(location != "lok")
-  
-  visitsbranch <- visits %>%
-    mutate(month = format(date, "%m"), year = format(date, "%y"), visits2017 = ifelse(year == "17", count, 0), visits2016 = ifelse(year == "16", count, 0), visits2015 = ifelse(year == "15", count, 0)) %>%
-    arrange(month, location) %>%
-    group_by(month, location) %>%
-    summarise(count = sum(count), visits2017 = sum(visits2017), visits2016 = sum(visits2016), visits2015 = sum(visits2015)) %>%
-    mutate(diff1716 = percent((visits2017-visits2016)/visits2016), diff1615 = percent((visits2016-visits2015)/visits2015)) %>%
-    select(month, location, visits2017, diff1716, visits2016, diff1615, visits2015, count)
-    
-  foreach(i = visitslocations$location) %do% {
-    local ({
-      my_i <- i
-      plotname <- paste0("table",my_i)
-      visitsbranch <- visitsbranch %>% 
-        filter(location == my_i) %>%
-        group_by(month) %>%
-        summarize(visits2017, visits2016, visits2015, diff1716, diff1615) %>%
-        mutate (cumsum2017 = cumsum(visits2017), cumsum2016 = cumsum(visits2016), cumsum2015 = cumsum(visits2015)) %>%
-        select(month, visits2017, cumsum2017, diff1716, visits2016, cumsum2016, diff1615, visits2015, cumsum2015)
-      colnames(visitsbranch) <- c("Måned", "2017", "2017 akum","17><16", "2016", "2016 akum", "16><15", "2015", "2015 akum")
-      output[[plotname]] <- renderFormattable({formattable(visitsbranch, list(
-        "17><16" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
-        "16><15" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
-      ))})
-    })
-  }
   
   #meetingrooms
   
@@ -680,5 +643,6 @@ shinyServer(function(input, output) {
   
   ### Datasources ### 
   
+  output$datasources_table <- renderTable(datasources) 
   
 })

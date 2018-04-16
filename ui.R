@@ -49,8 +49,7 @@ dashboardPage(
         box(width = 12,
           h3("Whitebook"),
           h4("Samlet besøgstal"),
-          p("Samlet besøgstal for alle biblioteker de seneste 3 år. Nb: Hovedbiblioteket lukket december 2016 til november 2017."),
-          plotlyOutput("visitsplotall")
+          p("Samlet besøgstal for alle biblioteker de seneste 3 år. Nb: Hovedbiblioteket lukket december 2016 til november 2017.")
         )
       ),
       
@@ -138,27 +137,25 @@ dashboardPage(
               tabPanel("Generelt", 
                  fluidRow(
                    column(2,
-                     h4("Afgræns pr. år"),
-                       dateRangeInput('dateRangeBhus_events',
-                         label = 'Vælg periode',
-                         start = Sys.Date() - 365, end = Sys.Date(),
-                         format = "yyyy",
-                         separator = " - ",
-                         startview = 'year', weekstart = 1
-                       )
-                    ),
+                      h4("Afgræns pr. år"),
+                      uiOutput("visitorsfrom"),
+                      uiOutput("visitorsto"),
+                      h4("Afgræns pr. filial"),
+                      selectInput("visitorslibrary", NULL, c("Alle" = "all","Bolbro" = "bo","Dalum" = "da","Højby" = "hoj","Historiens Hus" = "lok","Holluf Pile" = "ho","Borgernes Hus" = "hb","Korup" = "kor","Musikbiblioteket" = "mus","Tarup" = "ta","Vollsmose" = "vo")
+                      )
+                   ),
                    column(10,
-                      h4("Samlet besøgstal i detaljer"),
-                      formattableOutput("visitors_table"),
-                      formattableOutput("tablevisits"), downloadButton("downloadData", "Download"
+                      h4("Besøgstal tabel"),
+                      formattableOutput("visitors_table")
                    ),
                    column(10,
                       h4("Besøgende pr. bibliotek"),
                       selectInput("library", "",c('Med Hovedbiblioteket','Uden Hovedbiblioteket')),
-                      plotlyOutput("plot")    
+                      plotlyOutput("plot"),
+                      plotlyOutput("visitsplot")
                    )
                  )   
-              ))
+              )
            )
         )
       )
@@ -474,8 +471,28 @@ dashboardPage(
     
       tabItem(tabName = "datasources",
         box(width = 12,
-          h3("Datakilder"),
-          img(src='DatakildeOversigt.svg', width="1440px", height="100%" )
+          h3("Datakilder")
+        ),
+        fluidRow(
+          column(12,
+            tabBox(width = 12,
+              id = "tabset3",
+              tabPanel("Kildetabel",
+                fluidRow(width = 12,
+                  column(width = 12,
+                    tableOutput('datasources_table')
+                  )
+                )       
+              ),
+              tabPanel("Kildediagram",
+                fluidRow(width = 12,
+                  column(width = 12,       
+                    img(src='DatakildeOversigt.svg', width="1440px", height="100%" )
+                  )
+                )
+              )       
+            )
+          )
         )
       )
     )
