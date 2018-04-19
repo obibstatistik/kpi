@@ -1,4 +1,5 @@
 source("global.R")
+source("modules.R")
 
 dashboardPage(
   skin = "black",
@@ -47,9 +48,7 @@ dashboardPage(
     tabItems(
       tabItem(tabName = "frontpage",
         box(width = 12,
-          h3("Whitebook"),
-          h4("Samlet besøgstal"),
-          p("Samlet besøgstal for alle biblioteker de seneste 3 år. Nb: Hovedbiblioteket lukket december 2016 til november 2017.")
+          h3("Whitebook")
         )
       ),
       
@@ -137,6 +136,14 @@ dashboardPage(
               tabPanel("Generelt", 
                  fluidRow(
                    column(2,
+                      h4("Afgræns"),
+                      selectInput("mainlibrary", "",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))    
+                   ),
+                   column(10,
+                      h4("Besøgende total"),
+                      plotlyOutput("visitsplotall")
+                   ),
+                   column(2,
                       h4("Afgræns pr. år"),
                       uiOutput("visitorsfrom"),
                       uiOutput("visitorsto"),
@@ -145,14 +152,16 @@ dashboardPage(
                       )
                    ),
                    column(10,
-                      h4("Besøgstal tabel"),
+                      h4("Besøgende detaljer"),
                       formattableOutput("visitors_table")
                    ),
+                   column(2,
+                      h4("Afgræns")   
+                   ),
                    column(10,
-                      h4("Besøgende pr. bibliotek"),
-                      selectInput("library", "",c('Med Hovedbiblioteket','Uden Hovedbiblioteket')),
-                      plotlyOutput("plot"),
-                      plotlyOutput("visitsplot")
+                      h4("Besøgende total"),
+                      plotlyOutput("visitsplotindividual"),
+                      formattableOutput("visitorstest")
                    )
                  )   
               )
@@ -487,7 +496,11 @@ dashboardPage(
               tabPanel("Kildediagram",
                 fluidRow(width = 12,
                   column(width = 12,       
-                    img(src='DatakildeOversigt.svg', width="1440px", height="100%" )
+                    img(src='DatakildeOversigt.svg', width="1440px", height="100%" ),
+                    h4("moduletest"),
+                    checkboxInput("display", "Show Value"),
+                    sliderTextUI("module"),
+                    h2(textOutput("value"))
                   )
                 )
               )       

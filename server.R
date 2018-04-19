@@ -1,7 +1,12 @@
 source("global.R")
+source("modules.R")
 
 shinyServer(function(input, output) {
 
+  display <- reactive({input$display})
+  num <- callModule(sliderText, "module", display)
+  output$value <- renderText({paste0("slider1+5: ", num())})
+  
   source("~/.postpass")
   
   ### DB QUERIES ###
@@ -23,7 +28,7 @@ shinyServer(function(input, output) {
   visitors <- dbGetQuery(con, "SELECT * FROM public.people_counter")
   
   visits <- dbGetQuery(con, "SELECT * FROM public.people_counter")
-  visitsoverview <- dbGetQuery(con, "SELECT extract(year from date)::text as year, sum(count) FROM public.people_counter WHERE extract(year from date) in ('2015','2016','2017') group by year order by year")
+  #visitsoverview <- dbGetQuery(con, "SELECT extract(year from date)::text as year, sum(count) FROM public.people_counter WHERE extract(year from date) in ('2015','2016','2017') group by year order by year")
   visitscompare <- dbGetQuery(con, "SELECT extract(year from date) as year, location, sum(count)n FROM public.people_counter WHERE extract(year from date) in ('2016','2017')  group by year, location")
   
   meetingrooms <- dbGetQuery(con, "SELECT * FROM datamart.meetingrooms")
@@ -64,7 +69,7 @@ shinyServer(function(input, output) {
     from cicero.aktive_laanere 
     join cicero.inaktive_laanere on cicero.aktive_laanere.Name = cicero.inaktive_laanere.Name
     group by kategori")
-  datasources <- dbGetQuery(con, "SELECT * FROM dokumentation.datasources")
+  datasources <- dbGetQuery(con, "SELECT * FROM dokumentation.datakilder")
   
   dbDisconnect(con)
   
@@ -81,7 +86,7 @@ shinyServer(function(input, output) {
   ### DATES ###
   
   year <- as.integer(format(Sys.Date(), "%Y"))
-  month <- as.integer(format(Sys.Date(), "%Y"))
+  month <- as.integer(format(Sys.Date(), "%M"))
   day <- as.integer(format(Sys.Date(), "%Y"))
   
   ### LOCATIONS ###
@@ -169,7 +174,7 @@ shinyServer(function(input, output) {
     selectInput("visitors_toyear", "Til:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2014", "2014" = "2013"), year)
   })
   
-  # visitors #
+  # visitors table #
   output$visitors_table <- renderFormattable({
     visitors <- visitors %>%
       select(date, count, location) %>%
@@ -192,28 +197,45 @@ shinyServer(function(input, output) {
     ))
   })
   
-  # 2017 overview #
+  # visitors total plot#
   output$visitsplotall <- renderPlotly({
-    plot_ly(visitsoverview, x = visitsoverview$year, y = visitsoverview$sum, type = 'bar', text = text) %>%
-      layout(yaxis = list(title = 'Antal'))
+    visitsoverview <- visitors %>%
+      select(date, count, location) %>%
+      mutate(year = year(date)) %>%
+      filter(year != as.integer(format(Sys.Date(), "%Y"))) %>%
+      filter(if(input$mainlibrary == 'Uden Hovedbiblioteket')  (location != 'hb') else TRUE) %>%
+      group_by(year) %>%
+      summarise(sum = sum(count)) 
+    plot_ly(visitsoverview, x = visitsoverview$year, y = visitsoverview$sum, type = 'bar') %>%
+      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'År', dtick = 1, autotick = FALSE))
   })
   
   
-  # visits plot #
-  visitsplot <- visits %>%
-    mutate(year = format(date, "%y"), v2017 = ifelse(year == "17", count, 0), v2016 = ifelse(year == "16", count, 0), v2015 = ifelse(year == "15", count, 0)) %>%
-    group_by(location) %>%
-    summarise(v2017 = sum(v2017), v2016 = sum(v2016), v2015 = sum(v2015)) %>%
-    select(location,v2017,v2016,v2015)
+  # visitors branch plot #
 
-  output$plot <- renderPlotly({
-    if (input$library == "Uden Hovedbiblioteket") {visitsplot <- visitsplot %>% filter(visitsplot$location %in% c("bo","da","ho","hoj","kor","lok","mus","ta","vo"))}
-    if (input$library == "Med Hovedbiblioteket") {visitsplot <- visitsplot %>% filter(visitsplot$location %in% c("bo","da","hb","ho","hoj","kor","lok","mus","ta","vo"))}
-    plot_ly(visitsplot, x = visitsplot$location, y = visitsplot$v2015, type = 'bar', name = '2015', text = text) %>%
-    add_trace(y = visitsplot$v2016, name = '2016') %>%  
-    add_trace(y = visitsplot$v2017, name = '2017') %>% 
-    layout(yaxis = list(title = 'Antal'), barmode = 'group')
+  output$visitsplotindividual <- renderPlotly({
+    visitorsbranch <- visitors %>%
+      select(date, count, location) %>%
+      mutate(year = year(date)) %>%
+      group_by(location, year) %>%
+      summarise(sum = sum(count)) %>%
+      spread(key = year, value = sum) %>%
+      ungroup(.self) 
+    plot_ly(visitorsbranch, x = ~location, y = ~`2014`, type = 'bar', name = '2014', text = text) %>%
+      add_trace(y = ~`2015`, name = '2015') %>%
+      add_trace(y = ~`2016`, name = '2016') %>%
+      add_trace(y = ~`2017`, name = '2017') %>%
+      add_trace(y = ~`2018`, name = '2018') %>%
+      layout(yaxis = list(title = 'Antal'), barmode = 'group')
   })
+  
+  visitorsbranch2 <- visitors %>%
+    select(date, count, location) %>%
+    mutate(year = year(date)) %>%  
+    group_by(location, year) %>%
+    summarise(sum = sum(count)) %>%
+    spread(key = year, value = sum) 
+  output$visitorstest <- renderFormattable({formattable(visitorsbranch2)})
   
   #meetingrooms
   
