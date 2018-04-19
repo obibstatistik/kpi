@@ -262,7 +262,8 @@ shinyServer(function(input, output) {
      select(sted, tid) %>%
      group_by(sted) %>%
      summarise(count = n(), mean = mean(tid), median = median(tid), sum = sum(tid)/60 ) %>%
-     rename(Lokalenummer = sted, Antal = count, Gennemsnit =	mean, Middelværdi =	median, Total =	sum )  
+     mutate(timediff = percent(count/(as.integer(input$dateRangeMeetingrooms[2] - input$dateRangeMeetingrooms[1])*14)*100)) %>%
+     rename(Lokalenummer = sted, Antal = count, Gennemsnit =	mean, Middelværdi =	median, Total =	sum, Belægningsprocent = timediff )  
   )
   
   output$meetingrooms_agendascreen_plot <- renderPlotly({
@@ -310,7 +311,8 @@ shinyServer(function(input, output) {
       select(location, tid) %>%
       group_by(location) %>%
       summarise(count = n(), mean = mean(tid), median = median(tid), sum = sum(tid)/60 ) %>%
-      rename(Lokation = location, Antal = count, Gennemsnit =	mean, Middelværdi =	median, Total =	sum )  
+      mutate(timediff = percent(count/(as.integer(input$dateRangeMeetingrooms[2] - input$dateRangeMeetingrooms[1])*14)*100)) %>%
+      rename(Lokation = location, Antal = count, Gennemsnit =	mean, Middelværdi =	median, Total =	sum, Belægninsprocent = timediff )  
   )
   
   output$bhus_events_agendascreen_plot <- renderPlotly({
