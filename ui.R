@@ -48,9 +48,7 @@ dashboardPage(
     tabItems(
       tabItem(tabName = "frontpage",
         box(width = 12,
-          h3("Whitebook"),
-          chartTableBoxUI(id = "Age"),
-          dataTableOutput("table1")
+          h3("Whitebook")
         )
       ),
       
