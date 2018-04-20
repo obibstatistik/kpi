@@ -1,19 +1,24 @@
-## metadata module
+# UI
 
-sliderTextUI <- function(id) {
+metaTabPanelUI <- function(id) {
+  
   ns <- NS(id)
-  tagList(
-    sliderInput(ns("slider"), "Slide me", 0, 100, 5),
-    textOutput(ns("number"))
+  tabPanel("Meta", 
+  fluidRow(
+    column(12,
+           tableOutput(ns("datasources_schema"))
+    )
+  )
   )
 }
 
-sliderText <- function(input, output, session, show) {
-  output$number <- renderText({
-    if(show())
-      input$slider
-    else
-      NULL
+# SERVER
+
+metaTabPanel <- function(input, output, session, data, tablename) {
+  module_data <- reactive({
+    data %>% filter(name == tablename)
   })
-  reactive({input$slider + 5})
+  output$datasources_schema <- renderTable(
+    module_data()
+  )
 }

@@ -3,9 +3,14 @@ source("modules.R")
 
 shinyServer(function(input, output) {
 
-  display <- reactive({input$display})
-  num <- callModule(sliderText, "module", display)
-  output$value <- renderText({paste0("slider1+5: ", num())})
+  demographics <- tibble(
+    category = c(rep("Gender", 2), rep("Age", 7), rep("Social", 5)),
+    demographic = c("Male", "Female", "15-24", "25-34", "35-44", "45-54", "55-64", "65-74", "75+", LETTERS[1:5]),
+    percent = c(48.706585, 51.293415, 18.676534, 21.136115, 19.066600, 18.326197, 10.709079, 7.270722, 
+                4.814752, 8.143243, 33.772399, 34.756400, 15.035762, 8.292197)
+  )
+
+  
   
   source("~/.postpass")
   
@@ -26,11 +31,7 @@ shinyServer(function(input, output) {
   eventsratio <- dbGetQuery(con, "select titel, arrangementstype, deltagere, forberedelsestid from datamart.arrangementer")
   
   visitors <- dbGetQuery(con, "SELECT * FROM public.people_counter")
-  
-  visits <- dbGetQuery(con, "SELECT * FROM public.people_counter")
-  #visitsoverview <- dbGetQuery(con, "SELECT extract(year from date)::text as year, sum(count) FROM public.people_counter WHERE extract(year from date) in ('2015','2016','2017') group by year order by year")
-  visitscompare <- dbGetQuery(con, "SELECT extract(year from date) as year, location, sum(count)n FROM public.people_counter WHERE extract(year from date) in ('2016','2017')  group by year, location")
-  
+
   meetingrooms <- dbGetQuery(con, "SELECT * FROM datamart.meetingrooms")
   bhus_events <- dbGetQuery(con, "SELECT * FROM datamart.bhus_events")
   
@@ -70,6 +71,7 @@ shinyServer(function(input, output) {
     join cicero.inaktive_laanere on cicero.aktive_laanere.Name = cicero.inaktive_laanere.Name
     group by kategori")
   datasources <- dbGetQuery(con, "SELECT * FROM dokumentation.datakilder")
+  datasources_schema <- (dbGetQuery(con, "SELECT columns.table_name as name, columns.column_name, columns.data_type,columns.column_default, columns.is_nullable FROM information_schema.columns;"))
   
   dbDisconnect(con)
   
@@ -91,6 +93,11 @@ shinyServer(function(input, output) {
   
   ### LOCATIONS ###
   
+  
+  ### MODULES ###
+  
+  callModule(metaTabPanel, id = "arrangementer", data = datasources_schema, tablename = "arrangementer")
+  callModule(metaTabPanel, id = "people_counter", data = datasources_schema, tablename = "people_counter")
   
   
   ### EVENTS ### 

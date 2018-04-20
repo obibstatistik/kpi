@@ -48,7 +48,9 @@ dashboardPage(
     tabItems(
       tabItem(tabName = "frontpage",
         box(width = 12,
-          h3("Whitebook")
+          h3("Whitebook"),
+          chartTableBoxUI(id = "Age"),
+          dataTableOutput("table1")
         )
       ),
       
@@ -115,7 +117,8 @@ dashboardPage(
                     plotlyOutput("eventsratioplot")
                   )
                 )
-              )     
+              ),
+              metaTabPanelUI(id = "arrangementer")
             )
           )
         )
@@ -164,7 +167,8 @@ dashboardPage(
                       formattableOutput("visitorstest")
                    )
                  )   
-              )
+              ),
+              metaTabPanelUI(id = "people_counter")
            )
         )
       )
