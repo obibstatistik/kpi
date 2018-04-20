@@ -499,10 +499,7 @@ dashboardPage(
                 fluidRow(width = 12,
                   column(width = 12,       
                     img(src='DatakildeOversigt.svg', width="1440px", height="100%" ),
-                    h4("moduletest"),
-                    checkboxInput("display", "Show Value"),
-                    sliderTextUI("module"),
-                    h2(textOutput("value"))
+                    h4("moduletest")
                   )
                 )
               )       
