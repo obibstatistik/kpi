@@ -55,7 +55,7 @@ dashboardPage(
     ### ARRANGEMENTER ###  
       
     tabItem(tabName = "events",
-      box(width = 12,
+      box(width = 12, solidHeader = TRUE,
         h3("Arrangementer")
       ),
       fluidRow(
@@ -127,7 +127,7 @@ dashboardPage(
     # Besøgende #
        
     tabItem(tabName = "visits",
-      box(width = 12,
+      box(width = 12, solidHeader = TRUE,
           h3("Besøgende")
       ),      
       fluidRow(
@@ -157,14 +157,18 @@ dashboardPage(
                       formattableOutput("visitors_table")
                    ),
                    column(2,
-                      h4("Afgræns")   
-                   ),
+                      h4("Afgræns"),
+                      selectInput("norm", "",c('Ikke Normaliseret' = 'not_norm','Normaliseret' = 'norm')) 
+                     ),
                    column(10,
-                      h4("Besøgende total"),
+                      h4("Besøgende filialer"),
                       plotlyOutput("visitsplotindividual"),
                       formattableOutput("visitorstest")
                    )
                  )   
+              ),
+              tabPanel("Timer",
+                tableOutput("visitors_per_hours_table")       
               ),
               metaTabPanelUI(id = "people_counter")
            )
@@ -175,7 +179,7 @@ dashboardPage(
     # Mødelokaler #
     
     tabItem(tabName = "meetingrooms",
-      box(width = 12,
+      box(width = 12, solidHeader = TRUE,
         h3("Mødelokaler")
       ),
       box(width = 12,
@@ -211,7 +215,7 @@ dashboardPage(
     # Event områder #
     
     tabItem(tabName = "eventareas",
-      box(width = 12,
+      box(width = 12, solidHeader = TRUE,
         h3("Eventområder")
       ),
       box(width = 12,
@@ -246,14 +250,14 @@ dashboardPage(
     
     # Smart City #
     
-    tabItem(tabName = "smartcity",
-      box(width = 12,
-        h3("Smartcity")
-      ),
-      box(width = 12,
-        p("")
-      )
-    ),
+    # tabItem(tabName = "smartcity",
+    #   box(width = 12,
+    #     h3("Smartcity")
+    #   ),
+    #   box(width = 12,
+    #     p("")
+    #   )
+    # ),
       
     ### Online
       
@@ -488,21 +492,23 @@ dashboardPage(
           column(12,
             tabBox(width = 12,
               id = "tabset3",
-              tabPanel("Kildetabel",
-                fluidRow(width = 12,
-                  column(width = 12,
-                    tableOutput('datasources_table')
-                  )
-                )       
-              ),
               tabPanel("Kildediagram",
                 fluidRow(width = 12,
                   column(width = 12,       
-                    img(src='DatakildeOversigt.svg', width="1440px", height="100%" ),
-                    h4("moduletest")
+                    img(src='DatakildeOversigt.svg', width="1440px", height="100%" )
                   )
                 )
-              )       
+              ),
+              tabPanel("Kildetabel",
+                fluidRow(width = 12,
+                  column(width = 2, 
+                    h4("Afgræns")
+                  ),        
+                  column(width = 10,
+                    tableOutput('datasources_table')
+                  )
+                )       
+              )
             )
           )
         )

@@ -1,3 +1,12 @@
+h3 {
+  margin-top: 10px;
+  text-transform: uppercase;
+}
+
+.content {
+  padding: 27px;
+}
+
 .skin-black .left-side, .skin-black .main-sidebar, .skin-black .wrapper {
   background-color: white;
 }
@@ -18,3 +27,15 @@
 .nav-tabs-custom>.nav-tabs>li.active {
     border-top-color: #233;
 }
+
+#shiny-tab-events .box:first-child {
+	background: rgb(29,114,170);
+	color: white;
+}
+
+#shiny-tab-visits .box:first-child, #shiny-tab-eventareas .box:first-child, #shiny-tab-meetingrooms .box:first-child {
+	background: rgb(174,176,81);
+	color: white;
+}
+
+
