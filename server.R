@@ -296,7 +296,7 @@ shinyServer(function(input, output) {
   
   output$visitors_per_hours_table <- renderFormattable({
     visitors_hours <- visitors_hours %>%
-      filter(if(input$visitors_hours_library != 'all')  (location == input$visitors_hours_library) else TRUE) %>%
+      #filter(if(input$visitors_hours_library != 'all')  (location == input$visitors_hours_library) else TRUE) %>%
       filter(updatetime > input$daterange_visitors_hours_library[1] & updatetime < input$daterange_visitors_hours_library[2]) %>%
       select(updatetime, location, delta) %>%
       mutate(tid = hour(updatetime)) %>%
