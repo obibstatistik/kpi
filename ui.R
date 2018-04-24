@@ -15,22 +15,22 @@ dashboardPage(
       menuItem("Det fysiske rum", tabName = "space", icon = icon("building-o", lib="font-awesome"),
         menuItem("Besøgende", tabName = "visits"),
         menuItem("Mødelokaler", tabName = "meetingrooms"),
-        menuItem("Event områder", tabName = "eventareas"),
-        menuItem("Smart City", tabName = "smartcity")
+        menuItem("Event områder", tabName = "eventareas")#,
+        #menuItem("Smart City", tabName = "smartcity")
       ),
       menuItem("Online", tabName = "online", icon = icon("laptop", lib="font-awesome"), 
         menuItem("Sites", tabName = "weboverview"),
-        menuItem("Odensebib.dk", tabName = "odensebib"),
-        menuItem("Biblioteket App", tabName = "app")
+        menuItem("Odensebib.dk", tabName = "odensebib")#,
+        #menuItem("Biblioteket App", tabName = "app")
       ),
       menuItem("Materialer", tabName = "emat", icon = icon("book", lib="font-awesome"),
         menuItem("Udlån", tabName = "fysmat"),
         menuItem("Materialeindkøb", tabName = "acquisition")
       ),
       menuItem("E-Ressourcer", tabName = "emat", icon = icon("database", lib="font-awesome"),
-        menuItem("E-Bøger", tabName = "ebooks"),
-        menuItem("E-Film", tabName = "emovies"),
-        menuItem("E-Baser", tabName = "edatabases")
+        menuItem("E-Bøger", tabName = "ebooks")#,
+        # menuItem("E-Film", tabName = "emovies"),
+        # menuItem("E-Baser", tabName = "edatabases")
       ),
       menuItem("Brugere", tabName = "users", icon = icon("users", lib="font-awesome")),
       menuItem("Personale", tabName = "personal", icon = icon("users", lib="font-awesome")),
@@ -55,8 +55,9 @@ dashboardPage(
     ### ARRANGEMENTER ###  
       
     tabItem(tabName = "events",
-      box(width = 12, solidHeader = TRUE,
-        h3("Arrangementer")
+      box(width = 12, solidHeader = TRUE, id="eventsheader",
+        h3("Arrangementer"),
+        img(src='arrangementer_ikon.png', align = "right", height="46px")
       ),
       fluidRow(
         column(12,
@@ -127,8 +128,9 @@ dashboardPage(
     # Besøgende #
        
     tabItem(tabName = "visits",
-      box(width = 12, solidHeader = TRUE,
-          h3("Besøgende")
+      box(width = 12, solidHeader = TRUE, id="spaceheader1",
+          h3("Besøgende"),
+          img(src='detfysiskerum.png', align = "right", height="46px")
       ),      
       fluidRow(
         column(12,
@@ -144,6 +146,7 @@ dashboardPage(
                       h4("Besøgende total"),
                       plotlyOutput("visitsplotall")
                    ),
+                   column(12, tags$hr()),
                    column(2,
                       h4("Afgræns pr. år"),
                       uiOutput("visitorsfrom"),
@@ -156,9 +159,10 @@ dashboardPage(
                       h4("Besøgende detaljer"),
                       formattableOutput("visitors_table")
                    ),
+                   column(12, tags$hr()),
                    column(2,
                       h4("Afgræns"),
-                      selectInput("norm", "",c('Ikke Normaliseret' = 'not_norm','Normaliseret' = 'norm')) 
+                      selectInput("norm", "",c('Indeks 2016' = 'norm', 'Ikke Normaliseret' = 'not_norm')) 
                      ),
                    column(10,
                       h4("Besøgende filialer"),
@@ -168,7 +172,20 @@ dashboardPage(
                  )   
               ),
               tabPanel("Timer",
-                tableOutput("visitors_per_hours_table")       
+                fluidRow(
+                    column(2,
+                    h4("Afgræns"),       
+                    selectInput("visitors_hours_library", NULL, c("Alle" = "all","Bolbro","Dalum","Højby","Historiens Hus","Holluf Pile","Borgernes Hus","Korup","Musikbiblioteket","Tarup","Vollsmose")),
+                    dateRangeInput("daterange_visitors_hours_library",
+                      label = 'Vælg periode',
+                      start = Sys.Date() - 90, end = Sys.Date(),
+                      separator = " - "
+                    )
+                  ),
+                  column(10,
+                    formattableOutput("visitors_per_hours_table")
+                  )
+                )  
               ),
               metaTabPanelUI(id = "people_counter")
            )
@@ -179,8 +196,9 @@ dashboardPage(
     # Mødelokaler #
     
     tabItem(tabName = "meetingrooms",
-      box(width = 12, solidHeader = TRUE,
-        h3("Mødelokaler")
+      box(width = 12, solidHeader = TRUE, id="spaceheader2",
+        h3("Mødelokaler"),
+        img(src='detfysiskerum.png', align = "right", height="46px")
       ),
       box(width = 12,
         column(2,
@@ -215,8 +233,9 @@ dashboardPage(
     # Event områder #
     
     tabItem(tabName = "eventareas",
-      box(width = 12, solidHeader = TRUE,
-        h3("Eventområder")
+      box(width = 12, solidHeader = TRUE, id="spaceheader3",
+        h3("Eventområder"),
+        img(src='detfysiskerum.png', align = "right", height="46px")
       ),
       box(width = 12,
         column(2,
@@ -262,15 +281,19 @@ dashboardPage(
     ### Online
       
       tabItem(tabName = "weboverview",
-              
-              box(width = 12,
-                  tableOutput("tablesites")
-              )
+        box(width = 12, solidHeader = TRUE, id="onlineheader1",
+          h3("Sites"),
+          img(src='online.png', align = "right", height="46px")
+        ),
+        box(width = 12,
+          tableOutput("tablesites")
+        )
       ),
       tabItem(tabName = "odensebib",
               
-              box(width = 12,
-                  h3("Odensebib.dk")
+              box(width = 12, solidHeader = TRUE, id="onlineheader2",
+                  h3("Odensebib.dk"),
+                  img(src='online.png', align = "right", height="46px")
               ),
               
               fluidRow(
@@ -302,19 +325,19 @@ dashboardPage(
                 )
               )
       ),
-      tabItem(tabName = "app",
-              box(width = 12,
-                  h3("Biblioteket App")
-              )
-      ),
+      # tabItem(tabName = "app",
+      #         box(width = 12,
+      #             h3("Biblioteket App")
+      #         )
+      # ),
       
       ### MATERIALER ###
       
       tabItem(tabName = "fysmat",
               
-        box(width = 12,
+        box(width = 12, solidHeader = TRUE, id="materialsheader1",
           h3("Udlån"),
-          "Udlån, reserveringer og fornyelser. Tal (fra DDE) frem til september 2017." 
+          img(src='materialer.png', align = "right", height="46px")
         ),
               
         fluidRow(
@@ -360,8 +383,9 @@ dashboardPage(
       ### MATERIALEINDKØB ###
         
       tabItem(tabName = "acquisition",
-        box(width = 12,
-          h3("Materialeindkøb - Imusic 2017")
+        box(width = 12, solidHeader = TRUE, id="materialsheader2",
+          h3("Materialeindkøb - Imusic 2017"),
+          img(src='materialer.png', align = "right", height="46px")
         ),
         
         fluidRow(
@@ -391,9 +415,9 @@ dashboardPage(
       
       tabItem(tabName = "ebooks",
               
-        box(width = 12,
+        box(width = 12, solidHeader = TRUE, id = "eressourcesheader",
           h3("Elektroniske Ressourcer"),
-          p("januar 2014 - februar 2016")
+          img(src='e_ressourcer.png', align = "right", height="46px")
         ),
         
         fluidRow(
@@ -415,21 +439,21 @@ dashboardPage(
           )
         )
       ),
-      tabItem(tabName = "emovies",
-              box(width = 12,
-                  h3("Film")
-              )
-      ),
-      tabItem(tabName = "edatabases",
-              box(width = 12,
-                  h3("Databaser")
-              )
-      ),
+      # tabItem(tabName = "emovies",
+      #         box(width = 12,
+      #             h3("Film")
+      #         )
+      # ),
+      # tabItem(tabName = "edatabases",
+      #         box(width = 12,
+      #             h3("Databaser")
+      #         )
+      # ),
       
       ### BRUGERE ###
       
       tabItem(tabName = "users",
-        box(width = 12,
+        box(width = 12, solidHeader = TRUE,
           h3("Brugere"),
           p("Oversigt over antallet af:"), 
           p("- Aktive lånere: lånere som har lånt på biblioteket indenfor det seneste år"), 
@@ -443,7 +467,7 @@ dashboardPage(
       
       tabItem(tabName = "personal",
         
-        box(width = 12,
+        box(width = 12, solidHeader = TRUE,
             h3("Personale")
         ),      
               
@@ -485,8 +509,9 @@ dashboardPage(
       ### DATAKILDER ###
     
       tabItem(tabName = "datasources",
-        box(width = 12,
-          h3("Datakilder")
+        box(width = 12, solidHeader = TRUE, id = "datasourcesheader",
+          h3("Datakilder"),
+          img(src='datakilder.png', align = "right", height="46px")
         ),
         fluidRow(
           column(12,
@@ -501,11 +526,8 @@ dashboardPage(
               ),
               tabPanel("Kildetabel",
                 fluidRow(width = 12,
-                  column(width = 2, 
-                    h4("Afgræns")
-                  ),        
-                  column(width = 10,
-                    tableOutput('datasources_table')
+                  column(width = 12,
+                    dataTableOutput('datasources_table')
                   )
                 )       
               )

@@ -3,6 +3,10 @@ h3 {
   text-transform: uppercase;
 }
 
+th {
+  text-transform: capitalize;
+}
+
 .content {
   padding: 27px;
 }
@@ -23,19 +27,40 @@ h3 {
   color: #555;
 }
 
-
 .nav-tabs-custom>.nav-tabs>li.active {
     border-top-color: #233;
 }
 
-#shiny-tab-events .box:first-child {
+#eventsheader {
 	background: rgb(29,114,170);
 	color: white;
 }
 
-#shiny-tab-visits .box:first-child, #shiny-tab-eventareas .box:first-child, #shiny-tab-meetingrooms .box:first-child {
+#eventsheader h3, #spaceheader1 h3, #spaceheader2 h3, #spaceheader3 h3, #onlineheader1 h3, #onlineheader2 h3, #materialsheader1 h3, #materialsheader2 h3 , #eressourcesheader h3, #datasourcesheader h3 {
+  display: inline-block;
+}
+
+#spaceheader1, #spaceheader2, #spaceheader3 {
 	background: rgb(174,176,81);
 	color: white;
 }
 
+#onlineheader1, #onlineheader2 {
+	background: rgb(70,140,140);
+	color: white;
+}
 
+#materialsheader1, #materialsheader2 {
+	background: rgb(59,54,74);
+	color: white;
+}
+
+#eressourcesheader {
+	background: rgb(174,176,81);
+	color: white;
+}
+
+#datasourcesheader {
+  background: rgb(225,123,81);
+	color: white;
+}

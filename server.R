@@ -22,7 +22,7 @@ shinyServer(function(input, output) {
   eventsratio <- dbGetQuery(con, "select titel, arrangementstype, deltagere, forberedelsestid from datamart.arrangementer")
   
   visitors <- dbGetQuery(con, "SELECT * FROM public.people_counter")
-  visitors_hours <- dbGetQuery(con, "SELECT * FROM public.visitor_counter limit 10")
+  visitors_hours <- dbGetQuery(con, "SELECT updatetime, location, delta FROM public.visitor_counter")
 
   meetingrooms <- dbGetQuery(con, "SELECT * FROM datamart.meetingrooms")
   bhus_events <- dbGetQuery(con, "SELECT * FROM datamart.bhus_events")
@@ -230,20 +230,22 @@ shinyServer(function(input, output) {
     )
   
   output$visitsplotindividual <- renderPlotly({
-    if (input$norm == "not_norm") {visitorsbranch <- visitors1 %>%
+    if (input$norm == "norm") {visitorsbranch <- visitors1 %>%
       select(date, count, location) %>%
       mutate(year = year(date)) %>%
       group_by(location, year) %>%
       summarise(sum = sum(count)) %>%
       spread(key = year, value = sum) %>%
-      ungroup(.self)} 
+      ungroup(.self) %>%
+      mutate(`2014` = `2014`/`2016`, `2015` = `2015`/`2016`, `2017` = `2017`/`2016`, `2018` = `2018`/`2016`, `2016` = 1 ) 
+      } 
     else {visitorsbranch <- visitors1 %>%
       select(date, count, location) %>%
       mutate(year = year(date)) %>%
       group_by(location, year) %>%
       summarise(sum = sum(count)) %>%
       spread(key = year, value = sum) %>%
-      ungroup(.self)}
+      ungroup(.self)} 
     plot_ly(visitorsbranch, x = ~location, y = ~`2014`, type = 'bar', name = '2014', marker = list(color = color1)) %>%
       add_trace(y = ~`2015`, name = '2015', marker = list(color = color2)) %>%
       add_trace(y = ~`2016`, name = '2016', marker = list(color = color3)) %>%
@@ -252,17 +254,60 @@ shinyServer(function(input, output) {
       layout(yaxis = list(title = 'Antal'), barmode = 'group')
   })
   
-  visitorsbranch2 <- visitors1 %>%
-    select(date, count, location) %>%
-    mutate(year = year(date)) %>%  
-    group_by(location, year) %>%
-    summarise(sum = sum(count)) %>%
-    spread(key = year, value = sum) %>%
-    rename(Filial = location) %>%
-    mutate_at(c(2:5), funs(replace(., is.na(.), 0)))
-  output$visitorstest <- renderFormattable({formattable(visitorsbranch2, align = (c('l','r','r','r','r','r')))})
+  output$visitorstest <- renderFormattable({
+    if (input$norm == "norm") {visitorsbranch2 <- visitors1 %>%
+      select(date, count, location) %>%
+      mutate(year = year(date)) %>%  
+      group_by(location, year) %>%
+      summarise(sum = sum(count)) %>%
+      spread(key = year, value = sum) %>%
+      rename(Filial = location) %>%
+      mutate(`2014` = `2014`/`2016`, `2015` = `2015`/`2016`, `2017` = `2017`/`2016`, `2018` = `2018`/`2016`, `2016` = 1) %>%
+      mutate_at(c(2:5), funs(replace(., is.na(.), 0)))
+    } 
+    else {visitorsbranch2 <- visitors1 %>%
+      select(date, count, location) %>%
+      mutate(year = year(date)) %>%  
+      group_by(location, year) %>%
+      summarise(sum = sum(count)) %>%
+      spread(key = year, value = sum) %>%
+      rename(Filial = location) %>%
+      mutate_at(c(2:5), funs(replace(., is.na(.), "0")))}
+    formattable(visitorsbranch2, align = (c('l','r','r','r','r','r')))
+  })
   
-  output$visitors_per_hours_table <- renderTable(visitors_hours)
+  # visitors pr. hour
+  
+  visitors_hours <- visitors_hours %>%
+    mutate(
+      location = case_when(
+        visitors_hours$location == "bo" ~ "Bolbro",
+        visitors_hours$location == "vo" ~ "Vollsmose",
+        visitors_hours$location == "da" ~ "Dalum",
+        visitors_hours$location == "ta" ~ "Tarup",
+        visitors_hours$location == "hb" ~ "Borgernes Hus",
+        visitors_hours$location == "lok" ~ "Historiens Hus",
+        visitors_hours$location == "hoj" ~ "Højby",
+        visitors_hours$location == "ho" ~ "Holluf Pile",
+        visitors_hours$location == "kor" ~ "Korup",
+        visitors_hours$location == "mus" ~ "Musikbiblioteket"
+      ) 
+    )
+  
+  output$visitors_per_hours_table <- renderFormattable({
+    visitors_hours <- visitors_hours %>%
+      filter(if(input$visitors_hours_library != 'all')  (location == input$visitors_hours_library) else TRUE) %>%
+      filter(updatetime > input$daterange_visitors_hours_library[1] & updatetime < input$daterange_visitors_hours_library[2]) %>%
+      select(updatetime, location, delta) %>%
+      mutate(tid = hour(updatetime)) %>%
+      select(-updatetime) %>%
+      group_by(location, tid) %>%
+      summarise(sum = sum(delta)) %>%
+      spread(key = location, value = sum) %>%
+      mutate_at(c(2:5), funs(replace(., is.na(.), "0")))
+    
+    formattable(visitors_hours)
+  })
   
   #meetingrooms
   
@@ -694,6 +739,11 @@ shinyServer(function(input, output) {
   
   ### Datasources ### 
   
-  output$datasources_table <- renderTable(datasources) 
+  datasources <- datasources %>%
+    select(-id, -undertitel) %>%
+    arrange(kildetype) %>%
+    mutate(aktiv2 = (ifelse(aktiv, 'Ja', 'Nej'))) %>%
+    select(-aktiv, -tabeller) 
+  output$datasources_table <- renderDataTable(datasources, options = list(paging = FALSE)) 
   
 })
