@@ -35,7 +35,7 @@ shinyServer(function(input, output) {
   sites <- dbGetQuery(con, "SELECT * FROM datamart.sites")
   ereolentype <- dbGetQuery(con, "SELECT type, count(type) FROM public.ereolen group by type")
   ereolenhist <- dbGetQuery(con, "select to_char(dato, 'iyyy-iw') as date, count(type = 'Lydbog') as lydbog, count(type = 'E-bog') as ebog from public.ereolen group by date;")
-  ereolenalder <- dbGetQuery(con, "select extract(year from date_trunc('year',age(birth))) as alder, count(extract(year from date_trunc('year',age(birth)))) as antal, (case when mod((substring(laanernummer from 10 for 1))::integer,2) = 1 then 'mand' else 'kvinde' end) as sex from public.ereolen join public.patron on public.patron.patronno = laanernummer group by alder, sex;")
+  #ereolenalder <- dbGetQuery(con, "select extract(year from date_trunc('year',age(birth))) as alder, count(extract(year from date_trunc('year',age(birth)))) as antal, (case when mod((substring(laanernummer from 10 for 1))::integer,2) = 1 then 'mand' else 'kvinde' end) as sex from public.ereolen join public.patron on public.patron.patronno = laanernummer group by alder, sex;")
   loaners <- dbGetQuery(con, "select sum(loaner_stat_count)::text as Antal, case 
     when Name like '0%'::text OR Name like '0%'::text OR Name like '1%'::text OR Name like '2%'::text OR Name like '3%'::text OR Name like '4%'::text OR Name like '5%'::text OR Name like '6%'::text OR Name like '7%'::text then 'Skole'::text
     when Name = 'Voksen, Odense kommune' then 'Voksen, Odense kommune'
@@ -276,7 +276,7 @@ shinyServer(function(input, output) {
   
   # visitors pr. hour
 
-   visitors_hours2 <- visitors_hours %>%
+   visitors_hours <- visitors_hours %>%
      mutate(
        location = case_when(
          visitors_hours$location == "bo" ~ "Bolbro",
@@ -573,20 +573,20 @@ shinyServer(function(input, output) {
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
   
-  ereolenalderkvinde <- ereolenalder %>%
-    filter(alder > 0) %>%
-    filter(alder < 100) %>%
-    filter(sex == 'kvinde')
-  ereolenaldermand <- ereolenalder %>%
-    filter(alder > 0) %>%
-    filter(alder < 100) %>%
-    filter(sex == 'mand')
-  
-  p1 <- plot_ly(ereolenalderkvinde, x = ~antal, y = ~alder, type = 'bar', orientation = 'h', name = 'kvinde', marker = list(color = color1)) %>%
-    layout(yaxis = list(side = 'left', range = c(0, 100)), xaxis = list(range = c(0, 2000)))
-  p2 <- plot_ly(ereolenaldermand, x = ~antal, y = ~alder, type = 'bar', orientation = 'h', name = 'mand', marker = list(color = color2)) %>%
-    layout(yaxis = list(side = 'left', range = c(0, 100)), xaxis = list(range = c(0, 2000)))
-  output$ereolenaldersubplot <- renderPlotly({subplot(p1, p2)})
+  # ereolenalderkvinde <- ereolenalder %>%
+  #   filter(alder > 0) %>%
+  #   filter(alder < 100) %>%
+  #   filter(sex == 'kvinde')
+  # ereolenaldermand <- ereolenalder %>%
+  #   filter(alder > 0) %>%
+  #   filter(alder < 100) %>%
+  #   filter(sex == 'mand')
+  # 
+  # p1 <- plot_ly(ereolenalderkvinde, x = ~antal, y = ~alder, type = 'bar', orientation = 'h', name = 'kvinde', marker = list(color = color1)) %>%
+  #   layout(yaxis = list(side = 'left', range = c(0, 100)), xaxis = list(range = c(0, 2000)))
+  # p2 <- plot_ly(ereolenaldermand, x = ~antal, y = ~alder, type = 'bar', orientation = 'h', name = 'mand', marker = list(color = color2)) %>%
+  #   layout(yaxis = list(side = 'left', range = c(0, 100)), xaxis = list(range = c(0, 2000)))
+  # output$ereolenaldersubplot <- renderPlotly({subplot(p1, p2)})
   
   
   output$p <- renderPlotly({

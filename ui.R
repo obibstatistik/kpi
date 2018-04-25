@@ -433,8 +433,8 @@ dashboardPage(
                 )
             ),
             box(width = 12,
-                h4("Alder"),
-                column(width = 12,plotlyOutput("ereolenaldersubplot"))
+                h4("Alder")#,
+                #column(width = 12,plotlyOutput("ereolenaldersubplot"))
             )
           )
         )
