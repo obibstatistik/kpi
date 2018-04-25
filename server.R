@@ -21,7 +21,7 @@ shinyServer(function(input, output) {
   eventsratio <- dbGetQuery(con, "select titel, arrangementstype, deltagere, forberedelsestid from datamart.arrangementer")
   
   visitors <- dbGetQuery(con, "SELECT * FROM public.people_counter")
-  visitors_hours <- dbGetQuery(con, "SELECT updatetime, location, delta FROM public.visitor_counter limit 100")
+  visitors_hours <- dbGetQuery(con, "SELECT updatetime, location, delta FROM public.visitor_counter limit 1000")
 
   meetingrooms <- dbGetQuery(con, "SELECT * FROM datamart.meetingrooms")
   bhus_events <- dbGetQuery(con, "SELECT * FROM datamart.bhus_events")
@@ -295,14 +295,14 @@ shinyServer(function(input, output) {
   output$visitors_per_hours_table <- renderFormattable({
     visitors_hours <- visitors_hours %>%
       #filter(if(input$visitors_hours_library != 'all')  (location == input$visitors_hours_library) else TRUE) %>%
-      #filter(updatetime > input$daterange_visitors_hours_library[1] & updatetime < input$daterange_visitors_hours_library[2]) %>%
+      filter(updatetime > input$daterange_visitors_hours_library[1] & updatetime < input$daterange_visitors_hours_library[2]) %>%
       select(updatetime, location, delta) %>%
       mutate(tid = hour(updatetime)) %>%
       select(-updatetime) %>%
       group_by(location, tid) %>%
       summarise(sum = sum(delta)) %>%
-      spread(key = location, value = sum) #%>%
-      #mutate_at(c(2:5), funs(replace(., is.na(.), "0")))
+      spread(key = location, value = sum) %>%
+      mutate_at(c(2:5), funs(replace(., is.na(.), "0")))
     formattable(visitors_hours)
   })
   
