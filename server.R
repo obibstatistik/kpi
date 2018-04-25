@@ -6,7 +6,6 @@ shinyServer(function(input, output) {
   source("~/.postpass")
   
   ### DB QUERIES ###
-  
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
   
@@ -22,7 +21,7 @@ shinyServer(function(input, output) {
   eventsratio <- dbGetQuery(con, "select titel, arrangementstype, deltagere, forberedelsestid from datamart.arrangementer")
   
   visitors <- dbGetQuery(con, "SELECT * FROM public.people_counter")
-  visitors_hours <- dbGetQuery(con, "SELECT updatetime, location, delta FROM public.visitor_counter")
+  visitors_hours <- dbGetQuery(con, "SELECT updatetime, location, delta FROM public.visitor_counter limit 100")
 
   meetingrooms <- dbGetQuery(con, "SELECT * FROM datamart.meetingrooms")
   bhus_events <- dbGetQuery(con, "SELECT * FROM datamart.bhus_events")
@@ -66,7 +65,6 @@ shinyServer(function(input, output) {
   datasources_schema <- (dbGetQuery(con, "SELECT columns.table_name as name, columns.column_name, columns.data_type,columns.column_default, columns.is_nullable FROM information_schema.columns;"))
   
   dbDisconnect(con)
-  
   ### COLORS ###
   
   colors <- c('rgb(70,140,140)', 'rgb(174,176,81)', 'rgb(59,54,74)', 'rgb(192,57,83)', 'rgb(29,114,170)', 'rgb(225,123,81)', 'rgb(219,181,61)')
@@ -277,35 +275,34 @@ shinyServer(function(input, output) {
   })
   
   # visitors pr. hour
-  
-  visitors_hours <- visitors_hours %>%
-    mutate(
-      location = case_when(
-        visitors_hours$location == "bo" ~ "Bolbro",
-        visitors_hours$location == "vo" ~ "Vollsmose",
-        visitors_hours$location == "da" ~ "Dalum",
-        visitors_hours$location == "ta" ~ "Tarup",
-        visitors_hours$location == "hb" ~ "Borgernes Hus",
-        visitors_hours$location == "lok" ~ "Historiens Hus",
-        visitors_hours$location == "hoj" ~ "Højby",
-        visitors_hours$location == "ho" ~ "Holluf Pile",
-        visitors_hours$location == "kor" ~ "Korup",
-        visitors_hours$location == "mus" ~ "Musikbiblioteket"
-      ) 
-    )
+
+   visitors_hours2 <- visitors_hours %>%
+     mutate(
+       location = case_when(
+         visitors_hours$location == "bo" ~ "Bolbro",
+         visitors_hours$location == "vo" ~ "Vollsmose",
+         visitors_hours$location == "da" ~ "Dalum",
+         visitors_hours$location == "ta" ~ "Tarup",
+         visitors_hours$location == "hb" ~ "Borgernes Hus",
+         visitors_hours$location == "lok" ~ "Historiens Hus",
+         visitors_hours$location == "hoj" ~ "Højby",
+         visitors_hours$location == "ho" ~ "Holluf Pile",
+         visitors_hours$location == "kor" ~ "Korup",
+         visitors_hours$location == "mus" ~ "Musikbiblioteket"
+       )
+     )
   
   output$visitors_per_hours_table <- renderFormattable({
     visitors_hours <- visitors_hours %>%
       #filter(if(input$visitors_hours_library != 'all')  (location == input$visitors_hours_library) else TRUE) %>%
-      filter(updatetime > input$daterange_visitors_hours_library[1] & updatetime < input$daterange_visitors_hours_library[2]) %>%
+      #filter(updatetime > input$daterange_visitors_hours_library[1] & updatetime < input$daterange_visitors_hours_library[2]) %>%
       select(updatetime, location, delta) %>%
       mutate(tid = hour(updatetime)) %>%
       select(-updatetime) %>%
       group_by(location, tid) %>%
       summarise(sum = sum(delta)) %>%
-      spread(key = location, value = sum) %>%
-      mutate_at(c(2:5), funs(replace(., is.na(.), "0")))
-    
+      spread(key = location, value = sum) #%>%
+      #mutate_at(c(2:5), funs(replace(., is.na(.), "0")))
     formattable(visitors_hours)
   })
   
