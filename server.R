@@ -272,7 +272,7 @@ shinyServer(function(input, output) {
       rename(Filial = location) #%>%
       #mutate_at(c(2:5), funs(replace(., is.na(.), "0")))
     }
-    formattable(visitorsbranch2#, align = (c('l','r','r','r','r','r'))
+    formattable(visitorsbranch2, align = (c('l','r','r','r','r','r'))
                 )
   })
   
@@ -303,8 +303,8 @@ shinyServer(function(input, output) {
       select(-updatetime) %>%
       group_by(location, tid) %>%
       summarise(sum = sum(delta)) %>%
-      spread(key = location, value = sum) %>%
-      mutate_at(c(2:5), funs(replace(., is.na(.), "0")))
+      spread(key = location, value = sum) #%>%
+      #mutate_at(c(2:5), funs(replace(., is.na(.), "0")))
     formattable(visitors_hours)
   })
   
