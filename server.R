@@ -29,7 +29,7 @@ shinyServer(function(input, output) {
   ga_pageviews <- dbGetQuery(con, "SELECT * FROM datamart.ga_pageviews where pageviews > 0")
   ga_device <- dbGetQuery(con, "select device, sum(users) as users from datamart.ga_device group by device")
   ga_top10 <- dbGetQuery(con, "SELECT title, pageviews FROM datamart.ga_top10 order by pageviews desc limit 11 offset 1")
-  sqlloan <- dbGetQuery(con, "SELECT * FROM datamart.kpi_loan")
+  #sqlloan <- dbGetQuery(con, "SELECT * FROM datamart.kpi_loan")
   events <- dbGetQuery(con, "SELECT * FROM datamart.arrangementer")
   acquisition <- dbGetQuery(con, "SELECT * FROM public.imusic")
   sites <- dbGetQuery(con, "SELECT * FROM datamart.sites")
@@ -166,10 +166,10 @@ shinyServer(function(input, output) {
   ### FYSISKE RUM ###
   
   output$visitorsfrom <- renderUI({
-    selectInput("visitors_fromyear", "Fra:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2015", "2014" = "2014"), year-1)
+    selectInput("visitors_fromyear", "Fra:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2015", "2014" = "2014"), as.integer(format(Sys.Date(), "%Y"))-1)
   })
   output$visitorsto <- renderUI({
-    selectInput("visitors_toyear", "Til:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2014", "2014" = "2013"), year)
+    selectInput("visitors_toyear", "Til:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2014", "2014" = "2013"), as.integer(format(Sys.Date(), "%Y")))
   })
   
   # visitors total plot#
@@ -185,24 +185,24 @@ shinyServer(function(input, output) {
       layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'År', dtick = 1, autotick = FALSE))
   })
   
-  # visitors table #
+  # # visitors table #
   output$visitors_table <- renderFormattable({
     visitors <- visitors %>%
       select(date, count, location) %>%
       mutate(month = month(date)) %>%
-      mutate(year = year(date)) %>%
-      filter(year == input$visitors_fromyear | year == input$visitors_toyear ) %>%
+      mutate(visitor_year = year(date)) %>%
+      filter(visitor_year == input$visitors_fromyear | visitor_year == input$visitors_toyear ) %>%
       filter(if(input$visitorslibrary != 'all')  (location == input$visitorslibrary) else TRUE) %>%
-      select(count, month, year) %>%
-      group_by(month, year) %>%
+      select(count, month, visitor_year) %>%
+      group_by(month, visitor_year) %>%
       summarise(sum = sum(count)) %>%
-      spread(key = year, value = sum) %>%
+      spread(key = visitor_year, value = sum) %>%
       ungroup(.self) %>%
       mutate(akku1 = cumsum(.[[2]]), akku2 = cumsum(.[[3]]), mdr = percent(.[[3]]-.[[2]])/.[[2]]) %>%
       mutate(akk = percent((akku2-akku1)/akku1)) %>%
       select(c(1,2,4,3,5,6,7)) %>%
       rename(Måned = month, Akkumuleret = akku1, "Akkumuleret " = akku2, "Ændring pr. mdr."= mdr, "Ændring akkumuleret" = akk)
-      
+
     formattable(visitors, list(
       "Ændring pr. mdr." = formatter("span", style = x ~ style(color = ifelse(x < 0 , color4, color1)), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
       "Ændring akkumuleret" = formatter("span", style = x ~ style(color = ifelse(x < 0 , color4, color1)), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
@@ -465,64 +465,64 @@ shinyServer(function(input, output) {
   
   ### LOAN & RENEWALS ###
   
-  # loan initial pivot #
-  loan <- sqlloan %>%
-    mutate(loan2017 = ifelse(year == "2017", count, 0), loan2016 = ifelse(year == "2016", count, 0), loan2015 = ifelse(year == "2015", count, 0)) %>%
-    select(month, library, loan2017, loan2016, loan2015) %>%
-    group_by(month, library) %>%
-    summarise(loan2017 = sum(loan2017), loan2016 = sum(loan2016), loan2015 = sum(loan2015))  
-  
-  # loan plot #
-  loanplot <- loan %>%
-    group_by(library) %>%
-    summarise(loan2017 = sum(loan2017), loan2016 = sum(loan2016), loan2015 = sum(loan2015)) %>%
-    select(library, loan2017, loan2016, loan2015)
-  
-  output$loanplot <- renderPlotly({
-    loanplot <- loanplot %>% filter(library %in% input$checkGroup)
-    plot_ly(loanplot, x = loanplot$library, y = loanplot$loan2015, type = 'bar', name = '2015', text = text) %>%
-    add_trace(y = loanplot$loan2016, name = '2016') %>%  
-    add_trace(y = loanplot$loan2017, name = '2017') %>% 
-    layout(yaxis = list(title = 'Antal'), barmode = 'group')
-  })
-  
-  # loan all libraries #
-  loanall <- loan %>%
-    group_by(month) %>%
-    summarise(loan2017 = sum(loan2017), loan2016 = sum(loan2016), loan2015 = sum(loan2015)) %>%
-    mutate(diff1716 = percent((loan2017-loan2016)/loan2016), diff1615 = percent((loan2016-loan2015)/loan2015), cumsum2017 = cumsum(loan2017), cumsum2016 = cumsum(loan2016), cumsum2015 = cumsum(loan2015), cumkum1716 = percent((cumsum(loan2017)-cumsum(loan2016))/cumsum(loan2016))) %>%
-    arrange(month) %>%
-    select(month, loan2017,cumsum2017,diff1716,loan2016,cumsum2016,diff1615,loan2015,cumsum2015,cumkum1716)
-  
-  colnames(loanall) <- c("Måned", "2017", "2017 akum","17><16", "2016", "2016 akum", "16><15", "2015", "2015 akum","17><16 akum")
-  
-  output$loantableall <- renderFormattable({formattable(loanall, list(
-    "17><16" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
-    "16><15" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
-  )
-  )})
-  
-  # loan individual libraries #
-  loanlibrary <- sqlloan %>% distinct(library)
-  loanbranch <- loan
-  
-  foreach(i = loanlibrary$library) %do% {
-    local ({
-      my_i <- i
-      plotname <- paste0("loantable",substr(my_i, 1, 3))
-      loanbranch <- loanbranch %>% 
-        filter(library == my_i) %>%
-        group_by(month) %>%
-        summarize(loan2017, loan2016, loan2015) %>%
-        mutate (diff1716 = percent((loan2017-loan2016)/loan2016), diff1615 = percent((loan2016-loan2015)/loan2015), cumsum2017 = cumsum(loan2017), cumsum2016 = cumsum(loan2016), cumsum2015 = cumsum(loan2015)) %>%
-        select(month, loan2017, cumsum2017, diff1716, loan2016, cumsum2016, diff1615, loan2015, cumsum2015)
-      colnames(loanbranch) <- c("Måned", "2017", "2017 akum","17><16", "2016", "2016 akum", "16><15", "2015", "2015 akum")
-      output[[plotname]] <- renderFormattable({formattable(loanbranch, list(
-        "17><16" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
-        "16><15" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
-      ))})
-    })
-  }
+  # # loan initial pivot #
+  # loan <- sqlloan %>%
+  #   mutate(loan2017 = ifelse(year == "2017", count, 0), loan2016 = ifelse(year == "2016", count, 0), loan2015 = ifelse(year == "2015", count, 0)) %>%
+  #   select(month, library, loan2017, loan2016, loan2015) %>%
+  #   group_by(month, library) %>%
+  #   summarise(loan2017 = sum(loan2017), loan2016 = sum(loan2016), loan2015 = sum(loan2015))  
+  # 
+  # # loan plot #
+  # loanplot <- loan %>%
+  #   group_by(library) %>%
+  #   summarise(loan2017 = sum(loan2017), loan2016 = sum(loan2016), loan2015 = sum(loan2015)) %>%
+  #   select(library, loan2017, loan2016, loan2015)
+  # 
+  # output$loanplot <- renderPlotly({
+  #   loanplot <- loanplot %>% filter(library %in% input$checkGroup)
+  #   plot_ly(loanplot, x = loanplot$library, y = loanplot$loan2015, type = 'bar', name = '2015', text = text) %>%
+  #   add_trace(y = loanplot$loan2016, name = '2016') %>%  
+  #   add_trace(y = loanplot$loan2017, name = '2017') %>% 
+  #   layout(yaxis = list(title = 'Antal'), barmode = 'group')
+  # })
+  # 
+  # # loan all libraries #
+  # loanall <- loan %>%
+  #   group_by(month) %>%
+  #   summarise(loan2017 = sum(loan2017), loan2016 = sum(loan2016), loan2015 = sum(loan2015)) %>%
+  #   mutate(diff1716 = percent((loan2017-loan2016)/loan2016), diff1615 = percent((loan2016-loan2015)/loan2015), cumsum2017 = cumsum(loan2017), cumsum2016 = cumsum(loan2016), cumsum2015 = cumsum(loan2015), cumkum1716 = percent((cumsum(loan2017)-cumsum(loan2016))/cumsum(loan2016))) %>%
+  #   arrange(month) %>%
+  #   select(month, loan2017,cumsum2017,diff1716,loan2016,cumsum2016,diff1615,loan2015,cumsum2015,cumkum1716)
+  # 
+  # colnames(loanall) <- c("Måned", "2017", "2017 akum","17><16", "2016", "2016 akum", "16><15", "2015", "2015 akum","17><16 akum")
+  # 
+  # output$loantableall <- renderFormattable({formattable(loanall, list(
+  #   "17><16" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
+  #   "16><15" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
+  # )
+  # )})
+  # 
+  # # loan individual libraries #
+  # loanlibrary <- sqlloan %>% distinct(library)
+  # loanbranch <- loan
+  # 
+  # foreach(i = loanlibrary$library) %do% {
+  #   local ({
+  #     my_i <- i
+  #     plotname <- paste0("loantable",substr(my_i, 1, 3))
+  #     loanbranch <- loanbranch %>% 
+  #       filter(library == my_i) %>%
+  #       group_by(month) %>%
+  #       summarize(loan2017, loan2016, loan2015) %>%
+  #       mutate (diff1716 = percent((loan2017-loan2016)/loan2016), diff1615 = percent((loan2016-loan2015)/loan2015), cumsum2017 = cumsum(loan2017), cumsum2016 = cumsum(loan2016), cumsum2015 = cumsum(loan2015)) %>%
+  #       select(month, loan2017, cumsum2017, diff1716, loan2016, cumsum2016, diff1615, loan2015, cumsum2015)
+  #     colnames(loanbranch) <- c("Måned", "2017", "2017 akum","17><16", "2016", "2016 akum", "16><15", "2015", "2015 akum")
+  #     output[[plotname]] <- renderFormattable({formattable(loanbranch, list(
+  #       "17><16" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
+  #       "16><15" = formatter("span", style = x ~ style(color = ifelse(x < 0 , "rgb(213,57,57)", "rgb(63,168,123)")), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
+  #     ))})
+  #   })
+  # }
   
   
   ### ACQUISITION ###
