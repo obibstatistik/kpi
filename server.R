@@ -260,8 +260,8 @@ shinyServer(function(input, output) {
       summarise(sum = sum(count)) %>%
       spread(key = year, value = sum) %>%
       rename(Filial = location) %>%
-      mutate(`2014` = `2014`/`2016`, `2015` = `2015`/`2016`, `2017` = `2017`/`2016`, `2018` = `2018`/`2016`, `2016` = 1) %>%
-      mutate_at(c(2:5), funs(replace(., is.na(.), 0)))
+      mutate(`2014` = `2014`/`2016`, `2015` = `2015`/`2016`, `2017` = `2017`/`2016`, `2018` = `2018`/`2016`, `2016` = 1) #%>%
+      #mutate_at(c(2:5), funs(replace(., is.na(.), 0)))
     } 
     else {visitorsbranch2 <- visitors1 %>%
       select(date, count, location) %>%
@@ -269,9 +269,11 @@ shinyServer(function(input, output) {
       group_by(location, year) %>%
       summarise(sum = sum(count)) %>%
       spread(key = year, value = sum) %>%
-      rename(Filial = location) %>%
-      mutate_at(c(2:5), funs(replace(., is.na(.), "0")))}
-    formattable(visitorsbranch2, align = (c('l','r','r','r','r','r')))
+      rename(Filial = location) #%>%
+      #mutate_at(c(2:5), funs(replace(., is.na(.), "0")))
+    }
+    formattable(visitorsbranch2#, align = (c('l','r','r','r','r','r'))
+                )
   })
   
   # visitors pr. hour
