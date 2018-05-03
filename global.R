@@ -15,3 +15,5 @@ library(lubridate)
 library(tidyr) 
 library(ggplot2) 
 library(profvis)
+library(whitebookviz)
+
