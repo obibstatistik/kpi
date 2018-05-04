@@ -64,7 +64,7 @@ visitorsTabPanelUI <- function(id) {
                                        )
                                      )
                                    )   
-                          ),
+                          )),
                           tabPanel("Timer",
                                    fluidRow(
                                      column(2,
@@ -85,7 +85,7 @@ visitorsTabPanelUI <- function(id) {
                    )
             )
           )
-  ))
+  )
 }
 
 # SERVER
@@ -135,7 +135,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   visitors6 <- visitors6 %>%
     arrange(year, desc(date))
  
-  curDate <- "2018-05-02" # the matching date you want data from, across all the years on the x-axis
+  curDate <- "2018-05-03"   #format(Sys.Date(), format="%Y-%m-%d") # the matching date you want data from, across all the years on the x-axis
   sortx <- "desc"         # controls direction of the sorting of the years on the x-axis
   frontColors <- colors # this vector turns into a javascript array
   backColor <- "Gainsboro"
@@ -147,6 +147,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   fontSizeX <- ""
   fontSizeY <- ""
   barWidth <- 0.8    # This is a percentage. 1 means no gap between bars (i.e. 100%)
+  barsOffset <- 10
   
   output$whity <- renderSamedate_barchart({
     samedate_barchart(visitors6,curDate,sortx,frontColors,backColor,labelx,labely,tickNumY,showScaleY,barWidth)
