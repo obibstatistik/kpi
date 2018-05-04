@@ -150,7 +150,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   barsOffset <- 10
   
   output$whity <- renderSamedate_barchart({
-    samedate_barchart(visitors6,curDate,sortx,frontColors,backColor,labelx,labely,tickNumY,showScaleY,barWidth)
+    samedate_barchart(visitors6,curDate,sortx,frontColors,backColor,labelx,labely,tickNumY,showScaleY,barWidth,barsOffset)
   })
   
   # visitors total plot#
