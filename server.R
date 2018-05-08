@@ -25,14 +25,7 @@ shinyServer(function(input, output) {
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
 
-  #sqlloan <- dbGetQuery(con, "SELECT * FROM datamart.kpi_loan")
-  
-  ereolentype <- dbGetQuery(con, "SELECT type, count(type) FROM public.ereolen group by type")
-  ereolenhist <- dbGetQuery(con, "select to_char(dato, 'iyyy-iw') as date, count(type = 'Lydbog') as lydbog, count(type = 'E-bog') as ebog from public.ereolen group by date;")
-  #ereolenalder <- dbGetQuery(con, "select extract(year from date_trunc('year',age(birth))) as alder, count(extract(year from date_trunc('year',age(birth)))) as antal, (case when mod((substring(laanernummer from 10 for 1))::integer,2) = 1 then 'mand' else 'kvinde' end) as sex from public.ereolen join public.patron on public.patron.patronno = laanernummer group by alder, sex;")
-  
   datasources_schema <- (dbGetQuery(con, "SELECT columns.table_name as name, columns.column_name, columns.data_type,columns.column_default, columns.is_nullable FROM information_schema.columns;"))
-  testdata <- dbGetQuery(con, "select * from datamart.whitebook_test_1 where substr(date::text,1,4) in ('2018','2017','2016','2015','2014');")
   
   dbDisconnect(con)
   ### COLORS ###

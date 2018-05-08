@@ -23,7 +23,8 @@ visitorsTabPanelUI <- function(id) {
                                        column(2),
                                        column(10,
                                               h4("Besøgende indtil idag & besøgende total"),
-                                              samedate_barchartOutput(ns('whity'))
+                                              samedate_barchartOutput(ns('whity')),
+                                              formattableOutput(ns("visitors_stack_table"))
                                        )
                                      ),
                                      column(12,tags$hr()),
@@ -98,13 +99,6 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   visitors_hours <- dbGetQuery(con, "SELECT * FROM datamart.visitors_per_hour")  
   dbDisconnect(con)
 
-  output$visitorsfrom <- renderUI({
-    selectInput("visitors_fromyear", "Fra:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2015", "2014" = "2014"), as.integer(format(Sys.Date(), "%Y"))-1)
-  })
-  output$visitorsto <- renderUI({
-    selectInput("visitors_toyear", "Til:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2014", "2014" = "2013"), as.integer(format(Sys.Date(), "%Y")))
-  })
-  
   # basic calculation
   visitors2 <- visitors %>%
     mutate(year = year(date)) %>%
@@ -124,18 +118,25 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   
   # get current day
   visitors4 <- visitors2 %>%
-    filter(date == Sys.Date()-1 | date == Sys.Date() - years(1)-1 |
-             date == Sys.Date() - years(2)-1 |
-             date == trunc(Sys.Date() - years(3)-2, "month") |
-             date == trunc(Sys.Date() - years(4)-2, "month")
+    filter(
+      if(year(date) == '2014' | year(date) == '2015') {
+        month(date) == month(Sys.Date())
+      }
+      else {
+        date == Sys.Date()-1 | 
+        date == Sys.Date() - years(1)-1 |
+        date == Sys.Date() - years(2)-1
+      }
     ) %>%
+    mutate(date = if_else(year(date) %in% c('2014','2015'), date + (day(Sys.Date())-2), date, NULL)) %>%
+    #mutate(if(year(date) == '2014' | year(date) == '2015') {date + (day(Sys.Date())-1)} else {date}) #%>%
     mutate(date = format(as.POSIXct(date, tz = "GMT", format, tryFormats = c("%Y-%m-%d %H:%M:%OS"), optional = FALSE)))
 
   visitors6 <- rbind(visitors3, visitors4)
   visitors6 <- visitors6 %>%
     arrange(year, desc(date))
  
-  curDate <- "2018-05-03"   #format(Sys.Date(), format="%Y-%m-%d") # the matching date you want data from, across all the years on the x-axis
+  curDate <- format(Sys.Date()-2, format="%Y-%m-%d") # the matching date you want data from, across all the years on the x-axis
   sortx <- "desc"         # controls direction of the sorting of the years on the x-axis
   frontColors <- colors # this vector turns into a javascript array
   backColor <- "Gainsboro"
@@ -152,6 +153,8 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   output$whity <- renderSamedate_barchart({
     samedate_barchart(visitors6,curDate,sortx,frontColors,backColor,labelx,labely,tickNumY,showScaleY,barWidth,barsOffset)
   })
+  
+  output$visitors_stack_table <- renderFormattable({formattable(visitors6)})
   
   # visitors total plot#
   output$visitsplotall <- renderPlotly({

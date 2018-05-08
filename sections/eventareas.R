@@ -31,13 +31,17 @@ eventareasTabPanelUI <- function(id) {
                             h4("Vist på agendaskærm"), 
                             plotlyOutput(ns("bhus_events_agendascreen_plot"))
                      ),
-                     column(width = 4,
-                            h4("Booker top 10"),
-                            tableOutput(ns("table_bhus_events_booker"))
-                     ),
-                     column(width = 8,
+                     column(width = 12,
                             h4("Oversigtstabel"),
                             formattableOutput(ns("tablebhus_events"))
+                     ),
+                     column(width = 6,
+                             h4("Booker top 10"),
+                             tableOutput(ns("table_bhus_events_booker"))
+                     ),
+                     column(width = 6,
+                            h4("Titel"),
+                            tableOutput(ns("table_bhus_events_title"))
                      )
               )
           )
@@ -52,6 +56,7 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
   bhus_events <- dbGetQuery(con, "SELECT * FROM datamart.bhus_events")
+  employees <- dbGetQuery(con, "SELECT navn,  email, enhedsnavnniv5, enhedsnavnniv6 FROM web.ansatte")
   dbDisconnect(con)
   
   output$tablebhus_events_overview <- renderTable(
@@ -78,6 +83,18 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
   
+  output$tablebhus_events <- renderFormattable({
+    bhus_events_timeslots <- bhus_events %>%
+      filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
+      select(location, startdate, slut ) %>%
+      mutate(Tidspunkt = hour(format(as.POSIXct(startdate)))) %>%
+      group_by(location, slut, Tidspunkt) %>%
+      summarise(count = n()) #%>%
+      #spread(key = location, value = count) %>%
+      #replace(., is.na(.), "0")
+    formattable(bhus_events_timeslots, list('Lokale 1.1' = color_tile("grey", '#468c8c')))}
+  )
+  
   output$table_bhus_events_booker <- renderTable(
     bhus_events_booker <- bhus_events %>%
       filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
@@ -86,19 +103,17 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
       summarise(count = n()) %>%
       arrange(desc(count)) %>%
       head(10) %>%
-      rename(Booker = forfatter_mail, Antal = count)
+      rename(Booker = forfatter_mail, Antal = count) %>%
+      left_join(employees, by = c("Booker" = "email"))
   )
   
-  output$tablebhus_events <- renderFormattable({
-    bhus_events_timeslots <- bhus_events %>%
+  output$table_bhus_events_title <- renderTable(
+    bhus_events_title <- bhus_events %>%
       filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
-      select(location, startdate ) %>%
-      mutate(Tidspunkt = hour(format(as.POSIXct(startdate)))) %>%
-      group_by(location, Tidspunkt) %>%
+      select(subject) %>%
+      group_by(subject) %>%
       summarise(count = n()) %>%
-      spread(key = location, value = count) %>%
-      replace(., is.na(.), "0")
-    formattable(bhus_events_timeslots, list('Lokale 1.1' = color_tile("grey", '#468c8c')))}
+      arrange(desc(count))
   )
   
 }
