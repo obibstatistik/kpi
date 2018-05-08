@@ -70,7 +70,9 @@ visitorsTabPanelUI <- function(id) {
                                    fluidRow(
                                      column(2,
                                             h4("Afgræns"),       
-                                            selectInput(ns("visitors_hours_library"), NULL, c("Alle" = "all","Bolbro","Dalum","Højby","Historiens Hus","Holluf Pile","Borgernes Hus","Korup","Musikbiblioteket","Tarup","Vollsmose")),
+                                            checkboxGroupInput(ns("visitors_hours_library"), label = 'Vælg filial', 
+                                            selected = list("Bolbro","Dalum","Højby","Historiens Hus","Holluf Pile","Borgernes Hus","Korup","Musikbiblioteket","Tarup","Vollsmose"),
+                                            choices = list("Bolbro","Dalum","Højby","Historiens Hus","Holluf Pile","Borgernes Hus","Korup","Musikbiblioteket","Tarup","Vollsmose")),
                                             dateRangeInput(ns("daterange_visitors_hours_library"),
                                                            label = 'Vælg periode',
                                                            start = Sys.Date() - 90, end = Sys.Date(),
@@ -280,7 +282,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   
   output$visitors_per_hours_table <- renderFormattable({
     visitors_hours <- visitors_hours %>%
-      filter(if(input$visitors_hours_library != 'all')  (location == input$visitors_hours_library) else TRUE) %>%
+      filter(location %in% input$visitors_hours_library) %>%
       filter(visit_date_hour > input$daterange_visitors_hours_library[1] & visit_date_hour < input$daterange_visitors_hours_library[2]) %>%
       select(visit_date_hour, location, count) %>%
       mutate(tid = hour(visit_date_hour)) %>%
