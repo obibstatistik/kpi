@@ -20,7 +20,8 @@ meetingroomsTabPanelUI <- function(id) {
                                     label = 'Vælg periode',
                                     start = Sys.Date() - 90, end = Sys.Date(),
                                     separator = " - "
-                     )
+                     ),
+                     selectInput(ns("timeslot"), "",c('Indenfor arbejdstid, indtil kl. 16','Udenfor arbejdstid, efter kl. 16')) 
               ),
               column(width = 10,
                      column(width = 6,
@@ -75,10 +76,11 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
         meetingrooms$roomnumber == "lok36_borghus@odense.dk" ~ "Lokale 3.6"
       ) 
     )
-  
+
   output$tablemeetingrooms_overview <- renderTable(
     meetingrooms_overview <- meetingrooms %>%
       filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
+      filter(if(input$timeslot == "Indenfor arbejdstid, indtil kl. 16") hour(startdate) < 16 else hour(startdate) >= 16) %>%
       mutate(tid = 	as.integer((enddate - startdate))) %>%
       select(sted, tid) %>%
       group_by(sted) %>%
@@ -86,7 +88,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
       mutate(timediff = percent(count/(as.integer(input$dateRangeMeetingrooms[2] - input$dateRangeMeetingrooms[1])*14)*100)) %>%
       rename(Lokalenummer = sted, Antal = count, "Gennemsnit(t)" =	mean, "Total(t)" =	sum, Belægningsprocent = timediff )  
   )
-  
+
   output$meetingrooms_agendascreen_plot <- renderPlotly({
     meetingrooms_agendascreen <- meetingrooms %>%
       filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
