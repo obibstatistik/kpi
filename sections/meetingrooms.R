@@ -21,7 +21,7 @@ meetingroomsTabPanelUI <- function(id) {
                                     start = Sys.Date() - 90, end = Sys.Date(),
                                     separator = " - "
                      ),
-                     selectInput(ns("timeslot"), "",c('Indenfor arbejdstid, indtil kl. 16','Udenfor arbejdstid, efter kl. 16')) 
+                     selectInput(ns("timeslot"), "Vælg tidspunkt på dagen",c('Indenfor arbejdstid, indtil kl. 16' = "1",'Udenfor arbejdstid, efter kl. 16' = "2",'Hele åbningstiden' = "3")) 
               ),
               column(width = 10,
                      column(width = 6,
@@ -77,16 +77,23 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
       ) 
     )
 
+  Nweekdays <- Vectorize(function(a, b) 
+    sum(!weekdays(seq(a, b, "days")) %in% c("Saturday", "Sunday")))
+  
   output$tablemeetingrooms_overview <- renderTable(
     meetingrooms_overview <- meetingrooms %>%
       filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
-      filter(if(input$timeslot == "Indenfor arbejdstid, indtil kl. 16") hour(startdate) < 16 else hour(startdate) >= 16) %>%
+      filter(if(input$timeslot == "1") hour(startdate) < 16 else if(input$timeslot == "2") hour(startdate) >= 16 else TRUE) %>%
       mutate(tid = 	as.integer((enddate - startdate))) %>%
       select(sted, tid) %>%
       group_by(sted) %>%
-      summarise(count = n(), mean = mean(tid)/60, sum = sum(tid)/60 ) %>%
-      mutate(timediff = percent(count/(as.integer(input$dateRangeMeetingrooms[2] - input$dateRangeMeetingrooms[1])*14)*100)) %>%
-      rename(Lokalenummer = sted, Antal = count, "Gennemsnit(t)" =	mean, "Total(t)" =	sum, Belægningsprocent = timediff )  
+      summarise(count = n(), median = median(tid)/60, sum = sum(tid)/60 ) %>%
+      mutate(timediff = 
+               if(input$timeslot == "1") sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*8))*100
+               else if (input$timeslot == "1") sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*5))*100
+               else sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*13))*100 
+             ) %>%
+      rename(Lokalenummer = sted, Antal = count, "Median" =	median, "Total(t)" =	sum, Belægningsprocent = timediff )  
   )
 
   output$meetingrooms_agendascreen_plot <- renderPlotly({
