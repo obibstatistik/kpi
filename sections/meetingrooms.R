@@ -90,7 +90,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
       summarise(count = n(), median = median(tid)/60, sum = sum(tid)/60 ) %>%
       mutate(timediff = 
                if(input$timeslot == "1") sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*8))*100
-               else if (input$timeslot == "1") sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*5))*100
+               else if (input$timeslot == "2") sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*5))*100
                else sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*13))*100 
              ) %>%
       rename(Lokalenummer = sted, Antal = count, "Median" =	median, "Total(t)" =	sum, Belægningsprocent = timediff )  
