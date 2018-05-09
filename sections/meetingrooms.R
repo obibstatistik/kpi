@@ -78,7 +78,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
     )
 
   Nweekdays <- Vectorize(function(a, b) 
-    sum(!weekdays(seq(a, b, "days")) %in% c("Saturday", "Sunday", "Lørdag", "Søndag" )))
+    sum(!weekdays(seq(a, b, "days")) %in% c("Saturday", "Sunday", "lørdag", "søndag" )))
   
   output$tablemeetingrooms_overview <- renderTable(
     meetingrooms_overview <- meetingrooms %>%
