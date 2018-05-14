@@ -13,40 +13,57 @@ meetingroomsTabPanelUI <- function(id) {
               h3("Mødelokaler"),
               img(src='detfysiskerum.png', align = "right", height="46px")
           ),
-          box(width = 12,
-              column(2,
-                     h4("Periode"),
-                     dateRangeInput(ns('dateRangeMeetingrooms'),
-                                    label = 'Vælg periode',
-                                    start = Sys.Date() - 90, end = Sys.Date(),
-                                    separator = " - "
-                     ),
-                     selectInput(ns("timeslot"), "Vælg tidspunkt på dagen",c('Indenfor arbejdstid, indtil kl. 16' = "1",'Udenfor arbejdstid, efter kl. 16' = "2",'Hele åbningstiden' = "3")) 
-              ),
-              column(width = 10,
-                     column(width = 6,
-                            h4("Oversigtstabel"),
-                            tableOutput(ns("tablemeetingrooms_overview"))
-                     ),
-                     column(width = 6,
-                            h4("Vist på agendaskærm"), 
-                            plotlyOutput(ns("meetingrooms_agendascreen_plot"))
-                     ),
-                     column(width = 12,
-                            h4("Oversigtstabel"),
-                            formattableOutput(ns("tablemeetingrooms_timeslots"))
-                     ),
-                     column(width = 6,
-                            h4("Booker top 10"),
-                            tableOutput(ns("table_meetingrooms_booker"))
-                     ),
-                     column(width = 6,
-                            h4("Emnefelt"),
-                            tableOutput(ns("table_meetingrooms_title"))
-                     )
-                     
-              )
-          )
+          fluidRow(
+            column(12,
+                   tabBox(width = 12,
+                          id = "tabset1",
+                          tabPanel("Generelt", 
+                                   fluidRow(
+                                     column(2,
+                                            h4("Periode"),
+                                            dateRangeInput(ns('dateRangeMeetingrooms'),
+                                                           label = 'Vælg periode',
+                                                           start = Sys.Date() - 90, end = Sys.Date(),
+                                                           separator = " - "
+                                            ),
+                                            selectInput(ns("timeslot"), "Vælg tidspunkt på dagen",c('Indenfor arbejdstid, indtil kl. 16' = "1",'Udenfor arbejdstid, efter kl. 16' = "2",'Hele åbningstiden' = "3")) 
+                                     ),
+                                     column(width = 10,
+                                            column(width = 6,
+                                                   h4("Oversigtstabel"),
+                                                   tableOutput(ns("tablemeetingrooms_overview"))
+                                            ),
+                                            column(width = 6,
+                                                   h4("Vist på agendaskærm"), 
+                                                   plotlyOutput(ns("meetingrooms_agendascreen_plot"))
+                                            ),
+                                            column(width = 12,
+                                                   h4("Oversigtstabel"),
+                                                   formattableOutput(ns("tablemeetingrooms_timeslots"))
+                                            ),
+                                            column(width = 6,
+                                                   h4("Booker top 10"),
+                                                   tableOutput(ns("table_meetingrooms_booker"))
+                                            ),
+                                            column(width = 6,
+                                                   h4("Emnefelt"),
+                                                   tableOutput(ns("table_meetingrooms_title"))
+                                            )
+                                     )
+                                )
+                          ),
+                          tabPanel("Meta",
+                                   fluidRow(
+                                     column(12,
+                                        h4("Forklaringer"),
+                                        p("Belægningsprocent er beregnet som 'Sum af belægning' / 'Total antal timer i perioden & tidsperioden'")
+                                     )
+                                   )  
+                          )
+                          
+                )
+            )
+        )
   )
   
 }
@@ -54,7 +71,7 @@ meetingroomsTabPanelUI <- function(id) {
 # SERVER
 
 meetingroomsTabPanel <- function(input, output, session, data, tablename) {
-
+  
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
   meetingrooms <- dbGetQuery(con, "SELECT * FROM datamart.meetingrooms")
@@ -76,7 +93,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
         meetingrooms$roomnumber == "lok36_borghus@odense.dk" ~ "Lokale 3.6"
       ) 
     )
-
+  
   Nweekdays <- Vectorize(function(a, b) 
     sum(!weekdays(seq(a, b, "days")) %in% c("Saturday", "Sunday", "lørdag", "søndag" )))
   
@@ -87,15 +104,18 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
       mutate(tid = 	as.integer((enddate - startdate))) %>%
       select(sted, tid) %>%
       group_by(sted) %>%
-      summarise(count = n(), median = median(tid)/60, sum = sum(tid)/60 ) %>%
+      summarise(count = n(), sum = sum(tid)/60, median = median(tid)/60) %>%
+      mutate(Median2 = sprintf("%02d:%02d",(median*60)%/%60,(median*60)%%60)) %>%
+      select(-median) %>%
       mutate(timediff = 
                if(input$timeslot == "1") sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*8))*100
-               else if (input$timeslot == "2") sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*5))*100
-               else sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*13))*100 
-             ) %>%
-      rename(Lokalenummer = sted, Antal = count, "Median" =	median, "Total(t)" =	sum, Belægningsprocent = timediff )  
+             else if (input$timeslot == "2") sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*5))*100
+             else sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*13))*100 
+      ) %>%
+      
+      rename(Lokalenummer = sted, Antal = count, "Median" =	Median2, "Total(t)" =	sum, Belægningsprocent = timediff )  
   )
-
+  
   output$meetingrooms_agendascreen_plot <- renderPlotly({
     meetingrooms_agendascreen <- meetingrooms %>%
       filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%

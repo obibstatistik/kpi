@@ -23,16 +23,16 @@ online_odensebibTabPanelUI <- function(id) {
                             tabPanel("Generelt", 
                                      fluidRow(
                                        column(12,
-                                              column(width = 4,
+                                              column(width = 12,
                                                      h4("Sidevisninger"), 
                                                      plotlyOutput(ns("plot1")),
                                                      tableOutput(ns("ga_pageviewstable"))
                                               ),
-                                              column(width = 4,
+                                              column(width = 6,
                                                      h4("Enheder"),  
                                                      plotlyOutput(ns("ga_device_plot"))
                                               ),
-                                              column(width = 4,
+                                              column(width = 6,
                                                      h4("Top 10 sider 2017"), 
                                                      formattableOutput(ns("tableplot3"))
                                               )

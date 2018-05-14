@@ -31,7 +31,7 @@ visitorsTabPanelUI <- function(id) {
                                      column(12,
                                        column(2,
                                               h4("Afgræns"),
-                                              selectInput(ns("mainlibrary"), "",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))    
+                                              selectInput(ns("mainlibrary"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))    
                                        ),
                                        column(10,
                                               h4("Besøgende total fulde år"),
@@ -41,11 +41,11 @@ visitorsTabPanelUI <- function(id) {
                                      column(12,tags$hr()),
                                      column(12,
                                        column(2,
-                                              h4("Afgræns pr. år"),
+                                              h4("Afgræns"),
                                               selectInput(ns("visitors_fromyear"), "Fra:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2015", "2014" = "2014"), as.integer(format(Sys.Date(), "%Y"))-1),
                                               selectInput(ns("visitors_toyear"), "Til:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2014", "2014" = "2013"), as.integer(format(Sys.Date(), "%Y"))),
-                                              h4("Afgræns pr. filial"),
-                                              selectInput(ns("visitorslibrary"), NULL, c("Alle" = "all","Bolbro" = "bo","Dalum" = "da","Højby" = "hoj","Historiens Hus" = "lok","Holluf Pile" = "ho","Borgernes Hus" = "hb","Korup" = "kor","Musikbiblioteket" = "mus","Tarup" = "ta","Vollsmose" = "vo"))
+                                              selectInput(ns("visitorslibrary"), "Filial:", c("Alle" = "all","Bolbro" = "bo","Dalum" = "da","Højby" = "hoj","Historiens Hus" = "lok","Holluf Pile" = "ho","Borgernes Hus" = "hb","Korup" = "kor","Musikbiblioteket" = "mus","Tarup" = "ta","Vollsmose" = "vo")),
+                                              selectInput(ns("mainlibrary2"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))    
                                        ),
                                        column(10,
                                               h4("Besøgende detaljer"),
@@ -56,7 +56,8 @@ visitorsTabPanelUI <- function(id) {
                                      column(12,
                                        column(2,
                                               h4("Afgræns"),
-                                              selectInput(ns("norm"), "",c('Indeks 2016' = 'norm', 'Ikke Normaliseret' = 'not_norm')) 
+                                              selectInput(ns("norm"), "Indekstal/tal:",c('Indeks 2016' = 'norm', 'Ikke Normaliseret' = 'not_norm')),
+                                              selectInput(ns("mainlibrary3"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))     
                                        ),
                                        column(10,
                                               h4("Besøgende filialer"),
@@ -101,6 +102,8 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   visitors_hours <- dbGetQuery(con, "SELECT * FROM datamart.visitors_per_hour")  
   dbDisconnect(con)
 
+  ### ###
+  
   # basic calculation
   visitors2 <- visitors %>%
     mutate(year = year(date)) %>%
@@ -157,7 +160,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   })
   
   output$visitors_stack_table <- renderFormattable({formattable(visitors6)})
-  
+
   # visitors total plot#
   output$visitsplotall <- renderPlotly({
     visitsoverview <- visitors %>%
@@ -170,11 +173,12 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
     plot_ly(visitsoverview, x = visitsoverview$year, y = visitsoverview$sum, type = 'bar', marker = list(color = color1)) %>%
       layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'År', dtick = 1, autotick = FALSE))
   })
-  
-  # # visitors table #
+
+  # visitors table details
   output$visitors_table <- renderFormattable({
     visitors <- visitors %>%
       select(date, count, location) %>%
+      filter(if(input$mainlibrary2 == 'Uden Hovedbiblioteket')  (location != 'hb') else TRUE) %>%
       mutate(month = month(date)) %>%
       mutate(visitor_year = year(date)) %>%
       filter(visitor_year == input$visitors_fromyear | visitor_year == input$visitors_toyear ) %>%
@@ -187,8 +191,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
       mutate(akku1 = cumsum(.[[2]]), akku2 = cumsum(.[[3]]), mdr = percent(.[[3]]-.[[2]])/.[[2]]) %>%
       mutate(akk = percent((akku2-akku1)/akku1)) %>%
       select(c(1,2,4,3,5,6,7)) %>%
-      rename(Måned = month, Akkumuleret = akku1, Akkumuleret = akku2, 'Ændring pr. mdr.' = mdr, 'Ændring akkumuleret' = akk)
-    
+      rename(Måned = month, Akkumuleret = akku1, "Akkumuleret " = akku2, 'Ændring pr. mdr.' = mdr, 'Ændring akkumuleret' = akk)
     formattable(visitors, list(
       'Ændring pr. mdr.' = formatter("span", style = x ~ style(color = ifelse(x < 0 , color4, color1)), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
       'Ændring akkumuleret' = formatter("span", style = x ~ style(color = ifelse(x < 0 , color4, color1)), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
@@ -196,7 +199,6 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   })
   
   # visitors branch plot #
-  
   visitors1 <- visitors %>%
     mutate(
       location = case_when(
@@ -215,6 +217,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   
   output$visitsplotindividual <- renderPlotly({
     if (input$norm == "norm") {visitorsbranch <- visitors1 %>%
+      filter(if(input$mainlibrary3 == 'Uden Hovedbiblioteket')  (location != 'Borgernes Hus') else TRUE) %>%
       select(date, count, location) %>%
       mutate(year = year(date)) %>%
       group_by(location, year) %>%
@@ -224,6 +227,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
       mutate(`2014` = `2014`/`2016`, `2015` = `2015`/`2016`, `2017` = `2017`/`2016`, `2018` = `2018`/`2016`, `2016` = 1 ) 
     } 
     else {visitorsbranch <- visitors1 %>%
+      filter(if(input$mainlibrary3 == 'Uden Hovedbiblioteket')  (location != 'Borgernes Hus') else TRUE) %>%
       select(date, count, location) %>%
       mutate(year = year(date)) %>%
       group_by(location, year) %>%
@@ -240,6 +244,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   
   output$visitorstest <- renderFormattable({
     if (input$norm == "norm") {visitorsbranch2 <- visitors1 %>%
+      filter(if(input$mainlibrary3 == 'Uden Hovedbiblioteket')  (location != 'Borgernes Hus') else TRUE) %>%
       select(date, count, location) %>%
       mutate(year = year(date)) %>%  
       group_by(location, year) %>%
@@ -250,6 +255,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
     #mutate_at(c(2:5), funs(replace(., is.na(.), 0)))
     } 
     else {visitorsbranch2 <- visitors1 %>%
+      filter(if(input$mainlibrary3 == 'Uden Hovedbiblioteket')  (location != 'Borgernes Hus') else TRUE) %>%
       select(date, count, location) %>%
       mutate(year = year(date)) %>%  
       group_by(location, year) %>%
