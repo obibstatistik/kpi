@@ -22,9 +22,10 @@ visitorsTabPanelUI <- function(id) {
                                      column(12,
                                        column(2),
                                        column(10,
-                                              h4("Besøgende indtil idag & besøgende total"),
-                                              samedate_barchartOutput(ns('whity')),
-                                              formattableOutput(ns("visitors_stack_table"))
+                                              h4("Samlet besøg på OBB"),
+                                              p("Farvet: fra 1. januar til dags dato i pågældende år. Grå: Året total"),
+                                              samedate_barchartOutput(ns('whity'))#,
+                                              #formattableOutput(ns("visitors_stack_table"))
                                        )
                                      ),
                                      column(12,tags$hr()),
@@ -34,7 +35,7 @@ visitorsTabPanelUI <- function(id) {
                                               selectInput(ns("mainlibrary"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))    
                                        ),
                                        column(10,
-                                              h4("Besøgende total fulde år"),
+                                              h4("Samlet besøg på OBB"),
                                               plotlyOutput(ns("visitsplotall")
                                               )
                                      ),
@@ -48,7 +49,7 @@ visitorsTabPanelUI <- function(id) {
                                               selectInput(ns("mainlibrary2"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))    
                                        ),
                                        column(10,
-                                              h4("Besøgende detaljer"),
+                                              h4("Samlet besøg på OBB"),
                                               formattableOutput(ns("visitors_table"))
                                        )
                                      ),
@@ -60,7 +61,7 @@ visitorsTabPanelUI <- function(id) {
                                               selectInput(ns("mainlibrary3"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))     
                                        ),
                                        column(10,
-                                              h4("Besøgende filialer"),
+                                              h4("Besøg fordelt på bibliotek"),
                                               plotlyOutput(ns("visitsplotindividual")),
                                               formattableOutput(ns("visitorstest"))
                                        )
@@ -81,11 +82,20 @@ visitorsTabPanelUI <- function(id) {
                                             )
                                      ),
                                      column(10,
+                                            h4("Besøg fordelt på timer og periode"), 
                                             formattableOutput(ns("visitors_per_hours_table"))
                                      )
                                    )  
                           ),
-                          metaTabPanelUI(id = "people_counter")
+                          tabPanel("Data",
+                            h4("Generelt"),
+                            p("Data fra 2014-01-01"),
+                            metaTabPanelUI(id = "people_counter"),
+                            column(12,tags$hr()),
+                            h4("Timer"),
+                            p("Data fra 2017-04-07"),
+                            metaTabPanelUI(id = "visitor_counter")
+                          )
                    )
             )
           )
@@ -141,7 +151,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   visitors6 <- visitors6 %>%
     arrange(year, desc(date))
  
-  curDate <- format(Sys.Date()-2, format="%Y-%m-%d") # the matching date you want data from, across all the years on the x-axis
+  curDate <- format(Sys.Date()-1, format="%Y-%m-%d") # the matching date you want data from, across all the years on the x-axis
   sortx <- "desc"         # controls direction of the sorting of the years on the x-axis
   frontColors <- colors # this vector turns into a javascript array
   backColor <- "Gainsboro"

@@ -79,8 +79,6 @@ dashboardPage(
       eventareasTabPanelUI(id = "eventareas"), 
       
       ### ONLINE ###
-      
-      # Odensebib #  
       online_odensebibTabPanelUI(id = "online_odensebib"),  
       
       ### MATERIALER ###

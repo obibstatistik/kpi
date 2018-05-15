@@ -51,6 +51,7 @@ shinyServer(function(input, output) {
   ### MODULES ###
   callModule(metaTabPanel, id = "arrangementer", data = datasources_schema, tablename = "arrangementer")
   callModule(metaTabPanel, id = "people_counter", data = datasources_schema, tablename = "people_counter")
+  callModule(metaTabPanel, id = "visitor_counter", data = datasources_schema, tablename = "visitor_counter")
   
   ### FRONTPAGE ### 
   callModule(frontpageTabPanel, id = "frontpage")
