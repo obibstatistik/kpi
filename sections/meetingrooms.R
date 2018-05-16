@@ -150,7 +150,11 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
       arrange(desc(count)) %>%
       head(10) %>%
       rename(Booker = forfatter_mail, Antal = count) %>%
-      left_join(employees, by = c("Booker" = "email"))
+      left_join(employees, by = c("Booker" = "email")) %>%
+      mutate(Enhed = if(is.na(enhedsnavnniv6)) enhedsnavnniv6 else enhedsnavnniv5) %>%
+      select(Enhed, Antal) %>%
+      group_by(Enhed) %>%
+      summarise(sum(Antal))
   )
   
   output$table_meetingrooms_title <- renderTable(

@@ -76,10 +76,14 @@ visitorsTabPanelUI <- function(id) {
                                             selected = list("Bolbro","Dalum","Højby","Historiens Hus","Holluf Pile","Borgernes Hus","Korup","Musikbiblioteket","Tarup","Vollsmose"),
                                             choices = list("Bolbro","Dalum","Højby","Historiens Hus","Holluf Pile","Borgernes Hus","Korup","Musikbiblioteket","Tarup","Vollsmose")),
                                             dateRangeInput(ns("daterange_visitors_hours_library"),
-                                                           label = 'Vælg periode',
+                                                           label = 'Vælg dato periode',
                                                            start = Sys.Date() - 90, end = Sys.Date(),
                                                            separator = " - "
-                                            )
+                                            ),
+                                            sliderInput(ns("range"), "Vælg tids periode:",
+                                                        min = 0, max = 24,
+                                                        value = c(8,16))
+                                            
                                      ),
                                      column(10,
                                             h4("Besøg fordelt på timer og periode"), 
@@ -302,6 +306,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
       filter(visit_date_hour > input$daterange_visitors_hours_library[1] & visit_date_hour < input$daterange_visitors_hours_library[2]) %>%
       select(visit_date_hour, location, count) %>%
       mutate(tid = hour(visit_date_hour)) %>%
+      filter(tid > input$range[1] & tid < input$range[2]) %>%
       select(-visit_date_hour) %>%
       group_by(location, tid) %>%
       summarise(sum = sum(count)) %>%
