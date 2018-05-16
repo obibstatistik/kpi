@@ -24,8 +24,7 @@ visitorsTabPanelUI <- function(id) {
                                        column(10,
                                               h4("Samlet besøg på OBB"),
                                               p("Farvet: fra 1. januar til dags dato i pågældende år. Grå: Året total"),
-                                              samedate_barchartOutput(ns('whity'))#,
-                                              #formattableOutput(ns("visitors_stack_table"))
+                                              samedate_barchartOutput(ns('whity'))
                                        )
                                      ),
                                      column(12,tags$hr()),
@@ -72,22 +71,37 @@ visitorsTabPanelUI <- function(id) {
                                    fluidRow(
                                      column(2,
                                             h4("Afgræns"),       
-                                            checkboxGroupInput(ns("visitors_hours_library"), label = 'Vælg filial', 
+                                            checkboxGroupInput(ns("visitors_hours_library"), label = 'Vælg bibliotek', 
                                             selected = list("Bolbro","Dalum","Højby","Historiens Hus","Holluf Pile","Borgernes Hus","Korup","Musikbiblioteket","Tarup","Vollsmose"),
                                             choices = list("Bolbro","Dalum","Højby","Historiens Hus","Holluf Pile","Borgernes Hus","Korup","Musikbiblioteket","Tarup","Vollsmose")),
+                                            tags$hr(),
                                             dateRangeInput(ns("daterange_visitors_hours_library"),
-                                                           label = 'Vælg dato periode',
+                                                           label = 'Vælg dato periode 1',
                                                            start = Sys.Date() - 90, end = Sys.Date(),
                                                            separator = " - "
                                             ),
+                                            checkboxInput(ns("smooth"), "Sammenlign med anden periode"),
+                                            conditionalPanel(
+                                              paste0("input['", ns("smooth"), "']"),
+                                              dateRangeInput(ns("daterange2_visitors_hours_library"),
+                                                             label = 'Vælg dato periode 2',
+                                                             start = 0, end = 0,
+                                                             separator = " - "
+                                              )
+                                            ),
+                                            tags$hr(),
                                             sliderInput(ns("range"), "Vælg tids periode:",
                                                         min = 0, max = 24,
                                                         value = c(8,16))
-                                            
                                      ),
                                      column(10,
                                             h4("Besøg fordelt på timer og periode"), 
-                                            formattableOutput(ns("visitors_per_hours_table"))
+                                            formattableOutput(ns("visitors_per_hours_table")),
+                                            conditionalPanel(
+                                              paste0("input['", ns("smooth"), "']"),
+                                              formattableOutput(ns("visitors_per_hours_table2"))
+                                            ),
+                                            downloadUI("visitors_per_hours")
                                      )
                                    )  
                           ),
@@ -314,5 +328,22 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
     #mutate_at(c(2:5), funs(replace(., is.na(.), "0")))
     formattable(visitors_hours)
   })
+    
+  output$visitors_per_hours_table2<- renderFormattable({
+    visitors_hours <- visitors_hours %>%
+      filter(location %in% input$visitors_hours_library) %>%
+      filter(visit_date_hour > input$daterange2_visitors_hours_library[1] & visit_date_hour < input$daterange2_visitors_hours_library[2]) %>%
+      select(visit_date_hour, location, count) %>%
+      mutate(tid = hour(visit_date_hour)) %>%
+      filter(tid > input$range[1] & tid < input$range[2]) %>%
+      select(-visit_date_hour) %>%
+      group_by(location, tid) %>%
+      summarise(sum = sum(count)) %>%
+      spread(key = location, value = sum) #%>%
+    #mutate_at(c(2:5), funs(replace(., is.na(.), "0")))
+    formattable(visitors_hours)
+  })
+    
+  callModule(download, id = "visitors_per_hours", dataset = visitors_hours)
   
 }

@@ -59,6 +59,7 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
   employees <- dbGetQuery(con, "SELECT navn,  email, enhedsnavnniv5, enhedsnavnniv6 FROM web.ansatte")
   dbDisconnect(con)
   
+  # Oversigtstabel
   output$tablebhus_events_overview <- renderTable(
     bhus_events_overview <- bhus_events %>%
       filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
@@ -70,6 +71,7 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
       rename(Lokation = location, Antal = count, Gennemsnit =	mean, Middelværdi =	median, Total =	sum, Belægninsprocent = timediff )  
   )
   
+  # Vist på agendaskærm
   output$bhus_events_agendascreen_plot <- renderPlotly({
     bhus_events_agendascreen <- bhus_events %>%
       filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
@@ -83,15 +85,16 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
   
+  # Oversigtstabel 2
   output$tablebhus_events <- renderFormattable({
     bhus_events_timeslots <- bhus_events %>%
       filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
       select(location, startdate, slut ) %>%
       mutate(Tidspunkt = hour(format(as.POSIXct(startdate)))) %>%
       group_by(location, slut, Tidspunkt) %>%
-      summarise(count = n()) #%>%
-      #spread(key = location, value = count) %>%
-      #replace(., is.na(.), "0")
+      summarise(count = n()) %>%
+      spread(key = location, value = count) %>%
+      replace(., is.na(.), "0")
     formattable(bhus_events_timeslots, list('Lokale 1.1' = color_tile("grey", '#468c8c')))}
   )
   
