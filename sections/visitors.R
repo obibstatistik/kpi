@@ -92,7 +92,9 @@ visitorsTabPanelUI <- function(id) {
                                             tags$hr(),
                                             sliderInput(ns("range"), "Vælg tids periode:",
                                                         min = 0, max = 24,
-                                                        value = c(8,16))
+                                                        value = c(8,16)),
+                                            tags$hr(),
+                                            selectInput(ns("numberpercent"), "Output metode:",c('Antal' = 'count','Procent af total' = 'percent')) 
                                      ),
                                      column(10,
                                             h4("Besøg fordelt på timer og periode"), 
@@ -100,8 +102,8 @@ visitorsTabPanelUI <- function(id) {
                                             conditionalPanel(
                                               paste0("input['", ns("smooth"), "']"),
                                               formattableOutput(ns("visitors_per_hours_table2"))
-                                            ),
-                                            downloadUI("visitors_per_hours")
+                                            )#,
+                                            #downloadUI("visitors_per_hours")
                                      )
                                    )  
                           ),
@@ -162,7 +164,6 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
       }
     ) %>%
     mutate(date = if_else(year(date) %in% c('2014','2015'), date + (day(Sys.Date())-2), date, NULL)) %>%
-    #mutate(if(year(date) == '2014' | year(date) == '2015') {date + (day(Sys.Date())-1)} else {date}) #%>%
     mutate(date = format(as.POSIXct(date, tz = "GMT", format, tryFormats = c("%Y-%m-%d %H:%M:%OS"), optional = FALSE)))
 
   visitors6 <- rbind(visitors3, visitors4)
@@ -315,17 +316,31 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
     )
   
   output$visitors_per_hours_table <- renderFormattable({
-    visitors_hours <- visitors_hours %>%
-      filter(location %in% input$visitors_hours_library) %>%
-      filter(visit_date_hour > input$daterange_visitors_hours_library[1] & visit_date_hour < input$daterange_visitors_hours_library[2]) %>%
-      select(visit_date_hour, location, count) %>%
-      mutate(tid = hour(visit_date_hour)) %>%
-      filter(tid > input$range[1] & tid < input$range[2]) %>%
-      select(-visit_date_hour) %>%
-      group_by(location, tid) %>%
-      summarise(sum = sum(count)) %>%
-      spread(key = location, value = sum) #%>%
-    #mutate_at(c(2:5), funs(replace(., is.na(.), "0")))
+    if (input$numberpercent == "percent")
+      visitors_hours <- visitors_hours %>%
+        filter(location %in% input$visitors_hours_library) %>%
+        filter(visit_date_hour > input$daterange_visitors_hours_library[1] & visit_date_hour < input$daterange_visitors_hours_library[2]) %>%
+        select(visit_date_hour, location, count) %>%
+        mutate(tid = hour(visit_date_hour)) %>%
+        filter(tid > input$range[1] & tid < input$range[2]) %>%
+        select(-visit_date_hour) %>%
+        group_by(location, tid) %>%
+        summarise(sum = sum(count)) %>%
+        spread(key = location, value = sum) %>% 
+        mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
+        mutate_at(vars(-tid), funs(ifelse( is.na(.), NA, percent(. / sum(.)))))
+    else 
+      visitors_hours <- visitors_hours %>%
+        filter(location %in% input$visitors_hours_library) %>%
+        filter(visit_date_hour > input$daterange_visitors_hours_library[1] & visit_date_hour < input$daterange_visitors_hours_library[2]) %>%
+        select(visit_date_hour, location, count) %>%
+        mutate(tid = hour(visit_date_hour)) %>%
+        filter(tid > input$range[1] & tid < input$range[2]) %>%
+        select(-visit_date_hour) %>%
+        group_by(location, tid) %>%
+        summarise(sum = sum(count)) %>%
+        spread(key = location, value = sum) %>% 
+        mutate_at(vars(-tid), funs(replace(., is.na(.), 0)))  
     formattable(visitors_hours)
   })
     
