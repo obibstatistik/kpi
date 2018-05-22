@@ -1,3 +1,5 @@
+source("global.R")
+
 ### POSTGRES METADATA MODUL ###
 
 # UI
@@ -33,7 +35,6 @@ metaTabPanel <- function(input, output, session, data, tablename) {
 downloadUI <- function(id) {
   ns <- NS(id)
   tagList(
-    selectInput("filetype", "Vælg filtype:", choices = c("excel", "csv", "pdf")),
     downloadButton(ns('downloadData'), 'Download')
   )
 }
@@ -42,22 +43,14 @@ downloadUI <- function(id) {
 
 download <- function(input, output, session, dataset) {
   
+  data <- starwars
+  
   output$downloadData <- downloadHandler(
-    
-    # This function returns a string which tells the client
-    # browser what name to use when saving the file.
     filename = function() {
-      paste(input$dataset, input$filetype, sep = ".")
+      paste("data-", Sys.Date(), ".csv", sep="")
     },
-    
-    # This function should write data to a file given to it by
-    # the argument 'file'.
     content = function(file) {
-      sep <- switch(input$filetype, "csv" = ",", "tsv" = "\t")
-      
-      # Write to a file specified by the 'file' argument
-      write.table(datasetInput(), file, sep = sep,
-                  row.names = FALSE)
+      write.csv(data, file)
     }
   )
   

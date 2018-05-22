@@ -34,20 +34,16 @@ meetingroomsTabPanelUI <- function(id) {
                                                    tableOutput(ns("tablemeetingrooms_overview"))
                                             ),
                                             column(width = 6,
-                                                   h4("Vist på agendaskærm"), 
-                                                   plotlyOutput(ns("meetingrooms_agendascreen_plot"))
+                                                   h4("Booker top 10"),
+                                                   tableOutput(ns("table_meetingrooms_booker"))
                                             ),
                                             column(width = 12,
                                                    h4("Oversigtstabel"),
                                                    formattableOutput(ns("tablemeetingrooms_timeslots"))
                                             ),
                                             column(width = 6,
-                                                   h4("Booker top 10"),
-                                                   tableOutput(ns("table_meetingrooms_booker"))
-                                            ),
-                                            column(width = 6,
-                                                   h4("Emnefelt"),
-                                                   tableOutput(ns("table_meetingrooms_title"))
+                                                   h4("Vist på agendaskærm"), 
+                                                   plotlyOutput(ns("meetingrooms_agendascreen_plot"))
                                             )
                                      )
                                 )
@@ -77,6 +73,11 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
   meetingrooms <- dbGetQuery(con, "SELECT * FROM datamart.meetingrooms")
   employees <- dbGetQuery(con, "SELECT navn,  email, enhedsnavnniv5, enhedsnavnniv6 FROM web.ansatte")
   dbDisconnect(con)
+  
+  employees <- rbind(employees, c("Team Musik", "teammusik@odense.dk", "Team Musik", "Team Musik"))
+  employees <- rbind(employees, c("Team Børn", "teamboern@odense.dk", "Team Børn", "Team Børn"))
+  employees <- rbind(employees, c("Team Oplevelse", "teamoplevelse@odense.dk", "Team Oplevelse", "Team Oplevelse"))
+  employees <- rbind(employees, c("Team Viden", "teamviden@odense.dk ", "Team Viden", "Team Viden"))
   
   meetingrooms <- meetingrooms %>%
     mutate(
@@ -145,25 +146,18 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
     meetingrooms_booker <- meetingrooms %>%
       filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
       select(forfatter_mail) %>%
+      mutate(forfatter_mail = tolower(forfatter_mail)) %>%
       group_by(forfatter_mail) %>%
       summarise(count = n()) %>%
       arrange(desc(count)) %>%
-      head(10) %>%
       rename(Booker = forfatter_mail, Antal = count) %>%
       left_join(employees, by = c("Booker" = "email")) %>%
-      mutate(Enhed = if(is.na(enhedsnavnniv6)) enhedsnavnniv6 else enhedsnavnniv5) %>%
+      mutate(Enhed = ifelse(is.na(enhedsnavnniv6) & is.na(enhedsnavnniv5), "Andet", ifelse(is.na(enhedsnavnniv6), enhedsnavnniv5, enhedsnavnniv6))) %>%
       select(Enhed, Antal) %>%
       group_by(Enhed) %>%
-      summarise(sum(Antal))
-  )
-  
-  output$table_meetingrooms_title <- renderTable(
-    meetingrooms_title <- meetingrooms %>%
-      filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
-      select(subject) %>%
-      group_by(subject) %>%
-      summarise(count = n()) %>%
-      arrange(desc(count))
+      summarise(sum = sum(Antal)) %>%
+      arrange(desc(sum)) %>%
+      head(10)
   )
   
 }
