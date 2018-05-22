@@ -372,7 +372,5 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
         mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) 
     formattable(visitors_hours)
   })
-    
-  callModule(download, id = "visitors_per_hours", dataset = visitors_hours)
-  
+
 }
