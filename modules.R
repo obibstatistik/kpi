@@ -28,31 +28,31 @@ metaTabPanel <- function(input, output, session, data, tablename) {
   )
 }
 
-### DOWNLOAD MODUL ###
-
-# UI
-
-downloadUI <- function(id) {
-  ns <- NS(id)
-  tagList(
-    downloadButton(ns('downloadData'), 'Download')
-  )
-}
-
-# SERVER
-
-download <- function(input, output, session, dataset) {
-  
-  data <- starwars
-  
-  output$downloadData <- downloadHandler(
-    filename = function() {
-      paste("data-", Sys.Date(), ".csv", sep="")
-    },
-    content = function(file) {
-      write.csv(data, file)
-    }
-  )
-  
-  
-}
+# ### DOWNLOAD MODUL ###
+# 
+# # UI
+# 
+# downloadUI <- function(id) {
+#   ns <- NS(id)
+#   tagList(
+#     downloadButton(ns('downloadData'), 'Download')
+#   )
+# }
+# 
+# # SERVER
+# 
+# download <- function(input, output, session, dataset) {
+#   
+#   data <- starwars
+#   
+#   output$downloadData <- downloadHandler(
+#     filename = function() {
+#       paste("data-", Sys.Date(), ".csv", sep="")
+#     },
+#     content = function(file) {
+#       write.csv(data, file)
+#     }
+#   )
+#   
+#   
+# }
