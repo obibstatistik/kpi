@@ -8,54 +8,55 @@ online_odensebibTabPanelUI <- function(id) {
   
   ns <- NS(id)
   
-    
-    tabItem(tabName = "odensebib",
-            
-            box(width = 12, solidHeader = TRUE, id="onlineheader2",
-                h3("Odensebib.dk"),
-                img(src='online.png', align = "right", height="46px")
-            ),
-            
-            fluidRow(
-              column(12,
-                     tabBox(width = 12,
-                            id = "tabset1", height = "250px",
-                            tabPanel("Generelt", 
-                                     fluidRow(
-                                       column(12,
-                                              column(width = 12,
-                                                     h4("Sidevisninger"), 
-                                                     plotlyOutput(ns("plot1")),
-                                                     tableOutput(ns("ga_pageviewstable"))
-                                              ),
-                                              column(width = 6,
-                                                     h4("Top 10 sider 2017"), 
-                                                     formattableOutput(ns("tableplot3"))
-                                              ),
-                                              column(width = 6,
-                                                     h4("Enheder"),  
-                                                     plotlyOutput(ns("ga_device_plot"))
-                                              ),
-                                              
-                                              column(width = 6,
-                                                     h4("Browser"), 
-                                                     plotlyOutput(ns("ga_browser_plot"))#,
-                                                     #tableOutput(ns("tablebrowser"))
-                                              ),
-                                              column(width = 6,
-                                                     h4("Sprog"), 
-                                                     plotlyOutput(ns("ga_language_plot"))#,
-                                                     #tableOutput(ns("tablelanguage"))
-                                              )
-                                       )
-                                     )   
-                            ),
-                            tabPanel("Indholdsgrupper", "")#,
-                            #tabPanel("Kampagner", "")
-                     )
-              )
+  
+  tabItem(tabName = "odensebib",
+          
+          box(width = 12, solidHeader = TRUE, id="onlineheader2",
+              h3("Odensebib.dk"),
+              img(src='online.png', align = "right", height="46px")
+          ),
+          
+          fluidRow(
+            column(12,
+                   tabBox(width = 12,
+                          id = "tabset1", height = "250px",
+                          tabPanel("Generelt", 
+                                   fluidRow(
+                                     column(width = 12,
+                                            h4("Sidevisninger"), 
+                                            plotlyOutput(ns("plot1")),
+                                            tableOutput(ns("ga_pageviewstable"))
+                                     )),
+                                   fluidRow(          
+                                     column(width = 6,
+                                            h4("Top 10 sider 2017"), 
+                                            formattableOutput(ns("tableplot3"))
+                                     ),
+                                     column(width = 6,
+                                            h4("Enheder"),  
+                                            plotlyOutput(ns("ga_device_plot"))
+                                     )
+                                   ),
+                                   fluidRow(          
+                                     column(width = 6,
+                                            h4("Browser"), 
+                                            plotlyOutput(ns("ga_browser_plot"))#,
+                                            #tableOutput(ns("tablebrowser"))
+                                     ),
+                                     column(width = 6,
+                                            h4("Sprog"), 
+                                            plotlyOutput(ns("ga_language_plot"))#,
+                                            #tableOutput(ns("tablelanguage"))
+                                     )
+                                   )
+                                   
+                          ),
+                          tabPanel("Indholdsgrupper", "")#,
+                          #tabPanel("Kampagner", "")
+                   )
             )
-    )
+          )
+  )
   
   # tabItem(tabName = "app",
   #         box(width = 12,
@@ -68,7 +69,7 @@ online_odensebibTabPanelUI <- function(id) {
 # SERVER
 
 online_odensebibTabPanel <- function(input, output, session) {
-
+  
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
   ga_pageviews <- dbGetQuery(con, "SELECT * FROM datamart.ga_pageviews where pageviews > 0")
@@ -130,17 +131,17 @@ online_odensebibTabPanel <- function(input, output, session) {
     head(10)
   
   output$ga_browser_plot <- renderPlotly({
-   p <- plot_ly(ga_browser2, x = ~datoen, y = ~`Samsung Internet`, name = 'Samsung Internet', type = 'scatter', mode = 'lines') %>%
-     add_trace(y = ~`Edge`, name = 'Edge', mode = 'lines') %>%
-     add_trace(y = ~`Firefox`, name = 'Firefox', mode = 'lines') %>%
-     add_trace(y = ~`Chrome`, name = 'Chrome', mode = 'lines') %>%
-     add_trace(y = ~`Internet Explorer`, name = 'Internet Explorer', mode = 'lines') %>%
-     add_trace(y = ~`Safari`, name = 'Safari', mode = 'lines') %>%
-     add_trace(y = ~`Safari (in-app)`, name = 'Safari (in-app)', mode = 'lines') %>%
-     add_trace(y = ~`Android Browser`, name = 'Android Browser ', mode = 'lines') %>%
-     add_trace(y = ~`Mozilla Compatible Agent`, name = 'Mozilla Compatible Agent', mode = 'lines') %>%
-     add_trace(y = ~`Android Webview`, name = 'Android Webview', mode = 'lines') %>%
-     layout(xaxis = list(title = 'Dato'),yaxis = list (title = 'Sidevisninger'))
+    p <- plot_ly(ga_browser2, x = ~datoen, y = ~`Samsung Internet`, name = 'Samsung Internet', type = 'scatter', mode = 'lines') %>%
+      add_trace(y = ~`Edge`, name = 'Edge', mode = 'lines') %>%
+      add_trace(y = ~`Firefox`, name = 'Firefox', mode = 'lines') %>%
+      add_trace(y = ~`Chrome`, name = 'Chrome', mode = 'lines') %>%
+      add_trace(y = ~`Internet Explorer`, name = 'Internet Explorer', mode = 'lines') %>%
+      add_trace(y = ~`Safari`, name = 'Safari', mode = 'lines') %>%
+      add_trace(y = ~`Safari (in-app)`, name = 'Safari (in-app)', mode = 'lines') %>%
+      add_trace(y = ~`Android Browser`, name = 'Android Browser ', mode = 'lines') %>%
+      add_trace(y = ~`Mozilla Compatible Agent`, name = 'Mozilla Compatible Agent', mode = 'lines') %>%
+      add_trace(y = ~`Android Webview`, name = 'Android Webview', mode = 'lines') %>%
+      layout(xaxis = list(title = 'Dato'),yaxis = list (title = 'Sidevisninger'))
   })
   
   #output$tablebrowser <- renderTable(ga_browser_table)
