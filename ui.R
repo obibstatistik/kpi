@@ -36,8 +36,8 @@ dashboardPage(
       ),
       menuItem("Online", tabName = "online", icon = icon("laptop", lib="font-awesome"), 
                #menuItem("Sites", tabName = "weboverview"),
-               menuItem("Odensebib.dk", tabName = "odensebib"),
-               menuItem("Biblioteket App", tabName = "app")
+               menuItem("Odensebib.dk", tabName = "odensebib")#,
+               #menuItem("Biblioteket App", tabName = "app")
       ),
       menuItem("Materialer", tabName = "emat", icon = icon("book", lib="font-awesome"),
                menuItem("Udlån", tabName = "fysmat"),

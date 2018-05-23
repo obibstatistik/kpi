@@ -29,18 +29,29 @@ online_odensebibTabPanelUI <- function(id) {
                                                      tableOutput(ns("ga_pageviewstable"))
                                               ),
                                               column(width = 6,
+                                                     h4("Top 10 sider 2017"), 
+                                                     formattableOutput(ns("tableplot3"))
+                                              ),
+                                              column(width = 6,
                                                      h4("Enheder"),  
                                                      plotlyOutput(ns("ga_device_plot"))
                                               ),
+                                              
                                               column(width = 6,
-                                                     h4("Top 10 sider 2017"), 
-                                                     formattableOutput(ns("tableplot3"))
+                                                     h4("Browser"), 
+                                                     plotlyOutput(ns("ga_browser_plot"))#,
+                                                     #tableOutput(ns("tablebrowser"))
+                                              ),
+                                              column(width = 6,
+                                                     h4("Sprog"), 
+                                                     plotlyOutput(ns("ga_language_plot"))#,
+                                                     #tableOutput(ns("tablelanguage"))
                                               )
                                        )
                                      )   
                             ),
-                            tabPanel("Indholdsgrupper", ""),
-                            tabPanel("Kampagner", "")
+                            tabPanel("Indholdsgrupper", "")#,
+                            #tabPanel("Kampagner", "")
                      )
               )
             )
@@ -63,6 +74,8 @@ online_odensebibTabPanel <- function(input, output, session) {
   ga_pageviews <- dbGetQuery(con, "SELECT * FROM datamart.ga_pageviews where pageviews > 0")
   ga_device <- dbGetQuery(con, "select device, sum(users) as users from datamart.ga_device group by device")
   ga_top10 <- dbGetQuery(con, "SELECT title, pageviews FROM datamart.ga_top10 order by pageviews desc limit 11 offset 1")
+  ga_browser <- dbGetQuery(con, "select browser, to_date(yearmonth::text, 'YYYYMM') as datoen, pageviews from datamart.ga_browser")
+  ga_language <- dbGetQuery(con, "select language, to_date(yearmonth::text, 'YYYYMM') as datoen, pageviews from datamart.ga_language")
   sites <- dbGetQuery(con, "SELECT * FROM datamart.sites")
   dbDisconnect(con)
   
@@ -105,6 +118,58 @@ online_odensebibTabPanel <- function(input, output, session) {
     rename(Titel = title, Sidevisninger = pageviews )
   
   output$tableplot3 <- renderFormattable({formattable(ga_top10)})
+  
+  # browser
+  
+  ga_browser2 <- ga_browser %>%
+    spread(browser, pageviews)
+  ga_browser_table <- ga_browser %>%
+    group_by(browser) %>%
+    summarise(sum = sum(pageviews)) %>%
+    arrange(desc(sum)) %>%
+    head(10)
+  
+  output$ga_browser_plot <- renderPlotly({
+   p <- plot_ly(ga_browser2, x = ~datoen, y = ~`Samsung Internet`, name = 'Samsung Internet', type = 'scatter', mode = 'lines') %>%
+     add_trace(y = ~`Edge`, name = 'Edge', mode = 'lines') %>%
+     add_trace(y = ~`Firefox`, name = 'Firefox', mode = 'lines') %>%
+     add_trace(y = ~`Chrome`, name = 'Chrome', mode = 'lines') %>%
+     add_trace(y = ~`Internet Explorer`, name = 'Internet Explorer', mode = 'lines') %>%
+     add_trace(y = ~`Safari`, name = 'Safari', mode = 'lines') %>%
+     add_trace(y = ~`Safari (in-app)`, name = 'Safari (in-app)', mode = 'lines') %>%
+     add_trace(y = ~`Android Browser`, name = 'Android Browser ', mode = 'lines') %>%
+     add_trace(y = ~`Mozilla Compatible Agent`, name = 'Mozilla Compatible Agent', mode = 'lines') %>%
+     add_trace(y = ~`Android Webview`, name = 'Android Webview', mode = 'lines') %>%
+     layout(xaxis = list(title = 'Dato'),yaxis = list (title = 'Sidevisninger'))
+  })
+  
+  #output$tablebrowser <- renderTable(ga_browser_table)
+  
+  # language
+  
+  ga_language2 <- ga_language %>%
+    spread(language, pageviews)
+  ga_language_table <- ga_language %>%
+    group_by(language) %>%
+    summarise(sum = sum(pageviews)) %>%
+    arrange(desc(sum)) %>%
+    head(10)
+  
+  output$ga_language_plot <- renderPlotly({
+    p <- plot_ly(ga_language2, x = ~datoen, y = ~`da-dk`, name = 'da-dk', type = 'scatter', mode = 'lines') %>%
+      add_trace(y = ~`da`, name = 'da', mode = 'lines') %>%
+      add_trace(y = ~`en-us`, name = 'en-us', mode = 'lines') %>%
+      add_trace(y = ~`en-gb`, name = 'en-gb', mode = 'lines') %>%
+      add_trace(y = ~`de-de`, name = 'de-de', mode = 'lines') %>%
+      add_trace(y = ~`de`, name = 'de', mode = 'lines') %>%
+      add_trace(y = ~`nb-no`, name = 'nb-no', mode = 'lines') %>%
+      add_trace(y = ~`nb`, name = 'nb', mode = 'lines') %>%
+      add_trace(y = ~`pl`, name = 'pl', mode = 'lines') %>%
+      add_trace(y = ~`sv-se`, name = 'sv-se', mode = 'lines') %>%
+      layout(xaxis = list(title = 'Dato'),yaxis = list (title = 'Sidevisninger'))
+  })
+  
+  #output$tablelanguage <- renderTable(ga_language_table)
   
   
   
