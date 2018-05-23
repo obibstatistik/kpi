@@ -20,7 +20,7 @@ online_odensebibTabPanelUI <- function(id) {
             column(width = 12,
 
                    tabBox(width = 12,
-                          id = "tabset1", height = "250px",
+                          id = "tabset1",
                           tabPanel("Generelt", 
                                    fluidRow(
                                      column(width = 12,
