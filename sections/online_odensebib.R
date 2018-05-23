@@ -16,6 +16,8 @@ online_odensebibTabPanelUI <- function(id) {
               img(src='online.png', align = "right", height="46px")
           ),
           
+          fluidRow(          
+            column(width = 12,
 
                    tabBox(width = 12,
                           id = "tabset1", height = "250px",
@@ -50,18 +52,10 @@ online_odensebibTabPanelUI <- function(id) {
                                    )
                                    
                           ),
-                          tabPanel("Indholdsgrupper", "")#,
-                          #tabPanel("Kampagner", "")
+                          tabPanel("Indholdsgrupper", "")
                    )
-           
+            ))
   )
-  
-  # tabItem(tabName = "app",
-  #         box(width = 12,
-  #             h3("Biblioteket App")
-  #         )
-  # ),
-  
 }
 
 # SERVER
