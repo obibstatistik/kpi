@@ -52,7 +52,10 @@ online_odensebibTabPanelUI <- function(id) {
                                    )
                                    
                           ),
-                          tabPanel("Indholdsgrupper", "")
+                          tabPanel("Indholdsgrupper",
+                                   p("Data fra 22-05-2018"),
+                                   tableOutput(ns('content_groups'))        
+                          )
                    )
             ))
   )
@@ -69,6 +72,7 @@ online_odensebibTabPanel <- function(input, output, session) {
   ga_top10 <- dbGetQuery(con, "SELECT title, pageviews FROM datamart.ga_top10 order by pageviews desc limit 11 offset 1")
   ga_browser <- dbGetQuery(con, "select browser, to_date(yearmonth::text, 'YYYYMM') as datoen, pageviews from datamart.ga_browser")
   ga_language <- dbGetQuery(con, "select language, to_date(yearmonth::text, 'YYYYMM') as datoen, pageviews from datamart.ga_language")
+  ga_path <- dbGetQuery(con, "SELECT * FROM datamart.ga_path")
   sites <- dbGetQuery(con, "SELECT * FROM datamart.sites")
   dbDisconnect(con)
   
@@ -164,6 +168,55 @@ online_odensebibTabPanel <- function(input, output, session) {
   
   #output$tablelanguage <- renderTable(ga_language_table)
   
+  #content groups
+  
+  ga_path <- ga_path %>%
+    mutate(
+      content_group = case_when(
+        grepl("biblioteker/hovedbiblioteket", path) ~ "Afdelingsside Hovedbiblioteket",
+        grepl("biblioteker/bolbro", path) ~ "Afdelingsside Bolbro",
+        grepl("biblioteker/dalum", path) ~ "Afdelingsside Dalum",
+        grepl("biblioteker/slug-dalum", path) ~ "Afdelingsside Dalum",
+        grepl("biblioteker/node/73", path) ~ "Afdelingsside Historiens Hus",
+        grepl("biblioteker/slug-holluf", path) ~ "Afdelingsside Holluf Pile",
+        grepl("biblioteker/node/142", path) ~ "Afdelingsside Højby",
+        grepl("biblioteker/slug-korup", path) ~ "Afdelingsside Korup",
+        grepl("biblioteker/musikbiblioteket", path) ~ "Afdelingsside Musikbiblioteket",
+        grepl("biblioteker/slug-tarup", path) ~ "Afdelingsside Tarup",
+        grepl("biblioteker/slug-vollsmose", path) ~ "Afdelingsside Vollsmose",
+        grepl("^/biblioteker", path) ~ "Biblioteker oversigtsiden",
+        grepl("page/feedback", path) ~ "Kontaktformularsiden",
+        grepl("page/kontakt-personalet", path) ~ "Personale oversigten",
+        grepl("page/pas_paa_biblioteket", path) ~ "Borgerservice siden",
+        grepl("^/search/ting", path) ~ "Søgning Brønd",
+        grepl("^/search/node", path) ~ "Søgning Hjemmeside",
+        grepl("^/ting/collection/", path) ~ "Visning Værker",
+        grepl("^/ting/collection/", path) ~ "Visning Værker",
+        grepl("^/ting/object/", path) ~ "Visning Objekt",
+        grepl("^/ting/infomedia/", path) ~ "Visning Infomedia",
+        grepl("^/user/password", path) ~ "Bruger Glemt kodeord",
+        grepl("^/user/$", path) ~ "Bruger Profil",
+        grepl("^/user$", path) ~ "Bruger Profil",
+        grepl("^/payment/dibs", path) ~ "Bruger Betaling Mellemværende",
+        grepl("^/nyheder", path) ~ "Nyheder Enkelte",
+        grepl("^/news-category", path) ~ "Nyheder Oversigtssider",
+        grepl("^/arrangementer", path) ~ "Arrangementer",
+        grepl("^/403.html", path) ~ "Adgang nægtet",
+        grepl("^/404.html", path) ~ "Ikke fundet",
+        grepl("^/media/browser", path) ~ "Medie browser!",
+        grepl("^/ding_frontpage", path) ~ "Bruger Log ind",
+        grepl("^/page/netbiblioteket-oversigt", path) ~ "Netbiblioteket Oversigt",
+        grepl("^/$", path) ~ "Forside"
+        
+      ) 
+    ) %>%
+    mutate(gruppe = ifelse(is.na(content_group), "Andet", content_group)) %>%
+    select(gruppe, pageviews) %>%
+    group_by(gruppe) %>%
+    summarise(sum = sum(pageviews)) %>%
+    arrange(gruppe)
+  
+  output$content_groups <- renderTable(ga_path)
   
   
 }
