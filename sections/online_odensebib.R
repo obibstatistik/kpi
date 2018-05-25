@@ -112,6 +112,7 @@ online_odensebibTabPanel <- function(input, output, session) {
   
   ga_top10 <- ga_top10 %>% 
     filter(title != "Adgang nægtet | Odense Bibliotekerne") %>%
+    mutate(pageviews = format(round(as.numeric(pageviews), 0), nsmall=0, big.mark=".")) %>%
     rename(Titel = title, Sidevisninger = pageviews )
   
   output$tableplot3 <- renderFormattable({formattable(ga_top10)})
@@ -214,6 +215,7 @@ online_odensebibTabPanel <- function(input, output, session) {
     select(gruppe, pageviews) %>%
     group_by(gruppe) %>%
     summarise(sum = sum(pageviews)) %>%
+    mutate(sum = format(round(as.numeric(sum), 0), nsmall=0, big.mark=".")) %>%
     arrange(gruppe)
   
   output$content_groups <- renderTable(ga_path)

@@ -71,8 +71,10 @@ eventsTabPanelUI <- function(id) {
                                      )
                                    )
                           ),
-                          metaTabPanelUI(id = "arrangementer")
-                   )
+                          tabPanel("Data",
+                            metaTabPanelUI(id = "arrangementer")
+                          )  
+                    )
             )
           )
   )

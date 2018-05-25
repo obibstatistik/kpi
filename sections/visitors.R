@@ -217,9 +217,12 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
       summarise(sum = sum(count)) %>%
       spread(key = visitor_year, value = sum) %>%
       ungroup(.self) %>%
-      mutate(akku1 = cumsum(.[[2]]), akku2 = cumsum(.[[3]]), mdr = percent(.[[3]]-.[[2]])/.[[2]]) %>%
-      mutate(akk = percent((akku2-akku1)/akku1)) %>%
+      mutate(akku1 = cumsum(.[[2]]), akku2 = cumsum(.[[3]]), mdr = percent(((.[[3]]-.[[2]])/(.[[2]])), digits = 0)) %>%
+      mutate(akk = percent((akku2-akku1)/akku1, digits = 0)) %>%
       select(c(1,2,4,3,5,6,7)) %>%
+      mutate_at(vars(-1), funs(replace(., is.na(.), 0))) %>%
+      mutate_at(vars(c(-1,-6,-7)), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark="."))) %>%
+      mutate_at(vars(1), funs(danskemåneder(.))) %>%
       rename(Måned = month, Akkumuleret = akku1, "Akkumuleret " = akku2, 'Ændring pr. mdr.' = mdr, 'Ændring akkumuleret' = akk)
     formattable(visitors, list(
       'Ændring pr. mdr.' = formatter("span", style = x ~ style(color = ifelse(x < 0 , color4, color1)), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
@@ -268,7 +271,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
       add_trace(y = ~`2016`, name = '2016', marker = list(color = color3)) %>%
       add_trace(y = ~`2017`, name = '2017', marker = list(color = color4)) %>%
       add_trace(y = ~`2018`, name = '2018', marker = list(color = color5)) %>%
-      layout(yaxis = list(title = 'Antal'), barmode = 'group')
+      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Bibliotek'), barmode = 'group')
   })
   
   output$visitorstest <- renderFormattable({
@@ -280,8 +283,10 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
       summarise(sum = sum(count)) %>%
       spread(key = year, value = sum) %>%
       rename(Filial = location) %>%
-      mutate(`2014` = `2014`/`2016`, `2015` = `2015`/`2016`, `2017` = `2017`/`2016`, `2018` = `2018`/`2016`, `2016` = 1) #%>%
-    #mutate_at(c(2:5), funs(replace(., is.na(.), 0)))
+      mutate(`2014` = `2014`/`2016`, `2015` = `2015`/`2016`, `2017` = `2017`/`2016`, `2018` = `2018`/`2016`, `2016` = 1) %>%
+      mutate_at(vars(1), funs(replace(., is.na(.), 0))) %>%
+      mutate_at(vars(c(1,2,3,4,5)), funs(format(round(as.numeric(.), 2), nsmall=1, big.mark="."))) %>%
+      mutate_at(vars(c(1,2,3,4,5)), funs(replace(., is.na(.), 0))) 
     } 
     else {visitorsbranch2 <- visitors1 %>%
       filter(if(input$mainlibrary3 == 'Uden Hovedbiblioteket')  (location != 'Borgernes Hus') else TRUE) %>%
@@ -290,8 +295,9 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
       group_by(location, year) %>%
       summarise(sum = sum(count)) %>%
       spread(key = year, value = sum) %>%
-      rename(Filial = location) #%>%
-    #mutate_at(c(2:5), funs(replace(., is.na(.), "0")))
+      rename(Filial = location) %>%
+      mutate_at(vars(-1), funs(replace(., is.na(.), 0))) %>%
+      mutate_at(vars(c(1,2,3,4,5)), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".")))
     }
     formattable(visitorsbranch2, align = (c('l','r','r','r','r','r'))
     )
@@ -328,7 +334,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
         summarise(sum = sum(count)) %>%
         spread(key = location, value = sum) %>% 
         mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
-        mutate_at(vars(-tid), funs(ifelse( is.na(.), NA, percent(. / sum(.)))))
+        mutate_at(vars(-tid), funs(ifelse( is.na(.), NA, percent((. / sum(.)), digits = 0))))
     else 
       visitors_hours <- visitors_hours %>%
         filter(location %in% input$visitors_hours_library) %>%
@@ -340,7 +346,8 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
         group_by(location, tid) %>%
         summarise(sum = sum(count)) %>%
         spread(key = location, value = sum) %>% 
-        mutate_at(vars(-tid), funs(replace(., is.na(.), 0)))  
+        mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
+        mutate_at(vars(-tid), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".")))
     formattable(visitors_hours)
   })
     
@@ -369,7 +376,8 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
         group_by(location, tid) %>%
         summarise(sum = sum(count)) %>%
         spread(key = location, value = sum) %>%
-        mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) 
+        mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
+        mutate_at(vars(-tid), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".")))
     formattable(visitors_hours)
   })
 

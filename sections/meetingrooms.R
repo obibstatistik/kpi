@@ -138,7 +138,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
       group_by(sted, Tidspunkt) %>%
       summarise(count = n()) %>%
       spread(key = sted, value = count) %>%
-      replace(., is.na(.), "0")
+      replace(., is.na(.), "0") 
     formattable(meetingrooms_timeslots, list('Lokale 1.1' = color_tile("grey", '#468c8c')))}
   )
   
@@ -157,7 +157,8 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
       group_by(Enhed) %>%
       summarise(sum = sum(Antal)) %>%
       arrange(desc(sum)) %>%
-      head(10)
+      head(10) %>%
+      mutate(sum = format(round(as.numeric(sum), 0), nsmall=0, big.mark="."))
   )
   
 }

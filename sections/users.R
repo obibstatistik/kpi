@@ -62,6 +62,14 @@ usersTabPanel <- function(input, output, session, data, tablename) {
   dbDisconnect(con)
   
   colnames(loaners) <- c("Kategori", "Aktive", "Inaktive","Alle")
+  
+  loaners <- loaners %>%
+    mutate(
+      Aktive = format(round(as.numeric(Aktive), 0), nsmall=0, big.mark="."),
+      Inaktive = format(round(as.numeric(Inaktive), 0), nsmall=0, big.mark="."),     
+      Alle = format(round(as.numeric(Alle), 0), nsmall=0, big.mark=".")     
+    )
+  
   output$tableloaners <- renderTable(loaners)
   
 }
