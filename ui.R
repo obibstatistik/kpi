@@ -1,10 +1,14 @@
-# LIBRARIES
+# Libraries
 source("global.R")
 
-# MODULES
+# Moduler
 source("modules.R")
 
-# SECTIONS (MODULES)
+# Functioner
+source("functions.R")
+
+# Sections (Modules)
+source("./sections/acquisition.R")
 source("./sections/datasources.R")
 source("./sections/eressources.R")
 source("./sections/events.R")
@@ -17,6 +21,7 @@ source("./sections/staff.R")
 source("./sections/users.R")
 source("./sections/visitors.R")
 
+#  Dashboard Layout
 dashboardPage(
   skin = "black",
   
@@ -32,15 +37,14 @@ dashboardPage(
                menuItem("Besøgende", tabName = "visits"),
                menuItem("Mødelokaler", tabName = "meetingrooms"),
                menuItem("Event områder", tabName = "eventareas")#,
-               #menuItem("Smart City", tabName = "smartcity")
+               #menuItem("Smart City", tabName = "smartcity") 
       ),
       menuItem("Online", tabName = "online", icon = icon("laptop", lib="font-awesome"), 
-               #menuItem("Sites", tabName = "weboverview"),
                menuItem("Odensebib.dk", tabName = "odensebib")#,
                #menuItem("Biblioteket App", tabName = "app")
       ),
-      menuItem("Materialer", tabName = "emat", icon = icon("book", lib="font-awesome"),
-               menuItem("Udlån", tabName = "fysmat"),
+      menuItem("Materialer", tabName = "pmat", icon = icon("book", lib="font-awesome"),
+               menuItem("Udlån", tabName = "physicalmat"),
                menuItem("Materialeindkøb", tabName = "acquisition")
       ),
       menuItem("E-Ressourcer", tabName = "emat", icon = icon("database", lib="font-awesome"),
@@ -54,57 +58,36 @@ dashboardPage(
     )
   ),
   
+#  Dashboard Content 
   dashboardBody(
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
     ),
-    
     tabItems(
-      
-      ### FRONTPAGE ###  
+      # Frontpage  
       frontpageTabPanelUI(id = "frontpage"),  
-      
-      ### ARRANGEMENTER ###  
+      # Events  
       eventsTabPanelUI(id = "events"),  
-      
-      ### DET FYSISKE RUM ###
-      
-      # Besøgende #
+      # Space Visitors
       visitorsTabPanelUI(id = "visitors"),    
-      
-      # Mødelokaler #
+      # Space Meetings Rooms
       meetingroomsTabPanelUI(id = "meetingrooms"), 
-      
-      # Event områder #
+      # Space Event Areas #
       eventareasTabPanelUI(id = "eventareas"), 
-      
-      ### ONLINE ###
+      # Online Odensebib.dk
       online_odensebibTabPanelUI(id = "online_odensebib"),  
-      
-      ### MATERIALER ###
+      # Materials Circulation 
       materialsTabPanelUI(id = "materials"),
-      
-      ### E-RESSOURCER ###
+      # Materials Acquisition
+      acquisitionTabPanelUI(id = "acquisition"),
+      # E-Ressources
       eressourcesTabPanelUI(id = "eressources"),
-      
-      ### BRUGERE ###
+      # Users
       usersTabPanelUI(id = "users"),
-      
-      ### PERSONALE ###
+      # Staff
       staffTabPanelUI(id = "staff"),
-      
-      ### DATAKILDER ###
+      # Datasources
       datasourcesTabPanelUI(id = "datasources")
-      
-      ,
-      tabItem(tabName = "app",
-              checkboxInput("smooth", "Smooth"),
-              conditionalPanel(
-        condition = "input.smooth == true",
-        selectInput("smoothMethod", "Method",
-                    list("lm", "glm", "gam", "loess", "rlm")))
-      )
-      
     )
   )
 )

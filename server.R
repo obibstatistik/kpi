@@ -1,10 +1,11 @@
-# LIBRARIES
+# Libraries
 source("global.R")
 
-# MODULES
+# Modules
 source("modules.R")
 
-# SECTIONS (MODULES)
+# Sections (Modules)
+source("./sections/acquisition.R")
 source("./sections/datasources.R")
 source("./sections/eressources.R")
 source("./sections/events.R")
@@ -14,7 +15,7 @@ source("./sections/materials.R")
 source("./sections/meetingrooms.R")
 source("./sections/online_odensebib.R")
 source("./sections/staff.R")
-source("./sections/users.R", local = TRUE)
+source("./sections/users.R")
 source("./sections/visitors.R")
 
 shinyServer(function(input, output) {
@@ -24,12 +25,10 @@ shinyServer(function(input, output) {
   ### DB QUERIES ###
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
-
   datasources_schema <- (dbGetQuery(con, "SELECT columns.table_name as name, columns.column_name, columns.data_type,columns.column_default, columns.is_nullable FROM information_schema.columns;"))
-  
   dbDisconnect(con)
-  ### COLORS ###
   
+  ### COLORS ###
   colors <- c('rgb(70,140,140)', 'rgb(174,176,81)', 'rgb(59,54,74)', 'rgb(192,57,83)', 'rgb(29,114,170)', 'rgb(225,123,81)', 'rgb(219,181,61)')
   color1 = c('rgb(70,140,140)')
   color2 = c('rgb(174,176,81)')
@@ -40,51 +39,38 @@ shinyServer(function(input, output) {
   color7 = c('rgb(219,181,61)')
   
   ### DATES ###
-  
   year <- as.integer(format(Sys.Date(), "%Y"))
   month <- as.integer(format(Sys.Date(), "%M"))
   day <- as.integer(format(Sys.Date(), "%Y"))
-  
-  ### LOCATIONS ###
-  
   
   ### MODULES ###
   callModule(metaTabPanel, id = "arrangementer", data = datasources_schema, tablename = "arrangementer")
   callModule(metaTabPanel, id = "people_counter", data = datasources_schema, tablename = "people_counter")
   callModule(metaTabPanel, id = "visitor_counter", data = datasources_schema, tablename = "visitor_counter")
-  #callModule(download, id = "visitors_per_hours", dataset = visitors_hours)
   
-  ### FRONTPAGE ### 
+  # Frontpage
   callModule(frontpageTabPanel, id = "frontpage")
-  
-  ### EVENTS ### 
+  # Events 
   callModule(eventsTabPanel, id = "events")
-  
-  ### FYSISKE RUM ###
+  # Space Visitors
   callModule(visitorsTabPanel, id = "visitors")
-  
-  #meetingrooms
+  # Space Meetings Rooms
   callModule(meetingroomsTabPanel, id = "meetingrooms")
-
-  #bhus_events
+  # Space Event Areas #
   callModule(eventareasTabPanel, id = "eventareas")
-  
-  ### ONLINE ###
+  # Online Odensebib.dk
   callModule(online_odensebibTabPanel, id = "online_odensebib")
-  
-  ### MATERIALS ###
+  # Materials Circulation
   callModule(materialsTabPanel, id = "materials")
-
-  ### E-RESSOURCES ### 
+  # Materials Acquisition
+  callModule(acquisitionTabPanel, id = "acquisition")
+  # E-Ressources 
   callModule(eressourcesTabPanel, id = "eressources")
-  
-  ### USERS ###
+  # Users
   callModule(usersTabPanel, id = "users")
-  
-  ### STAFF ###
+  # Staff
   callModule(staffTabPanel, id = "staff")
-  
-  ### DATASOURCES ### 
+  # Datasources
   callModule(datasourcesTabPanel, id = "datasources")
   
 })
