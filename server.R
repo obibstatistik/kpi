@@ -1,25 +1,25 @@
 # Libraries
 source("global.R")
 
-# Modules
-source("modules.R")
-
-# Sections (Modules)
-source("./sections/acquisition.R")
-source("./sections/datasources.R")
-source("./sections/eressources.R")
-source("./sections/events.R")
-source("./sections/eventareas.R")
-source("./sections/frontpage.R")
-source("./sections/materials.R")
-source("./sections/meetingrooms.R")
-source("./sections/online_odensebib.R")
-source("./sections/staff.R")
-source("./sections/users.R")
-source("./sections/visitors.R")
-
 shinyServer(function(input, output) {
-
+  
+  # Modules
+  source("modules.R")
+  
+  # Sections (Modules)
+  source("./sections/acquisition.R")
+  source("./sections/datasources.R")
+  source("./sections/eressources.R")
+  source("./sections/events.R")
+  source("./sections/eventareas.R")
+  source("./sections/frontpage.R")
+  source("./sections/materials.R")
+  source("./sections/meetingrooms.R")
+  source("./sections/online_odensebib.R")
+  source("./sections/staff.R")
+  source("./sections/users.R")
+  source("./sections/visitors.R")
+  
   source("~/.postpass")
   
   ### DB QUERIES ###
@@ -29,7 +29,7 @@ shinyServer(function(input, output) {
   dbDisconnect(con)
   
   ### COLORS ###
-  colors <- c('rgb(70,140,140)', 'rgb(174,176,81)', 'rgb(59,54,74)', 'rgb(192,57,83)', 'rgb(29,114,170)', 'rgb(225,123,81)', 'rgb(219,181,61)')
+  colors <<- c('rgb(70,140,140)', 'rgb(174,176,81)', 'rgb(59,54,74)', 'rgb(192,57,83)', 'rgb(29,114,170)', 'rgb(225,123,81)', 'rgb(68,68,68)','rgb(102,102,102)','rgb(136,136,136)')
   color1 = c('rgb(70,140,140)')
   color2 = c('rgb(174,176,81)')
   color3 = c('rgb(59,54,74)')

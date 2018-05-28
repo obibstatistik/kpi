@@ -39,7 +39,7 @@ dashboardPage(
                menuItem("Event områder", tabName = "eventareas")#,
                #menuItem("Smart City", tabName = "smartcity") 
       ),
-      menuItem("Online", tabName = "online", icon = icon("laptop", lib="font-awesome"), 
+      menuItem("Online", tabName = "online", icon = icon("laptop", lib="font-awesome", img(src='arrangementer_ikon.png', align = "right", height="46px")), 
                menuItem("Odensebib.dk", tabName = "odensebib")#,
                #menuItem("Biblioteket App", tabName = "app")
       ),
