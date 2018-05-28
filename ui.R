@@ -1,3 +1,5 @@
+function(request) {
+
 # Libraries
 source("global.R")
 
@@ -26,11 +28,14 @@ dashboardPage(
   skin = "black",
   
   dashboardHeader(
-    title = "Hvidbog"
+    title = "Hvidbog",
+    tags$li(class = "dropdown",
+            tags$li(bookmarkButton(label = "Bogmærk", icon = shiny::icon("link", lib = "glyphicon"), title = "Bogmærk siden med nuværende indstillinger"))
+            )
   ),
   
   dashboardSidebar(
-    sidebarMenu(
+    sidebarMenu(id = "sidebarmenu",
       menuItem("Forside", tabName = "frontpage", icon = icon("home", lib="font-awesome")),
       menuItem("Arrangementer", tabName = "events", icon = icon("calendar", lib="font-awesome")),
       menuItem("Det fysiske rum", tabName = "space", icon = icon("building-o", lib="font-awesome"),
@@ -39,7 +44,7 @@ dashboardPage(
                menuItem("Event områder", tabName = "eventareas")#,
                #menuItem("Smart City", tabName = "smartcity") 
       ),
-      menuItem("Online", tabName = "online", icon = icon("laptop", lib="font-awesome", img(src='arrangementer_ikon.png', align = "right", height="46px")), 
+      menuItem("Online", tabName = "online", icon = icon("laptop", lib="font-awesome"), 
                menuItem("Odensebib.dk", tabName = "odensebib")#,
                #menuItem("Biblioteket App", tabName = "app")
       ),
@@ -91,3 +96,5 @@ dashboardPage(
     )
   )
 )
+
+}

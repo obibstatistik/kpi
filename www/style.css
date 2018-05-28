@@ -70,3 +70,8 @@ th {
   background: white url("detfysiskerumsort.png") ;
   background-size: auto 100%;
 }
+
+.navbar-custom-menu button {
+  margin-top: 8px;
+  margin-right: 8px;
+}

@@ -17,3 +17,4 @@ library(ggplot2)
 library(profvis)
 library(whitebookviz)
 
+enableBookmarking(store = "url")
