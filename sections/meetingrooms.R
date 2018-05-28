@@ -1,5 +1,6 @@
 source("global.R")
 source("modules.R")
+source("functions.R")
 source("~/.postpass")
 
 # UI
@@ -34,16 +35,22 @@ meetingroomsTabPanelUI <- function(id) {
                                                    tableOutput(ns("tablemeetingrooms_overview"))
                                             ),
                                             column(width = 6,
+                                                   h4("Vist på agendaskærm"), 
+                                                   plotlyOutput(ns("meetingrooms_agendascreen_plot"))
+                                            ),
+                                            column(12,tags$hr()),
+                                            column(width = 6,
                                                    h4("Booker top 10"),
                                                    tableOutput(ns("table_meetingrooms_booker"))
                                             ),
+                                            column(width = 6,
+                                                   h4("Booker top 10"),
+                                                   plotlyOutput(ns("plot_pie_meetingrooms_booker"))
+                                            ),
+                                            column(12,tags$hr()),
                                             column(width = 12,
                                                    h4("Oversigtstabel"),
                                                    formattableOutput(ns("tablemeetingrooms_timeslots"))
-                                            ),
-                                            column(width = 6,
-                                                   h4("Vist på agendaskærm"), 
-                                                   plotlyOutput(ns("meetingrooms_agendascreen_plot"))
                                             )
                                      )
                                 )
@@ -142,7 +149,8 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
     formattable(meetingrooms_timeslots, list('Lokale 1.1' = color_tile("grey", '#468c8c')))}
   )
   
-  output$table_meetingrooms_booker <- renderTable(
+  # booker
+  meetingrooms_booker <- reactive({
     meetingrooms_booker <- meetingrooms %>%
       filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
       select(forfatter_mail) %>%
@@ -152,13 +160,29 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
       arrange(desc(count)) %>%
       rename(Booker = forfatter_mail, Antal = count) %>%
       left_join(employees, by = c("Booker" = "email")) %>%
-      mutate(Enhed = ifelse(is.na(enhedsnavnniv6) & is.na(enhedsnavnniv5), "Andet", ifelse(is.na(enhedsnavnniv6), enhedsnavnniv5, enhedsnavnniv6))) %>%
-      select(Enhed, Antal) %>%
-      group_by(Enhed) %>%
+      mutate(enhed = ifelse(is.na(enhedsnavnniv6) & is.na(enhedsnavnniv5), "Andet", ifelse(is.na(enhedsnavnniv6), enhedsnavnniv5, enhedsnavnniv6))) %>%
+      select(enhed, Antal) %>%
+      group_by(enhed) %>%
       summarise(sum = sum(Antal)) %>%
       arrange(desc(sum)) %>%
-      head(10) %>%
-      mutate(sum = format(round(as.numeric(sum), 0), nsmall=0, big.mark="."))
-  )
+      mutate(totalsum = sum(sum)) %>%
+      head(10) 
+  })
+  
+  output$table_meetingrooms_booker <- renderTable({
+    meetingrooms_booker <- meetingrooms_booker() %>% 
+      mutate(bookingprocent = procenten(sum/totalsum)) %>%
+      select(-totalsum)
+  })
+  
+  output$plot_pie_meetingrooms_booker <- renderPlotly({
+    meetingrooms_booker <- meetingrooms_booker() %>%
+      mutate(bookingprocent = (sum/totalsum))
+    plot_ly(meetingrooms_booker, labels = ~enhed, values = ~bookingprocent, marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
+      add_pie() %>%
+      layout(showlegend = T,
+             xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+             yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+  })
   
 }
