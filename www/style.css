@@ -64,3 +64,9 @@ th {
   background: rgb(225,123,81);
 	color: white;
 }
+
+.fa-building-o {
+  color: white;
+  background: white url("detfysiskerumsort.png") ;
+  background-size: auto 100%;
+}
