@@ -17,3 +17,9 @@ danskemåneder <- function(x){
   ) 
   return(måned)
 }
+
+# procent funktion, som ser ud til at virke overalt
+
+procenten <- function(x){
+  paste(round(100*(x), 0), "%", sep="")
+}
