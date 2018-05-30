@@ -38,10 +38,6 @@ eventareasTabPanelUI <- function(id) {
                      column(width = 6,
                              h4("Booker top 10"),
                              tableOutput(ns("table_bhus_events_booker"))
-                     ),
-                     column(width = 6,
-                            h4("Titel"),
-                            tableOutput(ns("table_bhus_events_title"))
                      )
               )
           )
@@ -85,19 +81,20 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
   
-  # Oversigtstabel 2
+  # Oversigtstabel
   output$tablebhus_events <- renderFormattable({
     bhus_events_timeslots <- bhus_events %>%
       filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
-      select(location, startdate, slut ) %>%
+      select(location, startdate) %>%
       mutate(Tidspunkt = hour(format(as.POSIXct(startdate)))) %>%
-      group_by(location, slut, Tidspunkt) %>%
+      group_by(location, Tidspunkt) %>%
       summarise(count = n()) %>%
       spread(key = location, value = count) %>%
       replace(., is.na(.), "0")
     formattable(bhus_events_timeslots, list('Lokale 1.1' = color_tile("grey", '#468c8c')))}
   )
   
+  # Booker top 10
   output$table_bhus_events_booker <- renderTable(
     bhus_events_booker <- bhus_events %>%
       filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
@@ -108,15 +105,6 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
       head(10) %>%
       rename(Booker = forfatter_mail, Antal = count) %>%
       left_join(employees, by = c("Booker" = "email"))
-  )
-  
-  output$table_bhus_events_title <- renderTable(
-    bhus_events_title <- bhus_events %>%
-      filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
-      select(subject) %>%
-      group_by(subject) %>%
-      summarise(count = n()) %>%
-      arrange(desc(count))
   )
   
 }

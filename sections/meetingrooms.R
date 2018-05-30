@@ -50,6 +50,7 @@ meetingroomsTabPanelUI <- function(id) {
                                             column(12,tags$hr()),
                                             column(width = 12,
                                                    h4("Oversigtstabel"),
+                                                   #formattableOutput(ns("tablemeetingrooms_time")),
                                                    formattableOutput(ns("tablemeetingrooms_timeslots"))
                                             )
                                      )
@@ -140,14 +141,25 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
   output$tablemeetingrooms_timeslots <- renderFormattable({
     meetingrooms_timeslots <- meetingrooms %>%
       filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
-      select(sted, startdate ) %>%
-      mutate(Tidspunkt = hour(format(as.POSIXct(startdate)))) %>%
-      group_by(sted, Tidspunkt) %>%
-      summarise(count = n()) %>%
+      select(sted, startdate, enddate ) %>%
+      mutate(startTidspunkt = hour(format(as.POSIXct(startdate)))) %>%
+      mutate(slutTidspunkt = hour(format(as.POSIXct(enddate)))) %>%
+      group_by(sted, startTidspunkt) %>%
+      summarise(count = sum(startTidspunkt >= startTidspunkt & slutTidspunkt <= slutTidspunkt)) %>%
       spread(key = sted, value = count) %>%
       replace(., is.na(.), "0") 
     formattable(meetingrooms_timeslots, list('Lokale 1.1' = color_tile("grey", '#468c8c')))}
   )
+  
+  # output$tablemeetingrooms_time <- renderFormattable({
+  #   meetingrooms_time <- meetingrooms %>%
+  #     mutate(startTidspunkt = hour(format(as.POSIXct(startdate)))) %>%
+  #     mutate(slutTidspunkt = hour(format(as.POSIXct(enddate)))) %>%  
+  #     select(sted, startTidspunkt, slutTidspunkt ) %>%
+  #     mutate(timer = slutTidspunkt-startTidspunkt) %>%
+  #     for(i in 1:5) print(i)
+  #   formattable(meetingrooms_time)}
+  # )
   
   # booker
   meetingrooms_booker <- reactive({

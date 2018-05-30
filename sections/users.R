@@ -16,7 +16,8 @@ usersTabPanelUI <- function(id) {
               p("- Aktive lånere: lånere som har lånt på biblioteket indenfor det seneste år"), 
               p("- Inaktive lånere: lånere som har lånt på biblioteket for mere end et år siden og seneste for 5 år siden"),
               p("-Fordelt på kategorier, som er sammentrækninger af en større mængde lånekategorier"),
-              tableOutput(ns('tableloaners'))
+              tableOutput(ns('tableloaners')),
+              csvDownloadUI(ns("inner2"))
           )        
   )
   
@@ -71,5 +72,7 @@ usersTabPanel <- function(input, output, session, data, tablename) {
     )
   
   output$tableloaners <- renderTable(loaners)
+  
+  innerResult <- callModule(csvDownload, "inner2", data = loaners, name = "users")
   
 }

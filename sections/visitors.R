@@ -103,8 +103,8 @@ visitorsTabPanelUI <- function(id) {
                                             conditionalPanel(
                                               paste0("input['", ns("smooth"), "']"),
                                               formattableOutput(ns("visitors_per_hours_table2"))
-                                            )#,
-                                            #downloadUI("visitors_per_hours")
+                                            ),
+                                            csvDownloadUI(ns("inner1"))
                                      )
                                    )  
                           ),
@@ -382,4 +382,6 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
     formattable(visitors_hours)
   })
 
+  innerResult <- callModule(csvDownload, "inner1")
+  
 }
