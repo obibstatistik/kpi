@@ -1,8 +1,5 @@
 source("global.R")
 
-
-
-
 ### POSTGRES METADATA MODUL ###
 
 # UI
@@ -31,31 +28,27 @@ metaTabPanel <- function(input, output, session, data, tablename) {
   )
 }
 
-# ### DOWNLOAD MODUL ###
-# 
-# # UI
-# 
-# downloadUI <- function(id) {
-#   ns <- NS(id)
-#   tagList(
-#     downloadButton(ns('downloadData'), 'Download')
-#   )
-# }
-# 
-# # SERVER
-# 
-# download <- function(input, output, session, dataset) {
-#   
-#   data <- starwars
-#   
-#   output$downloadData <- downloadHandler(
-#     filename = function() {
-#       paste("data-", Sys.Date(), ".csv", sep="")
-#     },
-#     content = function(file) {
-#       write.csv(data, file)
-#     }
-#   )
-#   
-#   
-# }
+### DOWNLOAD MODUL ###
+
+# UI
+
+csvDownloadUI <- function(id, label = "Download CSV") {
+  ns <- NS(id)
+  
+  downloadButton(ns("download"), label)
+}
+
+# SERVER
+
+csvDownload <- function(input, output, session, data, name = NULL) {
+
+  output$download <- downloadHandler(
+    filename = function() {
+      if(is.na(name)){"test.csv"} else {paste0(name,".csv")}
+    },
+    content = function(file) {
+      write.csv(data, file)
+    }
+  )
+  
+}
