@@ -59,7 +59,8 @@ dashboardPage(
       ),
       menuItem("Brugere", tabName = "users", icon = icon("users", lib="font-awesome")),
       menuItem("Personale", tabName = "personal", icon = icon("users", lib="font-awesome")),
-      menuItem("Datakilder", tabName = "datasources", icon = icon("database", lib="font-awesome"))
+      menuItem("Datakilder", tabName = "datasources", icon = icon("database", lib="font-awesome")),
+      menuItem("Test", tabName = "test")
     )
   ),
   
@@ -92,7 +93,9 @@ dashboardPage(
       # Staff
       staffTabPanelUI(id = "staff"),
       # Datasources
-      datasourcesTabPanelUI(id = "datasources")
+      datasourcesTabPanelUI(id = "datasources")#,
+      # tabItem(tabName = "test",
+      # )
     )
   )
 )
