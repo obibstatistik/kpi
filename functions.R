@@ -23,3 +23,8 @@ danskemåneder <- function(x){
 procenten <- function(x){
   paste(round(100*(x), 0), "%", sep="")
 }
+
+# find hverdage
+
+Nweekdays <- Vectorize(function(a, b) 
+  sum(!weekdays(seq(a, b, "days")) %in% c("Saturday", "Sunday", "lørdag", "søndag" )))
