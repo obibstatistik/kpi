@@ -39,6 +39,12 @@ meetingroomsTabPanelUI <- function(id) {
                                                    plotlyOutput(ns("meetingrooms_agendascreen_plot"))
                                             ),
                                             column(12,tags$hr()),
+                                            column(width = 12,
+                                                   h4("Timetabel"),
+                                                   formattableOutput(ns("tablemeetingrooms_timeslots"))
+                                                   
+                                            ),
+                                            column(12,tags$hr()),
                                             column(width = 6,
                                                    h4("Booker top 10"),
                                                    tableOutput(ns("table_meetingrooms_booker"))
@@ -46,12 +52,6 @@ meetingroomsTabPanelUI <- function(id) {
                                             column(width = 6,
                                                    h4("Booker top 10"),
                                                    plotlyOutput(ns("plot_pie_meetingrooms_booker"))
-                                            ),
-                                            column(12,tags$hr()),
-                                            column(width = 12,
-                                                   h4("Oversigtstabel"),
-                                                   #formattableOutput(ns("tablemeetingrooms_time")),
-                                                   formattableOutput(ns("tablemeetingrooms_timeslots"))
                                             )
                                      )
                                 )
@@ -138,28 +138,56 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
   
-  output$tablemeetingrooms_timeslots <- renderFormattable({
-    meetingrooms_timeslots <- meetingrooms %>%
-      filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
-      select(sted, startdate, enddate ) %>%
+  rækker <- function(meetingrooms){
+    
+    meetingrooms_time <- meetingrooms %>%
       mutate(startTidspunkt = hour(format(as.POSIXct(startdate)))) %>%
       mutate(slutTidspunkt = hour(format(as.POSIXct(enddate)))) %>%
+      select(sted, startTidspunkt, slutTidspunkt, startdate ) %>%
+      mutate(timer = (slutTidspunkt-startTidspunkt))
+    
+    for (i in 1:nrow(meetingrooms_time)){
+      for(x in 1:meetingrooms_time$timer[i]) {
+        sted <- meetingrooms_time$sted[i]
+        startTidspunkt <- meetingrooms_time$startTidspunkt[i]+x
+        slutTidspunkt <- meetingrooms_time$slutTidspunkt[i]
+        startdate <- meetingrooms_time$startdate[i]
+        timer <- meetingrooms_time$timer[i]
+        index <- i
+        dfen <- data.frame(sted, startTidspunkt, slutTidspunkt, startdate, timer)
+        meetingrooms_time <- rbind(meetingrooms_time, dfen)
+      }
+    }
+    
+    return(meetingrooms_time)
+    
+  }
+  
+  output$tablemeetingrooms_timeslots <- renderFormattable({
+    meetingrooms_timeslots <- rækker(meetingrooms) %>%
+      filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
+      select(sted, startTidspunkt ) %>%
       group_by(sted, startTidspunkt) %>%
-      summarise(count = sum(startTidspunkt >= startTidspunkt & slutTidspunkt <= slutTidspunkt)) %>%
+      summarise(count = n()) %>%
       spread(key = sted, value = count) %>%
       replace(., is.na(.), "0") 
-    formattable(meetingrooms_timeslots, list('Lokale 1.1' = color_tile("grey", '#468c8c')))}
+    formattable(meetingrooms_timeslots, list(
+      'Lokale 1.1' = color_tile("white", "CadetBlue"),
+      'Lokale 1.2' = color_tile("white", "CadetBlue"),
+      'Lokale 2.1' = color_tile("white", "CadetBlue"),
+      'Lokale 2.2' = color_tile("white", "CadetBlue"),
+      'Lokale 3.1' = color_tile("white", "CadetBlue"),
+      'Lokale 3.2' = color_tile("white", "CadetBlue"),
+      'Lokale 3.3' = color_tile("white", "CadetBlue"),
+      'Lokale 3.4' = color_tile("white", "CadetBlue"),
+      'Lokale 3.5' = color_tile("white", "CadetBlue"),
+      'Lokale 3.6' = color_tile("white", "CadetBlue")
+    ))
+  })
+
+  output$tablemeetingrooms_time <- renderTable(
+    {rækker(meetingrooms)}
   )
-  
-  # output$tablemeetingrooms_time <- renderFormattable({
-  #   meetingrooms_time <- meetingrooms %>%
-  #     mutate(startTidspunkt = hour(format(as.POSIXct(startdate)))) %>%
-  #     mutate(slutTidspunkt = hour(format(as.POSIXct(enddate)))) %>%  
-  #     select(sted, startTidspunkt, slutTidspunkt ) %>%
-  #     mutate(timer = slutTidspunkt-startTidspunkt) %>%
-  #     for(i in 1:5) print(i)
-  #   formattable(meetingrooms_time)}
-  # )
   
   # booker
   meetingrooms_booker <- reactive({
