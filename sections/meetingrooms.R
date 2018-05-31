@@ -41,8 +41,8 @@ meetingroomsTabPanelUI <- function(id) {
                                             column(12,tags$hr()),
                                             column(width = 12,
                                                    h4("Timetabel"),
-                                                   formattableOutput(ns("tablemeetingrooms_timeslots"))
-                                                   
+                                                   formattableOutput(ns("tablemeetingrooms_timeslots")), #%>% withSpinner(color="#0dc5c1"),
+                                                   plotlyOutput(ns("meetingrooms_time_heatmap"))
                                             ),
                                             column(12,tags$hr()),
                                             column(width = 6,
@@ -103,8 +103,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
       ) 
     )
   
-  Nweekdays <- Vectorize(function(a, b) 
-    sum(!weekdays(seq(a, b, "days")) %in% c("Saturday", "Sunday", "lørdag", "søndag" )))
+  # Oversigtstabel
   
   output$tablemeetingrooms_overview <- renderTable(
     meetingrooms_overview <- meetingrooms %>%
@@ -125,6 +124,8 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
       rename(Lokalenummer = sted, Antal = count, "Median" =	Median2, "Total(t)" =	sum, Belægningsprocent = timediff )  
   )
   
+  # Vist på agendaskærm
+  
   output$meetingrooms_agendascreen_plot <- renderPlotly({
     meetingrooms_agendascreen <- meetingrooms %>%
       filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
@@ -137,6 +138,8 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
+  
+  # Timetabel
   
   rækker <- function(meetingrooms){
     
@@ -158,9 +161,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
         meetingrooms_time <- rbind(meetingrooms_time, dfen)
       }
     }
-    
     return(meetingrooms_time)
-    
   }
   
   output$tablemeetingrooms_timeslots <- renderFormattable({
@@ -185,9 +186,17 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
     ))
   })
 
-  output$tablemeetingrooms_time <- renderTable(
-    {rækker(meetingrooms)}
-  )
+  output$meetingrooms_time_heatmap <- renderPlotly({
+    meetingrooms_timeslots <- rækker(meetingrooms) %>%
+      filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
+      select(sted, startTidspunkt ) %>%
+      group_by(sted, startTidspunkt) %>%
+      summarise(count = n()) %>%
+      replace(., is.na(.), "0")
+    
+    plot_ly(x=meetingrooms_timeslots$sted, y=meetingrooms_timeslots$startTidspunkt, z = meetingrooms_timeslots$count, 
+            colors = colorRamp(c("white", "CadetBlue")), type = "heatmap", showscale = FALSE, showgrid = FALSE)
+  })
   
   # booker
   meetingrooms_booker <- reactive({
