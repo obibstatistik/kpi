@@ -20,16 +20,17 @@ meetingroomsTabPanelUI <- function(id) {
                           id = "tabset1",
                           tabPanel("Generelt", 
                                    fluidRow(
-                                     column(2,
-                                            h4("Periode"),
-                                            dateRangeInput(ns('dateRangeMeetingrooms'),
-                                                           label = 'Vælg periode',
-                                                           start = Sys.Date() - 90, end = Sys.Date(),
-                                                           separator = " - "
-                                            ),
-                                            selectInput(ns("timeslot"), "Vælg tidspunkt på dagen",c('Indenfor arbejdstid, indtil kl. 16' = "1",'Udenfor arbejdstid, efter kl. 16' = "2",'Hele åbningstiden' = "3")) 
-                                     ),
-                                     column(width = 10,
+                                     column(width = 12,
+                                       column(2,
+                                              h4("Periode"),
+                                              dateRangeInput(ns('dateRangeMeetingrooms'),
+                                                             label = 'Vælg periode',
+                                                             start = Sys.Date() - 90, end = Sys.Date(),
+                                                             separator = " - "
+                                              ),
+                                              selectInput(ns("timeslot"), "Vælg tidspunkt på dagen",c('Indenfor arbejdstid, indtil kl. 16' = "1",'Udenfor arbejdstid, efter kl. 16' = "2",'Hele åbningstiden' = "3")) 
+                                       ),
+                                       column(width = 10,   
                                             column(width = 6,
                                                    h4("Oversigtstabel"),
                                                    tableOutput(ns("tablemeetingrooms_overview"))
@@ -37,14 +38,22 @@ meetingroomsTabPanelUI <- function(id) {
                                             column(width = 6,
                                                    h4("Vist på agendaskærm"), 
                                                    plotlyOutput(ns("meetingrooms_agendascreen_plot"))
-                                            ),
-                                            column(12,tags$hr()),
-                                            column(width = 12,
-                                                   h4("Timetabel"),
-                                                   formattableOutput(ns("tablemeetingrooms_timeslots")), #%>% withSpinner(color="#0dc5c1"),
-                                                   plotlyOutput(ns("meetingrooms_time_heatmap"))
-                                            ),
-                                            column(12,tags$hr()),
+                                            )
+                                       )
+                                     ),
+                                     column(12,tags$hr()),
+                                     column(width = 12,
+                                            column(width = 2,
+                                                   h4("Periode"),
+                                                   dateRangeInput(ns('dateRangeMeetingrooms_booker'),
+                                                                  label = 'Vælg periode',
+                                                                  start = Sys.Date() - 90, end = Sys.Date(),
+                                                                  separator = " - "
+                                                   ),
+                                                   selectInput(ns("timeslot_booker"), "Med/uden andet",c('Med andet' = "1",'Uden andet' = "2")) 
+                                                   
+                                                   ),
+                                      column(width = 10,
                                             column(width = 6,
                                                    h4("Booker top 10"),
                                                    tableOutput(ns("table_meetingrooms_booker"))
@@ -53,10 +62,35 @@ meetingroomsTabPanelUI <- function(id) {
                                                    h4("Booker top 10"),
                                                    plotlyOutput(ns("plot_pie_meetingrooms_booker"))
                                             )
-                                     )
+                                      )
+                                     
                                 )
+                          )),
+                          tabPanel("Timer",
+                                   fluidRow(
+                                     column(width = 12,
+                                            column(2,
+                                                   h4("Periode"),
+                                                   dateRangeInput(ns('dateRangeMeetingrooms2'),
+                                                                  label = 'Vælg periode',
+                                                                  start = Sys.Date() - 90, end = Sys.Date(),
+                                                                  separator = " - "
+                                                   )
+                                            ),
+                                            column(width = 10,   
+                                                   column(width = 12,
+                                                          h4("Timetabel"),
+                                                          p("Graduering pr. kolonner"),
+                                                          formattableOutput(ns("tablemeetingrooms_timeslots")), #%>% withSpinner(color="#0dc5c1"),
+                                                          h4("Heatmap"),
+                                                          p("Graduering i hele figuren"),
+                                                          plotlyOutput(ns("meetingrooms_time_heatmap"))
+                                                   )
+                                            )
+                                     )
+                                   )  
                           ),
-                          tabPanel("Meta",
+                          tabPanel("Data og dokumentation",
                                    fluidRow(
                                      column(12,
                                         h4("Forklaringer"),
@@ -116,12 +150,13 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
       mutate(Median2 = sprintf("%02d:%02d",(median*60)%/%60,(median*60)%%60)) %>%
       select(-median) %>%
       mutate(timediff = 
-               if(input$timeslot == "1") sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*8))*100
-             else if (input$timeslot == "2") sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*5))*100
-             else sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*13))*100 
+               if(input$timeslot == "1") procenten(sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*8)))
+             else if (input$timeslot == "2") procenten(sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*5)))
+             else procenten(sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*13)))
       ) %>%
       
-      rename(Lokalenummer = sted, Antal = count, "Median" =	Median2, "Total(t)" =	sum, Belægningsprocent = timediff )  
+      rename(Lokalenummer = sted, Antal = count, Median =	Median2, "Total(t)" =	sum, Belægningsprocent = timediff ) %>%
+      select(Lokalenummer, Antal, Median, "Total(t)", Belægningsprocent)
   )
   
   # Vist på agendaskærm
@@ -134,6 +169,43 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
       summarise(count = n())
     plot_ly(meetingrooms_agendascreen, labels = c("Ikke vist på skærm","Vist på skærm"), values = ~count, marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
       add_pie(hole = 0.6) %>%
+      layout(showlegend = T,
+             xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+             yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+  })
+  
+  # booker
+  meetingrooms_booker <- reactive({
+    meetingrooms_booker <- meetingrooms %>%
+      filter(startdate > input$dateRangeMeetingrooms_booker[1] & startdate < input$dateRangeMeetingrooms_booker[2]) %>%
+      select(forfatter_mail) %>%
+      mutate(forfatter_mail = tolower(forfatter_mail)) %>%
+      group_by(forfatter_mail) %>%
+      summarise(count = n()) %>%
+      arrange(desc(count)) %>%
+      rename(Booker = forfatter_mail, Antal = count) %>%
+      left_join(employees, by = c("Booker" = "email")) %>%
+      mutate(enhed = ifelse(is.na(enhedsnavnniv6) & is.na(enhedsnavnniv5), "Andet", ifelse(is.na(enhedsnavnniv6), enhedsnavnniv5, enhedsnavnniv6))) %>%
+      filter(if(input$timeslot_booker != "1") enhed != "Andet" else TRUE) %>%
+      select(enhed, Antal) %>%
+      group_by(enhed) %>%
+      summarise(sum = sum(Antal)) %>%
+      arrange(desc(sum)) %>%
+      mutate(totalsum = sum(sum)) %>%
+      head(10) 
+  })
+  
+  output$table_meetingrooms_booker <- renderTable({
+    meetingrooms_booker <- meetingrooms_booker() %>% 
+      mutate(bookingprocent = procenten(sum/totalsum)) %>%
+      select(-totalsum)
+  })
+  
+  output$plot_pie_meetingrooms_booker <- renderPlotly({
+    meetingrooms_booker <- meetingrooms_booker() %>%
+      mutate(bookingprocent = (sum/totalsum))
+    plot_ly(meetingrooms_booker, labels = ~enhed, values = ~bookingprocent, marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
+      add_pie() %>%
       layout(showlegend = T,
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
@@ -166,7 +238,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
   
   output$tablemeetingrooms_timeslots <- renderFormattable({
     meetingrooms_timeslots <- rækker(meetingrooms) %>%
-      filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
+      filter(startdate > input$dateRangeMeetingrooms2[1] & startdate < input$dateRangeMeetingrooms2[2]) %>%
       select(sted, startTidspunkt ) %>%
       group_by(sted, startTidspunkt) %>%
       summarise(count = n()) %>%
@@ -188,50 +260,15 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
 
   output$meetingrooms_time_heatmap <- renderPlotly({
     meetingrooms_timeslots <- rækker(meetingrooms) %>%
-      filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
+      filter(startdate > input$dateRangeMeetingrooms2[1] & startdate < input$dateRangeMeetingrooms2[2]) %>%
       select(sted, startTidspunkt ) %>%
       group_by(sted, startTidspunkt) %>%
       summarise(count = n()) %>%
       replace(., is.na(.), "0")
     
     plot_ly(x=meetingrooms_timeslots$sted, y=meetingrooms_timeslots$startTidspunkt, z = meetingrooms_timeslots$count, 
-            colors = colorRamp(c("white", "CadetBlue")), type = "heatmap", showscale = FALSE, showgrid = FALSE)
-  })
-  
-  # booker
-  meetingrooms_booker <- reactive({
-    meetingrooms_booker <- meetingrooms %>%
-      filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
-      select(forfatter_mail) %>%
-      mutate(forfatter_mail = tolower(forfatter_mail)) %>%
-      group_by(forfatter_mail) %>%
-      summarise(count = n()) %>%
-      arrange(desc(count)) %>%
-      rename(Booker = forfatter_mail, Antal = count) %>%
-      left_join(employees, by = c("Booker" = "email")) %>%
-      mutate(enhed = ifelse(is.na(enhedsnavnniv6) & is.na(enhedsnavnniv5), "Andet", ifelse(is.na(enhedsnavnniv6), enhedsnavnniv5, enhedsnavnniv6))) %>%
-      select(enhed, Antal) %>%
-      group_by(enhed) %>%
-      summarise(sum = sum(Antal)) %>%
-      arrange(desc(sum)) %>%
-      mutate(totalsum = sum(sum)) %>%
-      head(10) 
-  })
-  
-  output$table_meetingrooms_booker <- renderTable({
-    meetingrooms_booker <- meetingrooms_booker() %>% 
-      mutate(bookingprocent = procenten(sum/totalsum)) %>%
-      select(-totalsum)
-  })
-  
-  output$plot_pie_meetingrooms_booker <- renderPlotly({
-    meetingrooms_booker <- meetingrooms_booker() %>%
-      mutate(bookingprocent = (sum/totalsum))
-    plot_ly(meetingrooms_booker, labels = ~enhed, values = ~bookingprocent, marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
-      add_pie() %>%
-      layout(showlegend = T,
-             xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-             yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+            colors = colorRamp(c("white", "CadetBlue")), type = "heatmap", showscale = FALSE) %>%
+            layout(xaxis = list(showgrid = FALSE, dtick = 1, side = 'top'), yaxis = list(showgrid = FALSE, dtick = 1, autorange = 'reversed'))
   })
   
 }
