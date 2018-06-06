@@ -13,7 +13,7 @@ acquisitionTabPanelUI <- function(id) {
   tabItem(tabName = "acquisition",
           box(width = 12, solidHeader = TRUE, id="materialsheader2",
               h3("Materialeindkøb - Imusic 2017"),
-              img(src='/icons/materialer_negativ_45x45.png', align = "right", height="46px")
+              img(src='icons/materialer_negativ_45x45.png', align = "right", height="46px")
           ),
           
           fluidRow(

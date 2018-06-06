@@ -13,7 +13,7 @@ online_odensebibTabPanelUI <- function(id) {
           
           box(width = 12, solidHeader = TRUE, id="onlineheader2",
               h3("Odensebib.dk"),
-              img(src='/icons/online_negativ_45x45.png', align = "right", height="46px")
+              img(src='icons/online_negativ_45x45.png', align = "right", height="46px")
           ),
           
           fluidRow(          

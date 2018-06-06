@@ -12,7 +12,7 @@ meetingroomsTabPanelUI <- function(id) {
   tabItem(tabName = "meetingrooms",
           box(width = 12, solidHeader = TRUE, id="spaceheader2",
               h3("Mødelokaler"),
-              img(src='/icons/detfysiskerrum_negativ_45x45.png', align = "right", height="46px")
+              img(src='icons/detfysiskerrum_negativ_45x45.png', align = "right", height="46px")
           ),
           fluidRow(
             column(12,

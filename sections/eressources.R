@@ -23,7 +23,7 @@ eressourcesTabPanelUI <- function(id) {
           
           box(width = 12, solidHeader = TRUE, id = "eressourcesheader",
               h3("Elektroniske Ressourcer"),
-              img(src='/icons/eressourcer_negativ_45x45.png', align = "right", height="46px")
+              img(src='icons/eressourcer_negativ_45x45.png', align = "right", height="46px")
           ),
           
           fluidRow(

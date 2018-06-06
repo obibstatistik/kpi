@@ -11,7 +11,7 @@ eventsTabPanelUI <- function(id) {
   tabItem(tabName = "events",
           box(width = 12, solidHeader = TRUE, id="eventsheader",
               h3("Arrangementer"),
-              img(src='/icons/arrangementer_negativ_45x45.png', align = "right", height="45px")
+              img(src='icons/arrangementer_negativ_45x45.png', align = "right", height="45px")
           ),
           fluidRow(
             column(12,
