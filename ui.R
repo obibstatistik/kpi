@@ -1,5 +1,5 @@
 function(request) {
-
+  
 # Libraries
 source("global.R")
 
@@ -38,7 +38,7 @@ dashboardPage(
     sidebarMenu(id = "sidebarmenu",
       menuItem("Forside", tabName = "frontpage", icon = icon("home", lib="font-awesome")),
       menuItem("Arrangementer", tabName = "events", icon = icon("calendar", lib="font-awesome")),
-      menuItem("Det fysiske rum", tabName = "space", icon = icon("building-o", lib="font-awesome"),
+      menuItem("Det fysiske rum!", tabName = "space", icon = icon("building", lib="font-awesome"),
                menuItem("Besøgende", tabName = "visits"),
                menuItem("Mødelokaler", tabName = "meetingrooms"),
                menuItem("Event områder", tabName = "eventareas")#,
@@ -59,15 +59,16 @@ dashboardPage(
       ),
       menuItem("Brugere", tabName = "users", icon = icon("users", lib="font-awesome")),
       menuItem("Personale", tabName = "personal", icon = icon("users", lib="font-awesome")),
-      menuItem("Datakilder", tabName = "datasources", icon = icon("database", lib="font-awesome")),
-      menuItem("Test", tabName = "test")
+      menuItem("Datakilder", tabName = "datasources", icon = icon("database", lib="font-awesome"))#,
+      #menuItem("Test", tabName = "test")
     )
   ),
   
 #  Dashboard Content 
   dashboardBody(
     tags$head(
-      tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
+      tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
+      tags$head(tags$script(src="hacks.js"))
     ),
     tabItems(
       # Frontpage  

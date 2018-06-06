@@ -9,15 +9,30 @@ usersTabPanelUI <- function(id) {
   ns <- NS(id)
   
   tabItem(tabName = "users",
-          box(width = 12, solidHeader = TRUE,
-              h3("Brugere"),
-              p("test2"),
-              p("Oversigt over antallet af:"), 
-              p("- Aktive lånere: lånere som har lånt på biblioteket indenfor det seneste år"), 
-              p("- Inaktive lånere: lånere som har lånt på biblioteket for mere end et år siden og seneste for 5 år siden"),
-              p("-Fordelt på kategorier, som er sammentrækninger af en større mængde lånekategorier"),
-              tableOutput(ns('tableloaners')),
-              csvDownloadUI(ns("inner2"))
+          box(width = 12, solidHeader = TRUE, id="userheader",
+              h3("Brugere")
+          ),
+          fluidRow(
+            column(12,
+                   tabBox(width = 12,
+                          id = "tabset12",
+                          tabPanel("Generelt",
+                                   fluidRow(width = 12,
+                                            column(width = 12,     
+                                  h3("Brugere"),
+                                  p("test2"),
+                                  p("Oversigt over antallet af:"), 
+                                  p("- Aktive lånere: lånere som har lånt på biblioteket indenfor det seneste år"), 
+                                  p("- Inaktive lånere: lånere som har lånt på biblioteket for mere end et år siden og seneste for 5 år siden"),
+                                  p("-Fordelt på kategorier, som er sammentrækninger af en større mængde lånekategorier"),
+                                  tableOutput(ns('tableloaners')),
+                                  csvDownloadUI(ns("inner2"))))),
+                          tabPanel("Kort",
+                                   fluidRow(width = 12,
+                                            column(width = 12,
+                                                   leafletOutput("mymap")
+                                                   )))
+                          ))    
           )        
   )
   
@@ -74,5 +89,14 @@ usersTabPanel <- function(input, output, session, data, tablename) {
   output$tableloaners <- renderTable(loaners)
   
   innerResult <- callModule(csvDownload, "inner2", data = loaners, name = "users")
+  
+  # kort
+  
+  output$mymap <- renderLeaflet({
+    m <- leaflet() %>%
+      addTiles() %>%
+      setView(lng=-73.935242, lat=40.730610 , zoom=10)
+    m
+  })
   
 }

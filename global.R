@@ -16,5 +16,6 @@ library(tidyr)
 library(ggplot2) 
 library(profvis)
 library(whitebookviz)
+library(leaflet)
 
 enableBookmarking(store = "url")

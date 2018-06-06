@@ -13,7 +13,7 @@ online_odensebibTabPanelUI <- function(id) {
           
           box(width = 12, solidHeader = TRUE, id="onlineheader2",
               h3("Odensebib.dk"),
-              img(src='online.png', align = "right", height="46px")
+              img(src='/icons/online_negativ_45x45.png', align = "right", height="46px")
           ),
           
           fluidRow(          
@@ -55,6 +55,11 @@ online_odensebibTabPanelUI <- function(id) {
                           tabPanel("Indholdsgrupper",
                                    p("Data fra 22-05-2018"),
                                    tableOutput(ns('content_groups'))        
+                          ),
+                          tabPanel("Fokus Netbiblioteket",
+                                   p("Eressourcer i søgeresulateter"),
+                                   p("Netbiblioteket oversigt og undersider"),
+                                   p("Antal ud links til e-ressourcer")
                           )
                    )
             ))

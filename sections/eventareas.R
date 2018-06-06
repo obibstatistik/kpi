@@ -1,6 +1,7 @@
 source("global.R")
 source("modules.R")
 source("~/.postpass")
+source("functions.R")
 
 # UI
 
@@ -11,7 +12,7 @@ eventareasTabPanelUI <- function(id) {
   tabItem(tabName = "eventareas",
           box(width = 12, solidHeader = TRUE, id="spaceheader3",
               h3("Eventområder"),
-              img(src='detfysiskerum.png', align = "right", height="46px")
+              img(src='/icons/detfysiskerrum_negativ_45x45.png', align = "right", height="46px")
           ),
           box(width = 12,
               column(2,
@@ -59,12 +60,14 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
   output$tablebhus_events_overview <- renderTable(
     bhus_events_overview <- bhus_events %>%
       filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
-      mutate(tid = 	as.integer((slut - startdate))) %>%
+      mutate(tid = as.integer((slut - startdate))) %>%
       select(location, tid) %>%
-      group_by(location) %>%
-      summarise(count = n(), mean = mean(tid), median = median(tid), sum = sum(tid)/60 ) %>%
-      mutate(timediff = percent(count/(as.integer(input$dateRangeBhus_events[2] - input$dateRangeBhus_events[1])*14)*100)) %>%
-      rename(Lokation = location, Antal = count, Gennemsnit =	mean, Middelværdi =	median, Total =	sum, Belægninsprocent = timediff )  
+      group_by(location, tid) %>%
+      summarise(count = n(), median = median(tid), sum = sum(tid) ) %>%
+      
+      # mutate(timediff = percent(count/(as.integer(input$dateRangeBhus_events[2] - input$dateRangeBhus_events[1])*14)*100)) %>%
+      mutate(timediff = procenten(sum/((Nweekdays(input$dateRangeBhus_events[1], input$dateRangeBhus_events[2])*8)))) %>%
+      rename(Lokation = location, Antal = count, Median =	median, 'Total (t)' =	sum, Belægninsprocent = timediff )  
   )
   
   # Vist på agendaskærm

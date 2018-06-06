@@ -12,7 +12,7 @@ visitorsTabPanelUI <- function(id) {
   tabItem(tabName = "visits",
           box(width = 12, solidHeader = TRUE, id="spaceheader1",
               h3("Besøgende"),
-              img(src='detfysiskerum.png', align = "right", height="46px")
+              img(src='/icons/detfysiskerrum_negativ_45x45.png', align = "right", height="46px")
           ),      
           fluidRow(
             column(12,
