@@ -138,7 +138,6 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
     )
   
   # Oversigtstabel
-  
   output$tablemeetingrooms_overview <- renderTable(
     meetingrooms_overview <- meetingrooms %>%
       filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
@@ -154,13 +153,11 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
              else if (input$timeslot == "2") procenten(sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*5)))
              else procenten(sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*13)))
       ) %>%
-      
       rename(Lokalenummer = sted, Antal = count, Median =	Median2, "Total(t)" =	sum, Belægningsprocent = timediff ) %>%
       select(Lokalenummer, Antal, Median, "Total(t)", Belægningsprocent)
   )
   
   # Vist på agendaskærm
-  
   output$meetingrooms_agendascreen_plot <- renderPlotly({
     meetingrooms_agendascreen <- meetingrooms %>%
       filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
@@ -174,7 +171,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
   
-  # booker
+  # Booker top 10
   meetingrooms_booker <- reactive({
     meetingrooms_booker <- meetingrooms %>%
       filter(startdate > input$dateRangeMeetingrooms_booker[1] & startdate < input$dateRangeMeetingrooms_booker[2]) %>%
@@ -235,7 +232,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
     }
     return(meetingrooms_time)
   }
-  
+
   output$tablemeetingrooms_timeslots <- renderFormattable({
     meetingrooms_timeslots <- rækker(meetingrooms) %>%
       filter(startdate > input$dateRangeMeetingrooms2[1] & startdate < input$dateRangeMeetingrooms2[2]) %>%

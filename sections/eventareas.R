@@ -8,42 +8,83 @@ source("functions.R")
 eventareasTabPanelUI <- function(id) {
   
   ns <- NS(id)
- 
+  
   tabItem(tabName = "eventareas",
           box(width = 12, solidHeader = TRUE, id="spaceheader3",
               h3("Eventområder"),
               img(src='icons/detfysiskerrum_negativ_45x45.png', align = "right", height="46px")
           ),
-          box(width = 12,
-              column(2,
-                     h4("Periode"),
-                     dateRangeInput(ns('dateRangeBhus_events'),
-                                    label = 'Vælg periode',
-                                    start = Sys.Date() - 90, end = Sys.Date(),
-                                    separator = " - "
-                     )
-              ),
-              column(width = 10,
-                     column(width = 6,
-                            h4("Oversigtstabel"),
-                            tableOutput(ns("tablebhus_events_overview"))
-                     ),
-                     column(width = 6,
-                            h4("Vist på agendaskærm"), 
-                            plotlyOutput(ns("bhus_events_agendascreen_plot"))
-                     ),
-                     column(width = 12,
-                            h4("Oversigtstabel"),
-                            formattableOutput(ns("tablebhus_events"))
-                     ),
-                     column(width = 6,
-                             h4("Booker top 10"),
-                             tableOutput(ns("table_bhus_events_booker"))
-                     )
-              )
-          )
-  )
-   
+          
+          fluidRow(
+            column(12,
+                   tabBox(width = 12,
+                          id = "tabset1",
+                          tabPanel("Generelt", 
+                                   fluidRow(
+                                     column(width = 12,
+                                            column(2,
+                                                   h4("Periode"),
+                                                   dateRangeInput(ns('dateRangeBhus_events'),
+                                                                  label = 'Vælg periode',
+                                                                  start = Sys.Date() - 90, end = Sys.Date(),
+                                                                  separator = " - "
+                                                   )
+                                            ),
+                                            column(width = 10,
+                                                   column(width = 7,
+                                                          h4("Oversigtstabel"),
+                                                          tableOutput(ns("tablebhus_events_overview")
+                                                         )),
+                                                   column(width = 5,
+                                                           h4("Vist på agendaskærm"), 
+                                                           plotlyOutput(ns("bhus_events_agendascreen_plot"))
+                                                          )
+                                                   )
+                                                  
+                                           ),
+                                     column(12,tags$hr()),
+                                     column(width = 12,
+                                            column(width = 2),
+                                            column(width = 10,
+                                                   h4("Booker top 10"),
+                                                   tableOutput(ns("table_bhus_events_booker"))
+                                            )
+                                     )
+                                     
+                                   )),
+                          tabPanel("Timer",
+                                   fluidRow(
+                                     column(width = 12,
+                                            column(2,
+                                                   h4("Periode"),
+                                                   dateRangeInput(ns('dateRangebhus_events2'),
+                                                                  label = 'Vælg periode',
+                                                                  start = Sys.Date() - 90, end = Sys.Date(),
+                                                                  separator = " - "
+                                                   )
+                                            ),
+                                            column(width = 10,   
+                                                   column(width = 12,
+                                                          h4("Timetabel"),
+                                                          p("Graduering pr. kolonner"),
+                                                          formattableOutput(ns("tablebhus_events_timeslots")), #%>% withSpinner(color="#0dc5c1"),
+                                                          h4("Heatmap"),
+                                                          p("Graduering i hele figuren"),
+                                                          plotlyOutput(ns("bhus_events_time_heatmap"))
+                                                   )
+                                            )
+                                     )
+                                   )  
+                          ),
+                          tabPanel("Data og dokumentation",
+                                   fluidRow(
+                                     column(12,
+                                            p("Dokumentation")
+                                     )
+                                   )  
+                          )
+                   ))))
+  
 }
 
 # SERVER
@@ -52,8 +93,9 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
   
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
-  bhus_events <- dbGetQuery(con, "SELECT * FROM datamart.bhus_events")
-  employees <- dbGetQuery(con, "SELECT navn,  email, enhedsnavnniv5, enhedsnavnniv6 FROM web.ansatte")
+  bhus_events <- dbGetQuery(con, "SELECT forfatter_navn, forfatter_mail, location, slut, location as sted, show_on_screen, slut as enddate, startdate, subject  FROM datamart.bhus_events")
+  bhus_events2 <- dbGetQuery(con, "SELECT * FROM datamart.bhus_events")
+  employees <- dbGetQuery(con, "SELECT navn, email, enhedsnavnniv5, enhedsnavnniv6 FROM web.ansatte")
   dbDisconnect(con)
   
   # Oversigtstabel
@@ -62,12 +104,10 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
       filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
       mutate(tid = as.integer((slut - startdate))) %>%
       select(location, tid) %>%
-      group_by(location, tid) %>%
+      group_by(location) %>%
       summarise(count = n(), median = median(tid), sum = sum(tid) ) %>%
-      
-      # mutate(timediff = percent(count/(as.integer(input$dateRangeBhus_events[2] - input$dateRangeBhus_events[1])*14)*100)) %>%
-      mutate(timediff = procenten(sum/((Nweekdays(input$dateRangeBhus_events[1], input$dateRangeBhus_events[2])*8)))) %>%
-      rename(Lokation = location, Antal = count, Median =	median, 'Total (t)' =	sum, Belægninsprocent = timediff )  
+      mutate(timediff = procenten(sum/((Nweekdays(input$dateRangeBhus_events[1], input$dateRangeBhus_events[2])*13)))) %>%
+      rename(Lokation = location, Antal = count, Median =	median, 'Total(t)' =	sum, Belægningsprocent = timediff )  
   )
   
   # Vist på agendaskærm
@@ -84,30 +124,90 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
   
-  # Oversigtstabel
-  output$tablebhus_events <- renderFormattable({
-    bhus_events_timeslots <- bhus_events %>%
-      filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
-      select(location, startdate) %>%
-      mutate(Tidspunkt = hour(format(as.POSIXct(startdate)))) %>%
-      group_by(location, Tidspunkt) %>%
-      summarise(count = n()) %>%
-      spread(key = location, value = count) %>%
-      replace(., is.na(.), "0")
-    formattable(bhus_events_timeslots, list('Lokale 1.1' = color_tile("grey", '#468c8c')))}
-  )
-  
   # Booker top 10
   output$table_bhus_events_booker <- renderTable(
     bhus_events_booker <- bhus_events %>%
       filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
       select(forfatter_mail) %>%
+      mutate(forfatter_mail = tolower(forfatter_mail)) %>%
       group_by(forfatter_mail) %>%
       summarise(count = n()) %>%
       arrange(desc(count)) %>%
-      head(10) %>%
       rename(Booker = forfatter_mail, Antal = count) %>%
-      left_join(employees, by = c("Booker" = "email"))
+      left_join(employees, by = c("Booker" = "email")) %>%
+      mutate(enhed = ifelse(is.na(enhedsnavnniv6) & is.na(enhedsnavnniv5), "Andet", ifelse(is.na(enhedsnavnniv6), enhedsnavnniv5, enhedsnavnniv6))) %>%
+      #filter(if(input$timeslot_booker != "1") enhed != "Andet" else TRUE) %>%
+      select(enhed, Antal) %>%
+      group_by(enhed) %>%
+      summarise(sum = sum(Antal)) %>%
+      arrange(desc(sum)) %>%
+      mutate(totalsum = sum(sum)) %>%
+      head(10) %>% 
+      mutate(bookingprocent = procenten(sum/totalsum)) %>%
+      select(-totalsum)
   )
+  
+  # Timetabel
+
+  rækker <- function(bhus_events){
+
+    bhus_events_time <- bhus_events %>%
+      mutate(startTidspunkt = hour(format(as.POSIXct(startdate)))) %>%
+      mutate(slutTidspunkt = hour(format(as.POSIXct(enddate)))) %>%
+      select(sted, startTidspunkt, slutTidspunkt, startdate ) %>%
+      mutate(timer = (slutTidspunkt-startTidspunkt))
+
+    for (i in 1:nrow(bhus_events_time)){
+      for(x in 1:bhus_events_time$timer[i]) {
+        sted <- bhus_events_time$sted[i]
+        startTidspunkt <- bhus_events_time$startTidspunkt[i]+x
+        slutTidspunkt <- bhus_events_time$slutTidspunkt[i]
+        startdate <- bhus_events_time$startdate[i]
+        timer <- bhus_events_time$timer[i]
+        index <- i
+        dfen <- data.frame(sted, startTidspunkt, slutTidspunkt, startdate, timer)
+        bhus_events_time <- rbind(bhus_events_time, dfen)
+      }
+    }
+    return(bhus_events_time)
+  }
+  
+  output$test <- renderTable({rækker(bhus_events) %>% arrange(startdate, sted, startTidspunkt) })
+  
+  output$tablebhus_events_timeslots <- renderFormattable({
+    bhus_events_timeslots <- rækker(bhus_events) %>%
+      filter(startdate > input$dateRangebhus_events2[1] & startdate < input$dateRangebhus_events2[2]) %>%
+      select(sted, startTidspunkt ) %>%
+      group_by(sted, startTidspunkt) %>%
+      summarise(count = n()) %>%
+      spread(key = sted, value = count) %>%
+      replace(., is.na(.), "0") 
+    formattable(bhus_events_timeslots, 
+      list(
+        'Borgernes Torv (1. sal)' = color_tile("white", "CadetBlue"),
+        'Borgernes værksted (2. sal)' = color_tile("white", "CadetBlue"),
+        'Kantine området (3. sal)' = color_tile("white", "CadetBlue"),
+        'Multimøbel / Borgernes Torv (1. sal)' = color_tile("white", "CadetBlue"),
+        'Multimøbel / Borgernes Værksted (2. sal)' = color_tile("white", "CadetBlue"),
+        'Musikscenen (2. sal)' = color_tile("white", "CadetBlue"),
+        'Scene (stuen)' = color_tile("white", "CadetBlue"),
+        'Store scene (café 2. sal)' = color_tile("white", "CadetBlue"),
+        'Udstillingsområde (stuen)' = color_tile("white", "CadetBlue")
+      )
+    )
+  })
+  
+  output$bhus_events_time_heatmap <- renderPlotly({
+    bhus_events_timeslots <- rækker(bhus_events) %>%
+      filter(startdate > input$dateRangebhus_events2[1] & startdate < input$dateRangebhus_events2[2]) %>%
+      select(sted, startTidspunkt ) %>%
+      group_by(sted, startTidspunkt) %>%
+      summarise(count = n()) %>%
+      replace(., is.na(.), "0")
+    
+    plot_ly(x=bhus_events_timeslots$sted, y=bhus_events_timeslots$startTidspunkt, z = bhus_events_timeslots$count, 
+            colors = colorRamp(c("white", "CadetBlue")), type = "heatmap", showscale = FALSE) %>%
+      layout(xaxis = list(showgrid = FALSE, dtick = 1, side = 'top'), yaxis = list(showgrid = FALSE, dtick = 1, autorange = 'reversed'), margin = list(l = 50, r = 50, b = 50, t = 150))
+  })
   
 }

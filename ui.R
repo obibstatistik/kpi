@@ -38,7 +38,7 @@ dashboardPage(
     sidebarMenu(id = "sidebarmenu",
       menuItem("Forside", tabName = "frontpage", icon = icon("home", lib="font-awesome")),
       menuItem("Arrangementer", tabName = "events", icon = icon("calendar", lib="font-awesome")),
-      menuItem("Det fysiske rum!", tabName = "space", icon = icon("building", lib="font-awesome"),
+      menuItem("Det fysiske rum", tabName = "space", icon = icon("building", lib="font-awesome"),
                menuItem("Besøgende", tabName = "visits"),
                menuItem("Mødelokaler", tabName = "meetingrooms"),
                menuItem("Event områder", tabName = "eventareas")#,
