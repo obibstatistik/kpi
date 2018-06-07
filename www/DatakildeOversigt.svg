@@ -1,0 +1,1181 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Oprettet af Microsoft Visio, SVG-eksport DatakildeOversigt_09_04_2018.svg Page-1 -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events"
+		xmlns:v="http://schemas.microsoft.com/visio/2003/SVGExtensions/" width="16.5354in" height="11.6929in"
+		viewBox="0 0 1190.55 841.89" xml:space="preserve" color-interpolation-filters="sRGB" class="st33">
+	<v:documentProperties v:langID="1030" v:metric="true" v:viewMarkup="false">
+		<v:userDefs>
+			<v:ud v:nameU="msvSubprocessMaster" v:prompt="" v:val="VT4(Rectangle)"/>
+			<v:ud v:nameU="msvNoAutoConnect" v:val="VT0(1):26"/>
+		</v:userDefs>
+	</v:documentProperties>
+
+	<style type="text/css">
+	<![CDATA[
+		.st1 {fill:url(#grad0-4);stroke:#dfa800;stroke-width:2.25}
+		.st2 {fill:#000000;font-family:Calibri;font-size:0.833336em;font-weight:bold}
+		.st3 {font-size:1em;font-weight:normal}
+		.st4 {fill:url(#grad0-16);stroke:#61973d;stroke-width:2.25}
+		.st5 {font-size:1em}
+		.st6 {fill:#ffffff;stroke:#ffc000;stroke-dasharray:3.5,2.5;stroke-width:0.5}
+		.st7 {fill:#7f7f7f;font-family:Calibri;font-size:0.833336em}
+		.st8 {fill:url(#grad0-58);stroke:#4f87bb;stroke-width:3}
+		.st9 {fill:url(#grad0-58);stroke:#4f87bb;stroke-width:4.5}
+		.st10 {fill:#000000;font-family:Calibri;font-size:0.833336em}
+		.st11 {font-size:1em;font-weight:bold}
+		.st12 {marker-end:url(#mrkr4-74);stroke:#5b9bd5;stroke-linecap:round;stroke-linejoin:round;stroke-width:1}
+		.st13 {fill:#5b9bd5;fill-opacity:1;stroke:#5b9bd5;stroke-opacity:1;stroke-width:0.28409090909091}
+		.st14 {fill:#ffffff;stroke:none;stroke-linecap:butt;stroke-width:7.2}
+		.st15 {fill:#4f88bb;font-family:Calibri;font-size:0.666664em}
+		.st16 {fill:#ffffff;stroke:none;stroke-linecap:butt}
+		.st17 {fill:#4f87bb;font-family:Calibri;font-size:0.666664em}
+		.st18 {marker-end:url(#mrkr4-152);stroke:#bdd7ee;stroke-dasharray:1,2;stroke-linecap:round;stroke-linejoin:round;stroke-width:1}
+		.st19 {fill:#bdd7ee;fill-opacity:1;stroke:#bdd7ee;stroke-opacity:1;stroke-width:0.28409090909091}
+		.st20 {fill:#ffffff;stroke:#000000;stroke-width:0.75}
+		.st21 {fill:#ffffff;stroke:#92d050;stroke-dasharray:3.5,2.5;stroke-width:0.5}
+		.st22 {fill:url(#grad0-16);stroke:#61973d;stroke-width:4.5}
+		.st23 {fill:none;stroke:none;stroke-width:0.25}
+		.st24 {fill:#000000;font-family:Arial Rounded MT Bold;font-size:1.16666em;font-weight:bold}
+		.st25 {font-size:0.714294em;font-weight:normal}
+		.st26 {visibility:visible}
+		.st27 {fill:#5b9bd5;fill-opacity:0.22;filter:url(#filter_2);stroke:#5b9bd5;stroke-opacity:0.22}
+		.st28 {fill:#ffffff;stroke:#c7c8c8;stroke-width:0.25}
+		.st29 {fill:#0c0c0c;font-family:Calibri;font-size:1.00001em;font-weight:bold}
+		.st30 {fill:#ff0000;font-family:Calibri;font-size:2.50001em;font-weight:bold}
+		.st31 {fill:#5b9bd5;fill-opacity:0.22;filter:url(#filter_2);stroke:none}
+		.st32 {fill:#000000;stroke:none;stroke-width:0.25}
+		.st33 {fill:none;fill-rule:evenodd;font-size:12px;overflow:visible;stroke-linecap:square;stroke-miterlimit:3}
+	]]>
+	</style>
+
+	<defs id="Patterns_And_Gradients">
+		<linearGradient id="grad0-4" x1="0" y1="0" x2="1" y2="0" gradientTransform="rotate(60 0.5 0.5)">
+			<stop offset="0" stop-color="#fef4e7" stop-opacity="1"/>
+			<stop offset="0.24" stop-color="#fef9f3" stop-opacity="1"/>
+			<stop offset="0.54" stop-color="#feffff" stop-opacity="1"/>
+		</linearGradient>
+		<linearGradient id="grad0-16" x1="0" y1="0" x2="1" y2="0" gradientTransform="rotate(60 0.5 0.5)">
+			<stop offset="0" stop-color="#ebf1e8" stop-opacity="1"/>
+			<stop offset="0.24" stop-color="#f5f8f4" stop-opacity="1"/>
+			<stop offset="0.54" stop-color="#feffff" stop-opacity="1"/>
+		</linearGradient>
+		<linearGradient id="grad0-58" x1="0" y1="0" x2="1" y2="0" gradientTransform="rotate(60 0.5 0.5)">
+			<stop offset="0" stop-color="#e9eff7" stop-opacity="1"/>
+			<stop offset="0.24" stop-color="#f4f7fb" stop-opacity="1"/>
+			<stop offset="0.54" stop-color="#feffff" stop-opacity="1"/>
+		</linearGradient>
+	</defs>
+	<defs id="Markers">
+		<g id="lend4">
+			<path d="M 2 1 L 0 0 L 2 -1 L 2 1 " style="stroke:none"/>
+		</g>
+		<marker id="mrkr4-74" class="st13" v:arrowType="4" v:arrowSize="2" v:setback="7.04" refX="-7.04" orient="auto"
+				markerUnits="strokeWidth" overflow="visible">
+			<use xlink:href="#lend4" transform="scale(-3.52,-3.52) "/>
+		</marker>
+		<marker id="mrkr4-152" class="st19" v:arrowType="4" v:arrowSize="2" v:setback="7.04" refX="-7.04" orient="auto"
+				markerUnits="strokeWidth" overflow="visible">
+			<use xlink:href="#lend4" transform="scale(-3.52,-3.52) "/>
+		</marker>
+	</defs>
+	<defs id="Filters">
+		<filter id="filter_2">
+			<feGaussianBlur stdDeviation="2"/>
+		</filter>
+	</defs>
+	<g v:mID="0" v:index="1" v:groupContext="foregroundPage">
+		<v:userDefs>
+			<v:ud v:nameU="msvThemeOrder" v:val="VT0(0):26"/>
+		</v:userDefs>
+		<title>Side-1</title>
+		<v:pageProperties v:drawingScale="0.0393701" v:pageScale="0.0393701" v:drawingUnits="24" v:shadowOffsetX="8.50394"
+				v:shadowOffsetY="-8.50394"/>
+		<v:layer v:name="Forbindelse" v:index="0"/>
+		<g id="shape1-1" v:mID="1" v:groupContext="shape" transform="translate(760.574,-192.707)">
+			<title>Firkant</title>
+			<desc>Drupal (CMS)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st1"/>
+			<text x="23.83" y="801.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Drupal<v:newlineChar/><tspan
+						x="25.55" dy="1.2em" class="st3">(CMS)</tspan></text>		</g>
+		<g id="shape2-7" v:mID="2" v:groupContext="shape" transform="translate(559.843,-89.7357)">
+			<title>Firkant.2</title>
+			<desc>Webtrends (national løsning)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st1"/>
+			<text x="14.7" y="795.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Webtrends<v:newlineChar/><tspan
+						x="19.66" dy="1.2em" class="st3">(national </tspan><tspan x="21.8" dy="1.2em" class="st3">løsning)</tspan></text>		</g>
+		<g id="shape3-13" v:mID="3" v:groupContext="shape" transform="translate(647.272,-722.835)">
+			<title>Firkant.3</title>
+			<desc>Google Analytics</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st4"/>
+			<text x="23.15" y="801.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Google <tspan x="19"
+						dy="1.2em" class="st5">Analytics</tspan></text>		</g>
+		<g id="shape4-19" v:mID="4" v:groupContext="shape" transform="translate(32.2205,-363.892)">
+			<title>Firkant.4</title>
+			<desc>SurveyXact</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<path d="M0 841.89 L75.65 841.89 L75.65 766.24 L0 766.24 L0 841.89 Z" class="st6"/>
+			<text x="15.37" y="807.07" class="st7" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>SurveyXact</text>		</g>
+		<g id="shape7-22" v:mID="7" v:groupContext="shape" transform="translate(269.123,-89.7357)">
+			<title>Firkant.7</title>
+			<desc>DDElibra Biblioteks-system (til sept. 2017)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<path d="M0 841.89 L75.65 841.89 L75.65 766.24 L0 766.24 L0 841.89 Z" class="st6"/>
+			<text x="20.17" y="789.07" class="st7" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>DDElibra<v:newlineChar/><tspan
+						x="16.48" dy="1.2em" class="st5">Biblioteks</tspan>-<tspan x="23.49" dy="1.2em" class="st5">system<v:newlineChar/></tspan><tspan
+						x="8.42" dy="1.2em" class="st5">(til sept. 2017)</tspan></text>		</g>
+		<g id="shape8-28" v:mID="8" v:groupContext="shape" transform="translate(366.029,-89.7357)">
+			<title>Firkant.8</title>
+			<desc>Rapportserver til Cicero Biblioteks-system (fra sept. 2017)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st1"/>
+			<text x="8.03" y="777.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Rapportserver <tspan
+						x="33.63" dy="1.2em" class="st5">til<v:newlineChar/></tspan><tspan x="24.87" dy="1.2em" class="st5">Cicero<v:newlineChar/></tspan><tspan
+						x="16.48" dy="1.2em" class="st3">Biblioteks</tspan><tspan class="st3">-</tspan><tspan x="23.49" dy="1.2em"
+						class="st3">system<v:newlineChar/></tspan><tspan x="6.72" dy="1.2em" class="st3">(fra sept. 2017)</tspan></text>		</g>
+		<g id="shape9-38" v:mID="9" v:groupContext="shape" transform="translate(737.008,-722.835)">
+			<title>Firkant.9</title>
+			<desc>Heatmap.me</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st4"/>
+			<text x="10.81" y="807.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Heatmap.me</text>		</g>
+		<g id="shape10-42" v:mID="10" v:groupContext="shape" transform="translate(33.865,-184.418)">
+			<title>Firkant.10</title>
+			<desc>ERMS (brugsstatistik eRessourcer)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<path d="M0 841.89 L75.65 841.89 L75.65 766.24 L0 766.24 L0 841.89 Z" class="st6"/>
+			<text x="26.09" y="795.07" class="st7" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>ERMS<v:newlineChar/><tspan
+						x="9.1" dy="1.2em" class="st5">(brugsstatistik<v:newlineChar/></tspan><tspan x="11.35" dy="1.2em"
+						class="st5">eRessourcer)</tspan></text>		</g>
+		<g id="shape11-47" v:mID="11" v:groupContext="shape" transform="translate(165.298,-361.5)">
+			<title>Firkant.11</title>
+			<desc>eReolen (ebøger og elydbøger) (manuelle udtræk)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st1"/>
+			<text x="20.86" y="783.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>eReolen<v:newlineChar/><tspan
+						x="15.84" dy="1.2em" class="st3">(ebøger og </tspan><tspan x="15.92" dy="1.2em" class="st3">elydbøger)<v:newlineChar/></tspan><tspan
+						x="17.39" dy="1.2em" class="st3">(manuelle </tspan><tspan x="21.5" dy="1.2em" class="st3">udtræk)</tspan></text>		</g>
+		<g id="shape1000-55" v:mID="1000" v:groupContext="shape" transform="translate(633.015,-547.975)">
+			<title>Firkant.1000</title>
+			<desc>SAS (kommunalt datawarehouse)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st8"/>
+			<text x="30.07" y="795.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>SAS<v:newlineChar/><tspan
+						x="12.94" dy="1.2em" class="st3">(kommunalt<v:newlineChar/></tspan><tspan x="4.68" dy="1.2em" class="st3">datawarehouse)</tspan></text>		</g>
+		<g id="shape1001-62" v:mID="1001" v:groupContext="shape" transform="translate(496.063,-450.041)">
+			<title>Firkant.1001</title>
+			<desc>Importserver m. PostgreSQL (bibliotekets datawarehouse)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st9"/>
+			<text x="4.83" y="789.07" class="st10" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Importserver m.<v:newlineChar/><tspan
+						x="14.17" dy="1.2em" class="st11">PostgreSQL<v:newlineChar/></tspan><tspan x="12.42" dy="1.2em" class="st5">(bibliotekets </tspan><tspan
+						x="4.68" dy="1.2em" class="st5">datawarehouse)</tspan></text>		</g>
+		<g id="shape1003-69" v:mID="1003" v:groupContext="shape" v:layerMember="0" transform="translate(359.027,-325.984)">
+			<title>Dynamisk forbindelse.1003</title>
+			<desc>Besøgstal, Materialealarmer, netværkstrafik</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="92.8053" cy="788.596" width="68.87" height="36.8035"/>
+			<path d="M0 841.89 L0 789.6 L146.9 789.6 L146.9 724.87" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="63.2804" y="774.196" width="59.0501" height="28.7996" class="st14"/>
+			<text x="76.34" y="781.4" class="st15" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Besøgstal, <v:newlineChar/><tspan
+						x="63.28" dy="1.2em" class="st5">Materialealarmer,<v:newlineChar/></tspan><tspan x="69.09" dy="1.2em"
+						class="st5">netværkstrafik</tspan></text>		</g>
+		<g id="shape1008-79" v:mID="1008" v:groupContext="shape" transform="translate(947.045,-192.707)">
+			<title>Firkant.1008</title>
+			<desc>Arrangements-DB (custom løsning MySQL / Access)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st1"/>
+			<text x="6.67" y="789.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Arrangements-<tspan
+						x="31.87" dy="1.2em" class="st5">DB<v:newlineChar/></tspan><tspan x="5.67" dy="1.2em" class="st3">(custom løsning </tspan><tspan
+						x="4.29" dy="1.2em" class="st3">MySQL / Access)</tspan></text>		</g>
+		<g id="shape1014-86" v:mID="1014" v:groupContext="shape" transform="translate(462.936,-89.7357)">
+			<title>Firkant.1014</title>
+			<desc>BookPC publikumsPC’er (manuelle udtræk)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st1"/>
+			<text x="21.94" y="789.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>BookPC<v:newlineChar/><tspan
+						x="6.07" dy="1.2em" class="st3">publikumsPC</tspan><tspan class="st3">’</tspan><tspan class="st3">er<v:newlineChar/></tspan><tspan
+						x="17.39" dy="1.2em" class="st3">(manuelle<v:lf/></tspan><tspan x="20.37" dy="1.2em" class="st3"> </tspan><tspan
+						class="st3">udtræk)</tspan></text>		</g>
+		<g id="shape1015-96" v:mID="1015" v:groupContext="shape" transform="translate(1062.99,-195.004)">
+			<title>Firkant.1015</title>
+			<desc>Sagio publikumsprint</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<path d="M0 841.89 L75.65 841.89 L75.65 766.24 L0 766.24 L0 841.89 Z" class="st6"/>
+			<text x="26.99" y="801.07" class="st7" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Sagio<v:newlineChar/><tspan
+						x="6.98" dy="1.2em" class="st5">publikumsprint</tspan></text>		</g>
+		<g id="shape1016-100" v:mID="1016" v:groupContext="shape" transform="translate(947.045,-288.931)">
+			<title>Firkant.1016</title>
+			<desc>Place2Book</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st1"/>
+			<text x="13.74" y="807.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Place2Book</text>		</g>
+		<g id="shape1026-104" v:mID="1026" v:groupContext="shape" v:layerMember="0" transform="translate(331.614,-165.382)">
+			<title>Dynamisk forbindelse.1026</title>
+			<desc>Statistik 2003-2017</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="115.693" cy="677.036" width="46.51" height="27.2035"/>
+			<path d="M0 841.89 L0 808.85 L80.9 808.85 L80.9 678.84 L187.47 678.84 L187.47 564.27" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="97.3456" y="667.436" width="36.696" height="19.1997" class="st16"/>
+			<text x="102.7" y="674.64" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Statistik<v:newlineChar/><tspan
+						x="97.35" dy="1.2em" class="st5"> </tspan>2003-2017</text>		</g>
+		<g id="shape1027-112" v:mID="1027" v:groupContext="shape" v:layerMember="0" transform="translate(403.853,-165.382)">
+			<title>Dynamisk forbindelse.1027</title>
+			<desc>Enkeltrapporter via url’er</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="63.1178" cy="774.086" width="92.04" height="17.6036"/>
+			<path d="M0 841.89 L0 823.02 L48.94 823.02 L48.94 709.63 L130.03 709.63 L130.03 564.27" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="22.0087" y="769.286" width="82.2184" height="9.59985" class="st14"/>
+			<text x="22.01" y="776.49" class="st15" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Enkeltrapporter via url’er</text>		</g>
+		<g id="shape1031-119" v:mID="1031" v:groupContext="shape" v:layerMember="0" transform="translate(597.666,-165.382)">
+			<title>Dynamisk forbindelse.1031</title>
+			<desc>Brugsstatistik: sites</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="3.20763" cy="686.465" width="72.2" height="17.6036"/>
+			<path d="M0 841.89 L0 548.06 L-18.92 548.06" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="-27.9812" y="681.665" width="62.3779" height="9.59985" class="st14"/>
+			<text x="-27.98" y="688.86" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Brugsstatistik: sites</text>		</g>
+		<g id="shape1032-126" v:mID="1032" v:groupContext="shape" v:layerMember="0" transform="translate(670.838,-547.975)">
+			<title>Dynamisk forbindelse.1032</title>
+			<desc>Borgerdata m.m.</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="0" cy="869.495" width="64.89" height="17.6036"/>
+			<path d="M0 841.89 L0 893.8 L-92.09 893.8" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="-27.5348" y="864.695" width="55.0698" height="9.59985" class="st14"/>
+			<text x="-27.53" y="871.9" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Borgerdata m.m.</text>		</g>
+		<g id="shape1033-133" v:mID="1033" v:groupContext="shape" v:layerMember="0" transform="translate(571.71,-508.147)">
+			<title>Dynamisk forbindelse.1033</title>
+			<desc>Biblioteksdata</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="23.5659" cy="783.108" width="56.07" height="17.6036"/>
+			<path d="M0 841.89 L10.63 841.89 L10.63 743.68 L54.27 743.68" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="0.439499" y="778.308" width="46.253" height="9.59985" class="st14"/>
+			<text x="0.44" y="785.51" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Biblioteksdata</text>		</g>
+		<g id="shape1038-140" v:mID="1038" v:groupContext="shape" v:layerMember="0" transform="translate(240.945,-399.324)">
+			<title>Dynamisk forbindelse.1038</title>
+			<desc>udlånsstatistik</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="63.9619" cy="753.654" width="56.66" height="17.6036"/>
+			<path d="M0 841.89 L33.57 841.89 L33.57 753.35 L248.08 753.35" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="40.5405" y="748.855" width="46.843" height="9.59985" class="st14"/>
+			<text x="40.54" y="756.05" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>udlånsstatistik</text>		</g>
+		<g id="shape1040-147" v:mID="1040" v:groupContext="shape" v:layerMember="0" transform="translate(240.945,-222.241)">
+			<title>Dynamisk forbindelse.1040</title>
+			<desc>driftsstatistik</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="171.25" cy="638.934" width="52.33" height="17.6036"/>
+			<path d="M0 841.89 L62.66 841.89 L62.66 639.68 L223.04 639.68 L223.04 599.4 L248.08 599.4" class="st18"/>
+			<rect v:rectContext="textBkgnd" x="149.993" y="634.134" width="42.5149" height="9.59985" class="st14"/>
+			<text x="149.99" y="641.33" class="st15" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>driftsstatistik</text>		</g>
+		<g id="shape1041-155" v:mID="1041" v:groupContext="shape" v:layerMember="0" transform="translate(760.574,-211.908)">
+			<title>Dynamisk forbindelse.1041</title>
+			<desc>Brugsstatistik: sites</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="-93.8647" cy="841.89" width="72.2" height="17.6036"/>
+			<path d="M0 841.89 L-141.2 841.89 L-141.2 881.38" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="-125.054" y="837.09" width="62.3779" height="9.59985" class="st14"/>
+			<text x="-125.05" y="844.29" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Brugsstatistik: sites</text>		</g>
+		<g id="shape1042-162" v:mID="1042" v:groupContext="shape" v:layerMember="0" transform="translate(947.045,-326.754)">
+			<title>Dynamisk forbindelse.1042</title>
+			<desc>Arrangementsbesøg m.m.</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="-96.2071" cy="853.859" width="94.13" height="17.6036"/>
+			<path d="M0 841.89 L-125.97 841.89 L-125.97 893.25" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="-138.363" y="849.06" width="84.3116" height="9.59985" class="st14"/>
+			<text x="-138.36" y="856.26" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Arrangementsbesøg m.m.</text>		</g>
+		<g id="shape1043-169" v:mID="1043" v:groupContext="shape" v:layerMember="0" transform="translate(947.045,-223.443)">
+			<title>Dynamisk forbindelse.1043</title>
+			<desc>Arrangementsbesøg m.m.</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="-58.3837" cy="849.9" width="94.13" height="17.6036"/>
+			<path d="M0 834.8 L-103.78 834.8" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="-100.539" y="845.1" width="84.3116" height="9.59985" class="st14"/>
+			<text x="-100.54" y="852.3" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Arrangementsbesøg m.m.</text>		</g>
+		<g id="shape1044-176" v:mID="1044" v:groupContext="shape" v:layerMember="0" transform="translate(500.759,-165.382)">
+			<title>Dynamisk forbindelse.1044</title>
+			<desc>Brugstatistik for publikumsPC’er</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="34.9887" cy="730.894" width="71.88" height="27.2035"/>
+			<path d="M0 841.89 L0 784.02 L45.02 784.02 L45.02 564.27" class="st18"/>
+			<rect v:rectContext="textBkgnd" x="3.95764" y="721.295" width="62.0623" height="19.1997" class="st16"/>
+			<text x="14.72" y="728.49" class="st15" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Brugstatistik<v:newlineChar/><tspan
+						x="3.96" dy="1.2em" class="st5">for publikumsPC</tspan>’er</text>		</g>
+		<g id="shape1045-184" v:mID="1045" v:groupContext="shape" v:layerMember="0" transform="translate(760.574,-248.758)">
+			<title>Dynamisk forbindelse.1045</title>
+			<desc>Brugsstatistik: sites</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="-29.8021" cy="609.166" width="55.63" height="27.2035"/>
+			<path d="M0 841.89 L-31.03 841.89 L-31.03 420.96 L-75.48 420.96 L-75.48 374.85" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="-52.7099" y="599.567" width="45.8157" height="19.1997" class="st14"/>
+			<text x="-52.71" y="606.77" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Brugsstatistik:<v:newlineChar/><tspan
+						x="-37.18" dy="1.2em" class="st5">sites</tspan></text>		</g>
+		<g id="shape1046-192" v:mID="1046" v:groupContext="shape" v:layerMember="0" transform="translate(786.614,-268.353)">
+			<title>Dynamisk forbindelse.1046</title>
+			<desc>Brugsstatistik for enkeltsider og enkeltelementer</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="-6.64226" cy="700.105" width="65.76" height="36.8035"/>
+			<path d="M-2.39 841.89 L-2.39 411.06 L-11.78 411.06 L-11.78 394.45" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="-34.6142" y="685.706" width="55.944" height="28.7996" class="st16"/>
+			<text x="-34.11" y="692.91" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Brugsstatistik for<v:newlineChar/><tspan
+						x="-29.67" dy="1.2em" class="st5">enkeltsider og</tspan><tspan x="-34.61" dy="1.2em" class="st5"> </tspan>enkeltelementer</text>		</g>
+		<g id="shape1047-201" v:mID="1047" v:groupContext="shape" transform="translate(165.298,-450.041)">
+			<title>Firkant.1047</title>
+			<desc>iMusic (hovedleverandør af materialer)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st1"/>
+			<text x="24.23" y="789.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>iMusic<v:newlineChar/><tspan
+						x="5.9" dy="1.2em" class="st3">(hovedleverand</tspan><tspan x="33.43" dy="1.2em" class="st3">ør<v:newlineChar/></tspan><tspan
+						x="10.04" dy="1.2em" class="st3">af materialer)</tspan></text>		</g>
+		<g id="shape1048-208" v:mID="1048" v:groupContext="shape" v:layerMember="0" transform="translate(240.945,-500.512)">
+			<title>Dynamisk forbindelse.1048</title>
+			<desc>Indkøbs- og leveringstatistik</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="189.888" cy="832.166" width="100.93" height="17.6036"/>
+			<path d="M0 835.35 L77.58 835.35 L77.58 834.25 L248.08 834.25" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="144.33" y="827.366" width="91.1162" height="9.59985" class="st16"/>
+			<text x="144.33" y="834.57" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Indkøbs- og leveringstatistik</text>		</g>
+		<g id="shape1050-215" v:mID="1050" v:groupContext="shape" transform="translate(1062.99,-284.74)">
+			<title>Firkant.1050</title>
+			<desc>Facebook</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<path d="M0 841.89 L75.65 841.89 L75.65 766.24 L0 766.24 L0 841.89 Z" class="st6"/>
+			<text x="18.36" y="807.07" class="st7" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Facebook</text>		</g>
+		<g id="shape1051-218" v:mID="1051" v:groupContext="shape" transform="translate(165.298,-538.583)">
+			<title>Firkant.1051</title>
+			<desc>Ad hoc geodata (fx fra Harry Potter Festival)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st1"/>
+			<text x="5.46" y="789.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Ad hoc geodata<v:newlineChar/><tspan
+						x="13.43" dy="1.2em" class="st3">(fx fra Harry </tspan><tspan x="25.02" dy="1.2em" class="st3">Potter<v:newlineChar/></tspan><tspan
+						x="20.94" dy="1.2em" class="st3">Festival)</tspan></text>		</g>
+		<g id="shape1052-225" v:mID="1052" v:groupContext="shape" transform="translate(378.065,-722.835)">
+			<title>Firkant.1052</title>
+			<desc>QGIS</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st4"/>
+			<text x="27.51" y="807.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>QGIS</text>		</g>
+		<g id="shape1053-229" v:mID="1053" v:groupContext="shape" transform="translate(138.48,-89.7357)">
+			<title>Rektangel med afrundet hjørne.1053</title>
+			<desc>Firewall</desc>
+			<v:userDefs>
+				<v:ud v:nameU="CTypeTopLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeTopRightSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeBotLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeBotRightSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockHoriz" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockVert" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockDiag" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.11694178830351):1"/>
+				<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.11694178830351):1"/>
+				<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.11694178830351):1"/>
+				<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.11694178830351):1"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="42.099" cy="825.582" width="84.2" height="32.6158"/>
+			<path d="M8.42 841.89 L75.78 841.89 A8.41967 8.41967 -180 0 0 84.2 833.47 L84.2 817.69 A8.41967 8.41967 -180 0 0 75.78
+						 809.27 L8.42 809.27 A8.41967 8.41967 -180 0 0 0 817.69 L0 833.47 A8.41967 8.41967 -180 0 0 8.42 841.89 Z"
+					class="st20"/>
+			<text x="25.63" y="828.58" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Firewall</text>		</g>
+		<g id="shape1054-232" v:mID="1054" v:groupContext="shape" transform="translate(321.204,-250.338)">
+			<title>Firkant.1054</title>
+			<desc>Logging server(e)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st8"/>
+			<text x="22" y="801.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Logging <tspan x="19.24"
+						dy="1.2em" class="st5">server(e)</tspan></text>		</g>
+		<g id="shape1055-237" v:mID="1055" v:groupContext="shape" v:layerMember="0" transform="translate(222.678,-106.044)">
+			<title>Dynamisk forbindelse.1055</title>
+			<desc>Netværkstrafik</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="75.1798" cy="738.756" width="58.21" height="17.6036"/>
+			<path d="M0 841.89 L30 841.89 L30 738.76 L121.55 738.76 L121.55 704.64" class="st18"/>
+			<rect v:rectContext="textBkgnd" x="50.9846" y="733.956" width="48.3907" height="9.59985" class="st14"/>
+			<text x="50.98" y="741.16" class="st15" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Netværkstrafik</text>		</g>
+		<g id="shape1056-244" v:mID="1056" v:groupContext="shape" v:layerMember="0" transform="translate(240.945,-545.482)">
+			<title>Dynamisk forbindelse.1056</title>
+			<path d="M0 841.89 L266.56 841.89 L266.56 854.64" class="st12"/>
+		</g>
+		<g id="shape1057-249" v:mID="1057" v:groupContext="shape" v:layerMember="0" transform="translate(545.398,-525.688)">
+			<title>Dynamisk forbindelse.1057</title>
+			<path d="M0 841.89 L0 786.48 L-111.13 786.48 L-111.13 651.78" class="st12"/>
+		</g>
+		<g id="shape1058-254" v:mID="1058" v:groupContext="shape" v:layerMember="0" transform="translate(240.945,-576.406)">
+			<title>Dynamisk forbindelse.1058</title>
+			<path d="M0 841.89 L174.94 841.89 L174.94 702.5" class="st12"/>
+		</g>
+		<g id="shape1059-259" v:mID="1059" v:groupContext="shape" transform="translate(557.536,-722.835)">
+			<title>Firkant.1059</title>
+			<desc>SAS VA</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<path d="M0 841.89 L75.65 841.89 L75.65 766.24 L0 766.24 L0 841.89 Z" class="st21"/>
+			<text x="23.48" y="807.07" class="st7" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>SAS VA</text>		</g>
+		<g id="shape1060-262" v:mID="1060" v:groupContext="shape" v:layerMember="0" transform="translate(670.838,-623.622)">
+			<title>Dynamisk forbindelse.1060</title>
+			<path d="M0 841.89 L0 814.29 L-75.48 814.29 L-75.48 749.72" class="st18"/>
+		</g>
+		<g id="shape1070-267" v:mID="1070" v:groupContext="shape" transform="translate(165.298,-184.418)">
+			<title>Firkant.1070</title>
+			<desc>Lyngsoe Sorteringsanlæg</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st1"/>
+			<text x="21.09" y="801.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Lyngsoe<v:newlineChar/><tspan
+						x="4.07" dy="1.2em" class="st5">Sorteringsanlæg</tspan></text>		</g>
+		<g id="shape1087-272" v:mID="1087" v:groupContext="shape" transform="translate(656.749,-89.7357)">
+			<title>Firkant.1087</title>
+			<desc>Mødelokale- og områdebooking</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st1"/>
+			<text x="5.28" y="801.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Mødelokale- og <tspan
+						x="4.88" dy="1.2em" class="st5">områdebooking</tspan></text>		</g>
+		<g id="shape1090-277" v:mID="1090" v:groupContext="shape" v:layerMember="0" transform="translate(694.572,-165.382)">
+			<title>Dynamisk forbindelse.1090</title>
+			<desc>Brugsdata</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="42.4354" cy="831.524" width="42.6" height="17.6036"/>
+			<path d="M0 841.89 L0 831.26 L85.08 831.26 L85.08 821.61" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="26.0431" y="826.724" width="32.7849" height="9.59985" class="st14"/>
+			<text x="26.04" y="833.92" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Brugsdata</text>		</g>
+		<g id="shape1091-284" v:mID="1091" v:groupContext="shape" transform="translate(947.045,-385.155)">
+			<title>Firkant.1091</title>
+			<desc>Arrangements betalinger (Place2Book)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st1"/>
+			<text x="8.2" y="795.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Arrangements<v:newlineChar/><tspan
+						x="16.62" dy="1.2em" class="st5">betalinger<v:newlineChar/></tspan><tspan x="11.26" dy="1.2em" class="st3">(Place2Book)</tspan></text>		</g>
+		<g id="shape1092-290" v:mID="1092" v:groupContext="shape" v:layerMember="0" transform="translate(947.045,-422.978)">
+			<title>Dynamisk forbindelse.1092</title>
+			<path d="M0 841.89 L-27.71 841.89 L-27.71 876.97 L-148.65 876.97 L-148.65 989.47" class="st12"/>
+		</g>
+		<g id="shape1093-295" v:mID="1093" v:groupContext="shape" transform="translate(467.801,-722.835)">
+			<title>Firkant.1002</title>
+			<desc>Shiny-server (Dashboards og Hvidbog)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st22"/>
+			<text x="12.02" y="795.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Shiny-server<v:newlineChar/><tspan
+						x="6.15" dy="1.2em" class="st3">(Dashboards og </tspan><tspan x="19.54" dy="1.2em" class="st3">Hvidbog)</tspan></text>		</g>
+		<g id="shape1094-301" v:mID="1094" v:groupContext="shape" transform="translate(947.045,-481.379)">
+			<title>Firkant.1012</title>
+			<desc>Cisco CMX</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st1"/>
+			<text x="16.27" y="807.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Cisco CMX</text>		</g>
+		<g id="shape1095-305" v:mID="1095" v:groupContext="shape" transform="translate(1061.6,-464.899)">
+			<title>Rektangel med afrundet hjørne.1019</title>
+			<desc>Wifi-AP’er</desc>
+			<v:userDefs>
+				<v:ud v:nameU="CTypeTopLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeTopRightSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeBotLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeBotRightSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockHoriz" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockVert" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockDiag" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+				<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+				<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+				<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="55.4743" cy="825.582" width="110.95" height="32.6158"/>
+			<path d="M11.09 841.89 L99.85 841.89 A11.0947 11.0947 -180 0 0 110.95 830.79 L110.95 820.37 A11.0947 11.0947 -180 0 0
+						 99.85 809.27 L11.09 809.27 A11.0947 11.0947 -180 0 0 -0 820.37 L0 830.79 A11.0947 11.0947 -180 0 0 11.09
+						 841.89 Z" class="st20"/>
+			<text x="34.1" y="828.58" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Wifi-AP’er</text>		</g>
+		<g id="shape1096-308" v:mID="1096" v:groupContext="shape" v:layerMember="0" transform="translate(561.711,-525.688)">
+			<title>Dynamisk forbindelse.1035</title>
+			<desc>Statistik og info til ledelse og personale</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="-9.69038" cy="744.428" width="84.69" height="27.2035"/>
+			<path d="M0 841.89 L0 743.96 L-56.09 743.96 L-56.09 651.78" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="-47.1291" y="734.829" width="74.8776" height="19.1997" class="st14"/>
+			<text x="-34.83" y="742.03" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Statistik og info<v:newlineChar/><tspan
+						x="-47.13" dy="1.2em" class="st5">til ledelse og personale</tspan></text>		</g>
+		<g id="shape1097-316" v:mID="1097" v:groupContext="shape" v:layerMember="0" transform="translate(1117.08,-497.515)">
+			<title>Dynamisk forbindelse.1036</title>
+			<path d="M0 841.89 L0 820.2 L-87.35 820.2" class="st12"/>
+		</g>
+		<g id="shape1098-321" v:mID="1098" v:groupContext="shape" v:layerMember="0" transform="translate(977.782,-557.025)">
+			<title>Dynamisk forbindelse.1037</title>
+			<desc>Bevægelser ml. zoner, occupancy data m.m.</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="7.08661" cy="818.518" width="83.45" height="36.8035"/>
+			<path d="M7.09 841.89 L7.09 791.81" class="st18"/>
+			<rect v:rectContext="textBkgnd" x="-28.8233" y="804.118" width="71.8198" height="28.7996" class="st16"/>
+			<text x="-28.82" y="811.32" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Bevægelser ml. zoner, <v:newlineChar/><tspan
+						x="-18.31" dy="1.2em" class="st5">occupancy data<v:newlineChar/></tspan><tspan x="-1.32" dy="1.2em"
+						class="st5">m.m.</tspan></text>		</g>
+		<g id="shape1099-330" v:mID="1099" v:groupContext="shape" transform="translate(947.045,-614.145)">
+			<title>Firkant.1066</title>
+			<desc>Smartcity- Server</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st1"/>
+			<text x="16.46" y="801.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Smartcity-<v:newlineChar/><tspan
+						x="24.51" dy="1.2em" class="st5">Server</tspan></text>		</g>
+		<g id="shape1100-335" v:mID="1100" v:groupContext="shape" transform="translate(1062.99,-775.258)">
+			<title>Rektangel med afrundet hjørne.1068</title>
+			<desc>Remoni enheder (Watt målere)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="CTypeTopLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeTopRightSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeBotLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeBotRightSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockHoriz" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockVert" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockDiag" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+				<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+				<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+				<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="55.4743" cy="825.582" width="110.95" height="32.6158"/>
+			<path d="M11.09 841.89 L99.85 841.89 A11.0947 11.0947 -180 0 0 110.95 830.79 L110.95 820.37 A11.0947 11.0947 -180 0 0
+						 99.85 809.27 L11.09 809.27 A11.0947 11.0947 -180 0 0 -0 820.37 L0 830.79 A11.0947 11.0947 -180 0 0 11.09
+						 841.89 Z" class="st20"/>
+			<text x="20.97" y="822.58" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Remoni enheder<v:newlineChar/><tspan
+						x="26.19" dy="1.2em" class="st5">(Watt målere)</tspan></text>		</g>
+		<g id="shape1101-339" v:mID="1101" v:groupContext="shape" v:layerMember="0" transform="translate(1118.47,-775.258)">
+			<title>Dynamisk forbindelse.1069</title>
+			<path d="M0 841.89 L0 852.52 L-112.17 852.52 L-112.17 920.32" class="st12"/>
+		</g>
+		<g id="shape1102-344" v:mID="1102" v:groupContext="shape" v:layerMember="0" transform="translate(947.045,-631.51)">
+			<title>Dynamisk forbindelse.1071</title>
+			<desc>Data om brugere, indeklima, og energiforbrug</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="-68.305" cy="934.817" width="102.57" height="27.2035"/>
+			<path d="M0 841.89 L-76.51 841.89 L-76.51 991.51 L-160.46 991.51 A2.3622 2.3622 -180 1 0 -165.18 991.51 L-215.13 991.51
+						 A2.3622 2.3622 -180 0 0 -219.86 991.51 L-368.3 991.51" class="st18"/>
+			<rect v:rectContext="textBkgnd" x="-114.683" y="925.218" width="92.757" height="19.1997" class="st14"/>
+			<text x="-114.68" y="932.42" class="st15" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Data om brugere, indeklima,<v:newlineChar/><tspan
+						x="-96.59" dy="1.2em" class="st5"> </tspan>og energiforbrug</text>		</g>
+		<g id="shape1103-352" v:mID="1103" v:groupContext="shape" transform="translate(1061.6,-562.66)">
+			<title>Rektangel med afrundet hjørne.1072</title>
+			<desc>LoRa indeklima enheder (Pt. IC-Meter)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="CTypeTopLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeTopRightSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeBotLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeBotRightSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockHoriz" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockVert" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockDiag" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+				<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+				<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+				<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="55.4743" cy="825.582" width="110.95" height="32.6158"/>
+			<path d="M11.09 841.89 L99.85 841.89 A11.0947 11.0947 -180 0 0 110.95 830.79 L110.95 820.37 A11.0947 11.0947 -180 0 0
+						 99.85 809.27 L11.09 809.27 A11.0947 11.0947 -180 0 0 -0 820.37 L0 830.79 A11.0947 11.0947 -180 0 0 11.09
+						 841.89 Z" class="st20"/>
+			<text x="5.25" y="822.58" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>LoRa indeklima enheder<v:newlineChar/><tspan
+						x="27.07" dy="1.2em" class="st5">(Pt. IC</tspan>-Meter)</text>		</g>
+		<g id="shape1104-356" v:mID="1104" v:groupContext="shape" v:layerMember="0" transform="translate(1117.08,-595.276)">
+			<title>Dynamisk forbindelse.1073</title>
+			<desc>Temp., lyd, fugt, CO2</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="-0.0351593" cy="816.103" width="78.09" height="17.6036"/>
+			<path d="M0 841.89 L0 806.77 L-87.35 806.77" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="-34.1718" y="811.303" width="68.2734" height="9.59985" class="st14"/>
+			<text x="-34.17" y="818.5" class="st15" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Temp., lyd, fugt, CO2</text>		</g>
+		<g id="shape1105-363" v:mID="1105" v:groupContext="shape" transform="translate(1061.6,-672.007)">
+			<title>Rektangel med afrundet hjørne.1074</title>
+			<desc>Energisensorer ATPs CTS-anlæg i BH</desc>
+			<v:userDefs>
+				<v:ud v:nameU="CTypeTopLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeTopRightSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeBotLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeBotRightSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockHoriz" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockVert" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockDiag" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+				<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+				<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+				<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="55.4743" cy="825.582" width="110.95" height="32.6158"/>
+			<path d="M11.09 841.89 L99.85 841.89 A11.0947 11.0947 -180 0 0 110.95 830.79 L110.95 820.37 A11.0947 11.0947 -180 0 0
+						 99.85 809.27 L11.09 809.27 A11.0947 11.0947 -180 0 0 -0 820.37 L0 830.79 A11.0947 11.0947 -180 0 0 11.09
+						 841.89 Z" class="st20"/>
+			<text x="24.51" y="822.58" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Energisensorer<v:newlineChar/><tspan
+						x="13.1" dy="1.2em" class="st5">ATPs CTS</tspan>-anlæg i BH</text>		</g>
+		<g id="shape1107-367" v:mID="1107" v:groupContext="shape" transform="translate(1061.6,-722.835)">
+			<title>Rektangel med afrundet hjørne.1076</title>
+			<desc>Xovis tællerkameraer/occupancy-sensorer</desc>
+			<v:userDefs>
+				<v:ud v:nameU="CTypeTopLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeTopRightSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeBotLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeBotRightSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockHoriz" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockVert" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockDiag" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+				<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+				<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+				<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.15409519607831):1"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="55.4743" cy="825.582" width="110.95" height="32.6158"/>
+			<path d="M11.09 841.89 L99.85 841.89 A11.0947 11.0947 -180 0 0 110.95 830.79 L110.95 820.37 A11.0947 11.0947 -180 0 0
+						 99.85 809.27 L11.09 809.27 A11.0947 11.0947 -180 0 0 -0 820.37 L0 830.79 A11.0947 11.0947 -180 0 0 11.09
+						 841.89 Z" class="st20"/>
+			<text x="8.81" y="822.58" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Xovis tællerkameraer/<tspan
+						x="14.14" dy="1.2em" class="st5">occupancy</tspan>-sensorer</text>		</g>
+		<g id="shape1108-371" v:mID="1108" v:groupContext="shape" v:layerMember="0" transform="translate(1061.6,-739.143)">
+			<title>Dynamisk forbindelse.1077</title>
+			<path d="M0 841.89 L-10.63 841.89 L-10.63 911.96 L-31.87 911.96" class="st12"/>
+		</g>
+		<g id="shape1109-376" v:mID="1109" v:groupContext="shape" transform="translate(826.744,-722.835)">
+			<title>Firkant.1078</title>
+			<desc>Opendata- Server (offentlige data)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st4"/>
+			<text x="15.68" y="795.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Opendata-<v:newlineChar/><tspan
+						x="24.51" dy="1.2em" class="st5">Server<v:newlineChar/></tspan><tspan x="4.95" dy="1.2em" class="st3">(offentlige data)</tspan></text>		</g>
+		<g id="shape1110-382" v:mID="1110" v:groupContext="shape" v:layerMember="0" transform="translate(947.045,-671.659)">
+			<title>Dynamisk forbindelse.1079</title>
+			<desc>Udvalgte smartcity data</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="-66.8271" cy="841.89" width="87.36" height="17.6036"/>
+			<path d="M0 841.89 L-82.48 841.89 L-82.48 797.75" class="st18"/>
+			<rect v:rectContext="textBkgnd" x="-105.6" y="837.09" width="77.5459" height="9.59985" class="st14"/>
+			<text x="-105.6" y="844.29" class="st15" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Udvalgte smartcity data</text>		</g>
+		<g id="shape1111-389" v:mID="1111" v:groupContext="shape" transform="translate(916.479,-722.835)">
+			<title>Firkant.1093</title>
+			<desc>Geckoboard (Indeklima-dashboard)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st4"/>
+			<text x="12.64" y="795.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Geckoboard<v:newlineChar/><tspan
+						x="14.82" dy="1.2em" class="st3">(Indeklima</tspan><tspan class="st3">-</tspan><tspan x="14.67" dy="1.2em"
+						class="st3">dashboard)</tspan></text>		</g>
+		<g id="shape1112-396" v:mID="1112" v:groupContext="shape" v:layerMember="0" transform="translate(984.869,-689.792)">
+			<title>Dynamisk forbindelse.1094</title>
+			<path d="M0 841.89 L0 831.26 L-30.57 831.26 L-30.57 815.89" class="st12"/>
+		</g>
+		<g id="shape1115-401" v:mID="1115" v:groupContext="shape" v:layerMember="0" transform="translate(1117.08,-672.007)">
+			<title>Dynamisk forbindelse.1115</title>
+			<path d="M0 841.89 L0 861.93 L-87.35 861.93" class="st18"/>
+		</g>
+		<g id="shape1117-406" v:mID="1117" v:groupContext="shape" transform="translate(32.0315,-18)">
+			<title>Ark.1117</title>
+			<desc>Odense Biblioteker og Borgerservice - Kilder til statistik (O...</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="322.299" cy="820.169" width="644.6" height="43.4421"/>
+			<rect x="0" y="798.448" width="644.598" height="43.4421" class="st23"/>
+			<text x="4" y="815.97" class="st24" v:langID="1030"><v:paragraph/><v:tabList/>Odense Biblioteker og Borgerservice - Kilder til statistik<v:newlineChar/><tspan
+						x="4" dy="1.68em" class="st25">(Opdateret 10.04.2018)</tspan></text>		</g>
+		<g id="shape1118-410" v:mID="1118" v:groupContext="shape" transform="translate(1062.99,-374.475)">
+			<title>Firkant.1118</title>
+			<desc>Borgerservices Ticket system</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<path d="M0 841.89 L75.65 841.89 L75.65 766.24 L0 766.24 L0 841.89 Z" class="st6"/>
+			<text x="7.99" y="801.07" class="st7" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Borgerservices<v:newlineChar/><tspan
+						x="10.23" dy="1.2em" class="st5">Ticket system</tspan></text>		</g>
+		<g id="shape1120-414" v:mID="1120" v:groupContext="shape" transform="translate(33.865,-272.959)">
+			<title>Firkant.1120</title>
+			<desc>Pubhub (Publizon)</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<path d="M0 841.89 L75.65 841.89 L75.65 766.24 L0 766.24 L0 841.89 Z" class="st6"/>
+			<text x="22.11" y="801.07" class="st7" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Pubhub<v:newlineChar/><tspan
+						x="17.42" dy="1.2em" class="st5">(Publizon)</tspan></text>		</g>
+		<g id="shape1121-418" v:mID="1121" v:groupContext="shape" transform="translate(165.298,-272.959)">
+			<title>Firkant.1121</title>
+			<desc>Computopic SMS Gateway</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st1"/>
+			<text x="12.63" y="801.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Computopic<v:newlineChar/><tspan
+						x="9.13" dy="1.2em" class="st5">SMS Gateway</tspan></text>		</g>
+		<g id="group1123-423" transform="translate(796.535,-35.4331)" v:mID="1123" v:groupContext="group">
+			<title>Ark.1123</title>
+			<g id="shape1085-424" v:mID="1085" v:groupContext="shape">
+				<title>Rektangel.1085</title>
+				<v:userDefs>
+					<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+				</v:userDefs>
+				<g id="shadow1085-425" v:groupContext="shadow" v:shadowOffsetX="0.345598" v:shadowOffsetY="-1.97279"
+						v:shadowType="1" transform="matrix(1,0,0,1,0.345598,1.97279)" class="st26">
+					<rect x="0" y="711.94" width="357.541" height="129.949" class="st27"/>
+				</g>
+				<rect x="0" y="711.94" width="357.541" height="129.949" class="st28"/>
+			</g>
+			<g id="shape1080-429" v:mID="1080" v:groupContext="shape" transform="translate(281.433,-46.2306)">
+				<title>Firkant.1080</title>
+				<desc>Dashboard eller slutbruger-program</desc>
+				<v:userDefs>
+					<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+				</v:userDefs>
+				<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+				<v:textRect cx="31.7222" cy="810.168" width="63.45" height="63.4443"/>
+				<rect x="0" y="778.445" width="63.4443" height="63.4443" class="st4"/>
+				<text x="9.12" y="795.17" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Dashboard <tspan
+							x="22.45" dy="1.2em" class="st5">eller </tspan><tspan x="8.74" dy="1.2em" class="st5">slutbruger</tspan>-<tspan
+							x="13.89" dy="1.2em" class="st5">program</tspan></text>			</g>
+			<g id="shape1081-436" v:mID="1081" v:groupContext="shape" transform="translate(107.138,-46.2306)">
+				<title>Firkant.1081</title>
+				<desc>Datakilde</desc>
+				<v:userDefs>
+					<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+				</v:userDefs>
+				<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+				<v:textRect cx="31.7222" cy="810.168" width="63.45" height="63.4443"/>
+				<rect x="0" y="778.445" width="63.4443" height="63.4443" class="st1"/>
+				<text x="11.84" y="813.17" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Datakilde</text>			</g>
+			<g id="shape1082-440" v:mID="1082" v:groupContext="shape" transform="translate(12.8185,-59.0143)">
+				<title>Rektangel med afrundet hjørne.1082</title>
+				<desc>Data indsamling eller sensor</desc>
+				<v:userDefs>
+					<v:ud v:nameU="CTypeTopLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+					<v:ud v:nameU="CTypeTopRightSnip" v:prompt="" v:val="VT0(0):5"/>
+					<v:ud v:nameU="CTypeBotLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+					<v:ud v:nameU="CTypeBotRightSnip" v:prompt="" v:val="VT0(0):5"/>
+					<v:ud v:nameU="CornerLockHoriz" v:prompt="" v:val="VT0(0):5"/>
+					<v:ud v:nameU="CornerLockVert" v:prompt="" v:val="VT0(0):5"/>
+					<v:ud v:nameU="CornerLockDiag" v:prompt="" v:val="VT0(0):5"/>
+					<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+					<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+					<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+					<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+					<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+					<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.1050648837376):1"/>
+					<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.1050648837376):1"/>
+					<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.1050648837376):1"/>
+					<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.1050648837376):1"/>
+				</v:userDefs>
+				<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+				<v:textRect cx="37.8234" cy="825.582" width="75.65" height="32.6158"/>
+				<path d="M7.56 841.89 L68.08 841.89 A7.56455 7.56455 -180 0 0 75.65 834.33 L75.65 816.84 A7.56455 7.56455 -180 0
+							 0 68.08 809.27 L7.56 809.27 A7.56455 7.56455 -180 0 0 -0 816.84 L0 834.33 A7.56455 7.56455 -180 0 0
+							 7.56 841.89 Z" class="st20"/>
+				<text x="4.24" y="822.58" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Data indsamling <tspan
+							x="13.77" dy="1.2em" class="st5">eller sensor</tspan></text>			</g>
+			<g id="shape1083-444" v:mID="1083" v:groupContext="shape" transform="translate(194.286,-46.2306)">
+				<title>Firkant.1083</title>
+				<desc>Database eller data-opsamling</desc>
+				<v:userDefs>
+					<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+				</v:userDefs>
+				<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+				<v:textRect cx="31.7222" cy="810.168" width="63.45" height="63.4443"/>
+				<rect x="0" y="778.445" width="63.4443" height="63.4443" class="st8"/>
+				<text x="12.24" y="795.17" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Database<v:newlineChar/><tspan
+							x="22.45" dy="1.2em" class="st5">eller <v:newlineChar/></tspan><tspan x="20.84" dy="1.2em" class="st5">data</tspan>-<tspan
+							x="10.31" dy="1.2em" class="st5">opsamling</tspan></text>			</g>
+			<g id="shape1084-451" v:mID="1084" v:groupContext="shape" transform="translate(11.3386,-107.624)">
+				<title>Ark.1084</title>
+				<desc>Tegnforklaring</desc>
+				<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197" v:verticalAlign="0"/>
+				<v:textRect cx="101.468" cy="833.699" width="202.94" height="16.382"/>
+				<rect x="0" y="825.508" width="202.936" height="16.382" class="st23"/>
+				<text x="4" y="840.31" class="st29" v:langID="1030"><v:paragraph/><v:tabList/>Tegnforklaring</text>			</g>
+			<g id="shape1122-454" v:mID="1122" v:groupContext="shape" transform="translate(11.3386,-8.48657)">
+				<title>Ark.1122</title>
+				<desc>Stiplede linjer repræsenterer data, der endnu ikke er en del ...</desc>
+				<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197" v:verticalAlign="0"/>
+				<v:textRect cx="165.827" cy="825.582" width="331.66" height="32.6158"/>
+				<rect x="0" y="809.274" width="331.654" height="32.6158" class="st23"/>
+				<text x="4" y="822.27" class="st10" v:langID="1030"><v:paragraph/><v:tabList/>Stiplede linjer repræsenterer data, der endnu ikke er en del af driften,<v:newlineChar/><tspan
+							x="4" dy="1.2em" class="st5">midlertidigt ude af drift eller, hvor der er usikkerhed om anvendeligheden.</tspan></text>			</g>
+		</g>
+		<g id="shape1125-458" v:mID="1125" v:groupContext="shape" v:layerMember="0" transform="translate(760.574,-230.53)">
+			<title>Dynamisk forbindelse</title>
+			<desc>Brugsstatistik: sites, arrangementer, lokaler</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="-97.3644" cy="725.748" width="84.97" height="27.2035"/>
+			<path d="M0 841.89 L-97.36 841.89 L-97.36 603.74 L-181.82 603.74" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="-134.938" y="716.148" width="75.1479" height="19.1997" class="st14"/>
+			<text x="-129.55" y="723.35" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Brugsstatistik: sites,<v:lf/><tspan
+						x="-134.94" dy="1.2em" class="st5">arrangementer, lokaler</tspan></text>		</g>
+		<g id="shape1127-466" v:mID="1127" v:groupContext="shape" transform="translate(502.866,-24.9449)">
+			<title>Ark.1127</title>
+			<desc>KLADDE</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="92.9764" cy="820.63" width="185.96" height="42.5197"/>
+			<rect x="0" y="799.37" width="185.953" height="42.5197" class="st23"/>
+			<text x="43.11" y="829.63" class="st30" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>KLADDE</text>		</g>
+		<g id="shape1128-469" v:mID="1128" v:groupContext="shape" v:layerMember="0" transform="translate(240.945,-310.782)">
+			<title>Dynamisk forbindelse.1128</title>
+			<desc>Ind- og udgående sms’er</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="141.002" cy="705.756" width="89.88" height="17.6036"/>
+			<path d="M0 841.89 L49.98 841.89 L49.98 705.97 L196.84 705.97 L196.84 676.1 L248.08 676.1" class="st18"/>
+			<rect v:rectContext="textBkgnd" x="100.969" y="700.957" width="80.0659" height="9.59985" class="st14"/>
+			<text x="100.97" y="708.16" class="st15" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Ind- og udgående sms’er</text>		</g>
+		<g id="shape1130-476" v:mID="1130" v:groupContext="shape" transform="translate(288.329,-722.835)">
+			<title>Firkant.5</title>
+			<desc>Bibliotheca Smartadmin</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st4"/>
+			<text x="14.47" y="801.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Bibliotheca<v:newlineChar/><tspan
+						x="12.28" dy="1.2em" class="st5">Smartadmin</tspan></text>		</g>
+		<g id="shape1131-481" v:mID="1131" v:groupContext="shape" transform="translate(165.298,-625.928)">
+			<title>Firkant.6</title>
+			<desc>Lokal Bibliotheca Server</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="37.8234" cy="804.066" width="75.65" height="75.6467"/>
+			<rect x="0" y="766.243" width="75.6467" height="75.6467" class="st1"/>
+			<text x="26.93" y="795.07" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Lokal <tspan
+						x="14.47" dy="1.2em" class="st5">Bibliotheca<v:newlineChar/></tspan><tspan x="24.51" dy="1.2em" class="st5">Server</tspan></text>		</g>
+		<g id="shape1132-487" v:mID="1132" v:groupContext="shape" transform="translate(28.7671,-750.259)">
+			<title>Rektangel med afrundet hjørne.1006</title>
+			<desc>Bibliotheca selvbetjenings-automater</desc>
+			<v:userDefs>
+				<v:ud v:nameU="CTypeTopLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeTopRightSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeBotLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeBotRightSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockHoriz" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockVert" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockDiag" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.11694178830351):1"/>
+				<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.11694178830351):1"/>
+				<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.11694178830351):1"/>
+				<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.11694178830351):1"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="42.099" cy="820.169" width="84.2" height="43.4421"/>
+			<path d="M8.42 841.89 L75.78 841.89 A8.41967 8.41967 -180 0 0 84.2 833.47 L84.2 806.87 A8.41967 8.41967 -180 0 0 75.78
+						 798.45 L8.42 798.45 A8.41967 8.41967 -180 0 0 0 806.87 L0 833.47 A8.41967 8.41967 -180 0 0 8.42 841.89 Z"
+					class="st20"/>
+			<text x="18.75" y="811.17" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Bibliotheca <tspan
+						x="10.78" dy="1.2em" class="st5">selvbetjenings</tspan>-<tspan x="19.96" dy="1.2em" class="st5">automater</tspan></text>		</g>
+		<g id="shape1133-492" v:mID="1133" v:groupContext="shape" transform="translate(28.7671,-642.03)">
+			<title>Rektangel med afrundet hjørne.1011</title>
+			<desc>Bibliotheca tællerkameraer</desc>
+			<v:userDefs>
+				<v:ud v:nameU="CTypeTopLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeTopRightSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeBotLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeBotRightSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockHoriz" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockVert" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockDiag" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.11694178830351):1"/>
+				<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.11694178830351):1"/>
+				<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.11694178830351):1"/>
+				<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.11694178830351):1"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="42.099" cy="820.169" width="84.2" height="43.4421"/>
+			<path d="M8.42 841.89 L75.78 841.89 A8.41967 8.41967 -180 0 0 84.2 833.47 L84.2 806.87 A8.41967 8.41967 -180 0 0 75.78
+						 798.45 L8.42 798.45 A8.41967 8.41967 -180 0 0 0 806.87 L0 833.47 A8.41967 8.41967 -180 0 0 8.42 841.89 Z"
+					class="st20"/>
+			<text x="18.75" y="817.17" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Bibliotheca <tspan
+						x="9.75" dy="1.2em" class="st5">tællerkameraer</tspan></text>		</g>
+		<g id="shape1134-496" v:mID="1134" v:groupContext="shape" v:layerMember="0" transform="translate(203.122,-701.575)">
+			<title>Dynamisk forbindelse.1020</title>
+			<desc>Besøgstal</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="24.4367" cy="805.555" width="40.75" height="17.6036"/>
+			<path d="M0 841.89 L0 805.56 L78.17 805.56" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="8.96838" y="800.756" width="30.937" height="9.59985" class="st16"/>
+			<text x="8.97" y="807.96" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Besøgstal</text>		</g>
+		<g id="shape1135-503" v:mID="1135" v:groupContext="shape" v:layerMember="0" transform="translate(112.965,-773.406)">
+			<title>Dynamisk forbindelse.1022</title>
+			<desc>Driftstatus</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="88.7372" cy="854.193" width="44.14" height="17.6036"/>
+			<path d="M0 843.32 L34.11 843.32 L34.11 854.64 L168.32 854.64" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="71.5773" y="849.393" width="34.3199" height="9.59985" class="st16"/>
+			<text x="71.58" y="856.59" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Driftstatus</text>		</g>
+		<g id="shape1136-510" v:mID="1136" v:groupContext="shape" v:layerMember="0" transform="translate(112.965,-656.665)">
+			<title>Dynamisk forbindelse.1025</title>
+			<desc>Besøgstal</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="22.5822" cy="832.413" width="40.75" height="17.6036"/>
+			<path d="M0 834.8 L45.29 834.8" class="st18"/>
+			<rect v:rectContext="textBkgnd" x="7.11381" y="827.613" width="30.937" height="9.59985" class="st16"/>
+			<text x="7.11" y="834.81" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Besøgstal</text>		</g>
+		<g id="shape1137-517" v:mID="1137" v:groupContext="shape" v:layerMember="0" transform="translate(240.945,-688.333)">
+			<title>Dynamisk forbindelse.1063</title>
+			<desc>Besøgstal</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="78.4674" cy="843.671" width="40.75" height="17.6036"/>
+			<path d="M0 841.89 L155.91 841.89 L155.91 814.43" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="62.999" y="838.872" width="30.937" height="9.59985" class="st14"/>
+			<text x="63" y="846.07" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Besøgstal</text>		</g>
+		<g id="shape1138-524" v:mID="1138" v:groupContext="shape" transform="translate(28.7671,-698.979)">
+			<title>Rektangel med afrundet hjørne.1064</title>
+			<desc>Bibliotheca gates</desc>
+			<v:userDefs>
+				<v:ud v:nameU="CTypeTopLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeTopRightSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeBotLeftSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CTypeBotRightSnip" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockHoriz" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockVert" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="CornerLockDiag" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud v:nameU="TopLeftOffset" v:prompt="" v:val="VT0(0.11694178830351):1"/>
+				<v:ud v:nameU="TopRightOffset" v:prompt="" v:val="VT0(0.11694178830351):1"/>
+				<v:ud v:nameU="BotLeftOffset" v:prompt="" v:val="VT0(0.11694178830351):1"/>
+				<v:ud v:nameU="BotRightOffset" v:prompt="" v:val="VT0(0.11694178830351):1"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="42.099" cy="825.582" width="84.2" height="32.6158"/>
+			<path d="M8.42 841.89 L75.78 841.89 A8.41967 8.41967 -180 0 0 84.2 833.47 L84.2 817.69 A8.41967 8.41967 -180 0 0 75.78
+						 809.27 L8.42 809.27 A8.41967 8.41967 -180 0 0 0 817.69 L0 833.47 A8.41967 8.41967 -180 0 0 8.42 841.89 Z"
+					class="st20"/>
+			<text x="6.53" y="828.58" class="st2" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Bibliotheca gates</text>		</g>
+		<g id="shape1139-527" v:mID="1139" v:groupContext="shape" v:layerMember="0" transform="translate(112.965,-715.287)">
+			<title>Dynamisk forbindelse.1065</title>
+			<desc>Besøgstal</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="16.44" cy="842.846" width="40.75" height="17.6036"/>
+			<path d="M0 841.89 L38.46 841.89 L38.46 871.06 L45.29 871.06" class="st12"/>
+			<rect v:rectContext="textBkgnd" x="0.971629" y="838.046" width="30.937" height="9.59985" class="st14"/>
+			<text x="0.97" y="845.25" class="st17" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>Besøgstal</text>		</g>
+		<g id="group1140-534" transform="translate(35.0601,-64.2517)" v:mID="1140" v:groupContext="group">
+			<title>Ark.1140</title>
+			<g id="group1141-535" v:mID="1141" v:groupContext="group">
+				<title>g4165</title>
+				<g id="shape1142-536" v:mID="1142" v:groupContext="shape" transform="translate(53.8838,1656.06) scale(1,-1)">
+					<title>path4167</title>
+					<g id="shadow1142-537" v:groupContext="shadow" v:shadowOffsetX="0.345598" v:shadowOffsetY="-1.97279"
+							v:shadowType="1" transform="matrix(1,0,0,1,0.345598,-1.97279)" class="st26">
+						<path d="M1.25 841.89 C0.56 841.89 0 841.27 0 840.51 L0 829.42 C0 828.65 0.56 828.03 1.25 828.03 L4.11 828.03
+									 C4.8 828.03 5.36 828.65 5.36 829.42 L5.36 840.51 C5.36 841.27 4.8 841.89 4.11 841.89 L1.25 841.89
+									 Z" class="st31"/>
+					</g>
+					<path d="M1.25 841.89 C0.56 841.89 0 841.27 0 840.51 L0 829.42 C0 828.65 0.56 828.03 1.25 828.03 L4.11 828.03
+								 C4.8 828.03 5.36 828.65 5.36 829.42 L5.36 840.51 C5.36 841.27 4.8 841.89 4.11 841.89 L1.25 841.89
+								 Z" class="st32"/>
+				</g>
+				<g id="shape1143-541" v:mID="1143" v:groupContext="shape" transform="translate(0,1656.06) scale(1,-1)">
+					<title>path4169</title>
+					<g id="shadow1143-542" v:groupContext="shadow" v:shadowOffsetX="0.345598" v:shadowOffsetY="-1.97279"
+							v:shadowType="1" transform="matrix(1,0,0,1,0.345598,-1.97279)" class="st26">
+						<path d="M0 829.42 C0 828.65 0.56 828.03 1.25 828.03 L4.11 828.03 C4.8 828.03 5.36 828.65 5.36 829.42 L5.36
+									 840.51 C5.36 841.27 4.8 841.89 4.11 841.89 L1.25 841.89 C0.56 841.89 0 841.27 0 840.51 L0 829.42
+									 Z" class="st31"/>
+					</g>
+					<path d="M0 829.42 C0 828.65 0.56 828.03 1.25 828.03 L4.11 828.03 C4.8 828.03 5.36 828.65 5.36 829.42 L5.36 840.51
+								 C5.36 841.27 4.8 841.89 4.11 841.89 L1.25 841.89 C0.56 841.89 0 841.27 0 840.51 L0 829.42 Z"
+							class="st32"/>
+				</g>
+				<g id="shape1144-546" v:mID="1144" v:groupContext="shape" transform="translate(11.3729,1642.2) scale(1,-1)">
+					<title>path4171</title>
+					<g id="shadow1144-547" v:groupContext="shadow" v:shadowOffsetX="0.345598" v:shadowOffsetY="-1.97279"
+							v:shadowType="1" transform="matrix(1,0,0,1,0.345598,-1.97279)" class="st26">
+						<path d="M5.36 815.56 C5.36 814.79 4.8 814.17 4.11 814.17 L1.25 814.17 C0.57 814.17 0 813.55 0 812.79 L0
+									 801.7 C0 800.94 0.57 800.31 1.25 800.31 L4.11 800.31 C4.8 800.31 5.36 800.94 5.36 801.7 L5.36
+									 812.79 C5.36 813.55 5.93 814.17 6.62 814.17 L9.47 814.17 C10.16 814.17 10.72 814.79 10.72 815.56
+									 L10.72 826.65 C10.72 827.41 11.29 828.03 11.98 828.03 L14.83 828.03 C15.52 828.03 16.08 827.41
+									 16.08 826.64 L16.08 815.56 C16.08 814.79 16.65 814.17 17.33 814.17 L20.19 814.17 C20.88 814.17
+									 21.45 813.55 21.45 812.79 L21.45 801.7 C21.45 800.94 22.01 800.31 22.7 800.31 L25.55 800.31
+									 C26.24 800.31 26.81 800.94 26.81 801.7 L26.81 812.79 C26.81 813.55 27.37 814.17 28.05 814.17
+									 L30.92 814.17 C31.61 814.17 32.17 813.55 32.17 812.79 L32.17 801.7 C32.17 800.94 32.73 800.31
+									 33.42 800.31 L36.28 800.31 C36.97 800.31 37.53 800.94 37.53 801.7 L37.53 812.79 C37.53 813.55
+									 36.97 814.17 36.28 814.17 L33.42 814.17 C32.74 814.17 32.17 814.79 32.17 815.56 L32.17 826.65
+									 C32.17 827.41 31.61 828.03 30.92 828.03 L22.7 828.03 C22.01 828.03 21.45 828.66 21.45 829.42
+									 L21.44 840.51 C21.44 841.26 20.88 841.89 20.19 841.89 L11.98 841.89 C11.29 841.89 10.72 841.26
+									 10.72 840.51 L10.72 829.42 C10.72 828.66 10.16 828.03 9.47 828.03 L6.62 828.03 C5.93 828.03
+									 5.36 828.66 5.36 829.42 L5.36 840.51 C5.36 841.26 4.8 841.89 4.11 841.89 L1.25 841.89 C0.57
+									 841.89 0 841.26 0 840.51 L0 829.42 C0 828.66 0.57 828.03 1.25 828.03 L4.11 828.03 C4.8 828.03
+									 5.36 827.41 5.36 826.65 L5.36 815.56 Z" class="st31"/>
+					</g>
+					<path d="M5.36 815.56 C5.36 814.79 4.8 814.17 4.11 814.17 L1.25 814.17 C0.57 814.17 0 813.55 0 812.79 L0 801.7
+								 C0 800.94 0.57 800.31 1.25 800.31 L4.11 800.31 C4.8 800.31 5.36 800.94 5.36 801.7 L5.36 812.79 C5.36
+								 813.55 5.93 814.17 6.62 814.17 L9.47 814.17 C10.16 814.17 10.72 814.79 10.72 815.56 L10.72 826.65
+								 C10.72 827.41 11.29 828.03 11.98 828.03 L14.83 828.03 C15.52 828.03 16.08 827.41 16.08 826.64 L16.08
+								 815.56 C16.08 814.79 16.65 814.17 17.33 814.17 L20.19 814.17 C20.88 814.17 21.45 813.55 21.45 812.79
+								 L21.45 801.7 C21.45 800.94 22.01 800.31 22.7 800.31 L25.55 800.31 C26.24 800.31 26.81 800.94 26.81
+								 801.7 L26.81 812.79 C26.81 813.55 27.37 814.17 28.05 814.17 L30.92 814.17 C31.61 814.17 32.17 813.55
+								 32.17 812.79 L32.17 801.7 C32.17 800.94 32.73 800.31 33.42 800.31 L36.28 800.31 C36.97 800.31 37.53
+								 800.94 37.53 801.7 L37.53 812.79 C37.53 813.55 36.97 814.17 36.28 814.17 L33.42 814.17 C32.74 814.17
+								 32.17 814.79 32.17 815.56 L32.17 826.65 C32.17 827.41 31.61 828.03 30.92 828.03 L22.7 828.03 C22.01
+								 828.03 21.45 828.66 21.45 829.42 L21.44 840.51 C21.44 841.26 20.88 841.89 20.19 841.89 L11.98 841.89
+								 C11.29 841.89 10.72 841.26 10.72 840.51 L10.72 829.42 C10.72 828.66 10.16 828.03 9.47 828.03 L6.62
+								 828.03 C5.93 828.03 5.36 828.66 5.36 829.42 L5.36 840.51 C5.36 841.26 4.8 841.89 4.11 841.89 L1.25
+								 841.89 C0.57 841.89 0 841.26 0 840.51 L0 829.42 C0 828.66 0.57 828.03 1.25 828.03 L4.11 828.03 C4.8
+								 828.03 5.36 827.41 5.36 826.65 L5.36 815.56 Z" class="st32"/>
+				</g>
+			</g>
+		</g>
+	</g>
+</svg>
