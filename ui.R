@@ -28,7 +28,7 @@ dashboardPage(
   skin = "black",
   
   dashboardHeader(
-    title = "Hvidbog",
+    title = "Whitebook",
     tags$li(class = "dropdown",
             tags$li(bookmarkButton(label = "Bogmærk", icon = shiny::icon("link", lib = "glyphicon"), title = "Bogmærk siden med nuværende indstillinger"))
             )
