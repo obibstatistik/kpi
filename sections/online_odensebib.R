@@ -31,7 +31,7 @@ online_odensebibTabPanelUI <- function(id) {
                                    fluidRow(          
                                      column(width = 6,
                                             h4("Top 10 sider 2017"), 
-                                            formattableOutput(ns("tableplot3"))
+                                            tableOutput(ns("tableplot3"))
                                      ),
                                      column(width = 6,
                                             h4("Enheder"),  
@@ -57,9 +57,13 @@ online_odensebibTabPanelUI <- function(id) {
                                    tableOutput(ns('content_groups'))        
                           ),
                           tabPanel("Fokus Netbiblioteket",
+                                   h4("Antal ud links til e-ressourcer"),
+                                   tableOutput(ns("table_events_category")),
+                                   tableOutput(ns("table_events_action")),
+                                   tableOutput(ns("table_events_clicks")),
+                                   tableOutput(ns("table_events_clicks_na")),
                                    p("Eressourcer i søgeresulateter"),
-                                   p("Netbiblioteket oversigt og undersider"),
-                                   p("Antal ud links til e-ressourcer")
+                                   p("Netbiblioteket oversigt og undersider")
                           )
                    )
             ))
@@ -78,6 +82,7 @@ online_odensebibTabPanel <- function(input, output, session) {
   ga_browser <- dbGetQuery(con, "select browser, to_date(yearmonth::text, 'YYYYMM') as datoen, pageviews from datamart.ga_browser")
   ga_language <- dbGetQuery(con, "select language, to_date(yearmonth::text, 'YYYYMM') as datoen, pageviews from datamart.ga_language")
   ga_path <- dbGetQuery(con, "SELECT * FROM datamart.ga_path")
+  ga_events <- dbGetQuery(con, "SELECT * FROM datamart.ga_events")
   sites <- dbGetQuery(con, "SELECT * FROM datamart.sites")
   dbDisconnect(con)
   
@@ -120,7 +125,7 @@ online_odensebibTabPanel <- function(input, output, session) {
     mutate(pageviews = format(round(as.numeric(pageviews), 0), nsmall=0, big.mark=".")) %>%
     rename(Titel = title, Sidevisninger = pageviews )
   
-  output$tableplot3 <- renderFormattable({formattable(ga_top10)})
+  output$tableplot3 <- renderTable({formattable(ga_top10)}, rownames = TRUE)
   
   # browser
   
@@ -225,5 +230,62 @@ online_odensebibTabPanel <- function(input, output, session) {
   
   output$content_groups <- renderTable(ga_path)
   
+  #events - outlinks
+  
+  output$table_events_category <- renderTable (
+    ga_events <- ga_events %>%
+      select(eventcategory, yearmonth) %>%
+      group_by(eventcategory, yearmonth) %>%
+      summarise(sum = n()) %>%
+      spread(eventcategory, sum)
+  )
+  
+  output$table_events_action <- renderTable (
+    ga_events <- ga_events %>%
+      select(eventaction, yearmonth) %>%
+      group_by(eventaction, yearmonth) %>%
+      summarise(sum = n()) %>%
+      spread(eventaction, sum)
+  )
+
+  events <- ga_events %>%
+    filter(eventcategory == 'Outbound links') %>%
+    select(eventlabel, yearmonth) %>%
+    mutate(
+      destination = case_when(
+        grepl("^https://www.place2book.com", .$eventlabel) ~ "Place2book",
+        grepl("^http://www.litteratursiden.dk", .$eventlabel) ~ "Litteratursiden",
+        grepl("^https://www.litteratursiden.dk", .$eventlabel) ~ "Litteratursiden",
+        grepl("^https://litteratursiden.dk/", .$eventlabel) ~ "Litteratursiden",
+        grepl("^https://adm.biblioteksvagten.dk", .$eventlabel) ~ "Biblioteksvagten",
+        grepl("^https://bibliotek.dk", .$eventlabel) ~ "Bibliotek.dk",
+        grepl("^http://bibliotek.dk", .$eventlabel) ~ "Bibliotek.dk",
+        grepl("^https://ereolen.dk/", .$eventlabel) ~ "Ereolen",
+        grepl("^http://ereolen.dk/", .$eventlabel) ~ "Ereolen",
+        grepl("^http://ereolenglobal", .$eventlabel) ~ "Ereolen",
+        grepl("^https://biblioteksbaser.dk/linkme/", .$eventlabel) ~ "Proxy",
+        grepl("^http://biblioteksbaser.dk/linkme/", .$eventlabel) ~ "Proxy",
+        grepl("^http://bib461.bibbaser.dk/", .$eventlabel) ~ "Proxy",
+        grepl("^http://ebookcentral.proquest.com/", .$eventlabel) ~ "Ebook Central",
+        grepl("^http://danmarkshistorien.dk", .$eventlabel) ~ "Danmark.dk"
+      )) %>%
+    select(destination, eventlabel, yearmonth) %>%
+    arrange(desc(destination), eventlabel) 
+  
+  output$table_events_clicks <- renderTable (
+    events %>% 
+      filter(!is.na(destination)) %>%
+      group_by(destination, yearmonth) %>%
+      summarize(sum = n()) %>%
+      spread(destination, sum)
+    , rownames = TRUE
+  )
+  
+  output$table_events_clicks_na <- renderTable (
+    events %>% filter(is.na(destination)), rownames = TRUE  
+  )
+  
+  #
+  areas <- c("eReolen","eReolen Go","eReolen Global","Fynsbibliografien","Historisk Atlas","Infomedia","Litteraturens Verden.dk","Matematikfessor")
   
 }
