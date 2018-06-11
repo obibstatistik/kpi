@@ -144,7 +144,7 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
       mutate(totalsum = sum(sum)) %>%
       head(10) %>% 
       mutate(bookingprocent = procenten(sum/totalsum)) %>%
-      select(-totalsum)
+      select(-totalsum), rownames = TRUE
   )
   
   # Timetabel

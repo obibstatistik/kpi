@@ -196,7 +196,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
     meetingrooms_booker <- meetingrooms_booker() %>% 
       mutate(bookingprocent = procenten(sum/totalsum)) %>%
       select(-totalsum)
-  })
+  }, rownames = TRUE)
   
   output$plot_pie_meetingrooms_booker <- renderPlotly({
     meetingrooms_booker <- meetingrooms_booker() %>%
