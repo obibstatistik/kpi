@@ -2,21 +2,14 @@ source("global.R")
 source("modules.R")
 source("~/.postpass")
 
-### COLORS ###
-
-colors <- c('rgb(70,140,140)', 'rgb(174,176,81)', 'rgb(59,54,74)', 'rgb(192,57,83)', 'rgb(29,114,170)', 'rgb(225,123,81)', 'rgb(219,181,61)')
-color1 = c('rgb(70,140,140)')
-color2 = c('rgb(174,176,81)')
-color3 = c('rgb(59,54,74)')
-color4 = c('rgb(192,57,83)')
-color5 = c('rgb(29,114,170)')
-color6 = c('rgb(225,123,81)')
-color7 = c('rgb(219,181,61)')
-
 ### DB QUERIES ###
 drv <- dbDriver("PostgreSQL")
 con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
-licenses_df <- dbGetQuery(con, "select year,month,product produkt,sum(use) visninger from datamart.eressourcer_ddb where type = 'visninger' group by year,month,product")
+licenses_df <- dbGetQuery(con, "select brug,pris,statbank,year,month,datamart.eressourcer_ddb.product produkt,sum(use) visninger 
+from datamart.eressourcer_ddb 
+left join datamart.eressourcer_ddb_kategorier on datamart.eressourcer_ddb_kategorier.name_match = datamart.eressourcer_ddb.product 
+where type = 'visninger' 
+group by brug,pris,statbank,year,month,datamart.eressourcer_ddb.product")
 dbDisconnect(con)
 #licenses_df <- as.data.frame(licenses_df,stringsAsFactors = FALSE)
 
@@ -40,21 +33,22 @@ eressourcesTabPanelUI <- function(id) {
                                             column(2,
                                                    h4("Afgræns"),
                                                    selectInput(ns("eres_fromyear"), "År:", unique(as.numeric(licenses_df$year))),
-                                                   selectInput(ns("eres_statbank"), "Statistikbankens typer:", c("Seriepublikationer" = "serie","eBøger" = "ebooks","Multimedier" = "multimedia","Databaser" = "databaser")),
-                                                   selectInput(ns("eres_priskategori"), "Priskategori:", c("Fastpris" = "fastpris", "Klikpris" = "klikpris")),
-                                                   selectInput(ns("eres_brugskategori"), "Brugskategori:", c("Rekreativ brug" = "rekreativ", "Faglig brug" = "faglig"))
+                                                   #selectInput(ns("eres_statbank"), "Statistikbankens typer:", c("Seriepublikationer" = "serie","eBøger" = "ebooks","Multimedier" = "multimedia","Databaser" = "databaser")),
+                                                   selectInput(ns("eres_statbank"), "Statistikbankens typer:", unique(as.character(licenses_df$statbank))),
+                                                   selectInput(ns("eres_priskategori"), "Priskategori:", unique(as.character(licenses_df$pris))),
+                                                   selectInput(ns("eres_brugskategori"), "Brugskategori:", unique(as.character(licenses_df$brug)))
                                             ),
                                             column(10,
                                                    h4("Licenser"),
                                                    p("Kategoriseret efter sammenlignelighed"),
                                                    plotlyOutput(ns("licenses_plot"))
                                             ),
-                                            column(2,
-                                                   checkboxGroupInput(ns("eres_productselector"),
-                                                                      'Vælg eRessource:',
-                                                                      unique(as.character(licenses_df$produkt)),
-                                                                      selected = unique(as.character(licenses_df$produkt)),
-                                                                      inline = F)
+                                            column(2
+                                            #       checkboxGroupInput(ns("eres_productselector"),
+                                            #       'Vælg eRessource:',
+                                            #       unique(as.character(licenses_df$produkt)),
+                                            #       selected = unique(as.character(licenses_df$produkt)),
+                                            #       inline = F)
                                             ),
                                             column(8,
                                                    formattableOutput(ns("licenses_table"))
@@ -73,8 +67,10 @@ eressourcesTabPanel <- function(input, output, session, data, tablename) {
   output$licenses_table <- renderFormattable({
     licenses <- licenses_df %>%
       filter(year == input$eres_fromyear) %>%
-      filter(produkt %in% input$eres_productselector) %>%
-      #filter(year == '2016') %>%
+      filter(pris == input$eres_priskategori) %>%
+      filter(brug == input$eres_brugskategori) %>%
+      filter(statbank == input$eres_statbank) %>%
+      # filter(produkt %in% input$eres_productselector) %>%
       group_by(produkt,month) %>%
       summarise(visninger = sum(visninger)) %>%
       mutate_at(vars(-1), funs(replace(., is.na(.), 0))) %>%
@@ -88,7 +84,10 @@ eressourcesTabPanel <- function(input, output, session, data, tablename) {
     
     licenses_traces <- licenses_df %>%
       filter(year == input$eres_fromyear) %>%
-      filter(produkt %in% input$eres_productselector) %>%
+      filter(pris == input$eres_priskategori) %>%
+      filter(brug == input$eres_brugskategori) %>%
+      filter(statbank == input$eres_statbank) %>%
+      # filter(produkt %in% input$eres_productselector) %>%
       select(produkt,month,visninger) %>%
       group_by(produkt,month) %>%
       summarise(visninger = sum(visninger)) %>%
@@ -98,7 +97,7 @@ eressourcesTabPanel <- function(input, output, session, data, tablename) {
     colNames <- names(licenses_traces)[-1] # ie. get all colnames except the first which is year or month or whatever
     
     # tjek https://stackoverflow.com/questions/46583282/r-plotly-to-add-traces-conditionally-based-on-available-columns-in-dataframe                                
-    p <- plot_ly(licenses_traces, x = ~month, y = ~`kompass`, name = 'kompass', type = 'scatter', mode = 'lines')
+    p <- plot_ly(licenses_traces, x = ~month, type = 'scatter', mode = 'lines') 
     for(trace in colNames){
       p <- p %>% add_trace(y = as.formula(paste0("~`", trace, "`")), name = trace, mode = 'lines')   # add_trace(y = as.formula(paste0("~`", trace, "`")), name = trace)
     }
