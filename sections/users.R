@@ -2,6 +2,30 @@ source("global.R")
 source("modules.R")
 source("~/.postpass")
 
+
+### Branchplot MODUL ###
+
+# UI
+branchplotUI <- function(id, branch) {
+  ns <- NS(id)
+    tagList(
+      column(3,
+        p(branch),
+        plotlyOutput(ns("branchplot"))
+      )
+  )
+}
+
+# SERVER
+branchplot <- function(input, output, session, data, branch) {
+  output$branchplot <- renderPlotly({
+    data <- data %>% filter(name1 == branch)
+    plot_ly(data, x = data$full_date1, y = data$loaner_stat_count1 , type = 'bar', name = 'Lånere', marker = list(color = color1)) %>%
+      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Alder'))
+  })
+}
+
+
 # UI
 
 usersTabPanelUI <- function(id) {
@@ -19,20 +43,43 @@ usersTabPanelUI <- function(id) {
                           tabPanel("Generelt",
                                    fluidRow(width = 12,
                                             column(width = 12,     
-                                  h3("Brugere"),
-                                  p("test2"),
-                                  p("Oversigt over antallet af:"), 
-                                  p("- Aktive lånere: lånere som har lånt på biblioteket indenfor det seneste år"), 
-                                  p("- Inaktive lånere: lånere som har lånt på biblioteket for mere end et år siden og seneste for 5 år siden"),
-                                  p("-Fordelt på kategorier, som er sammentrækninger af en større mængde lånekategorier"),
-                                  tableOutput(ns('tableloaners')),
-                                  csvDownloadUI(ns("inner2"))))),
+                                                  h4("Bruger alder vs. borger alder"),
+                                                  plotlyOutput(ns("agebranch_plot")),
+                                                  h4("Aldersfordling pr. filial"),
+                                                  branchplotUI(ns(id = "kor"), branch = "Korup"),
+                                                  branchplotUI(ns(id = "ta"), branch = "Tarup"),
+                                                  branchplotUI(ns(id = "da"), branch = "Dalum"),
+                                                  branchplotUI(ns(id = "hb"), branch = "Hovedbiblioteket"),
+                                                  branchplotUI(ns(id = "vo"), branch = "Vollsmose"),
+                                                  branchplotUI(ns(id = "hoj"), branch = "Højby"),
+                                                  branchplotUI(ns(id = "bo"), branch = "Bolbro"),
+                                                  branchplotUI(ns(id = "ho"), branch = "Holluf Pile"),
+                                                  h4("Aktive/Inaktive lånere"),
+                                                  tableOutput(ns('tableloaners')),
+                                                  csvDownloadUI(ns("inner2"))))),
                           tabPanel("Kort",
                                    fluidRow(width = 12,
                                             column(width = 12,
                                                    leafletOutput("mymap")
-                                                   )))
-                          ))    
+                                                   ))
+                          ),
+                          tabPanel("Dokumentation og Data",
+                                   fluidRow(width = 12,
+                                            column(width = 12,
+                                                   h4("Dokumention"),
+                                                     p("Bruger statistik og visualiseringer er dannet på baggrund af:"),
+                                                     tags$ul(
+                                                       tags$li("Antal lånere fordelt på alder og tilhørsfilial. Data udtrukket fra Cicero Reporting Services 12. juni 2018"), 
+                                                       tags$li("Antal aktive lånere fordelt på lånergruppe. Data udtrukket fra Cicero Reporting Services 12. juni 2018"), 
+                                                       tags$li("Odense Borgernes alder. Udtrukket fra Danmarks statistiks statistikbank")
+                                                     ),
+                                                     p("Aktive lånere: lånere som har lånt på biblioteket indenfor det seneste år"),
+                                                     p("Inaktive lånere: lånere som har lånt på biblioteket for mere end et år siden og seneste for 5 år siden"),
+                                                   h4("Data")  
+                                            ))
+                          )
+                          
+                    ))    
           )        
   )
   
@@ -49,14 +96,6 @@ usersTabPanel <- function(input, output, session, data, tablename) {
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
   
-  # loaners <- dbGetQuery(con, "select sum(loaner_stat_count)::text as Antal, case 
-  #   when Name like '0%'::text OR Name like '0%'::text OR Name like '1%'::text OR Name like '2%'::text OR Name like '3%'::text OR Name like '4%'::text OR Name like '5%'::text OR Name like '6%'::text OR Name like '7%'::text then 'Skole'::text
-  #   when Name = 'Voksen, Odense kommune' then 'Voksen, Odense kommune'
-  #   when Name = 'Barn, Odense kommune' then 'Barn, Odense kommune'
-  #   when Name = 'Voksen, udenfor Odense Kommune' then 'Voksen, udenfor Odense kommune'
-  #   when Name = 'Barn, udenfor Odense Kommune' then 'Barn, udenfor Odense kommune'  
-  #   else 'Andre' end as Kategori  
-  #   from cicero.aktive_laanere group by Kategori")
   loaners <- dbGetQuery(con, "select case 
     when cicero.aktive_laanere.Name like '0%'::text OR cicero.aktive_laanere.Name like '0%'::text 
     OR cicero.aktive_laanere.Name like '1%'::text OR cicero.aktive_laanere.Name like '2%'::text 
@@ -74,7 +113,8 @@ usersTabPanel <- function(input, output, session, data, tablename) {
     from cicero.aktive_laanere 
     join cicero.inaktive_laanere on cicero.aktive_laanere.Name = cicero.inaktive_laanere.Name
     group by kategori")
-  
+  agebranch <- dbGetQuery(con, "select * from cicero.brugere_alder_filial")
+  ageodense <- dbGetQuery(con, "select * from datamart.odenseborgere")
   dbDisconnect(con)
   
   colnames(loaners) <- c("Kategori", "Aktive", "Inaktive","Alle")
@@ -90,9 +130,34 @@ usersTabPanel <- function(input, output, session, data, tablename) {
   
   innerResult <- callModule(csvDownload, "inner2", data = loaners, name = "users")
   
-  # kort
   
-  output$mymap <- renderLeaflet({
+  
+  # Alderfordeling
+  agecitizenloaner <- agebranch %>%
+    group_by(full_date1) %>%
+    summarise(sum = sum(loaner_stat_count1)) %>%
+    full_join(ageodense, by = c("full_date1" = "alder")) #%>%
+    #rename("Alder" = full_date1, "Antal Lånere" = sum, "Antal Borgere" = antal)
+  
+  output$agebranch <- renderTable(agebranch) 
+  
+  output$agebranch_plot <- renderPlotly({
+    plot_ly(agecitizenloaner, x = agecitizenloaner$full_date1, y = agecitizenloaner$sum, type = 'bar', name = 'Lånere', marker = list(color = color1)) %>%
+      add_trace(y = agecitizenloaner$antal, name = 'Borgere', marker = list(color = color2) ) %>%
+      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Alder', dtick = 1, autotick = FALSE))
+  })
+  
+  callModule(branchplot, id = "kor", data = agebranch, branch = 'Korup Bibliotek')
+  callModule(branchplot, id = "ta", data = agebranch, branch = 'Tarup Bibliotek')
+  callModule(branchplot, id = "da", data = agebranch, branch = 'Dalum Bibliotek')
+  callModule(branchplot, id = "hb", data = agebranch, branch = 'Odense Hovedbibliotek')
+  callModule(branchplot, id = "vo", data = agebranch, branch = 'Vollsmose Bibliotek')
+  callModule(branchplot, id = "hoj", data = agebranch, branch = 'Højby Bibliotek')
+  callModule(branchplot, id = "bo", data = agebranch, branch = 'Bolbro Bibliotek')
+  callModule(branchplot, id = "ho", data = agebranch, branch = "Holluf Pile Bibliotek")
+  
+  # kort
+    output$mymap <- renderLeaflet({
     m <- leaflet() %>%
       addTiles() %>%
       setView(lng=-73.935242, lat=40.730610 , zoom=10)
