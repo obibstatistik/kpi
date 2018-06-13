@@ -28,15 +28,7 @@ shinyServer(function(input, output) {
   datasources_schema <- (dbGetQuery(con, "SELECT columns.table_name as name, columns.column_name, columns.data_type,columns.column_default, columns.is_nullable FROM information_schema.columns;"))
   dbDisconnect(con)
   
-  ### COLORS ###
-  colors <<- c('rgb(70,140,140)', 'rgb(174,176,81)', 'rgb(59,54,74)', 'rgb(192,57,83)', 'rgb(29,114,170)', 'rgb(225,123,81)', 'rgb(68,68,68)','rgb(102,102,102)','rgb(136,136,136)')
-  color1 = c('rgb(70,140,140)')
-  color2 = c('rgb(174,176,81)')
-  color3 = c('rgb(59,54,74)')
-  color4 = c('rgb(192,57,83)')
-  color5 = c('rgb(29,114,170)')
-  color6 = c('rgb(225,123,81)')
-  color7 = c('rgb(219,181,61)')
+
   
   ### DATES ###
   year <- as.integer(format(Sys.Date(), "%Y"))
