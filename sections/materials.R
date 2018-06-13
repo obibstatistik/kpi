@@ -17,7 +17,6 @@ materialsTabPanelUI <- function(id) {
           
           fluidRow(
             column(12,
-                   
                    tabBox(width = 12,
                           id = "tabset2",
                           tabPanel("Generelt", 
@@ -28,11 +27,44 @@ materialsTabPanelUI <- function(id) {
                                             tableOutput(ns('table'))
                                      ),
                                      column(12,
-                                            formattableOutput(ns("loantableall")))
+                                            formattableOutput(ns("checkout_all_plot"))
+                                     ),
+                                     column(12,
+                                            formattableOutput(ns("checkout_all_table")))
                                    )
+                          ),
+                          tabPanel("Cirkulation", 
+                                   fluidRow(
+                                     column(2, h4("Afgræns")),
+                                     column(10,
+                                            plotlyOutput(ns("cirkulation")),
+                                            tableOutput(ns('cirktable'))
+                                     ),
+                                     column(12,
+                                            formattableOutput(ns("cirkulation_table_all"))
+                                     )
+                                   )
+                          ),
+                          tabPanel("Pr. bibliotek", 
+                                   fluidRow(
+                                     column(2, h4("Afgræns")),
+                                     column(10,
+                                            plotlyOutput(ns("bibliotasdfek")),
+                                            tableOutput(ns('bibtableasdf'))
+                                     ),
+                                     column(12,
+                                            formattableOutput(ns("bibtableall"))
+                                     )
+                                   )
+                          ),
+                          tabPanel("Data og dokumentation",
+                                   fluidRow(
+                                     column(12,
+                                            p("Dokumentation")
+                                     )
+                                   )  
                           )
                    ))))
-  
 }
 
 # Server
@@ -42,7 +74,22 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
   udlaan <- dbGetQuery(con, "SELECT name, hour, circulation_fact_count FROM cicero.udlaan_per_klokkeslaet")
+  checkout_all <- dbGetQuery(con, "SELECT * FROM public.people_counter")
   dbDisconnect(con)
+  
+  
+  # visitors total plot#
+  output$checkouts_plot_all <- renderPlotly({
+    visitsoverview <- visitors %>%
+      select(date, count, location) %>%
+      mutate(year = year(date)) %>%
+      filter(year != as.integer(format(Sys.Date(), "%Y"))) %>%
+      filter(if(input$mainlibrary == 'Uden Hovedbiblioteket')  (location != 'hb') else TRUE) %>%
+      group_by(year) %>%
+      summarise(sum = sum(count)) 
+    plot_ly(visitsoverview, x = visitsoverview$year, y = visitsoverview$sum, type = 'bar', marker = list(color = color1)) %>%
+      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'År', dtick = 1, autotick = FALSE))
+  })
   
   udlaan_heat <- udlaan %>%
     mutate(branch = ifelse(is.na(name), "Andet", name)) %>%
