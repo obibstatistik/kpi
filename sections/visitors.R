@@ -335,7 +335,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
         summarise(sum = sum(count)) %>%
         spread(key = location, value = sum) %>% 
         mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
-        mutate_at(vars(-tid), funs(ifelse( is.na(.), NA, percent((. / sum(.)), digits = 0))))
+        mutate_at(vars(-tid), funs(ifelse( is.na(.), NA, procenten((. / sum(.))))))
     else 
       visitors_hours <- visitors_hours %>%
         filter(location %in% input$visitors_hours_library) %>%
@@ -365,7 +365,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
         summarise(sum = sum(count)) %>%
         spread(key = location, value = sum) %>%
         mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
-        mutate_at(vars(-tid), funs(ifelse( is.na(.), NA, percent(. / sum(.)))))
+        mutate_at(vars(-tid), funs(ifelse( is.na(.), NA, procenten((. / sum(.))))))
     else
       visitors_hours <- visitors_hours %>%
         filter(location %in% input$visitors_hours_library) %>%

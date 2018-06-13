@@ -143,7 +143,7 @@ usersTabPanel <- function(input, output, session, data, tablename) {
   
   output$agebranch_plot <- renderPlotly({
     plot_ly(agecitizenloaner, x = agecitizenloaner$full_date1, y = agecitizenloaner$sum, type = 'bar', name = 'Lånere', marker = list(color = color1)) %>%
-      add_trace(y = agecitizenloaner$antal, name = 'Borgere', marker = list(color = color2) ) %>%
+      add_trace(y = agecitizenloaner$antal, name = 'Borgere i Odense', marker = list(color = color2) ) %>%
       layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Alder', dtick = 1, autotick = FALSE))
   })
   
