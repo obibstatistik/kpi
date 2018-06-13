@@ -64,43 +64,35 @@ eressourcesTabPanel <- function(input, output, session, data, tablename) {
   licenses_df$month <- factor(licenses_df$month, levels = c("jan","feb","mar","apr","maj","jun","jul","aug","sep","okt","nov","dec"))
   licenses_df = licenses_df[order(licenses_df$month,decreasing=FALSE),]
   
-  output$licenses_table <- renderFormattable({
+  # Store data and its filters in reactive function (gives reusability)
+  lic_data <- reactive({
     licenses <- licenses_df %>%
       filter(year == input$eres_fromyear) %>%
       filter(pris == input$eres_priskategori) %>%
       filter(brug == input$eres_brugskategori) %>%
       filter(statbank == input$eres_statbank) %>%
-      # filter(produkt %in% input$eres_productselector) %>%
-      group_by(produkt,month) %>%
-      summarise(visninger = sum(visninger)) %>%
-      mutate_at(vars(-1), funs(replace(., is.na(.), 0))) %>%
-      spread(month, visninger)
-    
-    formattable(licenses)
-  })
-  
-  # Licenses plot
-  output$licenses_plot <- renderPlotly({
-    
-    licenses_traces <- licenses_df %>%
-      filter(year == input$eres_fromyear) %>%
-      filter(pris == input$eres_priskategori) %>%
-      filter(brug == input$eres_brugskategori) %>%
-      filter(statbank == input$eres_statbank) %>%
-      # filter(produkt %in% input$eres_productselector) %>%
       select(produkt,month,visninger) %>%
+      # filter(produkt %in% input$eres_productselector) %>%
       group_by(produkt,month) %>%
       summarise(visninger = sum(visninger)) %>%
-      mutate_at(vars(-1), funs(replace(., is.na(.), 0))) %>%
-      spread(produkt, visninger)
-    
-    colNames <- names(licenses_traces)[-1] # ie. get all colnames except the first which is year or month or whatever
-    
-    # tjek https://stackoverflow.com/questions/46583282/r-plotly-to-add-traces-conditionally-based-on-available-columns-in-dataframe                                
-    p <- plot_ly(licenses_traces, x = ~month, type = 'scatter', mode = 'lines') 
+      mutate_at(vars(-1), funs(replace(., is.na(.), 0)))
+  })
+ 
+  # Render the plot
+  output$licenses_plot <- renderPlotly({
+    data <- lic_data() %>% spread(produkt, visninger)   # the plot needs a spread (pivot) of produkt
+    colNames <- names(data)[-1]                         # ie. get all colnames except the first which is year or month or whatever
+    # cf. https://stackoverflow.com/questions/46583282/r-plotly-to-add-traces-conditionally-based-on-available-columns-in-dataframe                                
+    p <- plot_ly(data, x = ~month, type = 'scatter', mode = 'lines') 
     for(trace in colNames){
       p <- p %>% add_trace(y = as.formula(paste0("~`", trace, "`")), name = trace, mode = 'lines')   # add_trace(y = as.formula(paste0("~`", trace, "`")), name = trace)
     }
     p %>% layout(xaxis = list(title = 'Måneder'), yaxis = list (title = 'Visninger'))
+  })
+  
+  # Render the table
+  output$licenses_table <- renderFormattable({
+    data <- lic_data() %>% spread(month, visninger)     # the table needs a spread (pivot) of month
+    formattable(data)
   })
 }
