@@ -25,7 +25,7 @@ shinyServer(function(input, output) {
   ### DB QUERIES ###
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
-  datasources_schema <- (dbGetQuery(con, "SELECT columns.table_name as name, columns.column_name, columns.data_type,columns.column_default, columns.is_nullable FROM information_schema.columns;"))
+  #datasources_schema <- (dbGetQuery(con, "SELECT columns.table_name as name, columns.column_name, columns.data_type,columns.column_default, columns.is_nullable FROM information_schema.columns;"))
   dbDisconnect(con)
   
 
@@ -36,9 +36,8 @@ shinyServer(function(input, output) {
   day <- as.integer(format(Sys.Date(), "%Y"))
   
   ### MODULES ###
-  callModule(metaTabPanel, id = "arrangementer", data = datasources_schema, tablename = "arrangementer")
-  callModule(metaTabPanel, id = "people_counter", data = datasources_schema, tablename = "people_counter")
-  callModule(metaTabPanel, id = "visitor_counter", data = datasources_schema, tablename = "visitor_counter")
+  #callModule(metaTabPanel, id = "people_counter", data = datasources_schema, tablename = "people_counter")
+  #callModule(metaTabPanel, id = "visitor_counter", data = datasources_schema, tablename = "visitor_counter")
   
   # Frontpage
   callModule(frontpageTabPanel, id = "frontpage")
