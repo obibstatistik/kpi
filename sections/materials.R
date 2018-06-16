@@ -21,14 +21,20 @@ materialsTabPanelUI <- function(id) {
                           id = "tabset2",
                           tabPanel("Generelt", 
                                    fluidRow(
-                                     column(2, h4("Afgræns")),
+                                     column(2),
                                      column(10,
                                             h4("Samlet udlån på OBB"),
                                             p("Farvet: fra 1. januar til dags dato i pågældende år. Grå: Året total"),
                                             samedate_barchartOutput(ns('checkouts_samedate_plot'))
                                      ),
-                                     column(12,
-                                            formattableOutput(ns("checkout_all_plot"))
+                                     column(12,tags$hr()),
+                                     column(2,
+                                            h4("Afgræns"),
+                                            selectInput(ns("checkouts_mainlibrary_filter1"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))    
+                                     ),
+                                     column(10,
+                                            h4("Samlet udlån på OBB, hele år"),
+                                            plotlyOutput(ns("checkouts_plot_all"))
                                      ),
                                      column(12,
                                             formattableOutput(ns("checkout_all_table")))
@@ -85,11 +91,11 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
   udlaan <- dbGetQuery(con, "SELECT name, hour, circulation_fact_count FROM cicero.udlaan_per_klokkeslaet")
   max_date <- dbGetQuery(con, "select max(transact_date) max_date from cicero.udlaan_per_opstillingsprofil")
-  checkouts_all <- dbGetQuery(con, "SELECT extract(year from transact_date) aar,transact_date, sum(antal) antal
+  checkouts_all <- dbGetQuery(con, "SELECT extract(year from transact_date) aar,transact_date,branch,sum(antal) antal
     from cicero.udlaan_per_opstillingsprofil
     where extract(year from (transact_date)) > extract(year from (current_date - interval '5 year'))
-    group by aar,transact_date
-    order by aar,transact_date")
+    group by aar,transact_date,branch
+    order by aar,transact_date,branch")
   dbDisconnect(con)
   
   # Calculate latest date with data
@@ -98,6 +104,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   
   # Calculate sums for partial years, adapting max_date to each year
   checkouts_partial_years <- checkouts_all %>%
+    select(aar,transact_date,antal) %>%
     group_by(aar) %>%       # Create group objects for each year. filter() and summarise() will run for each
     filter( transact_date >= as.Date( paste0(aar,"-01-01" )) & transact_date <= as.Date( paste0(aar,substr(max_date[[1]],5,11) ))) %>%
     summarise(sum = sum(antal)) %>%
@@ -105,6 +112,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   
   # Ditto whole years
   checkouts_whole_years <- checkouts_all %>%
+    select(aar,transact_date,antal) %>%
     group_by(aar) %>%
     summarise(sum = sum(antal)) %>%
     mutate(dato = paste0(aar,"-12-31")) 
@@ -113,10 +121,12 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   checkouts_samedate <- rbind(checkouts_whole_years,checkouts_partial_years) %>%
     arrange(aar, desc(dato))
   
+  # Reordering and renaming columns
   checkouts_samedate <- checkouts_samedate[c(1,3,2)]      # does the column order matter?
   names(checkouts_samedate) <- c("year","date","count")   # unsure if the column names matter, but renaming just to be safe
   
-  curDate <- format(Sys.Date()-3, format="%Y-%m-%d") # the matching date you want data from, across all the years on the x-axis
+  # Config for barchart comparing whole and partial years
+  curDate <- as.Date(max_date[[1]], format="%Y-%m-%d") # the matching date you want data from, across all the years on the x-axis
   sortx <- "desc"         # controls direction of the sorting of the years on the x-axis
   frontColors <- colors # this vector turns into a javascript array
   backColor <- "Gainsboro"
@@ -130,21 +140,25 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   barWidth <- 0.8    # This is a percentage. 1 means no gap between bars (i.e. 100%)
   barsOffset <- 10
   
+  # Render barchart comparing whole and partial years
   output$checkouts_samedate_plot <- renderSamedate_barchart({
     samedate_barchart(checkouts_samedate,curDate,sortx,frontColors,backColor,labelx,labely,tickNumY,showScaleY,barWidth,barsOffset)
   })
   
-  # visitors total plot#
+  # Whole years dataframe with branches for filtering main library
+  checkouts_whole_years_branches <- checkouts_all %>%
+    group_by(aar,branch) %>%
+    summarise(sum = sum(antal))
+  
+  # Whole years plot filtering main library
   output$checkouts_plot_all <- renderPlotly({
-    visitsoverview <- visitors %>%
-      select(date, count, location) %>%
-      mutate(year = year(date)) %>%
-      filter(year != as.integer(format(Sys.Date(), "%Y"))) %>%
-      filter(if(input$mainlibrary == 'Uden Hovedbiblioteket')  (location != 'hb') else TRUE) %>%
-      group_by(year) %>%
-      summarise(sum = sum(count)) 
-    plot_ly(visitsoverview, x = visitsoverview$year, y = visitsoverview$sum, type = 'bar', marker = list(color = color1)) %>%
-      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'År', dtick = 1, autotick = FALSE))
+    checkouts_overview <- checkouts_whole_years_branches %>%
+      filter(aar != as.integer(format(Sys.Date(), "%Y"))) %>%      # we only want whole years so filter out current year
+      filter(if(input$checkouts_mainlibrary_filter1 == 'Uden Hovedbiblioteket') (branch != 'Odense Hovedbibliotek') else TRUE) %>%
+      group_by(aar) %>%
+      summarise(sum = sum(sum))
+    plot_ly(checkouts_overview, x = checkouts_overview$aar, y = checkouts_overview$sum, type = 'bar', marker = list(color = color1)) %>%
+      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'År', dtick = 1, autotick = FALSE, autorange="reversed"))
   })
   
   udlaan_heat <- udlaan %>%
