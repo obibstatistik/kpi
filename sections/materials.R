@@ -36,8 +36,32 @@ materialsTabPanelUI <- function(id) {
                                             h4("Samlet udlån på OBB, hele år"),
                                             plotlyOutput(ns("checkouts_plot_all"))
                                      ),
+                                     column(12,tags$hr()),
                                      column(12,
-                                            formattableOutput(ns("checkout_all_table")))
+                                            column(2,
+                                                   h4("Afgræns"),
+                                                   # TODO hvad med Arresten (er det med??) og hvad med opsøgende (skal den ikke med ind under hb?? eller er den tom for udlån?)
+                                                   selectInput(ns("checkouts_fromyear"), "Fra:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2015", "2014" = "2014"), as.integer(format(Sys.Date(), "%Y"))-1),
+                                                   selectInput(ns("checkouts_toyear"), "Til:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2014", "2014" = "2013"), as.integer(format(Sys.Date(), "%Y"))),
+                                                   selectInput(ns("checkouts_library"), "Filial:", c("Alle" = "all",
+                                                                                                     "Bolbro" = "Bolbro Bibliotek",
+                                                                                                     "Dalum" = "Dalum Bibliotek",
+                                                                                                     "Højby" = "Højby Bibliotek",
+                                                                                                     "Historiens Hus" = "Lokalhistorisk Bibliotek",
+                                                                                                     "Holluf Pile" = "Holluf Pile Bibliotek",
+                                                                                                     "Borgernes Hus" = "Odense Hovedbibliotek",
+                                                                                                     "Korup" = "Korup Bibliotek",
+                                                                                                     "Musikbiblioteket" = "Musikbiblioteket",
+                                                                                                     "Tarup" = "Tarup Bibliotek",
+                                                                                                     "Vollsmose" = "Vollsmose Bibliotek")),
+                                                   selectInput(ns("checkouts_mainlibrary_filter2"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))    
+                                            ),
+                                            column(10,
+                                                   h4("Udlån på OBB"),
+                                                   p("Sammenligning af to år"),
+                                                   formattableOutput(ns("checkouts_table"))
+                                            )
+                                        )
                                    )
                           ),
                           tabPanel("Timer", 
@@ -89,8 +113,8 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
-  udlaan <- dbGetQuery(con, "SELECT name, hour, circulation_fact_count FROM cicero.udlaan_per_klokkeslaet")
-  max_date <- dbGetQuery(con, "select max(transact_date) max_date from cicero.udlaan_per_opstillingsprofil")
+  #udlaan <- dbGetQuery(con, "SELECT name, hour, circulation_fact_count FROM cicero.udlaan_per_klokkeslaet")
+  #max_date <- dbGetQuery(con, "select max(transact_date) max_date from cicero.udlaan_per_opstillingsprofil")
   checkouts_all <- dbGetQuery(con, "SELECT extract(year from transact_date) aar,transact_date,branch,sum(antal) antal
     from cicero.udlaan_per_opstillingsprofil
     where extract(year from (transact_date)) > extract(year from (current_date - interval '5 year'))
@@ -159,6 +183,32 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
       summarise(sum = sum(sum))
     plot_ly(checkouts_overview, x = checkouts_overview$aar, y = checkouts_overview$sum, type = 'bar', marker = list(color = color1)) %>%
       layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'År', dtick = 1, autotick = FALSE, autorange="reversed"))
+  })
+  
+  # Checkouts two-year comparison table
+  output$checkouts_table <- renderFormattable({
+    checkouts_all_tbl <- checkouts_all %>%
+      select(aar,transact_date,antal,branch) %>%
+      filter(if(input$checkouts_mainlibrary_filter2 == 'Uden Hovedbiblioteket') (branch != 'Odense Hovedbibliotek') else TRUE) %>%
+      mutate(month = month(transact_date)) %>%
+      filter(aar == input$checkouts_fromyear | aar == input$checkouts_toyear ) %>%
+      filter(if(input$checkouts_library != 'all') (branch == input$checkouts_library) else TRUE) %>%
+      select(antal, month, aar) %>%
+      group_by(month, aar) %>%
+      summarise(sum = sum(antal)) %>%
+      spread(key = aar, value = sum) %>%
+      ungroup(.self) %>%
+      mutate(akku1 = cumsum(.[[2]]), akku2 = cumsum(.[[3]]), mdr = percent(((.[[3]]-.[[2]])/(.[[2]])), digits = 0)) %>%
+      mutate(akk = percent((akku2-akku1)/akku1, digits = 0)) %>%
+      select(c(1,2,4,3,5,6,7)) %>%
+      mutate_at(vars(-1), funs(replace(., is.na(.), 0))) %>%
+      mutate_at(vars(c(-1,-6,-7)), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark="."))) %>%
+      mutate_at(vars(1), funs(danskemåneder(.))) %>%
+      rename(Måned = month, Akkumuleret = akku1, "Akkumuleret " = akku2, 'Ændring pr. mdr.' = mdr, 'Ændring akkumuleret' = akk)
+    formattable(checkouts_all_tbl, list(
+      'Ændring pr. mdr.' = formatter("span", style = x ~ style(color = ifelse(x < 0 , color4, color1)), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
+      'Ændring akkumuleret' = formatter("span", style = x ~ style(color = ifelse(x < 0 , color4, color1)), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
+    ))
   })
   
   udlaan_heat <- udlaan %>%
