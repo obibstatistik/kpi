@@ -22,6 +22,13 @@ eventareasTabPanelUI <- function(id) {
                           tabPanel("Generelt", 
                                    fluidRow(
                                      column(width = 12,
+                                            fluidRow(
+                                              column(6,
+                                                     h4("Eventområde oversigt"),
+                                                     p("Oversigtstabellen viser aktiviteten i de enkelte event områder i Borgernes Hus for den valgte periode. Tabellen viser ”Antal møder” ”Median” – som er et udtryk for hvor langt møderne i snit varer i de enkelte lokaler, ”Total” – som er den totale tid mødelokalet har været optaget i perioden, samt ”Belægningsprocent” – der viser hvor meget af den totale tid mødelokalet har været booket."),
+                                                     p("Grafen viser hvor mange events, der er blevet vist på agendaskærmen i perioden.")
+                                              )
+                                            ),
                                             column(2,
                                                    h4("Periode"),
                                                    dateRangeInput(ns('dateRangeBhus_events'),
@@ -43,6 +50,12 @@ eventareasTabPanelUI <- function(id) {
                                                   
                                            ),
                                      column(12,tags$hr()),
+                                     column(6,
+                                            h4("Bookingoversigt"),
+                                            p("Bookingoversigten viser top 10 over bookinger fordelt på afdelinger i en valgt periode."),
+                                            p("”Andet” dækker over bookinger fra Odense Frivillighedscenter, bookinger fra Borgere, bookinger fra odense.dk brugere udenfor OBB. Fremover vil Odense Frivillighedscenter få særskilt kategori, og disse bookinger fremstå individuelt."),
+                                            p("Det er muligt at fravælge kategorien ”andet” for bedre at kunne se intern OBB brug af mødelokalerne.")
+                                     ),
                                      column(width = 12,
                                             column(width = 2),
                                             column(width = 10,

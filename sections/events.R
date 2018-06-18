@@ -21,10 +21,10 @@ eventsTabPanelUI <- function(id) {
                                    fluidRow(width = 12,
                                             column(width = 6,
                                                    h4("Arrangementer pr. år"),
-                                                   p("Antal arrangementer pr. år de sidste 5 år"),
+                                                   p("Graferne viser det samlede antal arrangementer og undervisning/læringsseancer afholdt på OBB, samt antal deltagere i arrangementer pr. år i de sidste 5 år."),
                                                    plotlyOutput(ns("eventsyearplot")),
                                                    h4("Arrangementer pr. måned"),
-                                                   p("Antal arrangementer pr. måned de sidste 5 år"),
+                                                   p("Graferne viser antal afholdte arrangementer, samt antal deltagere fordelt pr. måned. Det er muligt at vælge år via ”vælgeren” i venstre side – Det er også muligt at sammenligne to år via valg i drop down menuer"),
                                                    plotlyOutput(ns("eventsmonthplot"))
                                             ),
                                             column(width = 6,
@@ -38,6 +38,12 @@ eventsTabPanelUI <- function(id) {
                                    )       
                           ),
                           tabPanel("Type",
+                                   fluidRow(
+                                     column(6,
+                                            h4("Info"),
+                                            p("Den første graf viser fordelingen pr. år mellem børne og voksen arrangementer. Den anden graf fordeling i arrangementskategorier. Det tredje diagram viser afholdte arrangementer på hvert bibliotek. Det er muligt at skifte mellem forskellige år via ”vælgeren” i venstre side.")
+                                            )
+                                   ),
                                    fluidRow(
                                      column(2,
                                             h4("Afgræns pr. år"),
@@ -66,7 +72,9 @@ eventsTabPanelUI <- function(id) {
                                    fluidRow(
                                      column(12,
                                             h4("Forhold imellem forberedelse og deltagere"),
-                                            p("Arrangementer med max 500 deltagere"),
+                                            p("Grafen viser forholdet mellem forberedelsestid og antal deltagere fordelt på arrangementskategorier. Holdes musen henover det enkelte arrangement vises titel og specifikke data."),
+                                            p("OBS. Maks mulige forberedelsestid i indberetning er 999 minutter."),
+                                            p("Ved at klikke én gang på en arrangementstype fravælges denne i visningen. Ved at dobbeltklikke på en arrangementstype vises kun denne."),
                                             plotlyOutput(ns("eventsratioplot"))
                                      )
                                    )

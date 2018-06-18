@@ -18,7 +18,16 @@ meetingroomsTabPanelUI <- function(id) {
             column(12,
                    tabBox(width = 12,
                           id = "tabset1",
-                          tabPanel("Generelt", 
+                          tabPanel("Generelt",
+                                   fluidRow(
+                                     column(6,
+                                            h4("Mødelokaleoversigt"),
+                                            p("Oversigtstabellen viser aktiviteten i de enkelte mødelokaler i Borgernes Hus for den valgte periode. Tabellen viser ”Antal møder” ”Median” – som er et udtryk for hvor langt møderne i snit varer i de enkelte lokaler, ”Total” – som er den totale tid mødelokalet har været optaget i perioden, samt ”Belægningsprocent” – der viser hvor meget af den totale tid mødelokalet har været booket."),
+                                            p("Det er muligt at få vist oversigten ”Indenfor arbejdstid (8-16)”, ”udenfor arbejdstid (16-21)” eller ”hele åbningstiden”"),
+                                            p("Den totale tid er defineret som ”hverdage mellem 8 og 21”, hvorfor weekender ikke er medtaget."),
+                                            p("Grafen viser hvor mange møder, der er blevet vist på agendaskærmen i perioden.")
+                                            )
+                                   ),
                                    fluidRow(
                                      column(width = 12,
                                        column(2,
@@ -42,6 +51,12 @@ meetingroomsTabPanelUI <- function(id) {
                                        )
                                      ),
                                      column(12,tags$hr()),
+                                     column(6,
+                                            h4("Bookingoversigt"),
+                                            p("Bookingoversigten viser top 10 over bookinger fordelt på afdelinger i en valgt periode."),
+                                            p("Andet” dækker over bookinger fra Odense Frivillighedscenter, bookinger fra Borgere, bookinger fra odense.dk brugere udenfor OBB. Fremover vil Odense Frivillighedscenter få særskilt kategori, og disse bookinger fremstå individuelt."),
+                                            p("Det er muligt at fravælge kategorien ”andet” for bedre at kunne se intern OBB brug af mødelokalerne.")
+                                     ),
                                      column(width = 12,
                                             column(width = 2,
                                                    h4("Periode"),
@@ -66,7 +81,7 @@ meetingroomsTabPanelUI <- function(id) {
                                      
                                 )
                           )),
-                          tabPanel("Timer",
+                          tabPanel("Timeoversigt",
                                    fluidRow(
                                      column(width = 12,
                                             column(2,
@@ -79,11 +94,12 @@ meetingroomsTabPanelUI <- function(id) {
                                             ),
                                             column(width = 10,   
                                                    column(width = 12,
-                                                          h4("Timetabel"),
-                                                          p("Graduering pr. kolonner"),
+                                                          h4("Timeoversigt"),
+                                                          p("Grafen viser brugen af de enkelte mødelokaler i Borgerens Hus fordelt på timer. Der kan kun sammenlignes i den enkelte kolonne."),
+                                                          p("Jo mørkere markering jo højere brug af lokalet. Hvis et møde strækker sig over mere end én klokketime tæller mødet i begge time intervaller."),
                                                           formattableOutput(ns("tablemeetingrooms_timeslots")), #%>% withSpinner(color="#0dc5c1"),
                                                           h4("Heatmap"),
-                                                          p("Graduering i hele figuren"),
+                                                          p("Grafen viser brugen af mødelokaler i Borgernes Hus fordelt på døgnet. Heatmappet er dermed en indikation af hvordan brugen af huset er i løbet af en dag. Der kan sammenlignes på tværs af kolonner og rækker."),
                                                           plotlyOutput(ns("meetingrooms_time_heatmap"))
                                                    )
                                             )

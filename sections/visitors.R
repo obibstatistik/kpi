@@ -18,13 +18,19 @@ visitorsTabPanelUI <- function(id) {
             column(12,
                    tabBox(width = 12,
                           id = "tabset1",
-                          tabPanel("Generelt", 
+                          tabPanel("Generelt",
+                                   fluidRow(
+                                     column(6,
+                                            h4("Info"),
+                                            p("Besøgstallet stemmer ikke fuldstændigt overens med de officielle besøgstal, da der fortages forskellige justeringer grundet specifikke forhold i OBB.")
+                                     )
+                                   ),
                                    fluidRow(
                                      column(12,
                                        column(2),
                                        column(10,
                                               h4("Samlet besøg på OBB"),
-                                              p("Farvet: fra 1. januar til dags dato i pågældende år. Grå: Året total"),
+                                              p("Grafen viser det samlede besøg på OBB fordelt pr. år. De grå søjler er hele året, men farvede søjler i forgrunden er år til dato. Det er dermed muligt at sammenligne indeværende års besøg med de forrige."),
                                               samedate_barchartOutput(ns('whity'))
                                        )
                                      ),
@@ -36,6 +42,7 @@ visitorsTabPanelUI <- function(id) {
                                        ),
                                        column(10,
                                               h4("Samlet besøg på OBB"),
+                                              p("Denne graf viser samlet besøg på OBB fordelt pr. år med mulighed for at vælge hovedbibliotekets besøg fra via vælger i venstre side."),
                                               plotlyOutput(ns("visitsplotall")
                                               )
                                      ),
@@ -50,6 +57,8 @@ visitorsTabPanelUI <- function(id) {
                                        ),
                                        column(10,
                                               h4("Samlet besøg på OBB"),
+                                              p("Tabellen viser det samlede besøg på OBB fordelt pr. måned."),
+                                              p("Visningen giver mulighed for at sammenligne mellem to forskellige år samt vælge hvilken lokation der ønskes vist. Det er desuden muligt at vælge Hovedbiblioteket til og fra."),
                                               formattableOutput(ns("visitors_table"))
                                        )
                                      ),
@@ -62,6 +71,8 @@ visitorsTabPanelUI <- function(id) {
                                        ),
                                        column(10,
                                               h4("Besøg fordelt på bibliotek"),
+                                              p("Grafen viser besøget på de enkelte lokationer i OBB i de seneste 5 år. Der er to visninger: ”Ikke normaliseret, hvor antal besøg vises som det reelt er. Og ”Normaliseret” hvor 2016 er brugt som basisår og har værdien 1. Det gør det muligt lettere at sammenligne på tværs af lokationer."),
+                                              p("Det er muligt at fravælge og vælge enkelte år via enkeltklik på året i diagrammets højre side. Ved dobbeltklik på et år vælges kun dette år."),
                                               plotlyOutput(ns("visitsplotindividual")),
                                               formattableOutput(ns("visitorstest"))
                                        )
@@ -69,6 +80,17 @@ visitorsTabPanelUI <- function(id) {
                                    )   
                           )),
                           tabPanel("Timer",
+                                   fluidRow(
+                                     column(6,
+                                            h4("Info"),
+                                            p("Visningen giver overblik over besøget på de enkelte lokationer for en given periode fordelt på timer."),
+                                            p("Det er muligt at vælge lokationer til og fra for at sammenligne på tværs."),
+                                            p("Det er muligt at sammenligne 2 tidsperioder via valg i drop-down. Sørg for at perioderne er sammenlignelige."),
+                                            p("Det er muligt at ændre på timeintervallerne, hvorved totaler og procenter ændres. Den valgte visning vil altid summe til 100%."),
+                                            p("Det er muligt under outputmetode at vælge om besøg skal vises som ”Antal” eller ”Procent af total”."),
+                                            p("OBS. Der tages ikke højde for forskellige åbningstider over tid og der skelnes ikke mellem ugedage.")
+                                           )
+                                   ),
                                    fluidRow(
                                      column(2,
                                             h4("Afgræns"),       

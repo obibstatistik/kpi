@@ -25,27 +25,35 @@ online_odensebibTabPanelUI <- function(id) {
                                    fluidRow(
                                      column(width = 12,
                                             h4("Sidevisninger"), 
+                                            p("Grafen viser antal sidevisninger fordelt på måneder."),
+                                            p("År vælges til og fra ved klik på årstallet i højre side af diagrammet. Igangværende måned vises indtil dags dato."),
+                                            p("Der er forskel mellem officielle tal og WB tal, da officielle tal stammer fra Webtrekk, men WB tal trækkes fra Google Analytics."),
                                             plotlyOutput(ns("plot1")),
                                             tableOutput(ns("ga_pageviewstable"))
                                      )),
                                    fluidRow(          
                                      column(width = 6,
-                                            h4("Top 10 sider 2017"), 
+                                            h4("Top 10 sider 2017"),
+                                            p("Viser en oversigt over de mest besøgte sider på odensebib.dk i 2017."),
                                             tableOutput(ns("tableplot3"))
                                      ),
                                      column(width = 6,
-                                            h4("Enheder"),  
+                                            h4("Enheder"),
+                                            p("Viser hvilken enhedstype der typisk benyttes til at tilgå odensebib.dk."),
                                             plotlyOutput(ns("ga_device_plot"))
                                      )
                                    ),
                                    fluidRow(          
                                      column(width = 6,
                                             h4("Browser"), 
+                                            p("Viser hvilken type browser der typisk benyttes til at tilgå odensebib.dk"),
                                             plotlyOutput(ns("ga_browser_plot"))#,
                                             #tableOutput(ns("tablebrowser"))
                                      ),
                                      column(width = 6,
                                             h4("Sprog"), 
+                                            p("Viser hvilket sprog der er installeret som standard på brugernes enheder."),
+                                            p("Det er muligt at vælge dansk til og fra for at fokusere på andre sprog."),
                                             plotlyOutput(ns("ga_language_plot"))#,
                                             #tableOutput(ns("tablelanguage"))
                                      )
