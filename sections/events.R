@@ -19,22 +19,36 @@ eventsTabPanelUI <- function(id) {
                           id = "tabset3",
                           tabPanel("Antal",
                                    fluidRow(width = 12,
-                                            column(width = 6,
+                                            column(width = 12,
+                                                   column(width = 6,
                                                    h4("Arrangementer pr. år"),
                                                    p("Graferne viser det samlede antal arrangementer og undervisning/læringsseancer afholdt på OBB, samt antal deltagere i arrangementer pr. år i de sidste 5 år."),
-                                                   plotlyOutput(ns("eventsyearplot")),
-                                                   h4("Arrangementer pr. måned"),
-                                                   p("Graferne viser antal afholdte arrangementer, samt antal deltagere fordelt pr. måned. Det er muligt at vælge år via ”vælgeren” i venstre side – Det er også muligt at sammenligne to år via valg i drop down menuer"),
-                                                   plotlyOutput(ns("eventsmonthplot"))
-                                            ),
-                                            column(width = 6,
+                                                   plotlyOutput(ns("eventsyearplot"))),
+                                                   column(width = 6,
                                                    h4("Deltagere pr. år"),
                                                    p("Antal deltagere pr. år de sidste 5 år"),
-                                                   plotlyOutput(ns("eventsparticipantyearplot")),
-                                                   h4("Deltagere pr. måned"),
-                                                   p("Antal deltagere pr. måned de sidste 5 år"),
-                                                   plotlyOutput(ns("eventsparticipantmonthplot"))
-                                            )
+                                                   plotlyOutput(ns("eventsparticipantyearplot")))
+                                            ),
+                                            column(12,tags$hr()),
+                                            column(width = 12,
+                                                   #column(width = 2,
+                                                          # h4("Afgrænser"),
+                                                          # checkboxGroupInput(ns("event_year"), label = 'Vælg år', 
+                                                          #   selected = list("2017"),
+                                                          #   choices = list("2018","2017","2016","2015","2014"))
+                                                   #),
+                                                   column(width = 6,
+                                                          h4("Arrangementer pr. måned"),
+                                                          p("Graferne viser antal afholdte arrangementer, samt antal deltagere fordelt pr. måned. Det er muligt at vælge år via ”vælgeren” i venstre side – Det er også muligt at sammenligne to år via valg i drop down menuer"),
+                                                          plotlyOutput(ns("eventsmonthplot"))),
+                                                   column(width = 6,
+                                                          h4("Deltagere pr. måned"),
+                                                          p("Antal deltagere pr. måned de sidste 5 år"),
+                                                          plotlyOutput(ns("eventsparticipantmonthplot")))
+                                                   ),
+                                            column(12,
+                                                   tableOutput(ns("table"))
+                                                   )
                                    )       
                           ),
                           tabPanel("Type",
@@ -98,9 +112,9 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
     events <- dbGetQuery(con, "SELECT * FROM datamart.arrangementer")
     eventsmaalgruppe <- dbGetQuery(con, "select extract(year from dato) as year, maalgruppe, count(*) from datamart.arrangementer group by maalgruppe, year")
     eventsyear <- dbGetQuery(con, "select extract(year from dato) as year, count(*) from datamart.arrangementer where extract(year from dato) > 2012 group by year order by year")
-    eventsmonth <- dbGetQuery(con, "select extract(month from dato) as month, count(*) from datamart.arrangementer where extract(year from dato) > 2012 group by month order by month")
+    #eventsmonth <- dbGetQuery(con, "select extract(month from dato) as month, count(*) from datamart.arrangementer where extract(year from dato) > 2012 group by month order by month")
     eventsdeltagere <- dbGetQuery(con, "select sum(deltagere), extract(year from dato) as year from datamart.arrangementer where extract(year from dato) > 2012 group by year order by year")
-    eventsparticipantmonth <- dbGetQuery(con, "select sum(deltagere), extract(month from dato) as month from datamart.arrangementer where extract(year from dato) > 2012 group by month order by month")
+    #eventsparticipantmonth <- dbGetQuery(con, "select sum(deltagere), extract(month from dato) as month from datamart.arrangementer where extract(year from dato) > 2012 group by month order by month")
     eventssted <- dbGetQuery(con, "select lokation, extract(year from dato) as year, count(*) from datamart.arrangementer group by lokation, year")
     eventskategori <- dbGetQuery(con, "select kategori, extract(year from dato) as year, count(*) from datamart.arrangementer group by kategori, year")
     eventsratio <- dbGetQuery(con, "select titel, arrangementstype, deltagere, forberedelsestid from datamart.arrangementer")
@@ -110,20 +124,58 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
   output$eventsyearplot <- renderPlotly({
     plot_ly(eventsyear, x = eventsyear$year, y = eventsyear$count, type = 'bar', text = text, marker = list(color = color1)) 
   })
-  # arrangementer pr maaned #
-  output$eventsmonthplot <- renderPlotly({
-    plot_ly(eventsmonth, x = factor(month.abb[eventsmonth$month],levels=month.abb), y = eventsmonth$count, type = 'bar', text = text, marker = list(color = color1)) 
-  })
   
   # deltagere pr aar #
   output$eventsparticipantyearplot <- renderPlotly({
     plot_ly(eventsdeltagere, x = eventsdeltagere$year, y = eventsdeltagere$sum, type = 'bar', text = text, marker = list(color = color1)) 
   })
   
+  eventspermonth <- reactive({
+    eventspermonth <- events %>%
+      select(deltagere, dato) %>%
+      mutate(aar = year(dato), maaned = month(dato)) %>%
+      #filter(aar %in% input$event_year) %>%
+      select(-dato)
+  }) 
+  
+  # arrangementer pr maaned #
+  output$eventsmonthplot <- renderPlotly({
+    eventsmonth2 <- eventspermonth() %>%
+      select(-deltagere) %>%
+      group_by(aar, maaned) %>%
+      summarise(count = n()) %>% 
+      spread(aar, count)
+    plot_ly(eventsmonth2, x = factor(month.abb[eventsmonth2$maaned],levels=month.abb), y = ~`2013`, name = '2013', type = 'bar', text = "Antal", marker = list(color = color1)) %>%
+      add_trace(y = ~`2014`, name = '2014', marker = list(color = color2)) %>%
+      add_trace(y = ~`2015`, name = '2015', marker = list(color = color3)) %>%
+      add_trace(y = ~`2016`, name = '2016', marker = list(color = color4)) %>%
+      add_trace(y = ~`2017`, name = '2017', marker = list(color = color5)) %>%
+      #add_trace(y = ~`2018`, name = '2018', marker = list(color = color6))
+      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Måned'), barmode = 'group')
+  })
+  
   # deltagere pr maaned #
   output$eventsparticipantmonthplot <- renderPlotly({
-    plot_ly(eventsparticipantmonth, x = factor(month.abb[eventsparticipantmonth$month],levels=month.abb), y = eventsparticipantmonth$sum, type = 'bar', text = text, marker = list(color = color1)) 
+    participantmonth <- eventspermonth() %>%
+      group_by(aar, maaned) %>%
+      summarise(count = sum(deltagere)) %>% 
+      spread(aar, count)
+    plot_ly(participantmonth, x = factor(month.abb[participantmonth$maaned],levels=month.abb), y = ~`2013`, name = '2013', type = 'bar', text = text, marker = list(color = color1)) %>%
+      add_trace(y = ~`2014`, name = '2014', marker = list(color = color2)) %>%
+      add_trace(y = ~`2015`, name = '2015', marker = list(color = color3)) %>%
+      add_trace(y = ~`2016`, name = '2016', marker = list(color = color4)) %>%
+      add_trace(y = ~`2017`, name = '2017', marker = list(color = color5)) %>%
+      #add_trace(y = ~`2018`, name = '2018', marker = list(color = color6)) %>%
+      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Måned'), barmode = 'group')
   })
+  
+  
+  
+  # output$table <- renderTable(eventspermonth() %>%
+  #                               select(-deltagere) %>%
+  #                               group_by(aar, maaned) %>%
+  #                               summarise(count = n()) %>% 
+  #                               spread(aar, count)) 
   
   # målgruppe #
   output$eventsmaalgruppeplot <- renderPlotly({
