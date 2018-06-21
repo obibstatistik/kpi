@@ -325,7 +325,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
       group_by(location, year) %>%
       summarise(sum = sum(count)) %>%
       spread(key = year, value = sum) #%>%
-      rename(Filial = location) %>%
+      rename(Filial = location) #%>%
       #mutate_at(vars(-1), funs(replace(., is.na(.), 0))) #%>%
       #mutate_at(vars(c(1,2,3,4,5)), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".")))
     }
