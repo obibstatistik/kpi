@@ -315,9 +315,9 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
       spread(key = year, value = sum) %>%
       rename(Filial = location) %>%
       mutate(`2014` = `2014`/`2016`, `2015` = `2015`/`2016`, `2017` = `2017`/`2016`, `2018` = `2018`/`2016`, `2016` = 1) %>%
-      mutate_at(vars(1), funs(replace(., is.na(.), 0))) %>%
-      mutate_at(vars(c(1,2,3,4,5)), funs(format(round(as.numeric(.), 2), nsmall=1, big.mark="."))) %>%
-      mutate_at(vars(c(1,2,3,4,5)), funs(replace(., is.na(.), 0))) 
+      #mutate_at(vars(1), funs(replace(., is.na(.), 0))) %>%
+      mutate_at(vars(c(1,2,3,4,5)), funs(format(round(as.numeric(.), 2), nsmall=1, big.mark="."))) #%>%
+      #mutate_at(vars(c(1,2,3,4,5)), funs(replace(., is.na(.), 0))) 
     } 
     else {visitorsbranch2 <- visitors1 %>%
       filter(if(input$mainlibrary3 == 'Uden Hovedbiblioteket')  (location != 'Borgernes Hus') else TRUE) %>%
@@ -327,7 +327,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
       summarise(sum = sum(count)) %>%
       spread(key = year, value = sum) %>%
       rename(Filial = location) %>%
-      mutate_at(vars(-1), funs(replace(., is.na(.), 0))) %>%
+      #mutate_at(vars(-1), funs(replace(., is.na(.), 0))) %>%
       mutate_at(vars(c(1,2,3,4,5)), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".")))
     }
   })
