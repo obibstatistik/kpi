@@ -370,7 +370,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
         spread(key = location, value = sum) %>%
         adorn_totals("row") %>%
         mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
-        mutate_at(vars(-tid), funs(ifelse( is.na(.), NA, procenten((. / sum(.))))))
+        mutate_at(vars(-tid), funs(ifelse( is.na(.), NA, procenten((. / sum(.)*2)))))
     else 
       visitors_hours <- visitors_hours %>%
         filter(location %in% input$visitors_hours_library) %>%
