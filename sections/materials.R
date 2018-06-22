@@ -64,34 +64,29 @@ materialsTabPanelUI <- function(id) {
                                         )
                                    )
                           ),
-                          tabPanel("Timer", 
-                                   fluidRow(
-                                     column(2, h4("Afgræns")),
-                                     column(10,
-                                            plotlyOutput(ns("heat")),
-                                            tableOutput(ns('table'))
-                                     )
-                                   )
-                          ),
+                       #   tabPanel("Timer", 
+                       #           fluidRow(
+                       #             column(2, h4("Afgræns")),
+                       #             column(10,
+                       #                   plotlyOutput(ns("heat")),
+                       #                  tableOutput(ns('table'))
+                       #             )
+                       #           )
+                       #  ),
                           tabPanel("Cirkulation", 
                                    fluidRow(
-                                     column(2, h4("Afgræns")),
-                                     #column(10,div(style = "height:400px;"),
+                                     column(2,
+                                            tags$br(),
+                                            h4("Periode"),
+                                            dateRangeInput(ns('dateRange_circ'),
+                                                           label = 'Vælg periode',
+                                                           start = Sys.Date() - 182, end = Sys.Date(),
+                                                           separator = " - "
+                                            )
+                                     ),
                                      column(10,
                                             #box(width = NULL, plotlyOutput(ns("circ_join_plot"), height = "700px"))
                                             box(width = 10, plotlyOutput(ns("circ_join_plot"), height = "700px"))
-                                     )
-                                   )
-                          ),
-                          tabPanel("Pr. bibliotek", 
-                                   fluidRow(
-                                     column(2, h4("Afgræns")),
-                                     column(10,
-                                            plotlyOutput(ns("bibliotasdfek")),
-                                            tableOutput(ns('bibtableasdf'))
-                                     ),
-                                     column(12,
-                                            formattableOutput(ns("bibtableall"))
                                      )
                                    )
                           ),
@@ -111,7 +106,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
-  udlaan <- dbGetQuery(con, "SELECT name, hour, circulation_fact_count FROM cicero.udlaan_per_klokkeslaet")
+  #udlaan <- dbGetQuery(con, "SELECT name, hour, circulation_fact_count FROM cicero.udlaan_per_klokkeslaet")
   #max_date <- dbGetQuery(con, "select max(transact_date) max_date from cicero.udlaan_per_opstillingsprofil")
   checkouts_all <- dbGetQuery(con, "SELECT extract(year from transact_date) aar,transact_date,branch,dep,sum(antal) antal
     from cicero.udlaan_per_opstillingsprofil
@@ -213,25 +208,27 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
     ))
   })
   
-  udlaan_heat <- udlaan %>%
-    mutate(branch = ifelse(is.na(name), "Andet", name)) %>%
-    group_by(branch, hour) %>%
-    summarise(sum = sum(circulation_fact_count))
+  #udlaan_heat <- udlaan %>%
+  #  mutate(branch = ifelse(is.na(name), "Andet", name)) %>%
+  #  group_by(branch, hour) %>%
+  #  summarise(sum = sum(circulation_fact_count))
   
-  output$table <- renderTable(udlaan_heat)
+  #output$table <- renderTable(udlaan_heat)
   
-  output$heat <- renderPlotly({
-    plot_ly(x=udlaan_heat$hour ,y=udlaan_heat$branch ,z = udlaan_heat$sum, type = "heatmap")
-  })
+  #output$heat <- renderPlotly({
+  #  plot_ly(x=udlaan_heat$hour ,y=udlaan_heat$branch ,z = udlaan_heat$sum, type = "heatmap")
+  #})
   
   # Circulation numbers. Horizontal barchart
+  # TODO tilføj søjlepar, med gennemsnit ligesom kbh. (gerne med to andre farver, så de fremhæves) + vælger til magasin vs. udlån
   output$circ_join_plot <- renderPlotly({
     circ_behold <- beholdning %>%
       group_by(branch,dep) %>%
       summarise(sum = sum(sum))
     
     circ_udlån <- checkouts_all %>%
-      filter( transact_date >= as.Date("2018-01-01") & transact_date <= as.Date("2018-06-30") ) %>%
+      #filter( transact_date >= as.Date("2018-01-01") & transact_date <= as.Date("2018-06-30") ) %>%
+      filter( transact_date >= input$dateRange_circ[1] & transact_date <= input$dateRange_circ[2]) %>%
       group_by(branch,dep) %>%
       summarise(sum = sum(antal))
     
@@ -246,7 +243,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
       select(branch,dep,cirkulationstal) %>%
       spread(key = dep, value = cirkulationstal)
     
-    # Sorting Y-axis. Cf. https://stackoverflow.com/questions/40224892/r-plotly-barplot-sort-by-value
+    # Sorting Y-axis. cf. https://stackoverflow.com/questions/40224892/r-plotly-barplot-sort-by-value
     circ_join$branch <- factor(circ_join$branch,
                                levels = unique(circ_join$branch)[order(circ_join$Voksen, decreasing = FALSE)])
     
@@ -271,7 +268,6 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
       layout(title = "Cirkulationstal fordelt på biblioteker",
              margin = list(l = 200, r = 10, b = 50, t = 50, pad = 10),
              barmode = 'group',
-             #margin = list(t = 100),
              bargap = 0.4,
              height = 600,
              #width = 800,
