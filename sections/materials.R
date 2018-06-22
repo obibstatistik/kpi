@@ -113,7 +113,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
-  #udlaan <- dbGetQuery(con, "SELECT name, hour, circulation_fact_count FROM cicero.udlaan_per_klokkeslaet")
+  udlaan <- dbGetQuery(con, "SELECT name, hour, circulation_fact_count FROM cicero.udlaan_per_klokkeslaet")
   #max_date <- dbGetQuery(con, "select max(transact_date) max_date from cicero.udlaan_per_opstillingsprofil")
   checkouts_all <- dbGetQuery(con, "SELECT extract(year from transact_date) aar,transact_date,branch,sum(antal) antal
     from cicero.udlaan_per_opstillingsprofil

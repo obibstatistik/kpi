@@ -22,6 +22,13 @@ eventareasTabPanelUI <- function(id) {
                           tabPanel("Generelt", 
                                    fluidRow(
                                      column(width = 12,
+                                            fluidRow(
+                                              column(6,
+                                                     h4("Eventområde oversigt"),
+                                                     p("Oversigtstabellen viser aktiviteten i de enkelte event områder i Borgernes Hus for den valgte periode. Tabellen viser ”Antal møder” ”Median” – som er et udtryk for hvor langt møderne i snit varer i de enkelte lokaler, ”Total” – som er den totale tid mødelokalet har været optaget i perioden, samt ”Belægningsprocent” – der viser hvor meget af den totale tid mødelokalet har været booket."),
+                                                     p("Grafen viser hvor mange events, der er blevet vist på agendaskærmen i perioden.")
+                                              )
+                                            ),
                                             column(2,
                                                    h4("Periode"),
                                                    dateRangeInput(ns('dateRangeBhus_events'),
@@ -43,11 +50,23 @@ eventareasTabPanelUI <- function(id) {
                                                   
                                            ),
                                      column(12,tags$hr()),
+                                     column(6,
+                                            h4("Bookingoversigt"),
+                                            p("Bookingoversigten viser top 10 over bookinger fordelt på afdelinger i en valgt periode."),
+                                            p("”Andet” dækker over bookinger fra Odense Frivillighedscenter, bookinger fra Borgere, bookinger fra odense.dk brugere udenfor OBB. Fremover vil Odense Frivillighedscenter få særskilt kategori, og disse bookinger fremstå individuelt."),
+                                            p("Det er muligt at fravælge kategorien ”andet” for bedre at kunne se intern OBB brug af mødelokalerne.")
+                                     ),
                                      column(width = 12,
                                             column(width = 2),
                                             column(width = 10,
-                                                   h4("Booker top 10"),
-                                                   tableOutput(ns("table_bhus_events_booker"))
+                                                   column(width= 6,
+                                                          h4("Booker top 10"),
+                                                          tableOutput(ns("table_bhus_events_booker"))
+                                                   ),
+                                                   column(width = 6,
+                                                          h4("Booker top 10"),
+                                                          plotlyOutput(ns("plot_pie_eventarea_booker"))
+                                                   )
                                             )
                                      )
                                      
@@ -125,27 +144,42 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
   })
   
   # Booker top 10
-  output$table_bhus_events_booker <- renderTable(
+  
+  eventarea_booker <- reactive({
     bhus_events_booker <- bhus_events %>%
-      filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
-      select(forfatter_mail) %>%
-      mutate(forfatter_mail = tolower(forfatter_mail)) %>%
-      group_by(forfatter_mail) %>%
-      summarise(count = n()) %>%
-      arrange(desc(count)) %>%
-      rename(Booker = forfatter_mail, Antal = count) %>%
-      left_join(employees, by = c("Booker" = "email")) %>%
-      mutate(enhed = ifelse(is.na(enhedsnavnniv6) & is.na(enhedsnavnniv5), "Andet", ifelse(is.na(enhedsnavnniv6), enhedsnavnniv5, enhedsnavnniv6))) %>%
-      #filter(if(input$timeslot_booker != "1") enhed != "Andet" else TRUE) %>%
-      select(enhed, Antal) %>%
-      group_by(enhed) %>%
-      summarise(sum = sum(Antal)) %>%
-      arrange(desc(sum)) %>%
-      mutate(totalsum = sum(sum)) %>%
-      head(10) %>% 
+        filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
+        select(forfatter_mail) %>%
+        mutate(forfatter_mail = tolower(forfatter_mail)) %>%
+        group_by(forfatter_mail) %>%
+        summarise(count = n()) %>%
+        arrange(desc(count)) %>%
+        rename(Booker = forfatter_mail, Antal = count) %>%
+        left_join(employees, by = c("Booker" = "email")) %>%
+        mutate(enhed = ifelse(is.na(enhedsnavnniv6) & is.na(enhedsnavnniv5), "Andet", ifelse(is.na(enhedsnavnniv6), enhedsnavnniv5, enhedsnavnniv6))) %>%
+        select(enhed, Antal) %>%
+        group_by(enhed) %>%
+        summarise(sum = sum(Antal)) %>%
+        arrange(desc(sum)) %>%
+        mutate(totalsum = sum(sum)) %>%
+        head(10)
+    })
+    
+  output$table_bhus_events_booker <- renderTable(
+    bhus_events_booker <- eventarea_booker() %>%
       mutate(bookingprocent = procenten(sum/totalsum)) %>%
       select(-totalsum), rownames = TRUE
   )
+  
+  output$plot_pie_eventarea_booker <- renderPlotly({
+    eventarea_booker <- eventarea_booker() %>%
+      mutate(bookingprocent = (sum/totalsum))
+    plot_ly(eventarea_booker, labels = ~enhed, values = ~bookingprocent, marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
+      add_pie() %>%
+      layout(showlegend = T,
+             xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+             yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+  })
+  
   
   # Timetabel
 

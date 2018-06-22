@@ -17,15 +17,19 @@ library(ggplot2)
 library(profvis)
 library(whitebookviz)
 library(leaflet)
+library(janitor)
 
 enableBookmarking(store = "url")
 
 ### COLORS ###
-colors <- c('rgb(70,140,140)', 'rgb(174,176,81)', 'rgb(59,54,74)', 'rgb(192,57,83)', 'rgb(29,114,170)', 'rgb(225,123,81)', 'rgb(68,68,68)','rgb(102,102,102)','rgb(136,136,136)')
+colors <- c('rgb(70,140,140)', 'rgb(174,176,81)', 'rgb(59,54,74)', 'rgb(136,136,136)', 'rgb(29,114,170)', 'rgb(225,123,81)', 'rgb(68,68,68)','rgb(102,102,102)','rgb(192,57,83)')
 color1 = c('rgb(70,140,140)')
 color2 = c('rgb(174,176,81)')
 color3 = c('rgb(59,54,74)')
-color4 = c('rgb(192,57,83)')
+color4 = c('rgb(219,181,61)')
 color5 = c('rgb(29,114,170)')
 color6 = c('rgb(225,123,81)')
-color7 = c('rgb(219,181,61)')
+color7 = c('rgb(68,68,68)')
+color8 = c('rgb(102,102,102)')
+color9 = c('rgb(192,57,83)')
+

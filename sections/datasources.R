@@ -11,7 +11,7 @@ datasourcesTabPanelUI <- function(id) {
   tabItem(tabName = "datasources",
           box(width = 12, solidHeader = TRUE, id = "datasourcesheader",
               h3("Datakilder"),
-              img(src='icons/datakilder_negativ_45x45', align = "right", height="46px")
+              img(src='icons/datakilder_negativ_45x45.png', align = "right", height="46px")
           ),
           fluidRow(
             column(12,
@@ -19,7 +19,8 @@ datasourcesTabPanelUI <- function(id) {
                           id = "tabset3",
                           tabPanel("Kildediagram",
                                    fluidRow(width = 12,
-                                            column(width = 12,       
+                                            column(width = 12,
+                                                   p("Diagrammet viser alle OBBs datakilder, hvilken type det er og sammenhængen mellem de enkelte kilder."),
                                                    img(src='DatakildeOversigt.svg', width="1440px", height="100%" )
                                             )
                                    )
