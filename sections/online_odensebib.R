@@ -47,15 +47,13 @@ online_odensebibTabPanelUI <- function(id) {
                                      column(width = 6,
                                             h4("Browser"), 
                                             p("Viser hvilken type browser der typisk benyttes til at tilgå odensebib.dk"),
-                                            plotlyOutput(ns("ga_browser_plot"))#,
-                                            #tableOutput(ns("tablebrowser"))
+                                            plotlyOutput(ns("ga_browser_plot"))
                                      ),
                                      column(width = 6,
                                             h4("Sprog"), 
                                             p("Viser hvilket sprog der er installeret som standard på brugernes enheder."),
                                             p("Det er muligt at vælge dansk til og fra for at fokusere på andre sprog."),
-                                            plotlyOutput(ns("ga_language_plot"))#,
-                                            #tableOutput(ns("tablelanguage"))
+                                            plotlyOutput(ns("ga_language_plot"))
                                      )
                                    )
                                    
@@ -109,11 +107,11 @@ online_odensebibTabPanel <- function(input, output, session) {
   is.na(ga_pageviews) <- !ga_pageviews
   
   output$plot1 <- renderPlotly({
-    plot_ly(ga_pageviews, x = ~maaned , y = ~v2015 , type = "bar", name = '2015', marker = list(color = color1)) %>%
+    plot_ly(ga_pageviews, x = factor(month.abb[ga_pageviews$maaned],levels=month.abb), y = ~v2015 , type = "bar", name = '2015', marker = list(color = color1)) %>%
       add_trace(y = ~v2016, name = '2016', marker = list(color = color2)) %>%
       add_trace(y = ~v2017, name = '2017', marker = list(color = color3)) %>%
       add_trace(y = ~v2018, name = '2018', marker = list(color = color4)) %>%
-      layout(showlegend = T, xaxis = list(tickmode="linear", title = "Måned"), yaxis = list(title = "Antal"))  
+      layout(showlegend = T, separators=",.", xaxis = list(tickmode="linear", title = "Måned"), yaxis = list(title = "Antal", separatethousands = TRUE, exponentformat='none'))  
   })
   
   # device
@@ -138,7 +136,8 @@ online_odensebibTabPanel <- function(input, output, session) {
   # browser
   
   ga_browser2 <- ga_browser %>%
-    spread(browser, pageviews)
+    spread(browser, pageviews) %>%
+    filter(datoen < (floor_date(Sys.Date(), "month") - month(1)))
   ga_browser_table <- ga_browser %>%
     group_by(browser) %>%
     summarise(sum = sum(pageviews)) %>%
@@ -159,36 +158,45 @@ online_odensebibTabPanel <- function(input, output, session) {
       layout(xaxis = list(title = 'Dato'),yaxis = list (title = 'Sidevisninger'))
   })
   
-  #output$tablebrowser <- renderTable(ga_browser_table)
-  
   # language
   
   ga_language2 <- ga_language %>%
-    spread(language, pageviews)
+    mutate(
+      location = case_when(
+        grepl("^da", ga_language$language) ~ "dansk",
+        grepl("^en", ga_language$language) ~ "engelsk",
+        grepl("^de", ga_language$language) ~ "tysk",
+        grepl("^nb", ga_language$language) ~ "norsk",
+        grepl("^pl", ga_language$language) ~ "polen",
+        grepl("^sv", ga_language$language) ~ "svensk",
+        grepl("^zh-cn", ga_language$language) ~ "kinesisk"
+      )
+    )
+  ga_language2 <- ga_language2 %>% 
+    group_by(datoen, location) %>%
+    summarise(sum = sum(pageviews)) %>%
+    spread(location, sum) %>%
+    ungroup() %>%
+    filter(datoen < (floor_date(Sys.Date(), "month") - month(1)))
+  
   ga_language_table <- ga_language %>%
     group_by(language) %>%
     summarise(sum = sum(pageviews)) %>%
     arrange(desc(sum)) %>%
-    head(10)
+    head(20)
   
   output$ga_language_plot <- renderPlotly({
-    p <- plot_ly(ga_language2, x = ~datoen, y = ~`da-dk`, name = 'da-dk', type = 'scatter', mode = 'lines') %>%
-      add_trace(y = ~`da`, name = 'da', mode = 'lines') %>%
-      add_trace(y = ~`en-us`, name = 'en-us', mode = 'lines') %>%
-      add_trace(y = ~`en-gb`, name = 'en-gb', mode = 'lines') %>%
-      add_trace(y = ~`de-de`, name = 'de-de', mode = 'lines') %>%
-      add_trace(y = ~`de`, name = 'de', mode = 'lines') %>%
-      add_trace(y = ~`nb-no`, name = 'nb-no', mode = 'lines') %>%
-      add_trace(y = ~`nb`, name = 'nb', mode = 'lines') %>%
-      add_trace(y = ~`pl`, name = 'pl', mode = 'lines') %>%
-      add_trace(y = ~`sv-se`, name = 'sv-se', mode = 'lines') %>%
+    p <- plot_ly(ga_language2, x = ~datoen, y = ga_language2$dansk, name = 'Dansk', type = 'scatter', mode = 'lines') %>%
+      add_trace(y = ga_language2$engelsk, name = 'Engelsk', mode = 'lines') %>%
+      add_trace(y = ga_language2$tysk, name = 'Tysk', mode = 'lines') %>%
+      add_trace(y = ga_language2$norsk, name = 'Norsk', mode = 'lines') %>%
+      add_trace(y = ga_language2$polsk, name = 'Polsk', mode = 'lines') %>%
+      add_trace(y = ga_language2$svensk, name = 'Svensk', mode = 'lines') %>%
+      add_trace(y = ga_language2$kinesisk, name = 'Kinesisk', mode = 'lines') %>%
       layout(xaxis = list(title = 'Dato'),yaxis = list (title = 'Sidevisninger'))
   })
   
-  #output$tablelanguage <- renderTable(ga_language_table)
-  
   #content groups
-  
   ga_path <- ga_path %>%
     mutate(
       content_group = case_when(

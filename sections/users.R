@@ -48,8 +48,8 @@ usersTabPanelUI <- function(id) {
                                                   p("Lånergrafen udgøres af data fra Cicero."),
                                                   p("Borgergrafen udgøres af data fra seneste kvartal fra Danmarks Statistik."),
                                                   plotlyOutput(ns("agebranch_plot")),
-                                                  h4("Aldersfordeling pr. filial"),
-                                                  p("Graferne viser aldersfordelingen blandt lånerne, fordelt efter tilhørsfilial."),
+                                                  h4("Aldersfordeling pr. bibliotek"),
+                                                  p("Graferne viser aldersfordelingen blandt lånerne, fordelt efter tilhørsbibliotek."),
                                                   branchplotUI(ns(id = "kor"), branch = "Korup"),
                                                   branchplotUI(ns(id = "ta"), branch = "Tarup"),
                                                   branchplotUI(ns(id = "da"), branch = "Dalum"),
@@ -75,7 +75,7 @@ usersTabPanelUI <- function(id) {
                                                    h4("Dokumention"),
                                                      p("Bruger statistik og visualiseringer er dannet på baggrund af:"),
                                                      tags$ul(
-                                                       tags$li("Antal lånere fordelt på alder og tilhørsfilial. Data udtrukket fra Cicero Reporting Services 12. juni 2018"), 
+                                                       tags$li("Antal lånere fordelt på alder og tilhørsbibliotek. Data udtrukket fra Cicero Reporting Services 12. juni 2018"), 
                                                        tags$li("Antal aktive lånere fordelt på lånergruppe. Data udtrukket fra Cicero Reporting Services 12. juni 2018"), 
                                                        tags$li("Odense Borgernes alder. Udtrukket fra Danmarks statistiks statistikbank")
                                                      ),

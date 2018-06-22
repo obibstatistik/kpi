@@ -70,14 +70,14 @@ eventsTabPanelUI <- function(id) {
                                                    plotlyOutput(ns("eventsmaalgruppeplot"))
                                             ),
                                             column(width = 4,
-                                                   h4("Sted"),
-                                                   p("Antal arrangementer på de enkelte biblioteker i perioden"),
-                                                   plotlyOutput(ns("eventsstedplot"))
-                                            ),
-                                            column(width = 4,
                                                    h4("Kategori"),
                                                    p("Antal arrangementer målrettet hhv. arrangementer og læring/undervisning i perioden"),
                                                    plotlyOutput(ns("eventskategoriplot"))
+                                            ),
+                                            column(width = 4,
+                                                   h4("Sted"),
+                                                   p("Antal arrangementer på de enkelte biblioteker i perioden"),
+                                                   plotlyOutput(ns("eventsstedplot"))
                                             )
                                      )
                                    )       
@@ -117,7 +117,7 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
     #eventsparticipantmonth <- dbGetQuery(con, "select sum(deltagere), extract(month from dato) as month from datamart.arrangementer where extract(year from dato) > 2012 group by month order by month")
     eventssted <- dbGetQuery(con, "select lokation, extract(year from dato) as year, count(*) from datamart.arrangementer group by lokation, year")
     eventskategori <- dbGetQuery(con, "select kategori, extract(year from dato) as year, count(*) from datamart.arrangementer group by kategori, year")
-    eventsratio <- dbGetQuery(con, "select titel, arrangementstype, deltagere, forberedelsestid from datamart.arrangementer")
+    eventsratio <- dbGetQuery(con, "select titel, arrangementstype, deltagere, forberedelsestid from datamart.arrangementer where arrangementstype != ''")
   dbDisconnect(con)
   
   # arrangementer pr aar #
@@ -169,19 +169,11 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
       layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Måned'), barmode = 'group')
   })
   
-  
-  
-  # output$table <- renderTable(eventspermonth() %>%
-  #                               select(-deltagere) %>%
-  #                               group_by(aar, maaned) %>%
-  #                               summarise(count = n()) %>% 
-  #                               spread(aar, count)) 
-  
   # målgruppe #
   output$eventsmaalgruppeplot <- renderPlotly({
-    if (input$year != "Alle") {eventsmaalgruppe <- eventsmaalgruppe %>% filter(year == input$year)}
-    if (input$year == "Alle") {eventsmaalgruppe <- eventsmaalgruppe %>% filter(year %in% c("2013","2014","2015","2016","2017"))}
-    plot_ly(eventsmaalgruppe, labels = ~maalgruppe, values = ~count, marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
+    if (input$year != "Alle") {eventsmaalgruppe <- eventsmaalgruppe %>% filter(year == input$year) %>% mutate(colors = if_else(maalgruppe=="Voksne", color1, color2))}
+    if (input$year == "Alle") {eventsmaalgruppe <- eventsmaalgruppe %>% filter(year %in% c("2013","2014","2015","2016","2017")) %>% mutate(colors = if_else(maalgruppe=="Voksne", color1, color2))}
+    plot_ly(eventsmaalgruppe, labels = ~maalgruppe, values = ~count, marker = list(colors = ~colors, line = list(color = '#FFFFFF', width = 1))) %>%
       add_pie(hole = 0.0) %>%
       layout(showlegend = T,
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
@@ -203,7 +195,7 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
         eventssted$lokation == "Bolbro bibliotek" ~ "Bolbro Bibliotek",
         eventssted$lokation == "Vollsmose bibliotek" ~ "Vollsmose Bibliotek",
         eventssted$lokation == "Musikbiblioteket" ~ "Musikbiblioteket",
-        eventssted$lokation == "lokalhistorisk" ~ "Lokalhistorisk",
+        eventssted$lokation == "lokalhistorisk" ~ "Historiens Hus",
         eventssted$lokation == "Næsby bibliotek" ~ "Næsby Bibliotek",
         eventssted$lokation == "Andet..." ~ "Andet"
       ) 

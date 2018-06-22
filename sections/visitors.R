@@ -50,9 +50,9 @@ visitorsTabPanelUI <- function(id) {
                                      column(12,
                                        column(2,
                                               h4("Afgræns"),
-                                              selectInput(ns("visitors_fromyear"), "Fra:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2015", "2014" = "2014"), as.integer(format(Sys.Date(), "%Y"))-1),
-                                              selectInput(ns("visitors_toyear"), "Til:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2014", "2014" = "2013"), as.integer(format(Sys.Date(), "%Y"))),
-                                              selectInput(ns("visitorslibrary"), "Filial:", c("Alle" = "all","Bolbro" = "bo","Dalum" = "da","Højby" = "hoj","Historiens Hus" = "lok","Holluf Pile" = "ho","Borgernes Hus" = "hb","Korup" = "kor","Musikbiblioteket" = "mus","Tarup" = "ta","Vollsmose" = "vo")),
+                                              selectInput(ns("visitors_fromyear"), "År 1:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2015", "2014" = "2014"), as.integer(format(Sys.Date(), "%Y"))-1),
+                                              selectInput(ns("visitors_toyear"), "År 2:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2014", "2014" = "2013"), as.integer(format(Sys.Date(), "%Y"))),
+                                              selectInput(ns("visitorslibrary"), "Bibliotek:", c("Alle" = "all","Bolbro" = "bo","Dalum" = "da","Højby" = "hoj","Historiens Hus" = "lok","Holluf Pile" = "ho","Borgernes Hus" = "hb","Korup" = "kor","Musikbiblioteket" = "mus","Tarup" = "ta","Vollsmose" = "vo")),
                                               selectInput(ns("mainlibrary2"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))    
                                        ),
                                        column(10,
@@ -254,8 +254,8 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   
   output$visitors_table <- renderFormattable({
     formattable(visitors_table(), list(
-      'Ændring pr. mdr.' = formatter("span", style = x ~ style(color = ifelse(x < 0 , color4, color1)), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
-      'Ændring akkumuleret' = formatter("span", style = x ~ style(color = ifelse(x < 0 , color4, color1)), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
+      'Ændring pr. mdr.' = formatter("span", style = x ~ style(color = ifelse(x < 0 , color9, color1)), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
+      'Ændring akkumuleret' = formatter("span", style = x ~ style(color = ifelse(x < 0 , color9, color1)), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
     ))
   })
   
@@ -313,7 +313,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
       group_by(location, year) %>%
       summarise(sum = sum(count)) %>%
       spread(key = year, value = sum) %>%
-      rename(Filial = location) %>%
+      rename(Bibliotek = location) %>%
       mutate(`2014` = `2014`/`2016`, `2015` = `2015`/`2016`, `2017` = `2017`/`2016`, `2018` = `2018`/`2016`, `2016` = 1) #%>%
       #mutate_at(vars(-1), funs(replace(., is.na(.), 0))) #%>%
       #mutate_at(vars(c(1,2,3,4,5)), funs(replace(., is.na(.), 0))) 
@@ -325,7 +325,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
       group_by(location, year) %>%
       summarise(sum = sum(count)) %>%
       spread(key = year, value = sum) %>%
-      rename(Filial = location) #%>%
+      rename(Bibliotek = location) #%>%
       #mutate_at(vars(-1), funs(replace(., is.na(.), 0))) #%>%
       #mutate_at(vars(c(1,2,3,4,5)), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".")))
     }
@@ -367,7 +367,8 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
         select(-visit_date_hour) %>%
         group_by(location, tid) %>%
         summarise(sum = sum(count)) %>%
-        spread(key = location, value = sum) %>% 
+        spread(key = location, value = sum) %>%
+        adorn_totals("row") %>%
         mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
         mutate_at(vars(-tid), funs(ifelse( is.na(.), NA, procenten((. / sum(.))))))
     else 
@@ -380,7 +381,8 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
         select(-visit_date_hour) %>%
         group_by(location, tid) %>%
         summarise(sum = sum(count)) %>%
-        spread(key = location, value = sum) %>% 
+        spread(key = location, value = sum) %>%
+        adorn_totals("row") %>%
         mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
         mutate_at(vars(-tid), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".")))
   })
