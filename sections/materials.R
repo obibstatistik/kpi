@@ -76,12 +76,10 @@ materialsTabPanelUI <- function(id) {
                           tabPanel("Cirkulation", 
                                    fluidRow(
                                      column(2, h4("Afgræns")),
+                                     #column(10,div(style = "height:400px;"),
                                      column(10,
-                                            plotlyOutput(ns("cirkulation")),
-                                            tableOutput(ns('cirktable'))
-                                     ),
-                                     column(12,
-                                            formattableOutput(ns("cirkulation_table_all"))
+                                            #box(width = NULL, plotlyOutput(ns("circ_join_plot"), height = "700px"))
+                                            box(width = 10, plotlyOutput(ns("circ_join_plot"), height = "700px"))
                                      )
                                    )
                           ),
@@ -115,11 +113,15 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
   udlaan <- dbGetQuery(con, "SELECT name, hour, circulation_fact_count FROM cicero.udlaan_per_klokkeslaet")
   #max_date <- dbGetQuery(con, "select max(transact_date) max_date from cicero.udlaan_per_opstillingsprofil")
-  checkouts_all <- dbGetQuery(con, "SELECT extract(year from transact_date) aar,transact_date,branch,sum(antal) antal
+  checkouts_all <- dbGetQuery(con, "SELECT extract(year from transact_date) aar,transact_date,branch,dep,sum(antal) antal
     from cicero.udlaan_per_opstillingsprofil
     where extract(year from (transact_date)) > extract(year from (current_date - interval '5 year'))
-    group by aar,transact_date,branch
-    order by aar,transact_date,branch")
+    group by aar,transact_date,branch,dep
+    order by aar,transact_date,branch,dep")
+  beholdning <- dbGetQuery(con, "SELECT branch,department dep,sum(material_dim_count)
+    from cicero.beholdning
+    group by branch,dep
+    order by branch,dep")
   dbDisconnect(con)
   
   # Calculate latest date with data
@@ -220,6 +222,61 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   
   output$heat <- renderPlotly({
     plot_ly(x=udlaan_heat$hour ,y=udlaan_heat$branch ,z = udlaan_heat$sum, type = "heatmap")
+  })
+  
+  # Circulation numbers. Horizontal barchart
+  output$circ_join_plot <- renderPlotly({
+    circ_behold <- beholdning %>%
+      group_by(branch,dep) %>%
+      summarise(sum = sum(sum))
+    
+    circ_udlån <- checkouts_all %>%
+      filter( transact_date >= as.Date("2018-01-01") & transact_date <= as.Date("2018-06-30") ) %>%
+      group_by(branch,dep) %>%
+      summarise(sum = sum(antal))
+    
+    circ_join <- full_join(circ_udlån, circ_behold, by = c("branch","dep")) %>%
+      filter(!branch %in% c('Fællessamlingen',
+                            'Lokalhistorisk Bibliotek',
+                            'Odense Arrest',
+                            'Opsøgende afdeling Odense Bibliotekerne')) %>%
+      filter(dep %in% c('Børn','Voksen','Musik')) %>%
+      #mutate(cirkulationstal = format(round(sum.x / sum.y, 1), nsmall=0, big.mark=".", decimal.mark=",") ) %>%
+      mutate(cirkulationstal = format(round(sum.x / sum.y, 1)) ) %>%
+      select(branch,dep,cirkulationstal) %>%
+      spread(key = dep, value = cirkulationstal)
+    
+    # Sorting Y-axis. Cf. https://stackoverflow.com/questions/40224892/r-plotly-barplot-sort-by-value
+    circ_join$branch <- factor(circ_join$branch,
+                               levels = unique(circ_join$branch)[order(circ_join$Voksen, decreasing = FALSE)])
+    
+    plot_ly() %>%
+      
+      add_trace(y = ~circ_join$branch, 
+                x = ~circ_join$Børn, 
+                type = 'bar', 
+                orientation = 'h', 
+                name = 'Børn',
+                marker = list(color = color2, 
+                              width = 5)) %>%
+      
+      add_trace(y = ~circ_join$branch, 
+                x = ~circ_join$Voksen, 
+                type = 'bar', 
+                orientation = 'h', 
+                name = 'Voksen',
+                marker = list(color = color1, 
+                              width = 5)) %>%
+      
+      layout(title = "Cirkulationstal fordelt på biblioteker",
+             margin = list(l = 200, r = 10, b = 50, t = 50, pad = 10),
+             barmode = 'group',
+             #margin = list(t = 100),
+             bargap = 0.4,
+             height = 600,
+             #width = 800,
+             yaxis = list(showgrid = FALSE, showline = FALSE, showticklabels = TRUE, title = "", type = "category"),
+             xaxis = list(zeroline = FALSE, showline = FALSE, showticklabels = TRUE, domain = c(0,2), title = "", type = "line", showgrid = TRUE))
   })
   
 }
