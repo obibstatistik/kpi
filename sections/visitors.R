@@ -67,7 +67,7 @@ visitorsTabPanelUI <- function(id) {
                                      column(12,
                                        column(2,
                                               h4("Afgræns"),
-                                              selectInput(ns("norm"), "Indekstal/tal:",c('Indeks 2016' = 'norm', 'Ikke Normaliseret' = 'not_norm')),
+                                              selectInput(ns("norm"), "Indekstal/tal:",c('Ikke Normaliseret' = 'not_norm','Indeks 2016' = 'norm')),
                                               selectInput(ns("mainlibrary3"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))     
                                        ),
                                        column(10,
