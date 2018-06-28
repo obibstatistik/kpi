@@ -18,6 +18,8 @@ library(profvis)
 library(whitebookviz)
 library(leaflet)
 library(janitor)
+library(treemap)
+library(RColorBrewer)
 
 enableBookmarking(store = "url")
 
