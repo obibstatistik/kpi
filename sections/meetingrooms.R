@@ -46,8 +46,9 @@ meetingroomsTabPanelUI <- function(id) {
                                                    csvDownloadUI(ns("meetingsrooms"))
                                             ),
                                             column(width = 6,
-                                                   h4("Vist på agendaskærm"), 
-                                                   plotlyOutput(ns("meetingrooms_agendascreen_plot"))
+                                                   h4("Fordelingen af mødelængde"),
+                                                   plotlyOutput(ns("plot_meetingrooms_overview"))
+                                                   
                                             )
                                        )
                                      ),
@@ -78,6 +79,11 @@ meetingroomsTabPanelUI <- function(id) {
                                                    h4("Booker top 10"),
                                                    plotlyOutput(ns("plot_pie_meetingrooms_booker"))
                                             )
+                                      ),
+                                      column(12,tags$hr()),
+                                      column(width = 12,
+                                             h4("Vist på agendaskærm"), 
+                                             plotlyOutput(ns("meetingrooms_agendascreen_plot"))
                                       )
                                      
                                 )
@@ -181,6 +187,39 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
   )
   
   callModule(csvDownload, "meetingsrooms", data = meetingrooms_overview(), name = "meetingrooms")
+  
+  meetingrooms_overview_box <- reactive({
+    meetingrooms_overview <- meetingrooms %>%
+      filter(startdate > input$dateRangeMeetingrooms[1] & startdate < input$dateRangeMeetingrooms[2]) %>%
+      filter(if(input$timeslot == "1") hour(startdate) < 16 else if(input$timeslot == "2") hour(startdate) >= 16 else TRUE) %>%
+      mutate(tid = 	as.integer((enddate - startdate))) %>%
+      select(startdate, sted, tid) #%>%
+      #spread(sted, tid) 
+  })
+  
+  output$plot_meetingrooms_overview <- renderPlotly({
+    meetingrooms_overview_box_11 <- meetingrooms_overview_box() %>% filter(sted == 'Lokale 1.1')
+    meetingrooms_overview_box_12 <- meetingrooms_overview_box() %>% filter(sted == 'Lokale 1.2')
+    meetingrooms_overview_box_21 <- meetingrooms_overview_box() %>% filter(sted == 'Lokale 2.1')
+    meetingrooms_overview_box_22 <- meetingrooms_overview_box() %>% filter(sted == 'Lokale 2.2')
+    meetingrooms_overview_box_31 <- meetingrooms_overview_box() %>% filter(sted == 'Lokale 3.1')
+    meetingrooms_overview_box_32 <- meetingrooms_overview_box() %>% filter(sted == 'Lokale 3.2')
+    meetingrooms_overview_box_33 <- meetingrooms_overview_box() %>% filter(sted == 'Lokale 3.3')
+    meetingrooms_overview_box_34 <- meetingrooms_overview_box() %>% filter(sted == 'Lokale 3.4')
+    meetingrooms_overview_box_35 <- meetingrooms_overview_box() %>% filter(sted == 'Lokale 3.5')
+    meetingrooms_overview_box_36 <- meetingrooms_overview_box() %>% filter(sted == 'Lokale 3.6')
+    plot_ly(y = meetingrooms_overview_box_11$tid, type = "box", name = meetingrooms_overview_box_11$sted) %>%
+      add_trace(y = meetingrooms_overview_box_12$tid, name = meetingrooms_overview_box_12$sted) %>%
+      add_trace(y = meetingrooms_overview_box_21$tid, name = meetingrooms_overview_box_21$sted) %>%
+      add_trace(y = meetingrooms_overview_box_22$tid, name = meetingrooms_overview_box_22$sted) %>%
+      add_trace(y = meetingrooms_overview_box_31$tid, name = meetingrooms_overview_box_31$sted) %>%
+      add_trace(y = meetingrooms_overview_box_32$tid, name = meetingrooms_overview_box_32$sted) %>%
+      add_trace(y = meetingrooms_overview_box_33$tid, name = meetingrooms_overview_box_33$sted) %>%
+      add_trace(y = meetingrooms_overview_box_34$tid, name = meetingrooms_overview_box_34$sted) %>%
+      add_trace(y = meetingrooms_overview_box_35$tid, name = meetingrooms_overview_box_35$sted) %>%
+      add_trace(y = meetingrooms_overview_box_36$tid, name = meetingrooms_overview_box_36$sted) %>%
+      layout(yaxis = list(title = "Minutter"))
+  })
   
   # Vist på agendaskærm
   output$meetingrooms_agendascreen_plot <- renderPlotly({
