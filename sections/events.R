@@ -37,11 +37,11 @@ eventsTabPanelUI <- function(id) {
                                                           #   selected = list("2017"),
                                                           #   choices = list("2018","2017","2016","2015","2014"))
                                                    #),
-                                                   column(width = 6,
+                                                   column(width = 12, class = "col-lg-6",
                                                           h4("Arrangementer pr. måned"),
                                                           p("Graferne viser antal afholdte arrangementer, samt antal deltagere fordelt pr. måned. Det er muligt at vælge år via ”vælgeren” i venstre side – Det er også muligt at sammenligne to år via valg i drop down menuer"),
                                                           plotlyOutput(ns("eventsmonthplot"))),
-                                                   column(width = 6,
+                                                   column(width = 12, class = "col-lg-6",
                                                           h4("Deltagere pr. måned"),
                                                           p("Antal deltagere pr. måned de sidste 5 år"),
                                                           plotlyOutput(ns("eventsparticipantmonthplot")))
@@ -67,17 +67,17 @@ eventsTabPanelUI <- function(id) {
                                             selectInput(ns("year"), "",c('Alle','2013','2014','2015','2016','2017'))
                                      ),
                                      column(10,
-                                            column(width = 4,
+                                            column(width = 6, class = "col-lg-4",
                                                    h4("Arrangementer børn/voksen"),
                                                    p("Antal arrangementer målrettet hhv. børn og voksne i perioden"),
                                                    plotlyOutput(ns("eventsmaalgruppeplot"))
                                             ),
-                                            column(width = 4,
+                                            column(width = 6, class = "col-lg-4",
                                                    h4("Kategori"),
                                                    p("Antal arrangementer målrettet hhv. arrangementer og læring/undervisning i perioden"),
                                                    plotlyOutput(ns("eventskategoriplot"))
                                             ),
-                                            column(width = 4,
+                                            column(width = 12, class = "col-lg-4",
                                                    h4("Sted"),
                                                    p("Antal arrangementer på de enkelte biblioteker i perioden"),
                                                    plotlyOutput(ns("eventsstedplot"))
@@ -225,7 +225,7 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
   output$eventsmaalgruppeplot <- renderPlotly({
     if (input$year != "Alle") {eventsmaalgruppe <- eventsmaalgruppe %>% filter(year == input$year) %>% mutate(colors = if_else(maalgruppe=="Voksne", color1, color2))}
     if (input$year == "Alle") {eventsmaalgruppe <- eventsmaalgruppe %>% filter(year %in% c("2013","2014","2015","2016","2017")) %>% mutate(colors = if_else(maalgruppe=="Voksne", color1, color2))}
-    plot_ly(eventsmaalgruppe, labels = ~maalgruppe, values = ~count, marker = list(colors = ~colors, line = list(color = '#FFFFFF', width = 1))) %>%
+    plot_ly(eventsmaalgruppe, labels = ~maalgruppe, values = ~count, textfont = list(color = '#FFFFFF'), marker = list(colors = ~colors, line = list(color = '#FFFFFF', width = 1))) %>%
       add_pie(hole = 0.0) %>%
       layout(showlegend = T,
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),

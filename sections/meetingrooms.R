@@ -40,12 +40,12 @@ meetingroomsTabPanelUI <- function(id) {
                                               selectInput(ns("timeslot"), "Vælg tidspunkt på dagen",c('Indenfor arbejdstid, indtil kl. 16' = "1",'Udenfor arbejdstid, efter kl. 16' = "2",'Hele åbningstiden' = "3")) 
                                        ),
                                        column(width = 10,   
-                                            column(width = 6,
+                                            column(width = 12, class = "col-lg-6",
                                                    h4("Oversigtstabel"),
                                                    tableOutput(ns("tablemeetingrooms_overview")),
                                                    csvDownloadUI(ns("meetingsrooms"))
                                             ),
-                                            column(width = 6,
+                                            column(width = 12, class = "col-lg-6",
                                                    h4("Fordelingen af mødelængde"),
                                                    plotlyOutput(ns("plot_meetingrooms_overview"))
                                                    
@@ -71,11 +71,11 @@ meetingroomsTabPanelUI <- function(id) {
                                                    
                                                    ),
                                       column(width = 10,
-                                            column(width = 6,
+                                            column(width = 12, class = "col-lg-6",
                                                    h4("Booker top 10"),
                                                    tableOutput(ns("table_meetingrooms_booker"))
                                             ),
-                                            column(width = 6,
+                                            column(width = 12, class = "col-lg-6",
                                                    h4("Booker top 10"),
                                                    plotlyOutput(ns("plot_pie_meetingrooms_booker"))
                                             )
@@ -178,8 +178,8 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
              else if (input$timeslot == "2") procenten(sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*5)))
              else procenten(sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*13)))
       ) %>%
-      rename(Lokalenummer = sted, Antal = count, Median =	Median2, "Total(t)" =	sum, Belægningsprocent = timediff ) %>%
-      select(Lokalenummer, Antal, Median, "Total(t)", Belægningsprocent)
+      rename(Lokalenummer = sted, Antal = count, "Gns. mødevarighed" =	Median2, "Total(t)" =	sum, Belægningsprocent = timediff ) %>%
+      select(Lokalenummer, Antal, "Gns. mødevarighed", Belægningsprocent)
   })
   
   output$tablemeetingrooms_overview <- renderTable(
@@ -228,7 +228,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
       select(show_on_screen) %>%
       group_by(show_on_screen) %>%
       summarise(count = n())
-    plot_ly(meetingrooms_agendascreen, labels = c("Ikke vist på skærm","Vist på skærm"), values = ~count, marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
+    plot_ly(meetingrooms_agendascreen, labels = c("Ikke vist på skærm","Vist på skærm"), values = ~count, textfont = list(color = '#FFFFFF'), marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
       add_pie(hole = 0.6) %>%
       layout(showlegend = T,
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
@@ -265,7 +265,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
   output$plot_pie_meetingrooms_booker <- renderPlotly({
     meetingrooms_booker <- meetingrooms_booker() %>%
       mutate(bookingprocent = (sum/totalsum))
-    plot_ly(meetingrooms_booker, labels = ~enhed, values = ~bookingprocent, marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
+    plot_ly(meetingrooms_booker, labels = ~enhed, values = ~bookingprocent, textfont = list(color = '#FFFFFF'), marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
       add_pie() %>%
       layout(showlegend = T,
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),

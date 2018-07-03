@@ -952,11 +952,11 @@
 						x="-134.94" dy="1.2em" class="st5">arrangementer, lokaler</tspan></text>		</g>
 		<g id="shape1127-466" v:mID="1127" v:groupContext="shape" transform="translate(502.866,-24.9449)">
 			<title>Ark.1127</title>
-			<desc>KLADDE</desc>
+			
 			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
 			<v:textRect cx="92.9764" cy="820.63" width="185.96" height="42.5197"/>
 			<rect x="0" y="799.37" width="185.953" height="42.5197" class="st23"/>
-			<text x="43.11" y="829.63" class="st30" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/>KLADDE</text>		</g>
+			<text x="43.11" y="829.63" class="st30" v:langID="1030"><v:paragraph v:horizAlign="1"/><v:tabList/></text>		</g>
 		<g id="shape1128-469" v:mID="1128" v:groupContext="shape" v:layerMember="0" transform="translate(240.945,-310.782)">
 			<title>Dynamisk forbindelse.1128</title>
 			<desc>Ind- og udgående sms’er</desc>

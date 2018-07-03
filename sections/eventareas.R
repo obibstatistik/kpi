@@ -38,11 +38,11 @@ eventareasTabPanelUI <- function(id) {
                                                    )
                                             ),
                                             column(width = 10,
-                                                   column(width = 7,
+                                                   column(width = 12, class = "col-lg-7",
                                                           h4("Oversigtstabel"),
                                                           tableOutput(ns("tablebhus_events_overview")
                                                          )),
-                                                   column(width = 5,
+                                                   column(width = 12, class = "col-lg-5",
                                                            h4("Vist på agendaskærm"), 
                                                            plotlyOutput(ns("bhus_events_agendascreen_plot"))
                                                           )
@@ -59,11 +59,11 @@ eventareasTabPanelUI <- function(id) {
                                      column(width = 12,
                                             column(width = 2),
                                             column(width = 10,
-                                                   column(width= 6,
+                                                   column(width = 12, class = "col-lg-6",
                                                           h4("Booker top 10"),
                                                           tableOutput(ns("table_bhus_events_booker"))
                                                    ),
-                                                   column(width = 6,
+                                                   column(width = 12, class = "col-lg-6",
                                                           h4("Booker top 10"),
                                                           plotlyOutput(ns("plot_pie_eventarea_booker"))
                                                    )
@@ -136,7 +136,7 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
       select(show_on_screen) %>%
       group_by(show_on_screen) %>%
       summarise(count = n())
-    plot_ly(bhus_events_agendascreen, labels = c("Ikke vist på skærm","Vist på skærm"), values = ~count, marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
+    plot_ly(bhus_events_agendascreen, labels = c("Ikke vist på skærm","Vist på skærm"), values = ~count, textfont = list(color = '#FFFFFF'), marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
       add_pie(hole = 0.6) %>%
       layout(showlegend = T,
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
@@ -173,7 +173,7 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
   output$plot_pie_eventarea_booker <- renderPlotly({
     eventarea_booker <- eventarea_booker() %>%
       mutate(bookingprocent = (sum/totalsum))
-    plot_ly(eventarea_booker, labels = ~enhed, values = ~bookingprocent, marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
+    plot_ly(eventarea_booker, labels = ~enhed, values = ~bookingprocent, textfont = list(color = '#FFFFFF'), marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
       add_pie() %>%
       layout(showlegend = T,
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),

@@ -44,12 +44,12 @@ online_odensebibTabPanelUI <- function(id) {
                                      )
                                    ),
                                    fluidRow(          
-                                     column(width = 6,
+                                     column(width = 12, class = "col-lg-6",
                                             h4("Browser"), 
                                             p("Viser hvilken type browser der typisk benyttes til at tilgå odensebib.dk"),
                                             plotlyOutput(ns("ga_browser_plot"))
                                      ),
-                                     column(width = 6,
+                                     column(width = 12, class = "col-lg-6",
                                             h4("Sprog"), 
                                             p("Viser hvilket sprog der er installeret som standard på brugernes enheder."),
                                             p("Det er muligt at vælge dansk til og fra for at fokusere på andre sprog."),
@@ -60,6 +60,7 @@ online_odensebibTabPanelUI <- function(id) {
                           ),
                           tabPanel("Indholdsgrupper",
                                    p("Data fra 22-05-2018"),
+                                   plotOutput(ns('treemap')),
                                    tableOutput(ns('content_groups'))        
                           ),
                           tabPanel("Fokus Netbiblioteket",
@@ -117,7 +118,7 @@ online_odensebibTabPanel <- function(input, output, session) {
   # device
   
   output$ga_device_plot <- renderPlotly({
-    plot_ly(ga_device, labels = ~device, values = ~users, marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
+    plot_ly(ga_device, labels = ~device, values = ~users, textfont = list(color = '#FFFFFF'), marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
       add_pie(hole = 0.6) %>%
       layout(showlegend = T,
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
@@ -240,11 +241,54 @@ online_odensebibTabPanel <- function(input, output, session) {
     mutate(gruppe = ifelse(is.na(content_group), "Andet", content_group)) %>%
     select(gruppe, pageviews) %>%
     group_by(gruppe) %>%
-    summarise(sum = sum(pageviews)) %>%
-    mutate(sum = format(round(as.numeric(sum), 0), nsmall=0, big.mark=".")) %>%
-    arrange(gruppe)
+    summarise(sum = sum(pageviews))
   
-  output$content_groups <- renderTable(ga_path)
+  output$content_groups <- renderTable(
+    ga_path <- ga_path %>%
+      mutate(sum = format(round(as.numeric(sum), 0), nsmall=0, big.mark=".")) %>%
+      arrange(gruppe)  
+  )
+  
+  treemapdata <- reactive({
+    ga_path <- ga_path %>%
+      mutate(
+        overgruppe = case_when(
+          grepl("^Afdelingsside", ga_path$gruppe) ~ "Biblioteker",
+          grepl("^Biblioteker oversigtsiden", ga_path$gruppe) ~ "Biblioteker",
+          grepl("page/feedback", ga_path$gruppe) ~ "Kontaktformularsiden",
+          grepl("page/kontakt-personalet", ga_path$gruppe) ~ "Personale oversigten",
+          grepl("page/pas_paa_biblioteket", ga_path$gruppe) ~ "Borgerservice siden",
+          grepl("^Søgning", ga_path$gruppe) ~ "Materialer",
+          grepl("^Visning", ga_path$gruppe) ~ "Materialer",
+          grepl("^/ting/collection/", ga_path$gruppe) ~ "Visning Værker",
+          grepl("^/ting/object/", ga_path$gruppe) ~ "Visning Objekt",
+          grepl("^/ting/infomedia/", ga_path$gruppe) ~ "Visning Infomedia",
+          grepl("^Bruger", ga_path$gruppe) ~ "Brugerprofil",
+          grepl("^Nyheder", ga_path$gruppe) ~ "Nyheder",
+          grepl("^Arrangementer", ga_path$gruppe) ~ "Arrangementer",
+          grepl("^Adgang nægtet", ga_path$gruppe) ~ "Fejl",
+          grepl("^Ikke fundet", ga_path$gruppe) ~ "Fejl",
+          grepl("^/media/browser", ga_path$gruppe) ~ "Medie browser!",
+          grepl("^/page/netbiblioteket-oversigt", ga_path$gruppe) ~ "Netbiblioteket Oversigt",
+          grepl("^/$", ga_path$gruppe) ~ "Forside",
+          TRUE ~ "Andet"
+        ) 
+      )
+  })
+  
+  output$treemap <- renderPlot(
+    treemap(treemapdata(),
+          index=c("overgruppe","gruppe"),
+          vSize="sum",
+          type="index",
+          fontsize.title=14,
+          title="Treemap"#,
+          #vColor="sum",
+          #palette=terrain.colors(10)
+          )
+    
+  )
+  
   
   #events - outlinks
   

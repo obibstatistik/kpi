@@ -19,9 +19,9 @@ branchplotUI <- function(id, branch) {
 # SERVER
 branchplot <- function(input, output, session, data, branch) {
   output$branchplot <- renderPlotly({
-    data <- data %>% filter(name1 == branch)
+    data <- data %>% filter(name1 == branch) %>% filter(full_date1 < 101)
     plot_ly(data, x = data$full_date1, y = data$loaner_stat_count1 , type = 'bar', name = 'Lånere', marker = list(color = color1)) %>%
-      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Alder'))
+      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Alder', dtick = 20))
   })
 }
 
@@ -114,7 +114,7 @@ usersTabPanel <- function(input, output, session, data, tablename) {
   output$agebranch_plot <- renderPlotly({
     plot_ly(agecitizenloaner, x = agecitizenloaner$full_date1, y = agecitizenloaner$sum, type = 'bar', name = 'Lånere', marker = list(color = color1)) %>%
       add_trace(y = agecitizenloaner$antal, name = 'Borgere i Odense', marker = list(color = color2) ) %>%
-      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Alder', dtick = 1, autotick = FALSE))
+      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Alder', dtick = 20, autotick = FALSE))
   })
   
   callModule(branchplot, id = "kor", data = agebranch, branch = 'Korup Bibliotek')
@@ -158,9 +158,16 @@ usersTabPanel <- function(input, output, session, data, tablename) {
   
   loaners <- loaners %>% 
     group_by(lånertype = location, dato = format(date, format="%Y-%m-%d")) %>%
-    summarise(aktive = sum(ifelse(type == "Aktive", loaner_stat_count, 0)), inaktive = sum(loaner_stat_count)-aktive, total = sum(loaner_stat_count))
-  
+    summarise(aktive = sum(ifelse(type == "Aktive", loaner_stat_count, 0)), total = sum(ifelse(type == "Inaktive", loaner_stat_count, 0))) %>%
+    mutate(inaktive = total-aktive) %>%
+    select(lånertype,dato,aktive,inaktive,total)
+    
   output$tableloaners <- renderTable(loaners)
+  
+  output$active_inactive_plot <- renderPlotly({
+    plot_ly(loaners, x = agecitizenloaner$full_date1, y = agecitizenloaner$sum, type = 'bar', name = 'Lånere', marker = list(color = color1)) %>%
+      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Alder', dtick = 1, autotick = FALSE))
+  })
   
   innerResult <- callModule(csvDownload, "inner2", data = loaners, name = "users")
   

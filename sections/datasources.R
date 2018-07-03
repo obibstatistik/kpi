@@ -21,7 +21,7 @@ datasourcesTabPanelUI <- function(id) {
                                    fluidRow(width = 12,
                                             column(width = 12,
                                                    p("Diagrammet viser alle OBBs datakilder, hvilken type det er og sammenhængen mellem de enkelte kilder."),
-                                                   img(src='DatakildeOversigt.svg', width="1440px", height="100%" )
+                                                   img(src='DatakildeOversigt.svg', width="100%", height="100%" )
                                             )
                                    )
                           ),
