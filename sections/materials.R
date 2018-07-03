@@ -86,9 +86,11 @@ materialsTabPanelUI <- function(id) {
                                                            separator = " - "
                                             )
                                      ),
-                                     column(10,
-                                            #box(width = NULL, plotlyOutput(ns("circ_join_plot"), height = "700px"))
-                                            box(width = 10, plotlyOutput(ns("circ_join_plot"), height = "700px"))
+                                     column(10,height = "900px",
+                                            h4("Cirkulationstal fordelt på biblioteker og afdelingerne Børn/Voksen"),
+                                            p("Grafen viser cirkulationstallet, dvs. gennemstnitligt udlån pr. eksemplar over en given periode."),
+                                            p("Perioden kan vælges i venstre side. Default er et halvt år tilbage (182 dage)"),
+                                            plotlyOutput(ns("circ_join_plot"), height = "700px")
                                      )
                                    )
                           ),
@@ -200,7 +202,6 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
       mutate(akku1 = cumsum(.[[2]]), akku2 = cumsum(.[[3]]), mdr = percent(((.[[3]]-.[[2]])/(.[[2]])), digits = 0)) %>%
       mutate(akk = percent((akku2-akku1)/akku1, digits = 0)) %>%
       select(c(1,2,4,3,5,6,7)) %>%
-      #adorn_totals("row") %>%
       mutate_at(vars(-1), funs(replace(., is.na(.), 0))) %>%
       mutate_at(vars(c(-1,-6,-7)), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark="."))) %>%
       mutate_at(vars(1), funs(danskemåneder(.))) %>%
@@ -268,7 +269,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
                 marker = list(color = color1, 
                               width = 5)) %>%
       
-      layout(title = "Cirkulationstal fordelt på biblioteker",
+      layout(title = "",
              margin = list(l = 200, r = 10, b = 50, t = 50, pad = 10),
              barmode = 'group',
              bargap = 0.4,
