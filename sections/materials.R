@@ -24,7 +24,7 @@ materialsTabPanelUI <- function(id) {
                                      column(2),
                                      column(10,
                                             h4("Samlet udlån på OBB"),
-                                            p("Farvet: fra 1. januar til dags dato i pågældende år. Grå: Året total"),
+                                            p("Grafen viser det samlede udlån på OBB fordelt pr. år. De grå søjler er hele året, men farvede søjler i forgrunden er år til dato. Det er dermed muligt at sammenligne indeværende års udlån med de forrige."),
                                             samedate_barchartOutput(ns('checkouts_samedate_plot'))
                                      ),
                                      column(12,tags$hr()),
@@ -34,6 +34,7 @@ materialsTabPanelUI <- function(id) {
                                      ),
                                      column(10,
                                             h4("Samlet udlån på OBB, hele år"),
+                                            p("Denne graf viser samlet udlån på OBB fordelt pr. år med mulighed for at vælge hovedbibliotekets udlån fra via vælger i venstre side."),
                                             plotlyOutput(ns("checkouts_plot_all"))
                                      ),
                                      column(12,tags$hr()),
@@ -58,7 +59,8 @@ materialsTabPanelUI <- function(id) {
                                             ),
                                             column(10,
                                                    h4("Udlån på OBB"),
-                                                   p("Sammenligning af to år"),
+                                                   p("Tabellen viser det samlede udlån på OBB fordelt pr. måned."),
+                                                   p("Visningen giver mulighed for at sammenligne mellem to forskellige år samt vælge hvilken lokation der ønskes vist. Det er desuden muligt at vælge Hovedbiblioteket til og fra."),
                                                    formattableOutput(ns("checkouts_table"))
                                             )
                                         )
@@ -84,9 +86,11 @@ materialsTabPanelUI <- function(id) {
                                                            separator = " - "
                                             )
                                      ),
-                                     column(10,
-                                            #box(width = NULL, plotlyOutput(ns("circ_join_plot"), height = "700px"))
-                                            box(width = 10, plotlyOutput(ns("circ_join_plot"), height = "700px"))
+                                     column(10,height = "900px",
+                                            h4("Cirkulationstal fordelt på biblioteker og afdelingerne Børn/Voksen"),
+                                            p("Grafen viser cirkulationstallet, dvs. gennemstnitligt udlån pr. eksemplar over en given periode."),
+                                            p("Perioden kan vælges i venstre side. Default er et halvt år tilbage (182 dage)"),
+                                            plotlyOutput(ns("circ_join_plot"), height = "700px")
                                      )
                                    )
                           ),
@@ -265,7 +269,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
                 marker = list(color = color1, 
                               width = 5)) %>%
       
-      layout(title = "Cirkulationstal fordelt på biblioteker",
+      layout(title = "",
              margin = list(l = 200, r = 10, b = 50, t = 50, pad = 10),
              barmode = 'group',
              bargap = 0.4,
