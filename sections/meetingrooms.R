@@ -22,7 +22,8 @@ meetingroomsTabPanelUI <- function(id) {
                                    fluidRow(
                                      column(6,
                                             h4("Mødelokaleoversigt"),
-                                            p("Oversigtstabellen viser aktiviteten i de enkelte mødelokaler i Borgernes Hus for den valgte periode. Tabellen viser ”Antal møder” ”Median” – som er et udtryk for hvor langt møderne i snit varer i de enkelte lokaler, ”Total” – som er den totale tid mødelokalet har været optaget i perioden, samt ”Belægningsprocent” – der viser hvor meget af den totale tid mødelokalet har været booket."),
+                                            p("Oversigtstabellen viser aktiviteten i de enkelte mødelokaler i Borgernes Hus for den valgte periode."),
+                                            p("Tabellen viser ”Antal møder”, ”Gennemsnitlig mødevarighed” – som er et udtryk for hvor langt møderne i snit varer i de enkelte lokaler, ”Total” – som er den totale tid mødelokalet har været optaget i perioden, samt ”Belægningsprocent” – der viser hvor meget af den totale tid mødelokalet har været booket."),
                                             p("Det er muligt at få vist oversigten ”Indenfor arbejdstid (8-16)”, ”udenfor arbejdstid (16-21)” eller ”hele åbningstiden”"),
                                             p("Den totale tid er defineret som ”hverdage mellem 8 og 21”, hvorfor weekender ikke er medtaget."),
                                             p("Grafen viser hvor mange møder, der er blevet vist på agendaskærmen i perioden.")
@@ -178,8 +179,8 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
              else if (input$timeslot == "2") procenten(sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*5)))
              else procenten(sum/((Nweekdays(input$dateRangeMeetingrooms[1], input$dateRangeMeetingrooms[2])*13)))
       ) %>%
-      rename(Lokalenummer = sted, Antal = count, "Gns. mødevarighed" =	Median2, "Total(t)" =	sum, Belægningsprocent = timediff ) %>%
-      select(Lokalenummer, Antal, "Gns. mødevarighed", Belægningsprocent)
+      rename(Lokalenummer = sted, Antal = count, "Gennemsnit" =	Median2, "Total(t)" =	sum, Belægning = timediff ) %>%
+      select(Lokalenummer, Antal, "Gennemsnit", Belægning)
   })
   
   output$tablemeetingrooms_overview <- renderTable(
