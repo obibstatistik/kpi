@@ -1,6 +1,7 @@
 source("global.R")
 source("modules.R")
 source("~/.postpass")
+library(d3treeR)
 
 # UI
 
@@ -94,6 +95,21 @@ materialsTabPanelUI <- function(id) {
                                      )
                                    )
                           ),
+                          tabPanel("Beholdning", 
+                                  fluidRow(
+                                    column(2,
+                                           tags$br(),
+                                           h4("Vælg bibliotek")
+                                    ),
+                                    column(10,height = "900px",
+                                           h4("Beholdning"),
+                                           p("Arealet af hver firkant er proportionelt med antallet af eksemplarer i den viste kategori."),
+                                           p("Af performance-hensyn er kombinationer af afdeling, opstilling, delopstilling med under 10 eksemplarer ikke medtaget (dvs. for at danne visualiseringen inden for rimelig tid)."),
+                                           p("Materialegrupper er heller ikke medtaget af samme årsag."),
+                                           d3tree3Output('tree1', height = "700px", width="100%")
+                                    )
+                                  )
+                          ),
                           tabPanel("Data og dokumentation",
                                    fluidRow(
                                      column(12,
@@ -121,6 +137,12 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
     from cicero.beholdning
     group by branch,dep
     order by branch,dep")
+  beholdning2 <- dbGetQuery(con, "SELECT branch,department dep,locationname loc,sublocation subloc,sum(material_dim_count) antal
+    from cicero.beholdning
+    where branch != 'Odense Arrest'
+    and branch != 'Opsøgende afdeling Odense Bibliotekerne'
+    group by branch,dep,loc,subloc
+    order by branch,dep,loc,subloc")
   dbDisconnect(con)
   
   # Calculate latest date with data
@@ -277,6 +299,33 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
              #width = 800,
              yaxis = list(showgrid = FALSE, showline = FALSE, showticklabels = TRUE, title = "", type = "category"),
              xaxis = list(zeroline = FALSE, showline = FALSE, showticklabels = TRUE, domain = c(0,2), title = "", type = "line", showgrid = TRUE))
+  })
+  
+  beholdning2 <- beholdning2 %>%
+    filter(beholdning2$branch == 'Dalum Bibliotek') %>%
+    group_by(dep,loc,subloc) %>%
+    filter(antal > 9) %>%
+    summarise(antal = sum(antal)) %>%
+    replace_na(list(dep="INGEN AFDELING",loc="INGEN OPSTILLING",subloc="INGEN DELOPSTILLING"))
+  
+  beholdning2$subloc_label <- paste(beholdning2$subloc," ", beholdning2$antal,sep = "\n")
+  
+  output$tree1 <- renderD3tree3({
+    # basic treemap!"#
+    p=treemap(beholdning2,
+              #index=c("branch","dep","loc","subloc"),
+              index=c("dep","loc","subloc_label"),
+              vSize="antal",
+              type="index",
+              align.labels=list(c("center", "center"),c("right", "bottom")) # virker ikke med d3treeR
+              #inflate.labels=TRUE # virker ikke med d3treeR
+              #palette = "Reds",  #Select your color palette from the RColorBrewer presets or make your own.
+              #title="Beholdning på OBB - Drilldown fra biblioteksniveau", #Customize your title
+              #fontsize.title = 14 #Change the font size of the title
+    )    
+    # This makes the treemap interactive
+    # rootname is the title of the plot
+    inter=d3tree2( p ,  rootname = "Beholdning" )
   })
   
 }
