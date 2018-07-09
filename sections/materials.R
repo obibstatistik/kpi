@@ -1,6 +1,7 @@
 source("global.R")
 source("modules.R")
 source("~/.postpass")
+source("functions.R")
 library(d3treeR)
 
 # UI
@@ -101,7 +102,7 @@ materialsTabPanelUI <- function(id) {
                                            tags$br(),
                                            h4("Vælg bibliotek")
                                     ),
-                                    column(10,height = "900px",
+                                    column(10,
                                            h4("Beholdning"),
                                            p("Arealet af hver firkant er proportionelt med antallet af eksemplarer i den viste kategori."),
                                            p("Af performance-hensyn er kombinationer af afdeling, opstilling, delopstilling med under 10 eksemplarer ikke medtaget (dvs. for at danne visualiseringen inden for rimelig tid)."),
@@ -308,20 +309,15 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
     summarise(antal = sum(antal)) %>%
     replace_na(list(dep="INGEN AFDELING",loc="INGEN OPSTILLING",subloc="INGEN DELOPSTILLING"))
   
-  beholdning2$subloc_label <- paste(beholdning2$subloc," ", beholdning2$antal,sep = "\n")
+  beholdning2$subloc_label <- paste(beholdning2$subloc, beholdning2$antal,sep = "\n")
   
   output$tree1 <- renderD3tree3({
     # basic treemap!"#
     p=treemap(beholdning2,
-              #index=c("branch","dep","loc","subloc"),
+              #index=c("dep","loc","subloc"),
               index=c("dep","loc","subloc_label"),
               vSize="antal",
-              type="index",
-              align.labels=list(c("center", "center"),c("right", "bottom")) # virker ikke med d3treeR
-              #inflate.labels=TRUE # virker ikke med d3treeR
-              #palette = "Reds",  #Select your color palette from the RColorBrewer presets or make your own.
-              #title="Beholdning på OBB - Drilldown fra biblioteksniveau", #Customize your title
-              #fontsize.title = 14 #Change the font size of the title
+              type="index" 
     )    
     # This makes the treemap interactive
     # rootname is the title of the plot
