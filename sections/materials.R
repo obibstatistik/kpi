@@ -107,7 +107,7 @@ materialsTabPanelUI <- function(id) {
                                            p("Arealet af hver firkant er proportionelt med antallet af eksemplarer i den viste kategori."),
                                            p("Af performance-hensyn er kombinationer af afdeling, opstilling, delopstilling med under 10 eksemplarer ikke medtaget (dvs. for at danne visualiseringen inden for rimelig tid)."),
                                            p("Materialegrupper er heller ikke medtaget af samme årsag."),
-                                           d3tree3Output('tree1', height = "700px", width="100%")
+                                           d3tree3Output(ns('tree1', height = "700px", width="100%"))
                                     )
                                   )
                           ),
