@@ -17,6 +17,7 @@ source("./sections/events.R")
 source("./sections/eventareas.R")
 source("./sections/frontpage.R")
 source("./sections/materials.R")
+source("./sections/inventory.R")
 source("./sections/meetingrooms.R")
 source("./sections/online_odensebib.R")
 source("./sections/staff.R")
@@ -50,7 +51,8 @@ dashboardPage(
       ),
       menuItem("Materialer", tabName = "pmat", icon = icon("book", lib="font-awesome"),
                menuItem("Udlån", tabName = "physicalmat"),
-               menuItem("Materialeindkøb", tabName = "acquisition")
+               menuItem("Materialeindkøb", tabName = "acquisition"),
+               menuItem("Beholdning", tabName = "inventory")
       ),
       menuItem("E-Ressourcer", tabName = "emat", icon = icon("database", lib="font-awesome"),
                # menuItem("E-Bøger", tabName = "ebooks")#,
@@ -88,6 +90,8 @@ dashboardPage(
       materialsTabPanelUI(id = "materials"),
       # Materials Acquisition
       acquisitionTabPanelUI(id = "acquisition"),
+      # Materials Inventory
+      inventoryTabPanelUI(id = "inventory"),
       # E-Ressources
       eressourcesTabPanelUI(id = "eressources"),
       # Users
