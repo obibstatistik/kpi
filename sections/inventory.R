@@ -125,6 +125,20 @@ inventoryTabPanel <- function(input, output, session, data, tablename) {
     inter=d3tree2( p ,  rootname = "Beholdning" )
   })
   
+  #output$inv_treemap <- renderPlot(
+  #  treemap(treemapdata(),
+  #          index=c("overgruppe","gruppe"),
+  #          vSize="sum",
+  #          type="index",
+  #          fontsize.title=14,
+  #          title="Treemap"#,
+  #          #vColor="sum",
+  #          #palette=terrain.colors(10)
+  #  )
+  #  
+  #)
+  
+  
   # OVERSKRIFT: SAMLINGENS BESKAFFENHED + UNDEROVERSKRIFT VED SUNBURST: SAMLINGENS DIVERSITET/FRAGMENTERING
   
     output$inventory_table <- renderFormattable({
