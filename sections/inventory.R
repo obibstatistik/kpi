@@ -69,7 +69,6 @@ inventoryTabPanelUI <- function(id) {
                                                                                                  "Vollsmose" = "Vollsmose Bibliotek")),
                                              selectInput(ns("inv_compare_niveaufilter"),"Vælg beholdningsniveau:",c("afdeling","opstilling","delopstilling","materialetype")),
                                              tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),
-                                             #h4("Vælg bibliotek at sammenligne med"),
                                              selectInput(ns("inv_compare2_bibfilter"),"Vælg bibliotek til sammenligning:",c(
                                                                                                   "Bolbro" = "Bolbro Bibliotek",
                                                                                                   "Dalum" = "Dalum Bibliotek",
@@ -83,10 +82,9 @@ inventoryTabPanelUI <- function(id) {
                                       ),
                                       column(10,
                                              h4("Beholdning"),
-                                             p("Arealet af hver firkant er proportionelt med antallet af eksemplarer i den viste kategori."),
-                                             p("Af performance-hensyn er kombinationer af afdeling, opstilling, delopstilling med under 10 eksemplarer ikke medtaget (dvs. for at danne visualiseringen inden for rimelig tid)."),
+                                             p("Brug denne visualisering til at få et overblik over sammensætningen af samlingen på et enkelt bibliotek eller sammenlign til at sammenligne to biblioteker med hinanden"),
+                                             p("Arealet af hver firkant er proportionelt med antallet af eksemplarer i den viste kategori. Antallet er desuden angivet i hver boks"),
                                              p("Materialegrupper (tidl. materialesamlinger/udlånsregler) er ikke medtaget, da de ikke forekommer i datagrundlaget"),
-                                             #d3tree3Output(ns('tree1'), height = "700px", width="100%")
                                              plotOutput(ns("inv_treemap_compare1")),
                                              plotOutput(ns("inv_treemap_compare2"))
                                       )
@@ -134,34 +132,21 @@ inventoryTabPanel <- function(input, output, session, data, tablename) {
       group_by_at(input$inv_compare_niveaufilter) %>%
       #filter(antal > 9) %>%
       summarise(antal = sum(antal)) %>%
+      replace_na(list(afdeling="INGEN AFDELING",opstilling="INGEN OPSTILLING",delopstilling="INGEN DELOPSTILLING")) %>%
       rename("niveau" = names(.)[1]) %>%
-      mutate(kasse_label = paste(niveau, antal,sep = "\n")) %>%
-      replace_na(list(afdeling="INGEN AFDELING",opstilling="INGEN OPSTILLING",delopstilling="INGEN DELOPSTILLING"))
+      mutate(kasse_label = paste(niveau, antal,sep = "\n"))
   })
   
   treemapdata2 <- reactive({
     behold_compare2 <- beholdning2 %>%
       filter(beholdning2$bibliotek == input$inv_compare2_bibfilter) %>%
       group_by_at(input$inv_compare_niveaufilter) %>%
-      #group_by(delopstilling) %>%
       #filter(antal > 9) %>%
       summarise(antal = sum(antal)) %>%
+      replace_na(list(afdeling="INGEN AFDELING",opstilling="INGEN OPSTILLING",delopstilling="INGEN DELOPSTILLING")) %>%
       rename("niveau" = names(.)[1]) %>%
-      #mutate(kasse_label = paste(input$inv_compare_niveaufilter, antal,sep = "\n")) %>%
-      mutate(kasse_label = paste(niveau, antal,sep = "\n")) %>%
-      #mutate(kasse_label = paste(delopstilling, antal,sep = "\n")) %>%
-      replace_na(list(afdeling="INGEN AFDELING",opstilling="INGEN OPSTILLING",delopstilling="INGEN DELOPSTILLING"))
+      mutate(kasse_label = paste(niveau, antal,sep = "\n"))
   })
-  
-  #beholdning2 <- beholdning2 %>%
-  #  filter(beholdning2$branch == 'Dalum Bibliotek') %>%
-  #  group_by(dep,loc,subloc) %>%
-  #  #filter(antal > 9) %>%
-  #  summarise(antal = sum(antal)) %>%
-  #  replace_na(list(dep="INGEN AFDELING",loc="INGEN OPSTILLING",subloc="INGEN DELOPSTILLING"))
-  
-  #behold_compare1$subloc_label <- paste(behold_compare1$subloc, behold_compare1$antal,sep = "\n")
-  #behold_compare2$subloc_label <- paste(behold_compare2$subloc, behold_compare2$antal,sep = "\n")
   
   output$inv_treemap_compare1 <- renderPlot(
     treemap(treemapdata1(),
@@ -181,21 +166,6 @@ inventoryTabPanel <- function(input, output, session, data, tablename) {
               title =""
     )   
   )
-    # This makes the treemap interactive
-    # rootname is the title of the plot
-    #inter=d3tree2( p ,  rootname = "Beholdning" )
-  
-  #output$inv_treemap <- renderPlot(
-  #  treemap(treemapdata(),
-  #          index=c("overgruppe","gruppe"),
-  #          vSize="sum",
-  #          type="index",
-  #          fontsize.title=14,
-  #          title="Treemap"#,
-  #          #vColor="sum",
-  #          #palette=terrain.colors(10)
-  #  )
-  #)
   
   # OVERSKRIFT: SAMLINGENS BESKAFFENHED + UNDEROVERSKRIFT VED SUNBURST: SAMLINGENS DIVERSITET/FRAGMENTERING
   
