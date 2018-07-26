@@ -6,12 +6,12 @@ library(d3treeR)
 
 drv <- dbDriver("PostgreSQL")
 con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
-beholdning2 <- dbGetQuery(con, "SELECT branch,department dep,locationname loc,sublocation subloc,sum(material_dim_count) antal
+beholdning2 <- dbGetQuery(con, "SELECT branch bibliotek,department afdeling,locationname opstilling,sublocation delopstilling,materialtypename materialetype,sum(material_dim_count) antal
     from cicero.beholdning
     where branch != 'Odense Arrest'
     and branch != 'Opsøgende afdeling Odense Bibliotekerne'
-    group by branch,dep,loc,subloc
-    order by branch,dep,loc,subloc")
+    group by bibliotek,afdeling,opstilling,delopstilling,materialetype
+    order by bibliotek,afdeling,opstilling,delopstilling,materialetype")
 beholdning_alt <- dbGetQuery(con, "SELECT case 
       when branch = 'Bolbro Bibliotek' then 'Bolbro' 
       when branch = 'Dalum Bibliotek' then 'Dalum' 
@@ -55,15 +55,40 @@ inventoryTabPanelUI <- function(id) {
                                   fluidRow(
                                     column(12,
                                       column(2,
-                                             tags$br(),
-                                             h4("Vælg bibliotek")
+                                             tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),
+                                             #h4("Vælg bibliotek"),
+                                             selectInput(ns("inv_compare1_bibfilter"),"Vælg bibliotek:",c(
+                                                                                                 "Bolbro" = "Bolbro Bibliotek",
+                                                                                                 "Dalum" = "Dalum Bibliotek",
+                                                                                                 "Højby" = "Højby Bibliotek",
+                                                                                                 "Historiens Hus" = "Lokalhistorisk Bibliotek",
+                                                                                                 "Holluf Pile" = "Holluf Pile Bibliotek",
+                                                                                                 "Borgernes Hus" = "Odense Hovedbibliotek",
+                                                                                                 "Korup" = "Korup Bibliotek",
+                                                                                                 "Tarup" = "Tarup Bibliotek",
+                                                                                                 "Vollsmose" = "Vollsmose Bibliotek")),
+                                             selectInput(ns("inv_compare_niveaufilter"),"Vælg beholdningsniveau:",c("afdeling","opstilling","delopstilling","materialetype")),
+                                             tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),
+                                             #h4("Vælg bibliotek at sammenligne med"),
+                                             selectInput(ns("inv_compare2_bibfilter"),"Vælg bibliotek til sammenligning:",c(
+                                                                                                  "Bolbro" = "Bolbro Bibliotek",
+                                                                                                  "Dalum" = "Dalum Bibliotek",
+                                                                                                  "Højby" = "Højby Bibliotek",
+                                                                                                  "Historiens Hus" = "Lokalhistorisk Bibliotek",
+                                                                                                  "Holluf Pile" = "Holluf Pile Bibliotek",
+                                                                                                  "Borgernes Hus" = "Odense Hovedbibliotek",
+                                                                                                  "Korup" = "Korup Bibliotek",
+                                                                                                  "Tarup" = "Tarup Bibliotek",
+                                                                                                  "Vollsmose" = "Vollsmose Bibliotek"))
                                       ),
                                       column(10,
                                              h4("Beholdning"),
                                              p("Arealet af hver firkant er proportionelt med antallet af eksemplarer i den viste kategori."),
                                              p("Af performance-hensyn er kombinationer af afdeling, opstilling, delopstilling med under 10 eksemplarer ikke medtaget (dvs. for at danne visualiseringen inden for rimelig tid)."),
                                              p("Materialegrupper (tidl. materialesamlinger/udlånsregler) er ikke medtaget, da de ikke forekommer i datagrundlaget"),
-                                             d3tree3Output(ns('tree1'), height = "700px", width="100%")
+                                             #d3tree3Output(ns('tree1'), height = "700px", width="100%")
+                                             plotOutput(ns("inv_treemap_compare1")),
+                                             plotOutput(ns("inv_treemap_compare2"))
                                       )
                                     ),
                                     column(12,tags$hr()),
@@ -103,27 +128,62 @@ inventoryTabPanelUI <- function(id) {
 
 inventoryTabPanel <- function(input, output, session, data, tablename) {
   
-  beholdning2 <- beholdning2 %>%
-    filter(beholdning2$branch == 'Dalum Bibliotek') %>%
-    group_by(dep,loc,subloc) %>%
-    filter(antal > 9) %>%
-    summarise(antal = sum(antal)) %>%
-    replace_na(list(dep="INGEN AFDELING",loc="INGEN OPSTILLING",subloc="INGEN DELOPSTILLING"))
+  treemapdata1 <- reactive({
+    behold_compare1 <- beholdning2 %>%
+      filter(beholdning2$bibliotek == input$inv_compare1_bibfilter) %>%
+      group_by_at(input$inv_compare_niveaufilter) %>%
+      #filter(antal > 9) %>%
+      summarise(antal = sum(antal)) %>%
+      rename("niveau" = names(.)[1]) %>%
+      mutate(kasse_label = paste(niveau, antal,sep = "\n")) %>%
+      replace_na(list(afdeling="INGEN AFDELING",opstilling="INGEN OPSTILLING",delopstilling="INGEN DELOPSTILLING"))
+  })
   
-  beholdning2$subloc_label <- paste(beholdning2$subloc, beholdning2$antal,sep = "\n")
+  treemapdata2 <- reactive({
+    behold_compare2 <- beholdning2 %>%
+      filter(beholdning2$bibliotek == input$inv_compare2_bibfilter) %>%
+      group_by_at(input$inv_compare_niveaufilter) %>%
+      #group_by(delopstilling) %>%
+      #filter(antal > 9) %>%
+      summarise(antal = sum(antal)) %>%
+      rename("niveau" = names(.)[1]) %>%
+      #mutate(kasse_label = paste(input$inv_compare_niveaufilter, antal,sep = "\n")) %>%
+      mutate(kasse_label = paste(niveau, antal,sep = "\n")) %>%
+      #mutate(kasse_label = paste(delopstilling, antal,sep = "\n")) %>%
+      replace_na(list(afdeling="INGEN AFDELING",opstilling="INGEN OPSTILLING",delopstilling="INGEN DELOPSTILLING"))
+  })
   
-  output$tree1 <- renderD3tree3({
-    # basic treemap!"#
-    p=treemap(beholdning2,
-              #index=c("dep","loc","subloc"),
-              index=c("dep","loc","subloc_label"),
+  #beholdning2 <- beholdning2 %>%
+  #  filter(beholdning2$branch == 'Dalum Bibliotek') %>%
+  #  group_by(dep,loc,subloc) %>%
+  #  #filter(antal > 9) %>%
+  #  summarise(antal = sum(antal)) %>%
+  #  replace_na(list(dep="INGEN AFDELING",loc="INGEN OPSTILLING",subloc="INGEN DELOPSTILLING"))
+  
+  #behold_compare1$subloc_label <- paste(behold_compare1$subloc, behold_compare1$antal,sep = "\n")
+  #behold_compare2$subloc_label <- paste(behold_compare2$subloc, behold_compare2$antal,sep = "\n")
+  
+  output$inv_treemap_compare1 <- renderPlot(
+    treemap(treemapdata1(),
+              #index=c("delopstilling"),
+              index=c("kasse_label"),
               vSize="antal",
-              type="index" 
-    )    
+              type="index",
+              title =""
+      )
+    )
+  
+  output$inv_treemap_compare2 <- renderPlot(
+    treemap(treemapdata2(),
+              index=c("kasse_label"),
+              vSize="antal",
+              type="index",
+              title =""
+    )   
+  )
     # This makes the treemap interactive
     # rootname is the title of the plot
-    inter=d3tree2( p ,  rootname = "Beholdning" )
-  })
+    #inter=d3tree2( p ,  rootname = "Beholdning" )
   
   #output$inv_treemap <- renderPlot(
   #  treemap(treemapdata(),
@@ -135,9 +195,7 @@ inventoryTabPanel <- function(input, output, session, data, tablename) {
   #          #vColor="sum",
   #          #palette=terrain.colors(10)
   #  )
-  #  
   #)
-  
   
   # OVERSKRIFT: SAMLINGENS BESKAFFENHED + UNDEROVERSKRIFT VED SUNBURST: SAMLINGENS DIVERSITET/FRAGMENTERING
   

@@ -46,7 +46,7 @@ materialsTabPanelUI <- function(id) {
                                                    # TODO hvad med Arresten (er det med??) og hvad med opsøgende (skal den ikke med ind under hb?? eller er den tom for udlån?)
                                                    selectInput(ns("checkouts_fromyear"), "Fra:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2015", "2014" = "2014"), as.integer(format(Sys.Date(), "%Y"))-1),
                                                    selectInput(ns("checkouts_toyear"), "Til:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2014", "2014" = "2013"), as.integer(format(Sys.Date(), "%Y"))),
-                                                   selectInput(ns("checkouts_library"), "Filial:", c("Alle" = "all",
+                                                   selectInput(ns("checkouts_library"), "Bibliotek:", c("Alle" = "all",
                                                                                                      "Bolbro" = "Bolbro Bibliotek",
                                                                                                      "Dalum" = "Dalum Bibliotek",
                                                                                                      "Højby" = "Højby Bibliotek",
