@@ -82,7 +82,7 @@ inventoryTabPanelUI <- function(id) {
                                       ),
                                       column(10,
                                              h4("Beholdning"),
-                                             p("Brug denne visualisering til at få et overblik over sammensætningen af samlingen på et enkelt bibliotek eller sammenlign til at sammenligne to biblioteker med hinanden"),
+                                             p("Brug denne visualisering til at få et overblik over sammensætningen af samlingen på et enkelt bibliotek eller til at sammenligne to biblioteker med hinanden"),
                                              p("Arealet af hver firkant er proportionelt med antallet af eksemplarer i den viste kategori. Antallet er desuden angivet i hver boks"),
                                              p("Materialegrupper (tidl. materialesamlinger/udlånsregler) er ikke medtaget, da de ikke forekommer i datagrundlaget"),
                                              plotOutput(ns("inv_treemap_compare1")),
@@ -134,7 +134,8 @@ inventoryTabPanel <- function(input, output, session, data, tablename) {
       summarise(antal = sum(antal)) %>%
       replace_na(list(afdeling="INGEN AFDELING",opstilling="INGEN OPSTILLING",delopstilling="INGEN DELOPSTILLING")) %>%
       rename("niveau" = names(.)[1]) %>%
-      mutate(kasse_label = paste(niveau, antal,sep = "\n"))
+      # tilføj en label til hver kasse med beholdningsniveauets navn og antal eksemplarer
+      mutate(kasse_label = paste(niveau, format(round(as.numeric(antal), 0), nsmall=0, big.mark="."),sep = "\n"))
   })
   
   treemapdata2 <- reactive({
@@ -145,7 +146,7 @@ inventoryTabPanel <- function(input, output, session, data, tablename) {
       summarise(antal = sum(antal)) %>%
       replace_na(list(afdeling="INGEN AFDELING",opstilling="INGEN OPSTILLING",delopstilling="INGEN DELOPSTILLING")) %>%
       rename("niveau" = names(.)[1]) %>%
-      mutate(kasse_label = paste(niveau, antal,sep = "\n"))
+      mutate(kasse_label = paste(niveau, format(round(as.numeric(antal), 0), nsmall=0, big.mark="."),sep = "\n"))
   })
   
   output$inv_treemap_compare1 <- renderPlot(
