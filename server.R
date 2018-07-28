@@ -16,6 +16,7 @@ shinyServer(function(input, output) {
   source("./sections/materials.R")
   source("./sections/inventory.R")
   source("./sections/meetingrooms.R")
+  source("./sections/indoor_climate.R")
   source("./sections/online_odensebib.R")
   source("./sections/staff.R")
   source("./sections/users.R")
@@ -58,6 +59,8 @@ shinyServer(function(input, output) {
   callModule(acquisitionTabPanel, id = "acquisition")
   # Materials Inventory
   callModule(inventoryTabPanel, id = "inventory")
+  # Indoor climate 
+  callModule(indoor_climateTabPanel, id = "indoor_climate")
   # E-Ressources 
   callModule(eressourcesTabPanel, id = "eressources")
   # Users

@@ -17,6 +17,7 @@ source("./sections/events.R")
 source("./sections/eventareas.R")
 source("./sections/frontpage.R")
 source("./sections/materials.R")
+source("./sections/indoor_climate.R")
 source("./sections/inventory.R")
 source("./sections/meetingrooms.R")
 source("./sections/online_odensebib.R")
@@ -42,8 +43,8 @@ dashboardPage(
       menuItem("Det fysiske rum", tabName = "space", icon = icon("building", lib="font-awesome"),
                menuItem("Besøgende", tabName = "visits"),
                menuItem("Mødelokaler", tabName = "meetingrooms"),
-               menuItem("Event områder", tabName = "eventareas")#,
-               #menuItem("Smart City", tabName = "smartcity") 
+               menuItem("Event områder", tabName = "eventareas"),
+               menuItem("Indeklima", tabName = "indoor_climate") 
       ),
       menuItem("Online", tabName = "online", icon = icon("laptop", lib="font-awesome"), 
                menuItem("Odensebib.dk", tabName = "odensebib")#,
@@ -92,6 +93,8 @@ dashboardPage(
       acquisitionTabPanelUI(id = "acquisition"),
       # Materials Inventory
       inventoryTabPanelUI(id = "inventory"),
+      # Indoor Climate
+      indoor_climateTabPanelUI(id = "indoor_climate"),
       # E-Ressources
       eressourcesTabPanelUI(id = "eressources"),
       # Users

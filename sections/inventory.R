@@ -46,7 +46,6 @@ inventoryTabPanelUI <- function(id) {
               h3("Beholdning"),
               img(src='icons/materialer_negativ_45x45.png', align = "right", height="46px")
           ),
-          
           fluidRow(
             column(12,
                    tabBox(width = 12,
