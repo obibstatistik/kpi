@@ -18,33 +18,22 @@ device_plotUI <- function(id,device) {
 
 # SERVER
 sensors_plot <- function(input, output, session, data, device, sensor, limits, ticksuffix) {
+  
   output$sensors_plot <- renderPlotly({
     data <- data %>%
       select_("device_id","realtime","dato","hour",.dots = sensor) %>%
+      filter(device_id == device) %>%
       group_by(device_id,dato,hour) %>%
       summarise_at(sensor,mean) %>%
       spread_("dato",sensor) %>%
-      rename("a" = names(.)[3],
-             "b" = names(.)[4],
-             "c" = names(.)[5],
-             "d" = names(.)[6],
-             "e" = names(.)[7],
-             "f" = names(.)[8],
-             "g" = names(.)[9],
-             "h" = names(.)[10]) %>%
-      rowwise() %>% 
-      mutate(avg=mean(c(a,b,c,d,e,f,g,h))) %>%
-      filter(device_id == device)
-    p <- plot_ly(data, x = ~hour, y = ~a, type = 'scatter', line = list(color = 'rgb(210,210,210)', width = 3), mode = 'lines') %>%
+      mutate(avg=rowMeans(.[-1:-2]))
+    
     # Tilføj måledagenes graflinjer:
-      add_trace(y = ~b, line = list(color = 'rgb(220,220,220)', width = 3), mode = 'lines') %>%
-      add_trace(y = ~c, line = list(color = 'rgb(220,220,220)', width = 3), mode = 'lines') %>%
-      add_trace(y = ~d, line = list(color = 'rgb(220,220,220)', width = 3), mode = 'lines') %>%
-      add_trace(y = ~e, line = list(color = 'rgb(220,220,220)', width = 3), mode = 'lines') %>%
-      add_trace(y = ~f, line = list(color = 'rgb(220,220,220)', width = 3), mode = 'lines') %>%
-      add_trace(y = ~g, line = list(color = 'rgb(220,220,220)', width = 3), mode = 'lines') %>%
-      add_trace(y = ~h, line = list(color = 'rgb(220,220,220)', width = 3), mode = 'lines') %>%
-      add_trace(y = ~h, line = list(color = 'rgb(220,220,220)', width = 1), mode = 'lines')
+    p <- plot_ly(data, x = ~hour, y = as.formula(paste0("~`", names(data)[3], "`")), type = 'scatter', line = list(color = 'rgb(210,210,210)', width = 3), mode = 'lines')
+    for(colname in names(data)[4:10]){
+      p <- p %>% 
+        add_trace(y = as.formula(paste0("~`", colname, "`")), name = colname, line = list(color = 'rgb(220,220,220)', width = 3), mode = 'lines')   
+    }
     # Tilføj gennemsnittets graflinje:
     p <- p %>% 
       add_trace(y = ~avg, line = list(color = 'rgb(0,0,0)', width = 4), mode = 'lines')
@@ -53,13 +42,14 @@ sensors_plot <- function(input, output, session, data, device, sensor, limits, t
       for(limit in limits){
         p <- p %>% 
           add_trace(y = limit, line = list(color = 'rgb(100,100,100)', width = 1, dash = 'dash'), mode = 'lines')   
-        # add_trace(y = as.formula(paste0("~`", trace, "`")), name = trace)
       }
     }
     p %>% layout(xaxis = list(title = 'timer på dagen'), yaxis = list (title = '', ticksuffix = ticksuffix), showlegend = FALSE)
   })
+  
 }
 
+# Hent data fra DB:
 drv <- dbDriver("PostgreSQL")
 con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
 sensors <- dbGetQuery(con, "select *
