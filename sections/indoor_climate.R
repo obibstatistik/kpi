@@ -26,11 +26,12 @@ sensors_plot <- function(input, output, session, data, device, sensor, limits, t
       group_by(device_id,dato,hour) %>%
       summarise_at(sensor,mean) %>%
       spread_("dato",sensor) %>%
-      mutate(avg=rowMeans(.[-1:-2]))
+      mutate(avg=rowMeans(.[-1:-2])) %>%
+      select(avg,everything()) # move averages to first column, so we can have an open-ended/dynamic number of measured data columns for later use
     
     # Tilføj måledagenes graflinjer:
-    p <- plot_ly(data, x = ~hour, y = as.formula(paste0("~`", names(data)[3], "`")), type = 'scatter', line = list(color = 'rgb(210,210,210)', width = 3), mode = 'lines')
-    for(colname in names(data)[4:10]){
+    p <- plot_ly(data, x = ~hour, y = as.formula(paste0("~`", names(data)[4], "`")), type = 'scatter', line = list(color = 'rgb(210,210,210)', width = 3), mode = 'lines')
+    for(colname in names(data)[-1:-4]){
       p <- p %>% 
         add_trace(y = as.formula(paste0("~`", colname, "`")), name = colname, line = list(color = 'rgb(220,220,220)', width = 3), mode = 'lines')   
     }
