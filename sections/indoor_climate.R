@@ -17,7 +17,7 @@ device_plotUI <- function(id,device) {
 }
 
 # SERVER
-sensors_plot <- function(input, output, session, data, device, sensor, ticksuffix) {
+sensors_plot <- function(input, output, session, data, device, sensor, limits, ticksuffix) {
   output$sensors_plot <- renderPlotly({
     data <- data %>%
       select_("device_id","realtime","dato","hour",.dots = sensor) %>%
@@ -36,6 +36,7 @@ sensors_plot <- function(input, output, session, data, device, sensor, ticksuffi
       mutate(avg=mean(c(a,b,c,d,e,f,g,h))) %>%
       filter(device_id == device)
     p <- plot_ly(data, x = ~hour, y = ~a, type = 'scatter', line = list(color = 'rgb(210,210,210)', width = 3), mode = 'lines') %>%
+    # Tilføj måledagenes graflinjer:
       add_trace(y = ~b, line = list(color = 'rgb(220,220,220)', width = 3), mode = 'lines') %>%
       add_trace(y = ~c, line = list(color = 'rgb(220,220,220)', width = 3), mode = 'lines') %>%
       add_trace(y = ~d, line = list(color = 'rgb(220,220,220)', width = 3), mode = 'lines') %>%
@@ -43,10 +44,18 @@ sensors_plot <- function(input, output, session, data, device, sensor, ticksuffi
       add_trace(y = ~f, line = list(color = 'rgb(220,220,220)', width = 3), mode = 'lines') %>%
       add_trace(y = ~g, line = list(color = 'rgb(220,220,220)', width = 3), mode = 'lines') %>%
       add_trace(y = ~h, line = list(color = 'rgb(220,220,220)', width = 3), mode = 'lines') %>%
-      add_trace(y = ~h, line = list(color = 'rgb(220,220,220)', width = 1), mode = 'lines') %>%
-      add_trace(y = ~avg, line = list(color = 'rgb(0,0,0)', width = 4), mode = 'lines')  %>%
-      add_trace(y = 21, line = list(color = 'rgb(100,100,100)', width = 1, dash = 'dash'), mode = 'lines') %>%
-      add_trace(y = 25, line = list(color = 'rgb(100,100,10)', width = 1, dash = 'dash'), mode = 'lines')
+      add_trace(y = ~h, line = list(color = 'rgb(220,220,220)', width = 1), mode = 'lines')
+    # Tilføj gennemsnittets graflinje:
+    p <- p %>% 
+      add_trace(y = ~avg, line = list(color = 'rgb(0,0,0)', width = 4), mode = 'lines')
+    # Tilføj snorhøjder (limits) hvis der er nogen:
+    if ( length(limits) != 0) {
+      for(limit in limits){
+        p <- p %>% 
+          add_trace(y = limit, line = list(color = 'rgb(100,100,100)', width = 1, dash = 'dash'), mode = 'lines')   
+        # add_trace(y = as.formula(paste0("~`", trace, "`")), name = trace)
+      }
+    }
     p %>% layout(xaxis = list(title = 'timer på dagen'), yaxis = list (title = '', ticksuffix = ticksuffix), showlegend = FALSE)
   })
 }
@@ -158,31 +167,31 @@ indoor_climateTabPanel <- function(input, output, session, data, tablename) {
     mutate(dato = as.Date(realtime,tz="Europe/Copenhagen")) %>%
     mutate(hour = format(realtime,'%H',tz="Europe/Copenhagen"))
 
-  callModule(sensors_plot, id = 'temp-1BE1CA2D', data = sensors_pr_device, device = '1BE1CA2D', sensor = 'temperature', ticksuffix = '°C ')
-  callModule(sensors_plot, id = 'temp-879D5B2C', data = sensors_pr_device, device = '879D5B2C', sensor = 'temperature', ticksuffix = '°C ')
-  callModule(sensors_plot, id = 'temp-8CAE312E', data = sensors_pr_device, device = '8CAE312E', sensor = 'temperature', ticksuffix = '°C ')
-  callModule(sensors_plot, id = 'temp-20F2A02F', data = sensors_pr_device, device = '20F2A02F', sensor = 'temperature', ticksuffix = '°C ')
-  callModule(sensors_plot, id = 'temp-F358EC2B', data = sensors_pr_device, device = 'F358EC2B', sensor = 'temperature', ticksuffix = '°C ')
-  callModule(sensors_plot, id = 'temp-DDBFED32', data = sensors_pr_device, device = 'DDBFED32', sensor = 'temperature', ticksuffix = '°C ')
+  callModule(sensors_plot, id = 'temp-1BE1CA2D', data = sensors_pr_device, device = '1BE1CA2D', sensor = 'temperature', ticksuffix = '°C ', limits = c(21,25))
+  callModule(sensors_plot, id = 'temp-879D5B2C', data = sensors_pr_device, device = '879D5B2C', sensor = 'temperature', ticksuffix = '°C ', limits = c(21,25))
+  callModule(sensors_plot, id = 'temp-8CAE312E', data = sensors_pr_device, device = '8CAE312E', sensor = 'temperature', ticksuffix = '°C ', limits = c(21,25))
+  callModule(sensors_plot, id = 'temp-20F2A02F', data = sensors_pr_device, device = '20F2A02F', sensor = 'temperature', ticksuffix = '°C ', limits = c(21,25))
+  callModule(sensors_plot, id = 'temp-F358EC2B', data = sensors_pr_device, device = 'F358EC2B', sensor = 'temperature', ticksuffix = '°C ', limits = c(21,25))
+  callModule(sensors_plot, id = 'temp-DDBFED32', data = sensors_pr_device, device = 'DDBFED32', sensor = 'temperature', ticksuffix = '°C ', limits = c(21,25))
 
-  callModule(sensors_plot, id = 'co2-1BE1CA2D', data = sensors_pr_device, device = '1BE1CA2D', sensor = 'co2', ticksuffix = 'ppm ')
-  callModule(sensors_plot, id = 'co2-879D5B2C', data = sensors_pr_device, device = '879D5B2C', sensor = 'co2', ticksuffix = 'ppm ')
-  callModule(sensors_plot, id = 'co2-8CAE312E', data = sensors_pr_device, device = '8CAE312E', sensor = 'co2', ticksuffix = 'ppm ')
-  callModule(sensors_plot, id = 'co2-20F2A02F', data = sensors_pr_device, device = '20F2A02F', sensor = 'co2', ticksuffix = 'ppm ')
-  callModule(sensors_plot, id = 'co2-F358EC2B', data = sensors_pr_device, device = 'F358EC2B', sensor = 'co2', ticksuffix = 'ppm ')
-  callModule(sensors_plot, id = 'co2-DDBFED32', data = sensors_pr_device, device = 'DDBFED32', sensor = 'co2', ticksuffix = 'ppm ')
+  callModule(sensors_plot, id = 'co2-1BE1CA2D', data = sensors_pr_device, device = '1BE1CA2D', sensor = 'co2', ticksuffix = 'ppm ', limits = 1000)
+  callModule(sensors_plot, id = 'co2-879D5B2C', data = sensors_pr_device, device = '879D5B2C', sensor = 'co2', ticksuffix = 'ppm ', limits = 1000)
+  callModule(sensors_plot, id = 'co2-8CAE312E', data = sensors_pr_device, device = '8CAE312E', sensor = 'co2', ticksuffix = 'ppm ', limits = 1000)
+  callModule(sensors_plot, id = 'co2-20F2A02F', data = sensors_pr_device, device = '20F2A02F', sensor = 'co2', ticksuffix = 'ppm ', limits = 1000)
+  callModule(sensors_plot, id = 'co2-F358EC2B', data = sensors_pr_device, device = 'F358EC2B', sensor = 'co2', ticksuffix = 'ppm ', limits = 1000)
+  callModule(sensors_plot, id = 'co2-DDBFED32', data = sensors_pr_device, device = 'DDBFED32', sensor = 'co2', ticksuffix = 'ppm ', limits = 1000)
   
-  callModule(sensors_plot, id = 'fugt-1BE1CA2D', data = sensors_pr_device, device = '1BE1CA2D', sensor = 'humidity', ticksuffix = '% ')
-  callModule(sensors_plot, id = 'fugt-879D5B2C', data = sensors_pr_device, device = '879D5B2C', sensor = 'humidity', ticksuffix = '% ')
-  callModule(sensors_plot, id = 'fugt-8CAE312E', data = sensors_pr_device, device = '8CAE312E', sensor = 'humidity', ticksuffix = '% ')
-  callModule(sensors_plot, id = 'fugt-20F2A02F', data = sensors_pr_device, device = '20F2A02F', sensor = 'humidity', ticksuffix = '% ')
-  callModule(sensors_plot, id = 'fugt-F358EC2B', data = sensors_pr_device, device = 'F358EC2B', sensor = 'humidity', ticksuffix = '% ')
-  callModule(sensors_plot, id = 'fugt-DDBFED32', data = sensors_pr_device, device = 'DDBFED32', sensor = 'humidity', ticksuffix = '% ')
+  callModule(sensors_plot, id = 'fugt-1BE1CA2D', data = sensors_pr_device, device = '1BE1CA2D', sensor = 'humidity', ticksuffix = '% ', limits = '')
+  callModule(sensors_plot, id = 'fugt-879D5B2C', data = sensors_pr_device, device = '879D5B2C', sensor = 'humidity', ticksuffix = '% ', limits = '')
+  callModule(sensors_plot, id = 'fugt-8CAE312E', data = sensors_pr_device, device = '8CAE312E', sensor = 'humidity', ticksuffix = '% ', limits = '')
+  callModule(sensors_plot, id = 'fugt-20F2A02F', data = sensors_pr_device, device = '20F2A02F', sensor = 'humidity', ticksuffix = '% ', limits = '')
+  callModule(sensors_plot, id = 'fugt-F358EC2B', data = sensors_pr_device, device = 'F358EC2B', sensor = 'humidity', ticksuffix = '% ', limits = '')
+  callModule(sensors_plot, id = 'fugt-DDBFED32', data = sensors_pr_device, device = 'DDBFED32', sensor = 'humidity', ticksuffix = '% ', limits = '')
   
-  callModule(sensors_plot, id = 'lyd-1BE1CA2D', data = sensors_pr_device, device = '1BE1CA2D', sensor = 'noise_avg', ticksuffix = 'dBa ')
-  callModule(sensors_plot, id = 'lyd-879D5B2C', data = sensors_pr_device, device = '879D5B2C', sensor = 'noise_avg', ticksuffix = 'dBa ')
-  callModule(sensors_plot, id = 'lyd-8CAE312E', data = sensors_pr_device, device = '8CAE312E', sensor = 'noise_avg', ticksuffix = 'dBa ')
-  callModule(sensors_plot, id = 'lyd-20F2A02F', data = sensors_pr_device, device = '20F2A02F', sensor = 'noise_avg', ticksuffix = 'dBa ')
-  callModule(sensors_plot, id = 'lyd-F358EC2B', data = sensors_pr_device, device = 'F358EC2B', sensor = 'noise_avg', ticksuffix = 'dBa ')
-  callModule(sensors_plot, id = 'lyd-DDBFED32', data = sensors_pr_device, device = 'DDBFED32', sensor = 'noise_avg', ticksuffix = 'dBa ')
+  callModule(sensors_plot, id = 'lyd-1BE1CA2D', data = sensors_pr_device, device = '1BE1CA2D', sensor = 'noise_avg', ticksuffix = 'dBa ', limits = 60)
+  callModule(sensors_plot, id = 'lyd-879D5B2C', data = sensors_pr_device, device = '879D5B2C', sensor = 'noise_avg', ticksuffix = 'dBa ', limits = 60)
+  callModule(sensors_plot, id = 'lyd-8CAE312E', data = sensors_pr_device, device = '8CAE312E', sensor = 'noise_avg', ticksuffix = 'dBa ', limits = 60)
+  callModule(sensors_plot, id = 'lyd-20F2A02F', data = sensors_pr_device, device = '20F2A02F', sensor = 'noise_avg', ticksuffix = 'dBa ', limits = 60)
+  callModule(sensors_plot, id = 'lyd-F358EC2B', data = sensors_pr_device, device = 'F358EC2B', sensor = 'noise_avg', ticksuffix = 'dBa ', limits = 60)
+  callModule(sensors_plot, id = 'lyd-DDBFED32', data = sensors_pr_device, device = 'DDBFED32', sensor = 'noise_avg', ticksuffix = 'dBa ', limits = 60)
 }
