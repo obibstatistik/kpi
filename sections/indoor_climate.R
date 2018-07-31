@@ -73,7 +73,6 @@ sensors_pr_device <- sensors %>%
 
 # create small df for looping through when calling the module's function and ui
 device_ids = sensors %>% distinct(device_id,room)
-#device_ids = c("1BE1CA2D","879D5B2C","8CAE312E","20F2A02F","F358EC2B","DDBFED32")
 
 
 
