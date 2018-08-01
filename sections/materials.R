@@ -1,6 +1,8 @@
 source("global.R")
+source("functions.R")
 source("modules.R")
-source("~/.postpass")
+source("~/.postpass") 
+library(d3treeR)
 
 # UI
 
@@ -44,7 +46,7 @@ materialsTabPanelUI <- function(id) {
                                                    # TODO hvad med Arresten (er det med??) og hvad med opsøgende (skal den ikke med ind under hb?? eller er den tom for udlån?)
                                                    selectInput(ns("checkouts_fromyear"), "Fra:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2015", "2014" = "2014"), as.integer(format(Sys.Date(), "%Y"))-1),
                                                    selectInput(ns("checkouts_toyear"), "Til:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2014", "2014" = "2013"), as.integer(format(Sys.Date(), "%Y"))),
-                                                   selectInput(ns("checkouts_library"), "Filial:", c("Alle" = "all",
+                                                   selectInput(ns("checkouts_library"), "Bibliotek:", c("Alle" = "all",
                                                                                                      "Bolbro" = "Bolbro Bibliotek",
                                                                                                      "Dalum" = "Dalum Bibliotek",
                                                                                                      "Højby" = "Højby Bibliotek",
@@ -77,20 +79,22 @@ materialsTabPanelUI <- function(id) {
                        #  ),
                           tabPanel("Cirkulation", 
                                    fluidRow(
-                                     column(2,
-                                            tags$br(),
-                                            h4("Periode"),
-                                            dateRangeInput(ns('dateRange_circ'),
-                                                           label = 'Vælg periode',
-                                                           start = Sys.Date() - 182, end = Sys.Date(),
-                                                           separator = " - "
-                                            )
-                                     ),
-                                     column(10,height = "900px",
-                                            h4("Cirkulationstal fordelt på biblioteker og afdelingerne Børn/Voksen"),
-                                            p("Grafen viser cirkulationstallet, dvs. gennemstnitligt udlån pr. eksemplar over en given periode."),
-                                            p("Perioden kan vælges i venstre side. Default er et halvt år tilbage (182 dage)"),
-                                            plotlyOutput(ns("circ_join_plot"), height = "700px")
+                                     column(12,
+                                       column(2,
+                                              tags$br(),
+                                              h4("Periode"),
+                                              dateRangeInput(ns('dateRange_circ'),
+                                                             label = 'Vælg periode',
+                                                             start = Sys.Date() - 182, end = Sys.Date(),
+                                                             separator = " - "
+                                              )
+                                       ),
+                                       column(10,height = "900px",
+                                              h4("Cirkulationstal fordelt på biblioteker og afdelingerne Børn/Voksen"),
+                                              p("Grafen viser cirkulationstallet, dvs. gennemstnitligt udlån pr. eksemplar over en given periode."),
+                                              p("Perioden kan vælges i venstre side. Default er et halvt år tilbage (182 dage)"),
+                                              plotlyOutput(ns("circ_join_plot"), height = "700px")
+                                       )
                                      )
                                    )
                           ),

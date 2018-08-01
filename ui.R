@@ -17,6 +17,8 @@ source("./sections/events.R")
 source("./sections/eventareas.R")
 source("./sections/frontpage.R")
 source("./sections/materials.R")
+source("./sections/indoor_climate.R")
+source("./sections/inventory.R")
 source("./sections/meetingrooms.R")
 source("./sections/online_odensebib.R")
 source("./sections/staff.R")
@@ -41,16 +43,23 @@ dashboardPage(
       menuItem("Det fysiske rum", tabName = "space", icon = icon("building", lib="font-awesome"),
                menuItem("Besøgende", tabName = "visits"),
                menuItem("Mødelokaler", tabName = "meetingrooms"),
-               menuItem("Event områder", tabName = "eventareas")#,
-               #menuItem("Smart City", tabName = "smartcity") 
+               menuItem("Event områder", tabName = "eventareas"),
+               menuItem("Indeklima", tabName = "indoor_climate") 
       ),
       menuItem("Online", tabName = "online", icon = icon("laptop", lib="font-awesome"), 
                menuItem("Odensebib.dk", tabName = "odensebib")#,
                #menuItem("Biblioteket App", tabName = "app")
       ),
+<<<<<<< HEAD
       menuItem("Materialer & udlån", tabName = "pmat", icon = icon("book", lib="font-awesome"),
                menuItem("Udlån", tabName = "physicalmat")#,
                #menuItem("Materialeindkøb", tabName = "acquisition")
+=======
+      menuItem("Materialer", tabName = "pmat", icon = icon("book", lib="font-awesome"),
+               menuItem("Udlån", tabName = "physicalmat"),
+               menuItem("Materialeindkøb", tabName = "acquisition"),
+               menuItem("Beholdning", tabName = "inventory")
+>>>>>>> 5f401ee475c0f2f76a0943605aff1be32ea45ae7
       ),
       menuItem("E-Ressourcer", tabName = "emat", icon = icon("database", lib="font-awesome"),
                # menuItem("E-Bøger", tabName = "ebooks")#,
@@ -88,6 +97,10 @@ dashboardPage(
       materialsTabPanelUI(id = "materials"),
       # Materials Acquisition
       acquisitionTabPanelUI(id = "acquisition"),
+      # Materials Inventory
+      inventoryTabPanelUI(id = "inventory"),
+      # Indoor Climate
+      indoor_climateTabPanelUI(id = "indoor_climate"),
       # E-Ressources
       eressourcesTabPanelUI(id = "eressources"),
       # Users
