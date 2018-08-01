@@ -142,12 +142,12 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
   
   # arrangementer pr aar #
   output$eventsyearplot <- renderPlotly({
-    plot_ly(eventsyear, x = eventsyear$year, y = eventsyear$count, type = 'bar', text = text, marker = list(color = color1)) 
+    plot_ly(eventsyear, x = eventsyear$year, y = eventsyear$count, type = 'bar', text = text, marker = list(color = color5)) 
   })
   
   # deltagere pr aar #
   output$eventsparticipantyearplot <- renderPlotly({
-    plot_ly(eventsdeltagere, x = eventsdeltagere$year, y = eventsdeltagere$sum, type = 'bar', text = text, marker = list(color = color1)) 
+    plot_ly(eventsdeltagere, x = eventsdeltagere$year, y = eventsdeltagere$sum, type = 'bar', text = text, marker = list(color = color5)) 
   })
   
   eventspermonth <- reactive({

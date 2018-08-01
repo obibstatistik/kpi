@@ -310,16 +310,16 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
   
   output$tablemeetingrooms_timeslots <- renderFormattable({
     formattable(meetingrooms_timeslots(), list(
-      'Lokale 1.1' = color_tile("white", "CadetBlue"),
-      'Lokale 1.2' = color_tile("white", "CadetBlue"),
-      'Lokale 2.1' = color_tile("white", "CadetBlue"),
-      'Lokale 2.2' = color_tile("white", "CadetBlue"),
-      'Lokale 3.1' = color_tile("white", "CadetBlue"),
-      'Lokale 3.2' = color_tile("white", "CadetBlue"),
-      'Lokale 3.3' = color_tile("white", "CadetBlue"),
-      'Lokale 3.4' = color_tile("white", "CadetBlue"),
-      'Lokale 3.5' = color_tile("white", "CadetBlue"),
-      'Lokale 3.6' = color_tile("white", "CadetBlue")
+      'Lokale 1.1' = color_tile("white", "#aeb051"),
+      'Lokale 1.2' = color_tile("white", "#aeb051"),
+      'Lokale 2.1' = color_tile("white", "#aeb051"),
+      'Lokale 2.2' = color_tile("white", "#aeb051"),
+      'Lokale 3.1' = color_tile("white", "#aeb051"),
+      'Lokale 3.2' = color_tile("white", "#aeb051"),
+      'Lokale 3.3' = color_tile("white", "#aeb051"),
+      'Lokale 3.4' = color_tile("white", "#aeb051"),
+      'Lokale 3.5' = color_tile("white", "#aeb051"),
+      'Lokale 3.6' = color_tile("white", "#aeb051")
     ))
   })
 
@@ -334,7 +334,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
       replace(., is.na(.), "0")
     
     plot_ly(x=meetingrooms_timeslots$sted, y=meetingrooms_timeslots$startTidspunkt, z = meetingrooms_timeslots$count, 
-            colors = colorRamp(c("white", "CadetBlue")), type = "heatmap", showscale = FALSE) %>%
+            colors = colorRamp(c("white", "#aeb051")), type = "heatmap", showscale = FALSE) %>%
             layout(xaxis = list(showgrid = FALSE, dtick = 1, side = 'top'), yaxis = list(showgrid = FALSE, dtick = 1, autorange = 'reversed'))
   })
   
