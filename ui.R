@@ -50,16 +50,14 @@ dashboardPage(
                menuItem("Odensebib.dk", tabName = "odensebib")#,
                #menuItem("Biblioteket App", tabName = "app")
       ),
-<<<<<<< HEAD
       menuItem("Materialer & udlån", tabName = "pmat", icon = icon("book", lib="font-awesome"),
                menuItem("Udlån", tabName = "physicalmat")#,
                #menuItem("Materialeindkøb", tabName = "acquisition")
-=======
+      ),
       menuItem("Materialer", tabName = "pmat", icon = icon("book", lib="font-awesome"),
                menuItem("Udlån", tabName = "physicalmat"),
                menuItem("Materialeindkøb", tabName = "acquisition"),
                menuItem("Beholdning", tabName = "inventory")
->>>>>>> 5f401ee475c0f2f76a0943605aff1be32ea45ae7
       ),
       menuItem("E-Ressourcer", tabName = "emat", icon = icon("database", lib="font-awesome"),
                # menuItem("E-Bøger", tabName = "ebooks")#,
