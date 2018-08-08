@@ -57,21 +57,21 @@ online_odensebibTabPanelUI <- function(id) {
                                      )
                                    )
                                    
-                          ),
-                          tabPanel("Indholdsgrupper",
-                                   p("Data fra 22-05-2018"),
-                                   plotOutput(ns('treemap')),
-                                   tableOutput(ns('content_groups'))        
-                          ),
-                          tabPanel("Fokus Netbiblioteket",
-                                   h4("Antal ud links til e-ressourcer"),
-                                   tableOutput(ns("table_events_category")),
-                                   tableOutput(ns("table_events_action")),
-                                   tableOutput(ns("table_events_clicks")),
-                                   tableOutput(ns("table_events_clicks_na")),
-                                   p("Eressourcer i søgeresulateter"),
-                                   p("Netbiblioteket oversigt og undersider")
-                          )
+                          )#,
+                          # tabPanel("Indholdsgrupper",
+                          #          p("Data fra 22-05-2018"),
+                          #          plotOutput(ns('treemap')),
+                          #          tableOutput(ns('content_groups'))        
+                          # ),
+                          # tabPanel("Fokus Netbiblioteket",
+                          #          h4("Antal ud links til e-ressourcer"),
+                          #          tableOutput(ns("table_events_category")),
+                          #          tableOutput(ns("table_events_action")),
+                          #          tableOutput(ns("table_events_clicks")),
+                          #          tableOutput(ns("table_events_clicks_na")),
+                          #          p("Eressourcer i søgeresulateter"),
+                          #          p("Netbiblioteket oversigt og undersider")
+                          # )
                    )
             ))
   )

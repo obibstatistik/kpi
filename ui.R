@@ -51,12 +51,8 @@ dashboardPage(
                #menuItem("Biblioteket App", tabName = "app")
       ),
       menuItem("Materialer & udlån", tabName = "pmat", icon = icon("book", lib="font-awesome"),
-               menuItem("Udlån", tabName = "physicalmat")#,
-               #menuItem("Materialeindkøb", tabName = "acquisition")
-      ),
-      menuItem("Materialer", tabName = "pmat", icon = icon("book", lib="font-awesome"),
                menuItem("Udlån", tabName = "physicalmat"),
-               menuItem("Materialeindkøb", tabName = "acquisition"),
+               #menuItem("Materialeindkøb", tabName = "acquisition"),
                menuItem("Beholdning", tabName = "inventory")
       ),
       menuItem("E-Ressourcer", tabName = "emat", icon = icon("database", lib="font-awesome"),
