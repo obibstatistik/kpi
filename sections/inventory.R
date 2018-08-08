@@ -42,7 +42,7 @@ inventoryTabPanelUI <- function(id) {
   
   tabItem(tabName = "inventory",
           
-          box(width = 12, solidHeader = TRUE, id="inventoryheader1",
+          box(width = 12, solidHeader = TRUE, id="materialsheader1",
               h3("Beholdning"),
               img(src='icons/materialer_negativ_45x45.png', align = "right", height="46px")
           ),
