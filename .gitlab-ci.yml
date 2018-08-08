@@ -1,0 +1,52 @@
+stages:
+  - build
+  - test
+  - deploy
+
+before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN localhost:5000
+
+build:
+  stage: build
+  script:
+    - docker build --tag localhost:5000/soeb/whitebook:latest .
+    - docker push localhost:5000/soeb/whitebook:latest
+
+test_et_eller_andet:
+  stage: test 
+  script:
+    - echo "TODO"
+
+deploy_stage:
+  stage: deploy
+  script:
+    - echo "Deploying to Staging"
+    - echo "Get dockerhost to fetch whitebook docker image but not start it (that is done by Shinyproxy)"
+    - ssh deployer@dockerstage "docker login gitlab:4567 -u deployer -p deployer && docker pull gitlab:4567/soeb/whitebook"
+  environment:
+    name: staging 
+    url: https://whitebook-stage.fynbib.dk
+  only:
+  - master
+
+deploy_prod:
+  stage: deploy
+  script:
+    - echo "Deploying to Production"
+    - echo "Get dockerhost to fetch whitebook docker image but not start it (that is done by Shinyproxy)"
+    - ssh deployer@dockerhost "docker login gitlab:4567 -u deployer -p deployer && docker pull gitlab:4567/soeb/whitebook"
+  environment:
+    name: production
+    url: https://whitebook.fynbib.dk
+  when: manual
+  only:
+  - master
+
+
+
+
+# NOTER:
+# - VÆR SIKKER PÅ, AT DER IKKE ER MELLEMRUM EFTER HVER LINJE!
+# - selvom man har fx port 4567 på registry external url, så er 5000 åbenbart fortsat den interne!, 4567 er nok til nginx-proxy'en på gitlab?
+# - husk man kan bruge --no-cache i build, fx:        docker build --tag --no-cache localhost:5000/nemo/openldap:latest . 
+# - brug evt.  - docker info  under before_script for at få oplysninger om docker installationen ud i job-kørslen i gitlab
