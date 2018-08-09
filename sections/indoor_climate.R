@@ -51,7 +51,7 @@ sensors_plot <- function(input, output, session, data, device, sensor, limits, t
           add_trace(y = limit, line = list(color = 'rgb(100,100,100)', width = 1, dash = 'dash'), mode = 'lines')   
       }
     }
-    p %>% layout(xaxis = list(title = 'timer på dagen'), yaxis = list (title = '', ticksuffix = ticksuffix), showlegend = FALSE)
+    p %>% layout(title = device, xaxis = list(title = 'timer på dagen'), yaxis = list (title = '', ticksuffix = ticksuffix), showlegend = FALSE)
   })
   
 }
@@ -67,7 +67,7 @@ sensors <- dbGetQuery(con, select_stmt)
 dbDisconnect(con)
 
 sensors_pr_device <- sensors %>%
-  select(device_id,realtime,temperature,humidity,co2,noise_avg,noise_peak) %>%
+  select(room,device_id,realtime,temperature,humidity,co2,noise_avg,noise_peak) %>%
   # Gotta input timezone since dates have datatype 'timestamp with timezone'
   mutate(dato = as.Date(realtime,tz="Europe/Copenhagen")) %>%
   mutate(hour = format(realtime,'%H',tz="Europe/Copenhagen"))
@@ -94,7 +94,9 @@ indoor_climateTabPanelUI <- function(id) {
                           tabPanel("Temperatur", 
                                    fluidRow(
                                      column(12,
-                                            h4("Temperatur i Borgernes Hus"),
+                                            h3("Temperatur i Borgernes Hus"),
+                                            h4(paste0("Målinger mellem ", fromdate, " og ", todate)),
+                                            tags$br(),
                                             p("Nedenstående visualiseringer viser temperaturmålinger fra IC-meter enheder i Borgernes Hus over de senste otte dage, fordelt over timer på dagen"),
                                             p("Den kraftige sorte linje viser temperaturgennemsnittet for de otte dage og de grå linjer er de egentlige målinger, således at maximum og minimumværdier kan aflæses"),
                                             p("De stiplede snorhøjder på 21°C og 25°C angiver det temperaturvindue, som målingerne ifølge SDU bør ligge indenfor"),
@@ -112,6 +114,8 @@ indoor_climateTabPanelUI <- function(id) {
                                    fluidRow(
                                      column(12,
                                             h4("Luftkvalitet i Borgernes Hus"),
+                                            h4(paste0("Målinger mellem ", fromdate, " og ", todate)),
+                                            tags$br(),
                                             p("Nedenstående visualiseringer viser CO2-målinger fra IC-meter enheder i Borgernes Hus over de senste otte dage, fordelt over timer på dagen"),
                                             p("Målingerne er foretaget i ppm (parts per million)"),
                                             p("Den kraftige sorte linje viser temperaturgennemsnittet for de otte dage og de grå linjer er de egentlige målinger, således at maximum og minimumværdier kan aflæses"),
@@ -130,6 +134,8 @@ indoor_climateTabPanelUI <- function(id) {
                                    fluidRow(
                                      column(12,
                                             h4("Luftfugtighed i Borgernes Hus"),
+                                            h4(paste0("Målinger mellem ", fromdate, " og ", todate)),
+                                            tags$br(),
                                             p("Nedenstående visualiseringer viser målinger af luftfugtighed fra IC-meter enheder i Borgernes Hus over de senste otte dage, fordelt over timer på dagen"),
                                             p("Den kraftige sorte linje viser gennemsnittet for de otte dage og de grå linjer er de egentlige målinger, således at maximum og minimumværdier kan aflæses"),
                                             tags$br(),tags$br(),tags$br(),
@@ -146,6 +152,8 @@ indoor_climateTabPanelUI <- function(id) {
                                    fluidRow(
                                      column(12,
                                             h4("Lydniveau i Borgernes Hus"),
+                                            h4(paste0("Målinger mellem ", fromdate, " og ", todate)),
+                                            tags$br(),
                                             p("Nedenstående visualiseringer viser målinger af gennemsnitligt lydniveau fra IC-meter enheder i Borgernes Hus over de senste otte dage, fordelt over timer på dagen"),
                                             p("Den kraftige sorte linje viser gennemsnittet for de otte dage og de grå linjer er de egentlige målinger, således at maximum og minimumværdier kan aflæses"),
                                             tags$br(),tags$br(),tags$br(),
