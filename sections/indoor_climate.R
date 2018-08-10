@@ -5,26 +5,34 @@ source("~/.postpass")
 
 ### Deviceplot MODUL ###
 
-# UI
-device_plotUI <- function(id,room) {
+# Modul UI
+device_plotUI <- function(id) {
   ns <- NS(id)
   tagList(
     column(3,
-           p(room),
+           htmlOutput(ns("sensors_room_title")),
            plotlyOutput(ns("sensors_plot"))
     )
   )
 }
 
-# SERVER -----
-sensors_plot <- function(input, output, session, data, device, sensor, limits, ticksuffix) {
+# Modul SERVER
+sensors_plot <- function(input, output, session, data, device, room, sensor, limits, ticksuffix) {
   
   # Af en eller anden grund skal device kaldes eksplicit her, ellers vil der kun blive outputtet
   # grafer fra een enkelt device (den sidste) uanset at der inputtes forskellige device id'er
   # når denne funktion kaldes længere nede. Dvs. det er ikke nok at device er tilstede i funktionens parameter-variable ovenfor.
   # Det må være en sær scoping/caching/optimerings/reactive issue...
   device
+  room
   
+  # Titlen på chartet (har brugt html output, da chart-titlen i plot_ly() er svær at styre)
+  output$sensors_room_title <- renderUI({
+    x <- paste0("<h4>",room,"<h4>")
+    HTML(x)
+  })
+  
+  # Selve grafen
   output$sensors_plot <- renderPlotly({
     data <- data %>%
       select_("device_id","realtime","dato","hour",.dots = sensor) %>%
@@ -51,7 +59,7 @@ sensors_plot <- function(input, output, session, data, device, sensor, limits, t
           add_trace(y = limit, line = list(color = 'rgb(100,100,100)', width = 1, dash = 'dash'), mode = 'lines')   
       }
     }
-    p %>% layout(title = device, xaxis = list(title = 'timer på dagen'), yaxis = list (title = '', ticksuffix = ticksuffix), showlegend = FALSE)
+    p %>% layout(title = '', xaxis = list(title = 'timer på dagen'), yaxis = list (title = '', ticksuffix = ticksuffix), showlegend = FALSE)
   })
   
 }
@@ -83,7 +91,7 @@ indoor_climateTabPanelUI <- function(id) {
   
   tabItem(tabName = "indoor_climate",
           
-          box(width = 12, solidHeader = TRUE, id="indoor_climate",
+          box(width = 12, solidHeader = TRUE, id="spaceheader3",
               h3("Indeklima"),
               img(src='icons/materialer_negativ_45x45.png', align = "right", height="46px")
           ),
@@ -95,74 +103,74 @@ indoor_climateTabPanelUI <- function(id) {
                                    fluidRow(
                                      column(12,
                                             h3("Temperatur i Borgernes Hus"),
-                                            h4(paste0("Målinger mellem ", fromdate, " og ", todate)),
+                                            h4(paste0("Gennemsnit af målinger mellem ", fromdate, " og ", todate)),
                                             tags$br(),
                                             p("Nedenstående visualiseringer viser temperaturmålinger fra IC-meter enheder i Borgernes Hus over de senste otte dage, fordelt over timer på dagen"),
                                             p("Den kraftige sorte linje viser temperaturgennemsnittet for de otte dage og de grå linjer er de egentlige målinger, således at maximum og minimumværdier kan aflæses"),
                                             p("De stiplede snorhøjder på 21°C og 25°C angiver det temperaturvindue, som målingerne ifølge SDU bør ligge indenfor"),
                                             tags$br(),tags$br(),tags$br(),
-                                            device_plotUI(ns(id = "temp-1BE1CA2D"),room = "1BE1CA2D"),
-                                            device_plotUI(ns(id = "temp-879D5B2C"),room = "879D5B2C"),
-                                            device_plotUI(ns(id = "temp-8CAE312E"),room = "8CAE312E"),
-                                            device_plotUI(ns(id = "temp-20F2A02F"),room = "20F2A02F"),
-                                            device_plotUI(ns(id = "temp-F358EC2B"),room = "F358EC2B"),
-                                            device_plotUI(ns(id = "temp-DDBFED32"),room = "DDBFED32")
+                                            device_plotUI(ns(id = "temp-1BE1CA2D")),
+                                            device_plotUI(ns(id = "temp-879D5B2C")),
+                                            device_plotUI(ns(id = "temp-8CAE312E")),
+                                            device_plotUI(ns(id = "temp-20F2A02F")),
+                                            device_plotUI(ns(id = "temp-F358EC2B")),
+                                            device_plotUI(ns(id = "temp-DDBFED32"))
                                      )
                                    )
                           ),
                           tabPanel("Luftkvalitet (CO2)", 
                                    fluidRow(
                                      column(12,
-                                            h4("Luftkvalitet i Borgernes Hus"),
-                                            h4(paste0("Målinger mellem ", fromdate, " og ", todate)),
+                                            h3("Luftkvalitet i Borgernes Hus"),
+                                            h4(paste0("Gennemsnit af målinger mellem ", fromdate, " og ", todate)),
                                             tags$br(),
                                             p("Nedenstående visualiseringer viser CO2-målinger fra IC-meter enheder i Borgernes Hus over de senste otte dage, fordelt over timer på dagen"),
                                             p("Målingerne er foretaget i ppm (parts per million)"),
                                             p("Den kraftige sorte linje viser temperaturgennemsnittet for de otte dage og de grå linjer er de egentlige målinger, således at maximum og minimumværdier kan aflæses"),
                                             p("Den stiplede snorhøjde på 1.000ppm angiver den mængde CO2, som ifølge SDU maximalt bør være til stede"),
                                             tags$br(),tags$br(),tags$br(),
-                                            device_plotUI(ns(id = "co2-1BE1CA2D"),room = "1BE1CA2D"),
-                                            device_plotUI(ns(id = "co2-879D5B2C"),room = "879D5B2C"),
-                                            device_plotUI(ns(id = "co2-8CAE312E"),room = "8CAE312E"),
-                                            device_plotUI(ns(id = "co2-20F2A02F"),room = "20F2A02F"),
-                                            device_plotUI(ns(id = "co2-F358EC2B"),room = "F358EC2B"),
-                                            device_plotUI(ns(id = "co2-DDBFED32"),room = "DDBFED32")
+                                            device_plotUI(ns(id = "co2-1BE1CA2D")),
+                                            device_plotUI(ns(id = "co2-879D5B2C")),
+                                            device_plotUI(ns(id = "co2-8CAE312E")),
+                                            device_plotUI(ns(id = "co2-20F2A02F")),
+                                            device_plotUI(ns(id = "co2-F358EC2B")),
+                                            device_plotUI(ns(id = "co2-DDBFED32"))
                                      )
                                    )
                           ),
                           tabPanel("Luftfugtighed", 
                                    fluidRow(
                                      column(12,
-                                            h4("Luftfugtighed i Borgernes Hus"),
-                                            h4(paste0("Målinger mellem ", fromdate, " og ", todate)),
+                                            h3("Luftfugtighed i Borgernes Hus"),
+                                            h4(paste0("Gennemsnit af målinger mellem ", fromdate, " og ", todate)),
                                             tags$br(),
                                             p("Nedenstående visualiseringer viser målinger af luftfugtighed fra IC-meter enheder i Borgernes Hus over de senste otte dage, fordelt over timer på dagen"),
                                             p("Den kraftige sorte linje viser gennemsnittet for de otte dage og de grå linjer er de egentlige målinger, således at maximum og minimumværdier kan aflæses"),
                                             tags$br(),tags$br(),tags$br(),
-                                            device_plotUI(ns(id = "fugt-1BE1CA2D"),room = "1BE1CA2D"),
-                                            device_plotUI(ns(id = "fugt-879D5B2C"),room = "879D5B2C"),
-                                            device_plotUI(ns(id = "fugt-8CAE312E"),room = "8CAE312E"),
-                                            device_plotUI(ns(id = "fugt-20F2A02F"),room = "20F2A02F"),
-                                            device_plotUI(ns(id = "fugt-F358EC2B"),room = "F358EC2B"),
-                                            device_plotUI(ns(id = "fugt-DDBFED32"),room = "DDBFED32")
+                                            device_plotUI(ns(id = "fugt-1BE1CA2D")),
+                                            device_plotUI(ns(id = "fugt-879D5B2C")),
+                                            device_plotUI(ns(id = "fugt-8CAE312E")),
+                                            device_plotUI(ns(id = "fugt-20F2A02F")),
+                                            device_plotUI(ns(id = "fugt-F358EC2B")),
+                                            device_plotUI(ns(id = "fugt-DDBFED32"))
                                      )
                                    )
                           ),
                           tabPanel("Lydniveau", 
                                    fluidRow(
                                      column(12,
-                                            h4("Lydniveau i Borgernes Hus"),
-                                            h4(paste0("Målinger mellem ", fromdate, " og ", todate)),
+                                            h3("Lydniveau i Borgernes Hus"),
+                                            h4(paste0("Gennemsnit af målinger mellem ", fromdate, " og ", todate)),
                                             tags$br(),
                                             p("Nedenstående visualiseringer viser målinger af gennemsnitligt lydniveau fra IC-meter enheder i Borgernes Hus over de senste otte dage, fordelt over timer på dagen"),
                                             p("Den kraftige sorte linje viser gennemsnittet for de otte dage og de grå linjer er de egentlige målinger, således at maximum og minimumværdier kan aflæses"),
                                             tags$br(),tags$br(),tags$br(),
-                                            device_plotUI(ns(id = "lyd-1BE1CA2D"),room = "1BE1CA2D"),
-                                            device_plotUI(ns(id = "lyd-879D5B2C"),room = "879D5B2C"),
-                                            device_plotUI(ns(id = "lyd-8CAE312E"),room = "8CAE312E"),
-                                            device_plotUI(ns(id = "lyd-20F2A02F"),room = "20F2A02F"),
-                                            device_plotUI(ns(id = "lyd-F358EC2B"),room = "F358EC2B"),
-                                            device_plotUI(ns(id = "lyd-DDBFED32"),room = "DDBFED32")
+                                            device_plotUI(ns(id = "lyd-1BE1CA2D")),
+                                            device_plotUI(ns(id = "lyd-879D5B2C")),
+                                            device_plotUI(ns(id = "lyd-8CAE312E")),
+                                            device_plotUI(ns(id = "lyd-20F2A02F")),
+                                            device_plotUI(ns(id = "lyd-F358EC2B")),
+                                            device_plotUI(ns(id = "lyd-DDBFED32"))
                                      )
                                    )
                           ),
@@ -180,10 +188,10 @@ indoor_climateTabPanel <- function(input, output, session, data, tablename) {
   
   # Run the plot module for all devices and each of their four sensors:
   for(row in 1:nrow(device_ids)){
-    callModule(sensors_plot, id = paste0("temp-",device_ids[row,"device_id"]), data = sensors_pr_device, device = device_ids[row,"device_id"], sensor = 'temperature', ticksuffix = '°C ', limits = c(21,25))
-    callModule(sensors_plot, id = paste0("co2-",device_ids[row,"device_id"]), data = sensors_pr_device, device = device_ids[row,"device_id"], sensor = 'co2', ticksuffix = 'ppm ', limits = 1000)
-    callModule(sensors_plot, id = paste0("fugt-",device_ids[row,"device_id"]), data = sensors_pr_device, device = device_ids[row,"device_id"], sensor = 'humidity', ticksuffix = '% ', limits = '')
-    callModule(sensors_plot, id = paste0("lyd-",device_ids[row,"device_id"]), data = sensors_pr_device, device = device_ids[row,"device_id"], sensor = 'noise_avg', ticksuffix = 'dBa ', limits = 60)
+    callModule(sensors_plot, id = paste0("temp-",device_ids[row,"device_id"]), data = sensors_pr_device, device = device_ids[row,"device_id"], room = device_ids[row,"room"], sensor = 'temperature', ticksuffix = '°C ', limits = c(21,25))
+    callModule(sensors_plot, id = paste0("co2-",device_ids[row,"device_id"]), data = sensors_pr_device, device =  device_ids[row,"device_id"], room = device_ids[row,"room"], sensor = 'co2', ticksuffix = 'ppm ', limits = 1000)
+    callModule(sensors_plot, id = paste0("fugt-",device_ids[row,"device_id"]), data = sensors_pr_device, device = device_ids[row,"device_id"], room = device_ids[row,"room"], sensor = 'humidity', ticksuffix = '% ', limits = '')
+    callModule(sensors_plot, id = paste0("lyd-",device_ids[row,"device_id"]), data = sensors_pr_device, device =  device_ids[row,"device_id"], room = device_ids[row,"room"], sensor = 'noise_avg', ticksuffix = 'dBa ', limits = 60)
   }
   
 }
