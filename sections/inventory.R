@@ -2,7 +2,6 @@ source("global.R")
 source("functions.R")
 source("modules.R")
 source("~/.postpass") 
-library(d3treeR)
 
 drv <- dbDriver("PostgreSQL")
 con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)

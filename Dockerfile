@@ -26,7 +26,6 @@ RUN R -e "install.packages(c('devtools','markdown','DiagrammeR','RPostgreSQL','s
 
 # install dependencies from github
 RUN R -e "devtools::install_github('sorenb/whitebookviz')"
-RUN R -e "devtools::install_github('timelyportfolio/d3treeR')"
 
 # copy the app to the image
 RUN mkdir /root/whitebook

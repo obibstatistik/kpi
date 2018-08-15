@@ -1,7 +1,6 @@
 library(RPostgreSQL)
 library(shiny)
 library(treemap)
-library(d3treeR)
 library(tidyr)
 library(dplyr)
 library(formattable)
