@@ -59,7 +59,22 @@ sensors_plot <- function(input, output, session, data, device, room, sensor, lim
           add_trace(y = limit, line = list(color = 'rgb(100,100,100)', width = 1, dash = 'dash'), mode = 'lines')   
       }
     }
-    p %>% layout(title = '', xaxis = list(title = 'timer på dagen'), yaxis = list (range = c(15, 35), title = '', dtick = 2, ticksuffix = ticksuffix), showlegend = FALSE)
+    # Switch/case to distinguish between sensors to determine which y-axis range to use
+    yaxis_range <- function(sensor) {
+      switch(sensor,
+             temperature = c(15,35),
+             co2 = c(300,1100),
+             humidity = c(20,70),
+             noise_avg = c(20,65))
+    }
+    yaxis_step <- function(sensor) {
+      switch(sensor,
+             temperature = 2,
+             co2 = 100,
+             humidity = 5,
+             noise_avg = 10)
+      }
+      p %>% layout(title = '', xaxis = list(title = 'timer på dagen'), yaxis = list (range = yaxis_range(sensor), title = '', dtick = yaxis_step(sensor), ticksuffix = ticksuffix), showlegend = FALSE)
   })
   
 }

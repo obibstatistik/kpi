@@ -90,7 +90,7 @@ materialsTabPanelUI <- function(id) {
                                        ),
                                        column(10,height = "900px",
                                               h4("Cirkulationstal fordelt på biblioteker og afdelingerne Børn/Voksen"),
-                                              p("Grafen viser cirkulationstallet, dvs. gennemstnitligt udlån pr. eksemplar over en given periode."),
+                                              p("Grafen viser cirkulationstallet, dvs. gennemsnitligt udlån pr. eksemplar over en given periode."),
                                               p("Perioden kan vælges i venstre side. Default er et halvt år tilbage (182 dage)"),
                                               plotlyOutput(ns("circ_join_plot"), height = "700px")
                                        )
