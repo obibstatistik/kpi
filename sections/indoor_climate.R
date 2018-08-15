@@ -59,7 +59,7 @@ sensors_plot <- function(input, output, session, data, device, room, sensor, lim
           add_trace(y = limit, line = list(color = 'rgb(100,100,100)', width = 1, dash = 'dash'), mode = 'lines')   
       }
     }
-    p %>% layout(title = '', xaxis = list(title = 'timer på dagen'), yaxis = list (title = '', ticksuffix = ticksuffix), showlegend = FALSE)
+    p %>% layout(title = '', xaxis = list(title = 'timer på dagen'), yaxis = list (range = c(15, 35), title = '', dtick = 2, ticksuffix = ticksuffix), showlegend = FALSE)
   })
   
 }
@@ -91,9 +91,9 @@ indoor_climateTabPanelUI <- function(id) {
   
   tabItem(tabName = "indoor_climate",
           
-          box(width = 12, solidHeader = TRUE, id="spaceheader3",
+          box(width = 12, solidHeader = TRUE, id="spaceheader4",
               h3("Indeklima"),
-              img(src='icons/materialer_negativ_45x45.png', align = "right", height="46px")
+              img(src='icons/detfysiskerrum_negativ_45x45.png', align = "right", height="46px")
           ),
           fluidRow(
             column(12,
