@@ -36,11 +36,11 @@ th {
 	color: white;
 }
 
-#eventsheader h3, #spaceheader1 h3, #spaceheader2 h3, #spaceheader3 h3, #onlineheader1 h3, #onlineheader2 h3, #materialsheader1 h3, #materialsheader2 h3 , #eressourcesheader h3, #datasourcesheader h3 {
+#eventsheader h3, #spaceheader1 h3, #spaceheader2 h3, #spaceheader3 h3, #spaceheader4 h3, #onlineheader1 h3, #onlineheader2 h3, #materialsheader1 h3, #materialsheader2 h3 , #eressourcesheader h3, #datasourcesheader h3 {
   display: inline-block;
 }
 
-#spaceheader1, #spaceheader2, #spaceheader3 {
+#spaceheader1, #spaceheader2, #spaceheader3, #spaceheader4 {
 	background: rgb(174,176,81);
 	color: white;
 }
