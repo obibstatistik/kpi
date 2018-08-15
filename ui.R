@@ -55,12 +55,12 @@ dashboardPage(
                #menuItem("Materialeindkøb", tabName = "acquisition"),
                menuItem("Beholdning", tabName = "inventory")
       ),
-      menuItem("E-Ressourcer", tabName = "emat", icon = icon("database", lib="font-awesome"),
+      #menuItem("E-Ressourcer", tabName = "emat", icon = icon("database", lib="font-awesome"),
                # menuItem("E-Bøger", tabName = "ebooks")#,
                # menuItem("E-Film", tabName = "emovies"),
                # menuItem("E-Baser", tabName = "edatabases")
-               menuItem("Licenser", tabName = "licenses")
-      ),
+               #menuItem("Licenser", tabName = "licenses")
+      #),
       menuItem("Brugere", tabName = "users", icon = icon("users", lib="font-awesome")),
       menuItem("Personale", tabName = "personal", icon = icon("users", lib="font-awesome")),
       menuItem("Datakilder", tabName = "datasources", icon = icon("database", lib="font-awesome"))#,
