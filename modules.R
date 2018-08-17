@@ -69,3 +69,31 @@ csvDownload <- function(input, output, session, data, name = NULL) {
   )
   
 }
+
+### KPI TILE MODULE ###
+
+# UI
+kpitileUI <- function(id, image, text, color) {
+  ns <- NS(id)
+  tagList(
+    div(
+      div(
+        span(tags$img(src = image, width = "45px", height = "45px"), class="info-box-icon", style=paste0("background-color:",color)),
+        div(
+          span(text, class="info-box-text"),
+          span(htmlOutput(ns("kpitile")), class="info-box-number"),
+          class="info-box-content"
+        ), 
+        class = "info-box"
+      ), 
+      class = "shiny-html-output col-sm-4 shiny-bound-output"
+    )
+  )
+}
+
+# SERVER
+kpitile <- function(input, output, session, data) {
+  data_as_string <- paste( unlist(data), collapse='')
+  data_as_string_with_thousand_seperator <- paste(substr(data_as_string, 1, 4-1), ".", substr(data_as_string, 4, nchar(data_as_string)), sep = "")
+  output$kpitile <- renderText(ifelse(nchar(data) > 3, data_as_string_with_thousand_seperator, data_as_string))
+}
