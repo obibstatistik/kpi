@@ -108,7 +108,7 @@ indoor_climateTabPanelUI <- function(id) {
           
           box(width = 12, solidHeader = TRUE, id="spaceheader4",
               h3("Indeklima"),
-              img(src='icons/detfysiskerrum_negativ_45x45.png', align = "right", height="46px")
+              img(src='icons/detfysiskerum_negativ_45x45.png', align = "right", height="46px")
           ),
           fluidRow(
             column(12,
