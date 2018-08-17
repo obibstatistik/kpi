@@ -115,21 +115,11 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
   #udlaan <- dbGetQuery(con, "SELECT name, hour, circulation_fact_count FROM cicero.udlaan_per_klokkeslaet")
   #max_date <- dbGetQuery(con, "select max(transact_date) max_date from cicero.udlaan_per_opstillingsprofil")
-  checkouts_all <- dbGetQuery(con, "select * from (
-    SELECT extract(year from transact_date) aar,transact_date,branch,dep,sum(antal) antal
+  checkouts_all <- dbGetQuery(con, "SELECT extract(year from transact_date) aar,transact_date,branch,dep,sum(antal) antal
         from cicero.udlaan_per_opstillingsprofil
         where extract(year from (transact_date)) > extract(year from (current_date - interval '5 year'))
         group by aar,transact_date,branch,dep
-        order by aar,transact_date,branch,dep
-       ) lokationer
-        union all
-    select * from (   
-    SELECT extract(year from transact_date) aar,transact_date,branch::character varying(50),dep::character varying(50),sum(antal) antal
-        from datamart.supl_udlaan_musik
-        group by aar,transact_date,branch,dep
-        order by aar,transact_date,branch,dep
-        ) kun_musik
-        ")
+        order by aar,transact_date,branch,dep")
   beholdning <- dbGetQuery(con, "SELECT branch,department dep,sum(material_dim_count)
     from cicero.beholdning
     group by branch,dep
