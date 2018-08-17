@@ -33,7 +33,7 @@ metaTabPanel <- function(input, output, session, schema, table, description) {
     con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
     tablecomment <- dbGetQuery(con, paste0("select obj_description('",schema,".", table, "'::regclass)"))
     datasources_schema <- (dbGetQuery(con, "SELECT columns.table_name as name, columns.column_name, columns.data_type,columns.column_default, columns.is_nullable FROM information_schema.columns;"))
-    example <- dbGetQuery(con, "select * from datamart.arrangementer limit 1")
+    example <- dbGetQuery(con, "select * from datamart.arrangementer_old limit 1")
   dbDisconnect(con)
   
   output$heading <- renderText(table)

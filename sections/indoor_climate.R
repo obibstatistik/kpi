@@ -19,7 +19,7 @@ device_plotUI <- function(id) {
 # Modul SERVER
 sensors_plot <- function(input, output, session, data, device, room, sensor, limits, ticksuffix) {
   
-  # Af en eller anden grund skal device kaldes eksplicit her, ellers vil der kun blive outputtet
+  # Af en eller anden grund skal device (og room tror jeg) kaldes eksplicit her, ellers vil der kun blive outputtet
   # grafer fra een enkelt device (den sidste) uanset at der inputtes forskellige device id'er
   # når denne funktion kaldes længere nede. Dvs. det er ikke nok at device er tilstede i funktionens parameter-variable ovenfor.
   # Det må være en sær scoping/caching/optimerings/reactive issue...
@@ -67,6 +67,7 @@ sensors_plot <- function(input, output, session, data, device, room, sensor, lim
              humidity = c(20,70),
              noise_avg = c(20,65))
     }
+    # Switch/case to distinguish between sensors to determine which y-axis step to use
     yaxis_step <- function(sensor) {
       switch(sensor,
              temperature = 2,
