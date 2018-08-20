@@ -10,12 +10,19 @@ frontpageTabPanelUI <- function(id) {
   tabItem(
     tabName = "frontpage",
     fluidRow(
-      kpitileUI(ns(id = "visitors"), image = "icons/detfysiskerum_negativ_45x45.png", text = "Samlet besøg på OBB år til dato.", color = color2),
-      kpitileUI(ns(id = "loans"), image = "icons/materialer_negativ_45x45.png", text = "Samlet udlån på OBB år til dato", color = color3),
-      kpitileUI(ns(id = "events"), image = "icons/arrangementer_negativ_45x45.png", text = "Samlet antal afholdte arrangementer på OBB år til dato", color = color5),
-      box(
-        h4("Feedback"),
-        p("Vi vil meget gerne have feedback på Whitebook og I er meget velkomne til skrive til Thomas Bojsen, hvis I støder på problemer eller hvis I har udviklingsønsker til grafer eller visninger I er nysgerrige på.")
+      column(6,
+        box(width=12,
+          h1("Velkommen til Odense Biblioteker og Borgerservices digitale Whitebook"),
+          p("Her kan du finde nøgletal og tendenser indenfor forskellige områder af OBBs virksomhed."),
+          p("Du får adgang til de enkelte områder ved at klikke dig rundt i menuerne i venstre side af skærmen."),
+          p("Da Whitebooken er et nyt tiltag og er i konstant udvikling vil vi meget gerne have feedback på hvad du synes om den."),
+          p("Du er meget velkomen til skrive til Thomas Bojsen (tsboj@odense.dk), hvis du støder på problemer eller hvis du har udviklingsønsker til grafer eller visninger du er nysgerrige på.")
+        )
+      ),
+      column(6,
+        kpitileUI(ns(id = "visitors"), image = "icons/detfysiskerum_negativ_45x45.png", text = "Samlet besøg på OBB år til dato.", color = color2, width = 12),
+        kpitileUI(ns(id = "loans"), image = "icons/materialer_negativ_45x45.png", text = "Samlet udlån på OBB år til dato", color = color3, width = 12),
+        kpitileUI(ns(id = "events"), image = "icons/arrangementer_negativ_45x45.png", text = "Samlet antal afholdte arrangementer på OBB år til dato", color = color5, width = 12)
       )
     )
   )
