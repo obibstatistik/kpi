@@ -73,7 +73,7 @@ csvDownload <- function(input, output, session, data, name = NULL) {
 ### KPI TILE MODULE ###
 
 # UI
-kpitileUI <- function(id, image, text, color) {
+kpitileUI <- function(id, image, text, color, width) {
   ns <- NS(id)
   tagList(
     div(
@@ -86,7 +86,7 @@ kpitileUI <- function(id, image, text, color) {
         ), 
         class = "info-box"
       ), 
-      class = "shiny-html-output col-sm-4 shiny-bound-output"
+      class = paste0("shiny-html-output shiny-bound-output col-md-", width)
     )
   )
 }
