@@ -74,7 +74,7 @@ csvDownload <- function(input, output, session, data, name = NULL) {
 
 # UI
 
-csvDownloadUI <- function(id, label = "Download Excelark") {
+xlsxDownloadUI <- function(id, label = "Download Excelark") {
   ns <- NS(id)
   
   downloadButton(ns("download_xlsx"), label)
@@ -82,7 +82,7 @@ csvDownloadUI <- function(id, label = "Download Excelark") {
 
 # SERVER
 
-csvDownload <- function(input, output, session, data, name = NULL) {
+xlsxDownload <- function(input, output, session, data, name = NULL) {
   
   output$download <- downloadHandler(
     filename = function() {
