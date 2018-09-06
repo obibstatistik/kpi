@@ -94,14 +94,14 @@ eventareasTabPanelUI <- function(id) {
                                             )
                                      )
                                    )  
-                          ),
-                          tabPanel("Data og dokumentation",
-                                   fluidRow(
-                                     column(12,
-                                            p("Dokumentation")
-                                     )
-                                   )  
                           )
+                          #,tabPanel("Data og dokumentation",
+                          #         fluidRow(
+                          #           column(12,
+                          #                  p("Dokumentation")
+                          #           )
+                          #         )  
+                          #)
                    ))))
   
 }

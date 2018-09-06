@@ -131,16 +131,16 @@ visitorsTabPanelUI <- function(id) {
                                             )
                                      )
                                    )  
-                          ),
-                          tabPanel("Data",
-                            h4("Generelt"),
-                            p("Data fra 2014-01-01"),
-                            metaTabPanelUI(id = "people_counter"),
-                            column(12,tags$hr()),
-                            h4("Timer"),
-                            p("Data fra 2017-04-07"),
-                            metaTabPanelUI(id = "visitor_counter")
                           )
+                          #,tabPanel("Data",
+                          #  h4("Generelt"),
+                          #  p("Data fra 2014-01-01"),
+                          #  metaTabPanelUI(id = "people_counter"),
+                          #  column(12,tags$hr()),
+                          #  h4("Timer"),
+                          #  p("Data fra 2017-04-07"),
+                          #  metaTabPanelUI(id = "visitor_counter")
+                          #)
                    )
             )
           )

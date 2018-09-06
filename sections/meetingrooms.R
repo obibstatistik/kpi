@@ -114,15 +114,15 @@ meetingroomsTabPanelUI <- function(id) {
                                             )
                                      )
                                    )  
-                          ),
-                          tabPanel("Data og dokumentation",
-                                   fluidRow(
-                                     column(12,
-                                        h4("Forklaringer"),
-                                        p("Belægningsprocent er beregnet som 'Sum af belægning' / 'Total antal timer i perioden & tidsperioden'")
-                                     )
-                                   )  
                           )
+                          #,tabPanel("Data og dokumentation",
+                          #         fluidRow(
+                          #           column(12,
+                          #              h4("Forklaringer"),
+                          #              p("Belægningsprocent er beregnet som 'Sum af belægning' / 'Total antal timer i perioden & tidsperioden'")
+                          #           )
+                          #         )  
+                          #)
                           
                 )
             )

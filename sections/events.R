@@ -102,20 +102,20 @@ eventsTabPanelUI <- function(id) {
                                             h4("Afgræns"),
                                             checkboxGroupInput(ns("effectyear"), label = 'Vælg år:', 
                                                                selected = list('Alle','2013','2014','2015','2016','2017','2018'),
-                                                               choices = list('Alle','2013','2014','2015','2016','2017','2018')),
-                                            radioButtons(ns("yakse"), "Vælg Y akse:",
-                                                         c("Forberedelsestid" = "forberedelsestid",
-                                                           "ID" = "id")
-                                            )
+                                                               choices = list('Alle','2013','2014','2015','2016','2017','2018'))
+                                            #,radioButtons(ns("yakse"), "Vælg Y akse:",
+                                            #             c("Forberedelsestid" = "forberedelsestid",
+                                            #               "ID" = "id")
+                                            #)
                                        ),  
                                        column(width = 10,
                                               plotlyOutput(ns("eventsratioplot"))
                                      ) )
                                    )
-                          ),
-                          tabPanel("Dokumentation og data",
-                            metaTabPanelUI(ns("events"))
-                          )  
+                          )
+                          #,tabPanel("Dokumentation og data",
+                          #  metaTabPanelUI(ns("events"))
+                          #)  
                     )
             )
           )
@@ -278,8 +278,10 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
   # ratio #
   output$eventsratioplot <- renderPlotly({
     if (input$effectyear != "Alle") {events<- events %>% filter(year(dato) %in% input$effectyear)}
-    plot_ly(events, x = events$deltagere, y = switch(input$yakse, forberedelsestid = events$forberedelsestid, id = events$id, events$forberedelsestid), text = text, color = events$arrangementstype) %>%
-      layout(xaxis = list(title = "deltagere", range = c(0, 500)), yaxis = list(title = switch(input$yakse, forberedelsestid = "forberedelsestid", id = "id", "forberedelsestid")))
+    #plot_ly(events, x = events$deltagere, y = switch(input$yakse, forberedelsestid = events$forberedelsestid, id = events$id, events$forberedelsestid), text = text, color = events$arrangementstype) %>%
+    plot_ly(events, x = events$deltagere, y = events$forberedelsestid, text = text, color = events$arrangementstype) %>%
+      layout(xaxis = list(title = "deltagere", range = c(0, 500)), yaxis = list(title = "forberedelsestid"))
+      #layout(xaxis = list(title = "deltagere", range = c(0, 500)), yaxis = list(title = switch(input$yakse, forberedelsestid = "forberedelsestid", id = "id", "forberedelsestid")))
   })
   
   callModule(metaTabPanel, id = "events", schema = "datamart",  table = "arrangementer", description = "Arrangementsdatabase i brug indtil 3. kvartal 2018")

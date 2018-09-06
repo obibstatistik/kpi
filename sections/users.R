@@ -62,28 +62,29 @@ usersTabPanelUI <- function(id) {
                                                   p("Aktive lånere er lånere som har lånt et materiale indenfor det seneste år. Inaktive lånere har haft et lån mellem 1 til 5 år tilbage i tiden."),
                                                   p("OBS. Lånere kan optræde i flere kategorier"),
                                                   tableOutput(ns('tableloaners')),
-                                                  csvDownloadUI(ns("inner2"))))),
+                                                  csvDownloadUI(ns("inner2")))))
+                          #,
                           # tabPanel("Kort",
                           #          fluidRow(width = 12,
                           #                   column(width = 12,
                           #                          leafletOutput("mymap")
                           #                          ))
                           # ),
-                          tabPanel("Dokumentation og Data",
-                                   fluidRow(width = 12,
-                                            column(width = 12,
-                                                   h4("Dokumention"),
-                                                     p("Bruger statistik og visualiseringer er dannet på baggrund af:"),
-                                                     tags$ul(
-                                                       tags$li("Antal lånere fordelt på alder og tilhørsbibliotek. Data udtrukket fra Cicero Reporting Services 12. juni 2018"), 
-                                                       tags$li("Antal aktive lånere fordelt på lånergruppe. Data udtrukket fra Cicero Reporting Services 12. juni 2018"), 
-                                                       tags$li("Odense Borgernes alder. Udtrukket fra Danmarks statistiks statistikbank")
-                                                     ),
-                                                     p("Aktive lånere: lånere som har lånt på biblioteket indenfor det seneste år"),
-                                                     p("Inaktive lånere: lånere som har lånt på biblioteket for mere end et år siden og seneste for 5 år siden"),
-                                                   h4("Data")  
-                                            ))
-                          )
+                          #tabPanel("Dokumentation og Data",
+                          #         fluidRow(width = 12,
+                          #                  column(width = 12,
+                          #                         h4("Dokumention"),
+                          #                           p("Bruger statistik og visualiseringer er dannet på baggrund af:"),
+                          #                           tags$ul(
+                          #                             tags$li("Antal lånere fordelt på alder og tilhørsbibliotek. Data udtrukket fra Cicero Reporting Services 12. juni 2018"), 
+                          #                             tags$li("Antal aktive lånere fordelt på lånergruppe. Data udtrukket fra Cicero Reporting Services 12. juni 2018"), 
+                          #                             tags$li("Odense Borgernes alder. Udtrukket fra Danmarks statistiks statistikbank")
+                          #                           ),
+                          #                           p("Aktive lånere: lånere som har lånt på biblioteket indenfor det seneste år"),
+                          #                           p("Inaktive lånere: lånere som har lånt på biblioteket for mere end et år siden og seneste for 5 år siden"),
+                          #                         h4("Data")  
+                          #                  ))
+                          #)
                           
                     ))    
           )        

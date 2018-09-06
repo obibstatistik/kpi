@@ -109,14 +109,14 @@ inventoryTabPanelUI <- function(id) {
                                     )
                                   )
                                   # TODO beholdning fordelt på opstillinger og afdelinger, så man kan sammenligne mellem børn,voksen,musik og på hvad der er i udlån,magasin,depot
-                          ),
-                          tabPanel("Data og dokumentation",
-                                   fluidRow(
-                                     column(12,
-                                            p("Dokumentation")
-                                     )
-                                   )  
                           )
+                          #,tabPanel("Data og dokumentation",
+                          #         fluidRow(
+                          #           column(12,
+                          #                  p("Dokumentation")
+                          #           )
+                          #         )  
+                          #)
                    ))))
 }
 

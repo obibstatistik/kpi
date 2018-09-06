@@ -197,14 +197,14 @@ indoor_climateTabPanelUI <- function(id) {
                                             device_plotUI(ns(id = "lyd-DDBFED32"))
                                      )
                                    )
-                          ),
-                          tabPanel("Data og dokumentation",
-                                   fluidRow(
-                                     column(12,
-                                            p("Dokumentation")
-                                     )
-                                   )  
                           )
+                          #,tabPanel("Data og dokumentation",
+                          #         fluidRow(
+                          #           column(12,
+                          #                  p("Dokumentation")
+                          #           )
+                          #         )  
+                          #)
                    ))))
 }
 
