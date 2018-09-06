@@ -45,6 +45,10 @@ meetingroomsTabPanelUI <- function(id) {
                                                    h4("Oversigtstabel"),
                                                    tableOutput(ns("tablemeetingrooms_overview")),
                                                    csvDownloadUI(ns("meetingsrooms"))
+                                            ),
+                                            column(width = 12, class = "col-lg-6",
+                                                   h4("Vist på agendaskærm"), 
+                                                   plotlyOutput(ns("meetingrooms_agendascreen_plot"))
                                             )
                                             #,
                                             #column(width = 12, class = "col-lg-6",
@@ -81,13 +85,7 @@ meetingroomsTabPanelUI <- function(id) {
                                                    h4("Booker top 10"),
                                                    plotlyOutput(ns("plot_pie_meetingrooms_booker"))
                                             )
-                                      ),
-                                      column(12,tags$hr()),
-                                      column(width = 12,
-                                             h4("Vist på agendaskærm"), 
-                                             plotlyOutput(ns("meetingrooms_agendascreen_plot"))
                                       )
-                                     
                                 )
                           )),
                           tabPanel("Timeoversigt",

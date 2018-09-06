@@ -45,7 +45,7 @@ metaTabPanel <- function(input, output, session, schema, table, description) {
   output$datasources_schema <- renderTable(datasources_schema %>% filter(name == table) %>% select(-name))
 }
 
-### DOWNLOAD MODUL ###
+### DOWNLOAD CSV MODUL ###
 
 # UI
 
@@ -62,6 +62,31 @@ csvDownload <- function(input, output, session, data, name = NULL) {
   output$download <- downloadHandler(
     filename = function() {
       if(is.na(name)){"test.csv"} else {paste0(name,".csv")}
+    },
+    content = function(file) {
+      write.csv(data, file)
+    }
+  )
+  
+}
+
+### DOWNLOAD XLSX MODUL ###
+
+# UI
+
+csvDownloadUI <- function(id, label = "Download Excelark") {
+  ns <- NS(id)
+  
+  downloadButton(ns("download_xlsx"), label)
+}
+
+# SERVER
+
+csvDownload <- function(input, output, session, data, name = NULL) {
+  
+  output$download <- downloadHandler(
+    filename = function() {
+      if(is.na(name)){"test.xlsx"} else {paste0(name,".xlsx")}
     },
     content = function(file) {
       write.csv(data, file)
