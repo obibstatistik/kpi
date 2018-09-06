@@ -136,7 +136,13 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
       select(show_on_screen) %>%
       group_by(show_on_screen) %>%
       summarise(count = n())
-    plot_ly(bhus_events_agendascreen, labels = c("Ikke vist på skærm","Vist på skærm"), values = ~count, textfont = list(color = '#FFFFFF'), marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
+    plot_ly(bhus_events_agendascreen, 
+            labels = c("Ikke vist på skærm","Vist på skærm"), 
+            values = ~count,
+            text = ~paste(round((count / sum(count))*100, 0),"%",sep=""), # denne og følgende linje runder procenterne af, så de er uden decimaler
+            textinfo='text',
+            textfont = list(color = '#FFFFFF'), 
+            marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
       add_pie(hole = 0.6) %>%
       layout(showlegend = T,
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
@@ -173,7 +179,13 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
   output$plot_pie_eventarea_booker <- renderPlotly({
     eventarea_booker <- eventarea_booker() %>%
       mutate(bookingprocent = (sum/totalsum))
-    plot_ly(eventarea_booker, labels = ~enhed, values = ~bookingprocent, textfont = list(color = '#FFFFFF'), marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
+    plot_ly(eventarea_booker, 
+            labels = ~enhed, 
+            values = ~bookingprocent, 
+            text = ~paste(round((bookingprocent / sum(bookingprocent))*100, 0),"%",sep=""), # denne og følgende linje runder procenterne af, så de er uden decimaler
+            textinfo='text',
+            textfont = list(color = '#FFFFFF'), 
+            marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
       add_pie() %>%
       layout(showlegend = T,
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),

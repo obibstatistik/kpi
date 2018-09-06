@@ -118,7 +118,13 @@ online_odensebibTabPanel <- function(input, output, session) {
   # device
   
   output$ga_device_plot <- renderPlotly({
-    plot_ly(ga_device, labels = ~device, values = ~users, textfont = list(color = '#FFFFFF'), marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
+    plot_ly(ga_device, 
+            labels = ~device, 
+            values = ~users, 
+            text = ~paste(round((users / sum(users))*100, 0),"%",sep=""), # denne og følgende linje runder procenterne af, så de er uden decimaler
+            textinfo='text',
+            textfont = list(color = '#FFFFFF'), 
+            marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
       add_pie(hole = 0.6) %>%
       layout(showlegend = T,
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
