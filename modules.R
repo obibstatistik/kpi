@@ -74,26 +74,26 @@ csvDownload <- function(input, output, session, data, name = NULL) {
 
 # UI
 
-csvDownloadUI <- function(id, label = "Download Excelark") {
-  ns <- NS(id)
-  
-  downloadButton(ns("download_xlsx"), label)
-}
+#xlsxDownloadUI <- function(id, label = "Download Excelark") {
+#  ns <- NS(id)
+#  
+#  downloadButton(ns("download_xlsx"), label)
+#}
+#
+## SERVER
+#
+#xlsxDownload <- function(input, output, session, data, name = NULL) {
+#  
+#  output$download <- downloadHandler(
+#    filename = function() {
+#      if(is.na(name)){"test.xlsx"} else {paste0(name,".xlsx")}
+#    },
+#    content = function(file) {
+#      write.csv(data, file)
+#    }
+#  )
 
-# SERVER
-
-csvDownload <- function(input, output, session, data, name = NULL) {
-  
-  output$download <- downloadHandler(
-    filename = function() {
-      if(is.na(name)){"test.xlsx"} else {paste0(name,".xlsx")}
-    },
-    content = function(file) {
-      write.csv(data, file)
-    }
-  )
-  
-}
+#}
 
 ### KPI TILE MODULE ###
 
