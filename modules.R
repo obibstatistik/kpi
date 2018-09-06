@@ -73,7 +73,6 @@ csvDownload <- function(input, output, session, data, name = NULL) {
 ### DOWNLOAD XLSX MODUL ###
 
 # UI
-
 #xlsxDownloadUI <- function(id, label = "Download Excelark") {
 #  ns <- NS(id)
 #  
