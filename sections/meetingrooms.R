@@ -45,12 +45,13 @@ meetingroomsTabPanelUI <- function(id) {
                                                    h4("Oversigtstabel"),
                                                    tableOutput(ns("tablemeetingrooms_overview")),
                                                    csvDownloadUI(ns("meetingsrooms"))
-                                            ),
-                                            column(width = 12, class = "col-lg-6",
-                                                   h4("Fordelingen af mødelængde"),
-                                                   plotlyOutput(ns("plot_meetingrooms_overview"))
-                                                   
                                             )
+                                            #,
+                                            #column(width = 12, class = "col-lg-6",
+                                            #       h4("Fordelingen af mødelængde"),
+                                            #       plotlyOutput(ns("plot_meetingrooms_overview"))
+                                            #       
+                                            #)
                                        )
                                      ),
                                      column(12,tags$hr()),
