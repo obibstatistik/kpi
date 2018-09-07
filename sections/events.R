@@ -220,12 +220,26 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
   #     layout(separators=",.", barmode = 'group', xaxis = list(tickmode="linear", title = "Arrangementstype"), yaxis = list(title = "Antal deltagere", separatethousands = TRUE, exponentformat='none')) 
   # })
   
-  
   # målgruppe #
   output$eventsmaalgruppeplot <- renderPlotly({
-    if (input$year != "Alle") {eventsmaalgruppe <- eventsmaalgruppe %>% filter(year == input$year) %>% mutate(colors = if_else(maalgruppe=="Voksne", color1, color2))}
-    if (input$year == "Alle") {eventsmaalgruppe <- eventsmaalgruppe %>% filter(year %in% c("2013","2014","2015","2016","2017")) %>% mutate(colors = if_else(maalgruppe=="Voksne", color1, color2))}
-    plot_ly(eventsmaalgruppe, labels = ~maalgruppe, values = ~count, textfont = list(color = '#FFFFFF'), marker = list(colors = ~colors, line = list(color = '#FFFFFF', width = 1))) %>%
+    if (input$year != "Alle") {eventsmaalgruppe <- eventsmaalgruppe %>% 
+                                                   filter(year == input$year) %>% 
+                                                   mutate(colors = if_else(maalgruppe=="Voksne", color1, color2))}
+    
+    if (input$year == "Alle") {eventsmaalgruppe <- eventsmaalgruppe %>% 
+                                                   filter(year %in% c("2013","2014","2015","2016","2017")) %>% 
+                                                   group_by(maalgruppe) %>% 
+                                                   summarise(count = sum(count)) %>% 
+                                                   mutate(colors = if_else(maalgruppe=="Voksne", color1, color2))}
+    plot_ly(eventsmaalgruppe,
+            labels = ~maalgruppe,
+            values = ~count,
+            #text = percent, # denne og følgende linje runder procenterne af, så de er uden decimaler
+            text = ~paste(round((count / sum(count))*100, 0),"%",sep=""), # denne og følgende linje runder procenterne af, så de er uden decimaler
+            #text = ~paste(sum(which(year)),"%",sep=""), # denne og følgende linje runder procenterne af, så de er uden decimaler. Kunne dog ikke bare bruge sum(count) som andre steder, da Børn og Voksen ikke udgør 100% til sammen
+            textinfo = 'text',
+            textfont = list(color = '#FFFFFF'),
+            marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
       add_pie(hole = 0.0) %>%
       layout(showlegend = T,
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
