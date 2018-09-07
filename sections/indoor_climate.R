@@ -62,7 +62,7 @@ sensors_plot <- function(input, output, session, data, device, room, sensor, lim
     # Switch/case to distinguish between sensors to determine which y-axis range to use
     yaxis_range <- function(sensor) {
       switch(sensor,
-             temperature = c(15,31),
+             temperature = c(16,30),
              co2 = c(300,1100),
              humidity = c(20,70),
              noise_avg = c(20,65))
@@ -70,7 +70,7 @@ sensors_plot <- function(input, output, session, data, device, room, sensor, lim
     # Switch/case to distinguish between sensors to determine which y-axis step to use
     yaxis_step <- function(sensor) {
       switch(sensor,
-             temperature = 2,
+             temperature = 1,
              co2 = 100,
              humidity = 5,
              noise_avg = 10)
