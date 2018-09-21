@@ -20,7 +20,7 @@ frontpageTabPanelUI <- function(id) {
         )
       ),
       column(6,
-        kpitileUI(ns(id = "visitors"), image = "icons/detfysiskerum_negativ_45x45.png", text = "Samlet besøg på OBB år til dato.", color = color2, width = 12),
+        #kpitileUI(ns(id = "visitors"), image = "icons/detfysiskerum_negativ_45x45.png", text = "Samlet besøg på OBB år til dato.", color = color2, width = 12),
         kpitileUI(ns(id = "loans"), image = "icons/materialer_negativ_45x45.png", text = "Samlet udlån på OBB år til dato", color = color3, width = 12),
         kpitileUI(ns(id = "events"), image = "icons/arrangementer_negativ_45x45.png", text = "Samlet antal afholdte arrangementer på OBB år til dato", color = color5, width = 12)
       )
@@ -41,7 +41,7 @@ frontpageTabPanel <- function(input, output, session) {
   events_current_year <- dbGetQuery(con, "SELECT count(*) FROM datamart.arrangementer_old WHERE extract(year from dato) = 2018")
   dbDisconnect(con)
   
-  callModule(kpitile, id = "visitors", data = visitors_current_year)
+  #callModule(kpitile, id = "visitors", data = visitors_current_year)
   callModule(kpitile, id = "loans", data = loans_current_year)
   callModule(kpitile, id = "events", data = events_current_year)
   
