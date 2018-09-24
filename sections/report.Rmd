@@ -1,0 +1,25 @@
+---
+always_allow_html: yes
+output: pdf_document
+params:
+ n: NA
+ client: "bla"
+set_title: "My Title!"
+title: "`r params$set_title`"
+---
+  
+```{r cars, echo=FALSE, results='asis'}
+myCondition <- TRUE
+if(myCondition) {
+ cat(params$client)
+}
+```
+
+```{r Graph,  echo=FALSE, results='asis'}
+library(plotly)
+g <- ggplot(faithful, aes(x = eruptions, y = waiting)) +
+ stat_density_2d(aes(fill = ..level..), geom = "polygon") + 
+ xlim(1, 6) + ylim(40, 100)
+ggplotly(g)
+
+```

@@ -2,6 +2,7 @@ source("global.R")
 source("functions.R")
 source("modules.R")
 source("~/.postpass") 
+library(basictabler)
 
 # UI
 
@@ -26,7 +27,8 @@ materialsTabPanelUI <- function(id) {
                                      column(10,
                                             h4("Samlet udlån på OBB"),
                                             p("Grafen viser det samlede udlån på OBB fordelt pr. år. De grå søjler er hele året, men farvede søjler i forgrunden er år til dato. Det er dermed muligt at sammenligne indeværende års udlån med de forrige."),
-                                            samedate_barchartOutput(ns('checkouts_samedate_plot'))
+                                            samedate_barchartOutput(ns('checkouts_samedate_plot')),
+                                            downloadLink("report", "Generate report")
                                      ),
                                      column(12,tags$hr()),
                                      column(2,
@@ -62,7 +64,8 @@ materialsTabPanelUI <- function(id) {
                                                    h4("Udlån på OBB"),
                                                    p("Tabellen viser det samlede udlån på OBB fordelt pr. måned."),
                                                    p("Visningen giver mulighed for at sammenligne mellem to forskellige år samt vælge hvilken lokation der ønskes vist. Det er desuden muligt at vælge Hovedbiblioteket til og fra."),
-                                                   formattableOutput(ns("checkouts_table"))
+                                                   formattableOutput(ns("checkouts_table")),
+                                                   downloadLink("downloadData", "Download")
                                             )
                                         )
                                    )
@@ -125,7 +128,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
     group by branch,dep
     order by branch,dep")
   dbDisconnect(con)
-  
+
   # Calculate latest date with data
   max_date <- checkouts_all %>%
     summarize(max_date = max(transact_date))
@@ -280,6 +283,49 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
              #width = 800,
              yaxis = list(showgrid = FALSE, showline = FALSE, showticklabels = TRUE, title = "", type = "category"),
              xaxis = list(zeroline = FALSE, showline = FALSE, showticklabels = TRUE, domain = c(0,2), title = "", type = "line", showgrid = TRUE))
+    
+    
+    output$downloadData <- downloadHandler(
+      filename = function(){"mtcars.xlsx"},
+      content = function(file) {
+        fname <- paste(file,"xlsx",sep=".")
+        wb <- loadWorkbook(fname,create = TRUE)
+        createSheet(wb,"cars")
+        writeWorksheet(wb,data = data1,sheet = "cars")
+        saveWorkbook(wb)
+        file.rename(fname,file)
+      },
+      contentType="application/xlsx" 
+    )
+    
+    output$report <- downloadHandler(
+      filename = "report",
+      content = function(file) {
+        tempReport <- file.path(tempdir(), "report.Rmd")
+        file.copy("report.Rmd", tempReport, overwrite = TRUE)
+        client = "Nedenstående vis.\n Den kraftige sorte linje viser temperaturgennemsnittet for de otte dage og de grå linjer er de egentlige målinger, således at maximum og minimumværdier kan aflæses.\nDe stiplede snorhøjder på 21°C og 25°C angiver det temperaturvindue, som målingerne ifølge SDU bør ligge indenfor"
+        set_title = "Indeklima"
+        params <- list(n = input$slider,client = client,set_title = set_title)
+        rmarkdown::render(tempReport, output_file = file,
+                          params = params,
+                          envir = new.env(parent = globalenv())
+        )
+      }
+    )
+    
+    tbl <- BasicTable$new()
+    tbl$addData(checkouts_musbib, firstColumnAsRowHeaders=TRUE
+              #  ,
+              #  explicitColumnHeaders=c("TOC", "On-Time Arrivals", "On-Time Departures",
+              #                          "Total Trains", "On-Time Arrival %", "On-Time Departure %"),
+              #  columnFormats=columnFormats
+              )
+    
+    wb <- createWorkbook(creator = Sys.getenv("USERNAME"))
+    addWorksheet(wb, "Data")
+    tbl$writeToExcelWorksheet(wb=wb, wsName="Data", topRowNumber=1, leftMostColumnNumber=1, applyStyles=FALSE)
+    saveWorkbook(wb, file="/home/nemo/Hentet/test.xlsx", overwrite = TRUE)
+    
   })
   
 }
