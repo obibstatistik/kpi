@@ -2,9 +2,8 @@
 always_allow_html: yes
 output: pdf_document
 params:
- n: NA
  client: "bla"
-set_title: "My Title!"
+ set_title: "My Title!"
 title: "`r params$set_title`"
 ---
   
