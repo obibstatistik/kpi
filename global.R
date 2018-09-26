@@ -21,6 +21,8 @@ library(janitor)
 library(treemap)
 library(RColorBrewer)
 
+library(rmarkdown)
+
 enableBookmarking(store = "url")
 
 ### COLORS ###

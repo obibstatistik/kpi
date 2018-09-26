@@ -67,32 +67,33 @@ csvDownload <- function(input, output, session, data, name = NULL) {
       write.csv(data, file)
     }
   )
-  
 }
 
 ### DOWNLOAD XLSX MODUL ###
 
 # UI
-#xlsxDownloadUI <- function(id, label = "Download Excelark") {
-#  ns <- NS(id)
-#  
-#  downloadButton(ns("download_xlsx"), label)
-#}
-#
-## SERVER
-#
-#xlsxDownload <- function(input, output, session, data, name = NULL) {
-#  
-#  output$download <- downloadHandler(
-#    filename = function() {
-#      if(is.na(name)){"test.xlsx"} else {paste0(name,".xlsx")}
-#    },
-#    content = function(file) {
-#      write.csv(data, file)
-#    }
-#  )
+xlsxDownloadUI <- function(id, label = "Download Excelark") {
+  ns <- NS(id)
+  
+  downloadButton(ns("download_xlsx"), label)
+}
 
-#}
+# SERVER
+xlsxDownload <- function(input, output, session, data, name = NULL) {
+  
+  output$download_xlsx <- downloadHandler(
+    filename = function() {
+      if(is.na(name)){"test.xlsx"} else {paste0(name,".xlsx")}
+    },
+    content = function(file) {
+      #tempFile <- tempfile(fileext = ".xlsx")
+      #write.xlsx(data, tempFile)
+      write.xlsx(data, file)
+      #file.rename(tempFile, file)
+    },
+    contentType="application/xlsx"
+  )
+}
 
 ### KPI TILE MODULE ###
 

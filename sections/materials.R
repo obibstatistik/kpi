@@ -12,25 +12,23 @@ materialsTabPanelUI <- function(id) {
   
   tabItem(tabName = "physicalmat",
           
-          box(width = 12, solidHeader = TRUE, id="materialsheader1",
+          box(width = 12, solidHeader = TRUE, id="materialsheader1", class = "hidden-print",
               h3("Udlån"),
               img(src='icons/materialer_negativ_45x45.png', align = "right", height="46px")
           ),
           
           fluidRow(
             column(12,
-                   tabBox(width = 12,
-                          id = "tabset2",
-                          tabPanel("Generelt", 
+                   tabBox(width = 12, id = "tabset2", 
+                          tabPanel("Generelt",
                                    fluidRow(
                                      column(2),
                                      column(10,
                                             h4("Samlet udlån på OBB"),
                                             p("Grafen viser det samlede udlån på OBB fordelt pr. år. De grå søjler er hele året, men farvede søjler i forgrunden er år til dato. Det er dermed muligt at sammenligne indeværende års udlån med de forrige."),
-                                            samedate_barchartOutput(ns('checkouts_samedate_plot')),
-                                            downloadButton(ns("rapport"), "Generate report")
+                                            tags$div( samedate_barchartOutput(ns('checkouts_samedate_plot')), style = "page-break-after: always;" )
                                      ),
-                                     column(12,tags$hr()),
+                                     column(12,tags$div( tags$hr(), class = "hidden-print" )),
                                      column(2,
                                             h4("Afgræns"),
                                             selectInput(ns("checkouts_mainlibrary_filter1"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))    
@@ -38,9 +36,9 @@ materialsTabPanelUI <- function(id) {
                                      column(10,
                                             h4("Samlet udlån på OBB, hele år"),
                                             p("Denne graf viser samlet udlån på OBB fordelt pr. år med mulighed for at vælge hovedbibliotekets udlån fra via vælger i venstre side."),
-                                            plotlyOutput(ns("checkouts_plot_all"))
+                                            tags$div( plotlyOutput(ns("checkouts_plot_all")), style = "page-break-after: always;")
                                      ),
-                                     column(12,tags$hr()),
+                                     column(12,tags$div( tags$hr(), class = "hidden-print" )),
                                      column(12,
                                             column(2,
                                                    h4("Afgræns"),
@@ -64,8 +62,10 @@ materialsTabPanelUI <- function(id) {
                                                    h4("Udlån på OBB"),
                                                    p("Tabellen viser det samlede udlån på OBB fordelt pr. måned."),
                                                    p("Visningen giver mulighed for at sammenligne mellem to forskellige år samt vælge hvilken lokation der ønskes vist. Det er desuden muligt at vælge Hovedbiblioteket til og fra."),
-                                                   formattableOutput(ns("checkouts_table"))
+                                                   formattableOutput(ns("checkouts_table")),
                                                    #,downloadLink("downloadData", "Download")
+                                                   xlsxDownloadUI(ns("checkouts")),
+                                                   downloadButton(ns("downloadXlsx"), "Hent som Excelark", class = "hidden-print")
                                             )
                                         )
                                    )
@@ -171,21 +171,20 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   barWidth <- 0.8    # This is a percentage. 1 means no gap between bars (i.e. 100%)
   barsOffset <- 10
   
-  output$rapport <- downloadHandler(
-    filename = "report",
-    content = function(file) {
-      tempReport <- file.path(tempdir(), "report.Rmd")
-      file.copy("report.Rmd", tempReport, overwrite = TRUE)
-      client = "Nedenstående vis.\n Den kraftige sorte linje viser temperaturgennemsnittet for de otte dage og de grå linjer er de egentlige målinger, således at maximum og minimumværdier kan aflæses.\nDe stiplede snorhøjder på 21°C og 25°C angiver det temperaturvindue, som målingerne ifølge SDU bør ligge indenfor"
-      set_title = "Indeklima"
-      params <- list(client = client,
-                     set_title = set_title)
-      rmarkdown::render(tempReport, output_file = file,
-                        params = params,
-                        envir = new.env(parent = globalenv())
-      )
-    }
-  )
+  #output$rapport <- downloadHandler(
+  #  filename = "report",
+  #  content = function(file) {
+  #    tempReport <- file.path(tempdir(), "report.Rmd")
+  #    file.copy("report.Rmd", tempReport, overwrite = TRUE)
+  #    client = "Nedenstående vis.\n Den kraftige sorte linje viser temperaturgennemsnittet for de otte dage og de grå linjer er de egentlige målinger, således at maximum og minimumværdier kan aflæses.\nDe stiplede snorhøjder på 21°C og 25°C angiver det temperaturvindue, som målingerne ifølge SDU bør ligge indenfor"
+  #    set_title = "Indeklima"
+  #    params <- list(client = client, set_title = set_title)
+  #    rmarkdown::render(tempReport, output_file = file,
+  #                      params = params,
+  #                      envir = new.env(parent = globalenv())
+  #    )
+  #  }
+  #)
   
   # Render barchart comparing whole and partial years
   output$checkouts_samedate_plot <- renderSamedate_barchart({
@@ -207,10 +206,10 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
     plot_ly(checkouts_overview, x = checkouts_overview$aar, y = checkouts_overview$sum, type = 'bar', marker = list(color = color1)) %>%
       layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'År', dtick = 1, autotick = FALSE, autorange="reversed"))
   })
-  
-  # Checkouts two-year comparison table
-  output$checkouts_table <- renderFormattable({
-    checkouts_all_tbl <- checkouts_all %>%
+    
+  # Reactive function wrapping dataframe for checkouts two-year comparison table incl. Excel download below
+    checkouts_all_tbl <- reactive({
+      checkouts_all %>%
       select(aar,transact_date,antal,branch) %>%
       filter(if(input$checkouts_mainlibrary_filter2 == 'Uden Hovedbiblioteket') (branch != 'Odense Hovedbibliotek') else TRUE) %>%
       mutate(month = month(transact_date)) %>%
@@ -228,11 +227,18 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
       mutate_at(vars(c(-1,-6,-7)), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark="."))) %>%
       mutate_at(vars(1), funs(danskemåneder(.))) %>%
       rename(Måned = month, Akkumuleret = akku1, "Akkumuleret " = akku2, 'Ændring pr. mdr.' = mdr, 'Ændring akkumuleret' = akk)
-    formattable(checkouts_all_tbl, list(
+  })
+
+  # Checkouts two-year comparison table
+  output$checkouts_table <- renderFormattable({
+    formattable(checkouts_all_tbl(), list(
       'Ændring pr. mdr.' = formatter("span", style = x ~ style(color = ifelse(x < 0 , color4, color1)), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
       'Ændring akkumuleret' = formatter("span", style = x ~ style(color = ifelse(x < 0 , color4, color1)), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
     ))
   })
+  
+  # Call Excel download function for tables 
+  callModule(xlsxDownload, "checkouts", data = checkouts_all_tbl(), name = "udlån")
   
   #udlaan_heat <- udlaan %>%
   #  mutate(branch = ifelse(is.na(name), "Andet", name)) %>%
@@ -295,39 +301,26 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
              margin = list(l = 200, r = 10, b = 50, t = 50, pad = 10),
              barmode = 'group',
              bargap = 0.4,
-             height = 600,
+             #height = 600,
              #width = 800,
              yaxis = list(showgrid = FALSE, showline = FALSE, showticklabels = TRUE, title = "", type = "category"),
              xaxis = list(zeroline = FALSE, showline = FALSE, showticklabels = TRUE, domain = c(0,2), title = "", type = "line", showgrid = TRUE))
-  
-    #output$downloadData <- downloadHandler(
-    #  filename = function(){"mtcars.xlsx"},
-    #  content = function(file) {
-    #    fname <- paste(file,"xlsx",sep=".")
-    #    wb <- loadWorkbook(fname,create = TRUE)
-    #    createSheet(wb,"cars")
-    #    writeWorksheet(wb,data = data1,sheet = "cars")
-    #    saveWorkbook(wb)
-    #    file.rename(fname,file)
-    #  },
-    #  contentType="application/xlsx" 
-    #)
-    
-
-    
-    tbl <- BasicTable$new()
-    tbl$addData(checkouts_musbib, firstColumnAsRowHeaders=TRUE
-              #  ,
-              #  explicitColumnHeaders=c("TOC", "On-Time Arrivals", "On-Time Departures",
-              #                          "Total Trains", "On-Time Arrival %", "On-Time Departure %"),
-              #  columnFormats=columnFormats
-              )
-    
-    wb <- createWorkbook(creator = Sys.getenv("USERNAME"))
-    addWorksheet(wb, "Data")
-    tbl$writeToExcelWorksheet(wb=wb, wsName="Data", topRowNumber=1, leftMostColumnNumber=1, applyStyles=FALSE)
-    saveWorkbook(wb, file="/home/nemo/Hentet/test.xlsx", overwrite = TRUE)
-    
   })
   
+
+  # Excel spreedsheet downloadHandler
+  output$downloadXlsx <- downloadHandler(
+    filename = "name.xlsx",
+    content = function(file) {
+      tempFile <- tempfile(fileext = ".xlsx")
+      write.xlsx(checkouts_all_tbl(), tempFile)
+      file.rename(tempFile, file)
+    },
+    contentType="application/xlsx"
+  )
+  
+  #wb <- createWorkbook(creator = Sys.getenv("USERNAME"))
+  #addWorksheet(wb, "Data")
+  #tbl$writeToExcelWorksheet(wb=wb, wsName="Data", topRowNumber=1, leftMostColumnNumber=1, applyStyles=FALSE)
+  #saveWorkbook(wb, file="/home/nemo/Hentet/testMtcars.xlsx", overwrite = TRUE)
 }
