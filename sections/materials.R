@@ -64,8 +64,8 @@ materialsTabPanelUI <- function(id) {
                                                    p("Visningen giver mulighed for at sammenligne mellem to forskellige år samt vælge hvilken lokation der ønskes vist. Det er desuden muligt at vælge Hovedbiblioteket til og fra."),
                                                    formattableOutput(ns("checkouts_table")),
                                                    #,downloadLink("downloadData", "Download")
-                                                   xlsxDownloadUI(ns("checkouts")),
-                                                   downloadButton(ns("downloadXlsx"), "Hent som Excelark", class = "hidden-print")
+                                                   xlsxDownloadUI(ns("checkouts"))
+                                                   #downloadButton(ns("downloadXlsx"), "Hent som Excelark", class = "hidden-print")
                                             )
                                         )
                                    )
@@ -309,18 +309,19 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   
 
   # Excel spreedsheet downloadHandler
-  output$downloadXlsx <- downloadHandler(
-    filename = "name.xlsx",
-    content = function(file) {
-      tempFile <- tempfile(fileext = ".xlsx")
-      write.xlsx(checkouts_all_tbl(), tempFile)
-      file.rename(tempFile, file)
-    },
-    contentType="application/xlsx"
-  )
-  
-  #wb <- createWorkbook(creator = Sys.getenv("USERNAME"))
-  #addWorksheet(wb, "Data")
-  #tbl$writeToExcelWorksheet(wb=wb, wsName="Data", topRowNumber=1, leftMostColumnNumber=1, applyStyles=FALSE)
-  #saveWorkbook(wb, file="/home/nemo/Hentet/testMtcars.xlsx", overwrite = TRUE)
+  # Formatting notes here: https://cran.r-project.org/web/packages/openxlsx/vignettes/formatting.pdf
+  #output$downloadXlsx <- downloadHandler(
+  #  filename = "name.xlsx",
+  #  content = function(file) {
+  #    tempFile <- tempfile(fileext = ".xlsx")
+  #    wb <- createWorkbook()
+  #    addWorksheet(wb, "tabel")
+  #    writeDataTable(wb, 1, checkouts_all_tbl(), startRow = 3, startCol = 2, tableStyle = "TableStyleMedium2")
+  #    saveWorkbook(wb, file=tempFile, overwrite = TRUE)
+  #    #write.xlsx(wb, tempFile)
+  #    file.rename(tempFile, file)
+  #  },
+  #  contentType="application/xlsx"
+  #)
+
 }

@@ -72,27 +72,32 @@ csvDownload <- function(input, output, session, data, name = NULL) {
 ### DOWNLOAD XLSX MODUL ###
 
 # UI
-xlsxDownloadUI <- function(id, label = "Download Excelark") {
+xlsxDownloadUI <- function(id, label = "Download som Excelark") {
   ns <- NS(id)
   
-  downloadButton(ns("download_xlsx"), label)
+  downloadButton(ns("download_xlsx"), label, class = "hidden-print")
 }
 
 # SERVER
 xlsxDownload <- function(input, output, session, data, name = NULL) {
-  
+
+  # Formatting notes here: https://cran.r-project.org/web/packages/openxlsx/vignettes/formatting.pdf
   output$download_xlsx <- downloadHandler(
     filename = function() {
       if(is.na(name)){"test.xlsx"} else {paste0(name,".xlsx")}
     },
     content = function(file) {
-      #tempFile <- tempfile(fileext = ".xlsx")
-      #write.xlsx(data, tempFile)
-      write.xlsx(data, file)
-      #file.rename(tempFile, file)
+      tempFile <- tempfile(fileext = ".xlsx")
+      wb <- createWorkbook()
+      addWorksheet(wb, "tabel")
+      writeDataTable(wb, 1, data, startRow = 3, startCol = 2, tableStyle = "TableStyleMedium2")
+      saveWorkbook(wb, file=tempFile, overwrite = TRUE)
+      #write.xlsx(wb, tempFile)
+      file.rename(tempFile, file)
     },
     contentType="application/xlsx"
   )
+    
 }
 
 ### KPI TILE MODULE ###
