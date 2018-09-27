@@ -2,7 +2,6 @@ source("global.R")
 source("functions.R")
 source("modules.R")
 source("~/.postpass") 
-library(basictabler)
 
 # UI
 
