@@ -237,7 +237,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   })
   
   # Call Excel download function for tables 
-  callModule(xlsxDownload, "checkouts", data = checkouts_all_tbl(), name = "udlån")
+  callModule(xlsxDownload, "checkouts", data = reactive(checkouts_all_tbl()), name = "udlån")
   
   #udlaan_heat <- udlaan %>%
   #  mutate(branch = ifelse(is.na(name), "Andet", name)) %>%
