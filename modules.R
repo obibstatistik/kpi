@@ -74,7 +74,6 @@ csvDownload <- function(input, output, session, data, name = NULL) {
 # UI
 xlsxDownloadUI <- function(id, label = "Download som Excelark") {
   ns <- NS(id)
-  
   downloadButton(ns("download_xlsx"), label, class = "hidden-print")
 }
 
@@ -93,13 +92,12 @@ xlsxDownload <- function(input, output, session, data, name = NULL) {
       writeDataTable(wb, 1, data(), startRow = 3, startCol = 2, tableStyle = "TableStyleMedium2")
       setColWidths(wb, 1, cols = 2:6, widths = 15)
       setColWidths(wb, 1, cols = 7, widths = 17)
-      setColWidths(wb, 1, cols = 8, widths = 22)
+      setColWidths(wb, 1, cols = 8:9, widths = 22)
       saveWorkbook(wb, file=tempFile, overwrite = TRUE)
       file.rename(tempFile, file)
     },
     contentType="application/xlsx"
   )
-    
 }
 
 ### KPI TILE MODULE ###

@@ -60,7 +60,8 @@ visitorsTabPanelUI <- function(id) {
                                               p("Tabellen viser det samlede besøg på OBB fordelt pr. måned."),
                                               p("Visningen giver mulighed for at sammenligne mellem to forskellige år samt vælge hvilken lokation der ønskes vist. Det er desuden muligt at vælge Hovedbiblioteket til og fra."),
                                               formattableOutput(ns("visitors_table")),
-                                              csvDownloadUI(ns("visitors_table"))
+                                              #csvDownloadUI(ns("visitors_table")),
+                                              xlsxDownloadUI(ns("visitors_table"))
                                        )
                                      ),
                                      column(12,tags$hr()),
@@ -76,7 +77,8 @@ visitorsTabPanelUI <- function(id) {
                                               p("Det er muligt at fravælge og vælge enkelte år via enkeltklik på året i diagrammets højre side. Ved dobbeltklik på et år vælges kun dette år."),
                                               plotlyOutput(ns("visitsplotindividual")),
                                               formattableOutput(ns("visitorstest")),
-                                              csvDownloadUI(ns("csv_visitors_per_branch"))
+                                              #csvDownloadUI(ns("csv_visitors_per_branch")),
+                                              xlsxDownloadUI(ns("csv_visitors_per_branch"))
                                        )
                                      )
                                    )   
@@ -124,7 +126,8 @@ visitorsTabPanelUI <- function(id) {
                                      column(10,
                                             h4("Besøg fordelt på timer og periode"), 
                                             formattableOutput(ns("visitors_per_hours_table")),
-                                            csvDownloadUI(ns("csv_visitors_per_hour")),
+                                            #csvDownloadUI(ns("csv_visitors_per_hour")),
+                                            xlsxDownloadUI(ns("csv_visitors_per_hour")),
                                             conditionalPanel(
                                               paste0("input['", ns("smooth"), "']"),
                                               formattableOutput(ns("visitors_per_hours_table2"))
@@ -259,7 +262,8 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
     ))
   })
   
-  callModule(csvDownload, "visitors_table", data = visitors_table(), name = "visitors")
+  #callModule(csvDownload, "visitors_table", data = visitors_table(), name = "visitors")
+  callModule(xlsxDownload, "visitors_table", data = reactive(visitors_table()), name = "visitors")
   
   # visitors branch plot #
   visitors1 <- visitors %>%
@@ -336,7 +340,8 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
     )
   })
   
-  callModule(csvDownload, "csv_visitors_per_branch", data = visitors_per_branch(), name = "visitors_per_branch")
+  #callModule(csvDownload, "csv_visitors_per_branch", data = visitors_per_branch(), name = "visitors_per_branch")
+  callModule(xlsxDownload, "csv_visitors_per_branch", data = reactive(visitors_per_branch()), name = "visitors_per_branch")
   
   # visitors pr. hour
   
@@ -391,7 +396,8 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
     formattable(visitors_per_hour())
   })
   
-  callModule(csvDownload, "csv_visitors_per_hour", data = visitors_per_hour(), name = "visitors_per_hour")
+  #callModule(csvDownload, "csv_visitors_per_hour", data = visitors_per_hour(), name = "visitors_per_hour")
+  callModule(xlsxDownload, "csv_visitors_per_hour", data = reactive(visitors_per_hour()), name = "visitors_per_hour")
     
   output$visitors_per_hours_table2<- renderFormattable({
     if (input$numberpercent == "percent")  

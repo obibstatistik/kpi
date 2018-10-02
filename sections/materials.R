@@ -62,7 +62,6 @@ materialsTabPanelUI <- function(id) {
                                                    p("Tabellen viser det samlede udlån på OBB fordelt pr. måned."),
                                                    p("Visningen giver mulighed for at sammenligne mellem to forskellige år samt vælge hvilken lokation der ønskes vist. Det er desuden muligt at vælge Hovedbiblioteket til og fra."),
                                                    formattableOutput(ns("checkouts_table")),
-                                                   #,downloadLink("downloadData", "Download")
                                                    xlsxDownloadUI(ns("checkouts"))
                                                    #downloadButton(ns("downloadXlsx"), "Hent som Excelark", class = "hidden-print")
                                             )

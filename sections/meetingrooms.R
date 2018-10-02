@@ -44,7 +44,9 @@ meetingroomsTabPanelUI <- function(id) {
                                             column(width = 12, class = "col-lg-6",
                                                    h4("Oversigtstabel"),
                                                    tableOutput(ns("tablemeetingrooms_overview")),
-                                                   csvDownloadUI(ns("meetingsrooms"))
+                                                   #csvDownloadUI(ns("meetingsrooms")),
+                                                   xlsxDownloadUI(ns("meetingsrooms"))
+                                                   
                                             ),
                                             column(width = 12, class = "col-lg-6",
                                                    h4("Vist på agendaskærm"), 
@@ -74,12 +76,12 @@ meetingroomsTabPanelUI <- function(id) {
                                                                   separator = " - "
                                                    ),
                                                    selectInput(ns("timeslot_booker"), "Med/uden andet",c('Med andet' = "1",'Uden andet' = "2")) 
-                                                   
                                                    ),
                                       column(width = 10,
                                             column(width = 12, class = "col-lg-6",
                                                    h4("Booker top 10"),
-                                                   tableOutput(ns("table_meetingrooms_booker"))
+                                                   tableOutput(ns("table_meetingrooms_booker")),
+                                                   xlsxDownloadUI(ns("meetingrooms_booker"))
                                             ),
                                             column(width = 12, class = "col-lg-6",
                                                    h4("Booker top 10"),
@@ -105,7 +107,8 @@ meetingroomsTabPanelUI <- function(id) {
                                                           p("Grafen viser brugen af de enkelte mødelokaler i Borgerens Hus fordelt på timer. Der kan kun sammenlignes i den enkelte kolonne."),
                                                           p("Jo mørkere markering jo højere brug af lokalet. Hvis et møde strækker sig over mere end én klokketime tæller mødet i begge time intervaller."),
                                                           formattableOutput(ns("tablemeetingrooms_timeslots")), #%>% withSpinner(color="#0dc5c1"),
-                                                          csvDownloadUI(ns("csv_timeoversigt")),
+                                                          #csvDownloadUI(ns("csv_timeoversigt")),
+                                                          xlsxDownloadUI(ns("xlsx_timeoversigt")),
                                                           h4("Heatmap"),
                                                           p("Grafen viser brugen af mødelokaler i Borgernes Hus fordelt på døgnet. Heatmappet er dermed en indikation af hvordan brugen af huset er i løbet af en dag. Der kan sammenlignes på tværs af kolonner og rækker."),
                                                           plotlyOutput(ns("meetingrooms_time_heatmap"))
@@ -186,7 +189,8 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
     meetingrooms_overview()
   )
   
-  callModule(csvDownload, "meetingsrooms", data = meetingrooms_overview(), name = "meetingrooms")
+  #callModule(csvDownload, "meetingsrooms", data = meetingrooms_overview(), name = "meetingrooms")
+  callModule(xlsxDownload, "meetingsrooms", data = reactive(meetingrooms_overview()), name = "meetingsrooms")
   
   meetingrooms_overview_box <- reactive({
     meetingrooms_overview <- meetingrooms %>%
@@ -264,6 +268,8 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
       head(10) 
   })
   
+  callModule(xlsxDownload, "meetingrooms_booker", data = reactive(meetingrooms_booker()), name = "meetingrooms_booker")
+  
   output$table_meetingrooms_booker <- renderTable({
     meetingrooms_booker <- meetingrooms_booker() %>% 
       mutate(bookingprocent = procenten(sum/totalsum)) %>%
@@ -336,7 +342,8 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
     ))
   })
 
-  callModule(csvDownload, "csv_timeoversigt", data = meetingrooms_timeslots(), name = "timeoversigt")
+  #callModule(csvDownload, "csv_timeoversigt", data = meetingrooms_timeslots(), name = "timeoversigt")
+  callModule(xlsxDownload, "xlsx_timeoversigt", data = reactive(meetingrooms_timeslots()), name = "timeoversigt")
   
   output$meetingrooms_time_heatmap <- renderPlotly({
     meetingrooms_timeslots <- rækker(meetingrooms) %>%

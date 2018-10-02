@@ -27,7 +27,7 @@ eventareasTabPanelUI <- function(id) {
                                                      h4("Eventområde oversigt"),
                                                      p("Oversigtstabellen viser aktiviteten i de enkelte event områder i Borgernes Hus for den valgte periode. Tabellen viser ”Antal møder” ”Median” – som er et udtryk for hvor langt møderne i snit varer i de enkelte lokaler, ”Total” – som er den totale tid mødelokalet har været optaget i perioden, samt ”Belægningsprocent” – der viser hvor meget af den totale tid mødelokalet har været booket."),
                                                      p("Grafen viser hvor mange events, der er blevet vist på agendaskærmen i perioden.")
-                                              )
+                                                )
                                             ),
                                             column(2,
                                                    h4("Periode"),
@@ -35,19 +35,19 @@ eventareasTabPanelUI <- function(id) {
                                                                   label = 'Vælg periode',
                                                                   start = Sys.Date() - 90, end = Sys.Date(),
                                                                   separator = " - "
-                                                   )
+                                                )
                                             ),
                                             column(width = 10,
                                                    column(width = 12, class = "col-lg-7",
                                                           h4("Oversigtstabel"),
-                                                          tableOutput(ns("tablebhus_events_overview")
-                                                         )),
+                                                          tableOutput(ns("tablebhus_events_overview")),
+                                                          xlsxDownloadUI(ns("bh_events_overview"))
+                                                         ),
                                                    column(width = 12, class = "col-lg-5",
-                                                           h4("Vist på agendaskærm"), 
-                                                           plotlyOutput(ns("bhus_events_agendascreen_plot"))
-                                                          )
+                                                          h4("Vist på agendaskærm"), 
+                                                          plotlyOutput(ns("bhus_events_agendascreen_plot"))
+                                                         )
                                                    )
-                                                  
                                            ),
                                      column(12,tags$hr()),
                                      column(6,
@@ -61,7 +61,8 @@ eventareasTabPanelUI <- function(id) {
                                             column(width = 10,
                                                    column(width = 12, class = "col-lg-6",
                                                           h4("Booker top 10"),
-                                                          tableOutput(ns("table_bhus_events_booker"))
+                                                          tableOutput(ns("table_bhus_events_booker")),
+                                                          xlsxDownloadUI(ns("områdebooking"))
                                                    ),
                                                    column(width = 12, class = "col-lg-6",
                                                           h4("Booker top 10"),
@@ -69,7 +70,6 @@ eventareasTabPanelUI <- function(id) {
                                                    )
                                             )
                                      )
-                                     
                                    )),
                           tabPanel("Timer",
                                    fluidRow(
@@ -90,9 +90,9 @@ eventareasTabPanelUI <- function(id) {
                                                           h4("Heatmap"),
                                                           p("Graduering i hele figuren"),
                                                           plotlyOutput(ns("bhus_events_time_heatmap"))
-                                                   )
+                                                 )
                                             )
-                                     )
+                                        )
                                    )  
                           )
                           #,tabPanel("Data og dokumentation",
@@ -103,7 +103,6 @@ eventareasTabPanelUI <- function(id) {
                           #         )  
                           #)
                    ))))
-  
 }
 
 # SERVER
@@ -118,7 +117,7 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
   dbDisconnect(con)
   
   # Oversigtstabel
-  output$tablebhus_events_overview <- renderTable(
+  eventarea_booker <- reactive({
     bhus_events_overview <- bhus_events %>%
       filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
       mutate(tid = as.integer((slut - startdate))) %>%
@@ -127,8 +126,12 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
       summarise(count = n(), median = median(tid), sum = sum(tid) ) %>%
       mutate(timediff = procenten(sum/((Nweekdays(input$dateRangeBhus_events[1], input$dateRangeBhus_events[2])*13)))) %>%
       rename(Lokation = location, Antal = count, Median =	median, 'Total(t)' =	sum, Belægningsprocent = timediff )  
-  )
-  
+  })
+
+  callModule(xlsxDownload, "bh_events_overview", data = reactive(eventarea_booker()), name = "bh_events_overview")
+
+  output$tablebhus_events_overview <- renderTable({ eventarea_booker })
+    
   # Vist på agendaskærm
   output$bhus_events_agendascreen_plot <- renderPlotly({
     bhus_events_agendascreen <- bhus_events %>%
@@ -169,13 +172,15 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
         mutate(totalsum = sum(sum)) %>%
         head(10)
     })
-    
+
+  callModule(xlsxDownload, "områdebooking", data = reactive(eventarea_booker()), name = "områdebooking")
+      
   output$table_bhus_events_booker <- renderTable(
     bhus_events_booker <- eventarea_booker() %>%
       mutate(bookingprocent = procenten(sum/totalsum)) %>%
       select(-totalsum), rownames = TRUE
   )
-  
+
   output$plot_pie_eventarea_booker <- renderPlotly({
     eventarea_booker <- eventarea_booker() %>%
       mutate(bookingprocent = (sum/totalsum))
