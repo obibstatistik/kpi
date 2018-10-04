@@ -62,7 +62,8 @@ usersTabPanelUI <- function(id) {
                                                   p("Aktive lånere er lånere som har lånt et materiale indenfor det seneste år. Inaktive lånere har haft et lån mellem 1 til 5 år tilbage i tiden."),
                                                   p("OBS. Lånere kan optræde i flere kategorier"),
                                                   tableOutput(ns('tableloaners')),
-                                                  csvDownloadUI(ns("inner2")))))
+                                                  #csvDownloadUI(ns("inner2")))))
+                                                  xlsxDownloadUI(ns("active_inactive")))))
                           #,
                           # tabPanel("Kort",
                           #          fluidRow(width = 12,
@@ -170,7 +171,10 @@ usersTabPanel <- function(input, output, session, data, tablename) {
       layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Alder', dtick = 1, autotick = FALSE))
   })
   
-  innerResult <- callModule(csvDownload, "inner2", data = loaners, name = "users")
+  #innerResult <- callModule(csvDownload, "inner2", data = loaners, name = "users")
+
+  # Call Excel download function for tables 
+  innerResult <- callModule(xlsxDownload, "active_inactive", data = reactive(loaners), name = "aktiv_inaktiv")
   
   # # kort
   #   output$mymap <- renderLeaflet({
