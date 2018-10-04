@@ -21,8 +21,8 @@ metaTabPanelUI <- function(id) {
              h4("Kolonner"),
              tableOutput(ns("datasources_schema"))
            )  
-          )
-  )
+         )
+       )
 }
 
 # SERVER
@@ -90,9 +90,10 @@ xlsxDownload <- function(input, output, session, data, name = NULL) {
       wb <- createWorkbook()
       addWorksheet(wb, name)
       writeDataTable(wb, 1, data(), startRow = 3, startCol = 2, tableStyle = "TableStyleMedium2")
-      setColWidths(wb, 1, cols = 2:6, widths = 15)
-      setColWidths(wb, 1, cols = 7, widths = 17)
-      setColWidths(wb, 1, cols = 8:9, widths = 22)
+      setColWidths(wb, 1, cols = 2:15, widths = 22)
+      #setColWidths(wb, 1, cols = 2:6, widths = 15)
+      #setColWidths(wb, 1, cols = 7, widths = 17)
+      #setColWidths(wb, 1, cols = 8:9, widths = 22)
       saveWorkbook(wb, file=tempFile, overwrite = TRUE)
       file.rename(tempFile, file)
     },

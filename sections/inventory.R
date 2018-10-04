@@ -104,7 +104,8 @@ inventoryTabPanelUI <- function(id) {
                                              p("Totalerne i bunden og i højre side angiver hhv. det samlede antal registrerede eksemplarer for hvert bibliotek og det samlede antal for hvert beholdningsniveau eller materialetype (for de valgte filialer)"),
                                              tags$br(),
                                              tags$br(),
-                                             formattableOutput(ns("inventory_table"))
+                                             formattableOutput(ns("inventory_table")),
+                                             xlsxDownloadUI(ns("inventory"))
                                       )
                                     )
                                   )
@@ -168,14 +169,17 @@ inventoryTabPanel <- function(input, output, session, data, tablename) {
   
   # OVERSKRIFT: SAMLINGENS BESKAFFENHED + UNDEROVERSKRIFT VED SUNBURST: SAMLINGENS DIVERSITET/FRAGMENTERING
   
-    output$inventory_table <- renderFormattable({
-      beholdning_alt_tbl <- beholdning_alt %>%
+    beholdning_alt_tbl <- reactive({
+      beholdning_alt %>%
         group_by_at(vars(bibliotek,input$niveau)) %>%
         summarise(antal = sum(antal)) %>%
         spread(key = bibliotek, value = antal, fill = 0) %>%
         select(c(input$niveau,input$branch_selector)) %>%
         adorn_totals(c("row","col"))
-      formattable(beholdning_alt_tbl)
     })
-  
+    
+    output$inventory_table <- renderFormattable({ formattable(beholdning_alt_tbl()) })
+    
+    # Call Excel download function for tables 
+    callModule(xlsxDownload, "inventory", data = reactive(beholdning_alt_tbl()), name = "beholdning")
 }

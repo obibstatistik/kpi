@@ -153,7 +153,6 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
   })
   
   # Booker top 10
-  
   eventarea_booker <- reactive({
     bhus_events_booker <- bhus_events %>%
         filter(startdate > input$dateRangeBhus_events[1] & startdate < input$dateRangeBhus_events[2]) %>%
