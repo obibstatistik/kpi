@@ -130,7 +130,7 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
 
   callModule(xlsxDownload, "bh_events_overview", data = reactive(eventarea_booker()), name = "bh_events_overview")
 
-  output$tablebhus_events_overview <- renderTable({ eventarea_booker })
+  output$tablebhus_events_overview <- renderTable({ eventarea_booker() })
     
   # Vist på agendaskærm
   output$bhus_events_agendascreen_plot <- renderPlotly({

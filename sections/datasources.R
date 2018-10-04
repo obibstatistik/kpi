@@ -28,7 +28,8 @@ datasourcesTabPanelUI <- function(id) {
                           tabPanel("Kildetabel",
                                    fluidRow(width = 12,
                                             column(width = 12,
-                                                   dataTableOutput(ns('datasources_table'))
+                                                   dataTableOutput(ns('datasources_table')),
+                                                   xlsxDownloadUI(ns('datakilder'))
                                             )
                                    )       
                           )
@@ -61,4 +62,6 @@ datasourcesTabPanel <- function(input, output, session, data, tablename) {
     select(-aktiv, -tabeller) 
   output$datasources_table <- renderDataTable(datasources, options = list(paging = FALSE)) 
   
+  # Call Excel download function for tables 
+  callModule(xlsxDownload, "datakilder", data = reactive(datasources), name = "datakilder")
 }

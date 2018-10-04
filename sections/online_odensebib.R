@@ -35,7 +35,8 @@ online_odensebibTabPanelUI <- function(id) {
                                      column(width = 6,
                                             h4("Top 10 sider 2017"),
                                             p("Viser en oversigt over de mest besøgte sider på odensebib.dk i 2017."),
-                                            tableOutput(ns("tableplot3"))
+                                            tableOutput(ns("tableplot3")),
+                                            xlsxDownloadUI(ns("top10_sider_2017"))
                                      ),
                                      column(width = 6,
                                             h4("Enheder"),
@@ -139,6 +140,9 @@ online_odensebibTabPanel <- function(input, output, session) {
     rename(Titel = title, Sidevisninger = pageviews )
   
   output$tableplot3 <- renderTable({formattable(ga_top10)}, rownames = TRUE)
+  
+  # Call Excel download function for tables 
+  callModule(xlsxDownload, "top10_sider_2017", data = reactive(ga_top10), name = "top10_sider_2017")
   
   # browser
   
