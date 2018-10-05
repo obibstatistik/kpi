@@ -61,6 +61,7 @@ materialsTabPanelUI <- function(id) {
                                                    h4("Udlån på OBB"),
                                                    p("Tabellen viser det samlede udlån på OBB fordelt pr. måned."),
                                                    p("Visningen giver mulighed for at sammenligne mellem to forskellige år samt vælge hvilken lokation der ønskes vist. Det er desuden muligt at vælge Hovedbiblioteket til og fra."),
+                                                   p("N.B! Der er en forsinkelse på 3 dage på modtagelsen af seneste statistik fra Cicero"),
                                                    formattableOutput(ns("checkouts_table")),
                                                    xlsxDownloadUI(ns("checkouts"))
                                                    #downloadButton(ns("downloadXlsx"), "Hent som Excelark", class = "hidden-print")
@@ -236,7 +237,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   })
   
   # Call Excel download function for tables 
-  callModule(xlsxDownload, "checkouts", data = reactive(checkouts_all_tbl()), name = "udlån")
+  callModule(xlsxDownload, "checkouts", data = reactive(checkouts_all_tbl()), name = "Udlån_på_OBB")
   
   #udlaan_heat <- udlaan %>%
   #  mutate(branch = ifelse(is.na(name), "Andet", name)) %>%
