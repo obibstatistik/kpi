@@ -35,7 +35,8 @@ materialsTabPanelUI <- function(id) {
                                      column(10,
                                             h4("Samlet udlån på OBB, hele år"),
                                             p("Denne graf viser samlet udlån på OBB fordelt pr. år med mulighed for at vælge hovedbibliotekets udlån fra via vælger i venstre side."),
-                                            tags$div( plotlyOutput(ns("checkouts_plot_all")), style = "page-break-after: always;")
+                                            #tags$div( plotlyOutput(ns("checkouts_plot_all")), style = "page-break-after: always;width: 500px")
+                                            tags$div( plotlyOutput(ns("checkouts_plot_all")), style = "page-break-after: always;", class = "plotteren")
                                      ),
                                      column(12,tags$div( tags$hr(), class = "hidden-print" )),
                                      column(12,

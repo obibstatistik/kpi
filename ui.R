@@ -72,7 +72,11 @@ dashboardPage(
   dashboardBody(
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
-      tags$head(tags$script(src="hacks.js"))
+      #tags$link(rel = "stylesheet", type = "text/css", href = "plotprint.css", media="print"),
+      tags$head(tags$style(HTML('.shiny-server-account { display: none; }'))),
+      #includeCSS("www/plotprint.css"),
+      tags$head(tags$script(src="hacks.js")),
+      tags$head(tags$style(HTML('@media print { .plotteren { width: 500px; } }')))
     ),
     tabItems(
       # Frontpage  
