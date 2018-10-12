@@ -28,15 +28,21 @@ materialsTabPanelUI <- function(id) {
                                             tags$div( samedate_barchartOutput(ns('checkouts_samedate_plot')), style = "page-break-after: always;" )
                                      ),
                                      column(12,tags$div( tags$hr(), class = "hidden-print" )),
-                                     column(2,
-                                            h4("Afgræns"),
-                                            selectInput(ns("checkouts_mainlibrary_filter1"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))    
-                                     ),
-                                     column(10,
-                                            h4("Samlet udlån på OBB, hele år"),
-                                            p("Denne graf viser samlet udlån på OBB fordelt pr. år med mulighed for at vælge hovedbibliotekets udlån fra via vælger i venstre side."),
-                                            #tags$div( plotlyOutput(ns("checkouts_plot_all")), style = "page-break-after: always;width: 500px")
-                                            tags$div( plotlyOutput(ns("checkouts_plot_all")), style = "page-break-after: always;", class = "plotteren")
+                                     column(12,
+                                            tags$div(id = "print-content",
+                                                 column(2,
+                                                        h4("Afgræns"),
+                                                        selectInput(ns("checkouts_mainlibrary_filter1"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))    
+                                                 ),
+                                                 column(10,
+                                                          h4("Samlet udlån på OBB, hele år"),
+                                                          p("Denne graf viser samlet udlån på OBB fordelt pr. år med mulighed for at vælge hovedbibliotekets udlån fra via vælger i venstre side."),
+                                                          #tags$div( plotlyOutput(ns("checkouts_plot_all")), style = "page-break-after: always;width: 500px")
+                                                          tags$div( plotlyOutput(ns("checkouts_plot_all")), style = "page-break-after: always;", class = "plotteren"),
+                                                          #tags$div(HTML('<input type="button" value="Print this page" onClick="window.print()">'))
+                                                          tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv(\'print-content\')" value="Print denne sektion"/>'), class = 'hidden-print')
+                                                        )
+                                              )
                                      ),
                                      column(12,tags$div( tags$hr(), class = "hidden-print" )),
                                      column(12,

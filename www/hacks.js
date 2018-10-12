@@ -1,3 +1,16 @@
+function printDiv(divName) {
+  var svg = $('.main-svg')[0];
+  //var svg = $('.plotteren')[0];
+  //svg.setAttribute("style","width:600px");
+  //svg.setAttribute("width","600px");
+  svg.setAttribute('viewbox', '800 0 600 600');
+  var printContents = document.getElementById(divName).innerHTML;
+  w=window.open();
+  w.document.write(printContents);
+  w.print();
+  w.close();
+}
+
 document.addEventListener("DOMContentLoaded", function(event) { 
   
   //arrangementer
@@ -77,7 +90,4 @@ document.addEventListener("DOMContentLoaded", function(event) {
       $(this).find('img').replaceWith( "<img class=\"test\" src=\"icons/datakilder_positiv_15x15.png\" width=\"15px\" height=\"15px\" />");
     }
   });
-  
-  
-  
 });
