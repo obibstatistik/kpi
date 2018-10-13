@@ -3,6 +3,9 @@ source("functions.R")
 source("modules.R")
 source("~/.postpass") 
 
+data(diamonds, package = "ggplot2")
+nms <- names(diamonds)
+
 # UI
 
 materialsTabPanelUI <- function(id) {
@@ -15,7 +18,6 @@ materialsTabPanelUI <- function(id) {
               h3("Udlån"),
               img(src='icons/materialer_negativ_45x45.png', align = "right", height="46px")
           ),
-          
           fluidRow(
             column(12,
                    tabBox(width = 12, id = "tabset2", 
@@ -37,10 +39,10 @@ materialsTabPanelUI <- function(id) {
                                                  column(10,
                                                           h4("Samlet udlån på OBB, hele år"),
                                                           p("Denne graf viser samlet udlån på OBB fordelt pr. år med mulighed for at vælge hovedbibliotekets udlån fra via vælger i venstre side."),
-                                                          #tags$div( plotlyOutput(ns("checkouts_plot_all")), style = "page-break-after: always;width: 500px")
+                                                          #tags$div( plotlyOutput(ns("checkouts_plot_all")), style = "page-break-after: always;width: 1500px")
                                                           tags$div( plotlyOutput(ns("checkouts_plot_all")), style = "page-break-after: always;", class = "plotteren"),
                                                           #tags$div(HTML('<input type="button" value="Print this page" onClick="window.print()">'))
-                                                          tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv(\'print-content\')" value="Print denne sektion"/>'), class = 'hidden-print')
+                                                          tags$div(HTML('<input type="button" onclick="printDiv(\'.col-sm-12\')" value="Print denne sektion"/>'))
                                                         )
                                               )
                                      ),
@@ -73,7 +75,27 @@ materialsTabPanelUI <- function(id) {
                                                    xlsxDownloadUI(ns("checkouts"))
                                                    #downloadButton(ns("downloadXlsx"), "Hent som Excelark", class = "hidden-print")
                                             )
-                                        )
+                                            
+                                        ),
+                                     column(12,tags$div( tags$hr(), class = "hidden-print" )),
+                                     column(12,
+                                            column(2,
+                                                   sliderInput('sampleSize', 'Sample Size', min = 1, max = nrow(diamonds),
+                                                               value = 1000, step = 500, round = 0),
+                                                   selectInput('x', 'X', choices = nms, selected = "carat"),
+                                                   selectInput('y', 'Y', choices = nms, selected = "price"),
+                                                   selectInput('color', 'Color', choices = nms, selected = "clarity"),
+                                                   
+                                                   selectInput('facet_row', 'Facet Row', c(None = '.', nms), selected = "clarity"),
+                                                   selectInput('facet_col', 'Facet Column', c(None = '.', nms)),
+                                                   sliderInput('plotHeight', 'Height of plot (in pixels)', 
+                                                               min = 100, max = 2000, value = 1000)
+                                            ),
+                                            column(10,
+                                                     plotlyOutput(ns('trendPlot'), height = "900px")
+                                            )
+                                            
+                                     )
                                    )
                           ),
                        #   tabPanel("Timer", 
@@ -210,10 +232,37 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
       group_by(aar) %>%
       summarise(sum = sum(sum))
     plot_ly(checkouts_overview, x = checkouts_overview$aar, y = checkouts_overview$sum, type = 'bar', marker = list(color = color1)) %>%
-      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'År', dtick = 1, autotick = FALSE, autorange="reversed"))
+      layout(autosize = TRUE,  yaxis = list(title = 'Antal'), xaxis = list(title = 'År', dtick = 1, autotick = FALSE, autorange="reversed"))
   })
+  
+  
+  
+  
+  #add reactive data information. Dataset = built in diamonds data
+  dataset <- reactive({
+    #diamonds[sample(nrow(diamonds), input$sampleSize),]
+    diamonds[sample(nrow(diamonds), 31),]
+  })
+  
+  output$trendPlot <- renderPlotly({
     
-  # Reactive function wrapping dataframe for checkouts two-year comparison table incl. Excel download below
+    # build graph with ggplot syntax
+    #p <- ggplot(dataset(), aes_string(x = input$x, y = input$y, color = input$color)) + geom_point()
+    p <- ggplot(dataset(), aes_string(x = input$x, y = input$y, color = input$color))
+    
+    # if at least one facet column/row is specified, add it
+    facets <- paste('cut~color')
+    #facets <- paste(input$facet_row, '~', input$facet_col)
+    #if (facets != '. ~ .') p <- p + facet_grid(facets)
+    
+    ggplotly(p) %>% 
+      layout(height = input$plotHeight, autosize=TRUE)
+    
+  })
+   
+ 
+  
+   # Reactive function wrapping dataframe for checkouts two-year comparison table incl. Excel download below
     checkouts_all_tbl <- reactive({
       checkouts_all %>%
       select(aar,transact_date,antal,branch) %>%

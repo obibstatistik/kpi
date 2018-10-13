@@ -1,7 +1,5 @@
-@media print {
-    .main-svg { 
-      width: 500px; 
-    }
+.plotteren {
+  width: 1600px;
 }
 
 h3 {

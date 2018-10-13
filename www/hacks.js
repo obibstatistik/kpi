@@ -1,22 +1,44 @@
 function printDiv(divName) {
+  //$('body').width( '600px' );
   var svg = $('.main-svg')[0];
   //var svg = $('.plotteren')[0];
   //svg.setAttribute("style","width:600px");
   //svg.setAttribute("width","600px");
-  svg.setAttribute('viewbox', '800 0 600 600');
+  //Plotly.relayout(svg);
+  svg.setAttribute('viewbox', '800 100 600 600');
   var printContents = document.getElementById(divName).innerHTML;
   w=window.open();
   w.document.write(printContents);
   w.print();
   w.close();
 }
+/*
+function printDiv(printClass) {
+  //$('body').width( '600px' );
+  var svg = $('.main-svg')[0];
+  //var svg = $('.plotteren')[0];
+  //svg.setAttribute("style","width:600px");
+  //svg.setAttribute("width","600px");
+  //Plotly.relayout(svg);
+  //var divName = $(this).closest(printClass);
+  var divName = $(this).closest(".col-sm-12");
+  console.log(this);
+  svg.setAttribute('viewbox', '800 100 600 600');
+  //var printContents = document.getElementById(divName).innerHTML;
+  var printContents = divName.innerHTML;
+  w = window.open();
+  w.document.write(printContents);
+  w.print();
+  w.close();
+}
+*/
 
 document.addEventListener("DOMContentLoaded", function(event) { 
   
   //arrangementer
-  $( "li.active i.fa-calendar").replaceWith( "<img class=\"active\" src=\"icons/arrangementer_negativ_15x15.png\" width=\"15px\" height=\"15px\" />");
-  $( "i.fa-calendar").replaceWith( "<img class=\"1\" src=\"icons/arrangementer_positiv_15x15.png\" width=\"15px\" height=\"15px\" />");
-  $( ".1").parent().hover(function(e){
+  $( "li.active i.fa-calendar" ).replaceWith( "<img class=\"active\" src=\"icons/arrangementer_negativ_15x15.png\" width=\"15px\" height=\"15px\" />");
+  $( "i.fa-calendar" ).replaceWith( "<img class=\"1\" src=\"icons/arrangementer_positiv_15x15.png\" width=\"15px\" height=\"15px\" />");
+  $( ".1" ).parent().hover(function(e){
     $(this).find('img').replaceWith( "<img class=\"test\" src=\"icons/arrangementer_negativ_15x15.png\" width=\"15px\" height=\"15px\" />");
   },
   function(e){
