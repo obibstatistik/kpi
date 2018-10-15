@@ -10,18 +10,27 @@ function autorangeChart(div) {
 /* This function creates a new page, copies relevant content to
    it, opens the print dialogue and closes the page after printing. */
    
-function printDiv(divName) {
-  var svgDiv = document.getElementById("materials-checkouts_plot_all");
-  svgDiv.setAttribute('style','width:700px;');
-  autorangeChart('materials-checkouts_plot_all');
-  var printContents = document.getElementById(divName).innerHTML;
+function printDiv(event) {
+  var divName = $(this).closest(".col-sm-12");
+  //var svgDiv = document.getElementById("materials-checkouts_plot_all");
+  var widgetDivs = document.getElementsByClassName("html-widget-output");
+  [].forEach.call(widgetDivs, function (widgetDiv) {
+      widgetDiv.setAttribute('style','width:700px;');
+      console.log(widgetDiv.id);
+      //autorangeChart(widgetDiv);
+  });
+  /* If width is above 700px then set it to that, else keep current width? */
+  //svgDiv.setAttribute('style','width:700px;');
+  //html-widget-output
+  //autorangeChart('materials-checkouts_plot_all');
+  //var printContents = document.getElementById(divName).innerHTML;
   w = window.open();  // open a new window
-  w.document.write(printContents);
-  var svgs = w.document.getElementsByClassName("main-svg");
-  var svg = svgs[0];
-  var svgb = svgs[1];
-  svg.setAttribute('style','position:absolute;');
-  svgb.setAttribute('style','position:absolute;');
+  //w.document.write(printContents);
+  w.document.write($(divName).html());
+  var svgs = w.document.getElementsByClassName("main-svg");  // get refs to all elements with class main-svg
+  [].forEach.call(svgs, function (svg) {svg.setAttribute('style','position:absolute;')});  // set position absolute for all svgs to make axis label svg and graph svg stay on top of each other
+  //var inputs = w.document.getElementsByTagName("input"); 
+  //[].forEach.call(inputs, function (input) {input.setAttribute('style','display:none;')}); 
   var inputs = w.document.getElementsByTagName("input");  // get refs to all input elements (e.g. the print button)
   while (inputs[0]) inputs[0].parentNode.removeChild(inputs[0]);  // remove all input elements
   var modebars = w.document.getElementsByClassName("modebar");
@@ -36,6 +45,19 @@ function printDiv(divName) {
 TODO: særlig function kun tilgængelig for sekretariatet (via proxyens env var med login_navn) 
 som viser en knap ved siden af printknappen til at hive svg'er ud i bestemte bredder til den fysiske 
 whitebook og som overholder de ændringer, der er lavet med filtre!
+
+  var divName = $(this).closest(".col-sm-12");
+  $(divName).children(".html-widget-output").css('width','700px');
+  $(divName).children(".html-widget-output").each(function() {
+      console.log(this.id);
+      autorangeChart(this.id);
+    }
+  );
+
+  //var svg = svgs[0];
+  //var svgb = svgs[1];
+  //svg.setAttribute('style','position:absolute;');
+  //svgb.setAttribute('style','position:absolute;');
 
 //maybe call this in a 'on window resize' event
 

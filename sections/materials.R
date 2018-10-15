@@ -44,7 +44,8 @@ materialsTabPanelUI <- function(id) {
                                                           #tags$div( plotlyOutput(ns("checkouts_plot_all")), style = "page-break-after: always;", class = "plotteren"),
                                                           #tags$div(HTML('<input type="button" value="Print this page" onClick="window.print()">'))
                                                           #tags$div(HTML('<input type="button" onclick="printDiv(\'.col-sm-12\')" value="Print denne sektion"/>'))
-                                                          tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv(\'print-content\')" value="Print denne sektion"/>'))
+                                                          #tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv(\'print-content\')" value="Print denne sektion"/>'))
+                                                          tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event)" value="Print denne sektion"/>'))
                                                         )
                                               )
                                      ),
