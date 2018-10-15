@@ -39,10 +39,12 @@ materialsTabPanelUI <- function(id) {
                                                  column(10,
                                                           h4("Samlet udlån på OBB, hele år"),
                                                           p("Denne graf viser samlet udlån på OBB fordelt pr. år med mulighed for at vælge hovedbibliotekets udlån fra via vælger i venstre side."),
-                                                          #tags$div( plotlyOutput(ns("checkouts_plot_all")), style = "page-break-after: always;width: 1500px")
-                                                          tags$div( plotlyOutput(ns("checkouts_plot_all")), style = "page-break-after: always;", class = "plotteren"),
+                                                          # N.B! Hvis man indlejrer plotlyOutput i tags, så kan plottet åbenbart ikke skalere, selv ikke hvis man reloader siden!
+                                                          plotlyOutput(ns("checkouts_plot_all")),
+                                                          #tags$div( plotlyOutput(ns("checkouts_plot_all")), style = "page-break-after: always;", class = "plotteren"),
                                                           #tags$div(HTML('<input type="button" value="Print this page" onClick="window.print()">'))
-                                                          tags$div(HTML('<input type="button" onclick="printDiv(\'.col-sm-12\')" value="Print denne sektion"/>'))
+                                                          #tags$div(HTML('<input type="button" onclick="printDiv(\'.col-sm-12\')" value="Print denne sektion"/>'))
+                                                          tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv(\'print-content\')" value="Print denne sektion"/>'))
                                                         )
                                               )
                                      ),
@@ -75,27 +77,7 @@ materialsTabPanelUI <- function(id) {
                                                    xlsxDownloadUI(ns("checkouts"))
                                                    #downloadButton(ns("downloadXlsx"), "Hent som Excelark", class = "hidden-print")
                                             )
-                                            
-                                        ),
-                                     column(12,tags$div( tags$hr(), class = "hidden-print" )),
-                                     column(12,
-                                            column(2,
-                                                   sliderInput('sampleSize', 'Sample Size', min = 1, max = nrow(diamonds),
-                                                               value = 1000, step = 500, round = 0),
-                                                   selectInput('x', 'X', choices = nms, selected = "carat"),
-                                                   selectInput('y', 'Y', choices = nms, selected = "price"),
-                                                   selectInput('color', 'Color', choices = nms, selected = "clarity"),
-                                                   
-                                                   selectInput('facet_row', 'Facet Row', c(None = '.', nms), selected = "clarity"),
-                                                   selectInput('facet_col', 'Facet Column', c(None = '.', nms)),
-                                                   sliderInput('plotHeight', 'Height of plot (in pixels)', 
-                                                               min = 100, max = 2000, value = 1000)
-                                            ),
-                                            column(10,
-                                                     plotlyOutput(ns('trendPlot'), height = "900px")
-                                            )
-                                            
-                                     )
+                                        )
                                    )
                           ),
                        #   tabPanel("Timer", 
@@ -199,21 +181,6 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   barWidth <- 0.8    # This is a percentage. 1 means no gap between bars (i.e. 100%)
   barsOffset <- 10
   
-  #output$rapport <- downloadHandler(
-  #  filename = "report",
-  #  content = function(file) {
-  #    tempReport <- file.path(tempdir(), "report.Rmd")
-  #    file.copy("report.Rmd", tempReport, overwrite = TRUE)
-  #    client = "Nedenstående vis.\n Den kraftige sorte linje viser temperaturgennemsnittet for de otte dage og de grå linjer er de egentlige målinger, således at maximum og minimumværdier kan aflæses.\nDe stiplede snorhøjder på 21°C og 25°C angiver det temperaturvindue, som målingerne ifølge SDU bør ligge indenfor"
-  #    set_title = "Indeklima"
-  #    params <- list(client = client, set_title = set_title)
-  #    rmarkdown::render(tempReport, output_file = file,
-  #                      params = params,
-  #                      envir = new.env(parent = globalenv())
-  #    )
-  #  }
-  #)
-  
   # Render barchart comparing whole and partial years
   output$checkouts_samedate_plot <- renderSamedate_barchart({
     samedate_barchart(checkouts_samedate,curDate,sortx,frontColors,backColor,labelx,labely,tickNumY,showScaleY,barWidth,barsOffset)
@@ -232,35 +199,8 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
       group_by(aar) %>%
       summarise(sum = sum(sum))
     plot_ly(checkouts_overview, x = checkouts_overview$aar, y = checkouts_overview$sum, type = 'bar', marker = list(color = color1)) %>%
-      layout(autosize = TRUE,  yaxis = list(title = 'Antal'), xaxis = list(title = 'År', dtick = 1, autotick = FALSE, autorange="reversed"))
+      layout(autosize = TRUE, yaxis = list(title = 'Antal'), xaxis = list(title = 'År', dtick = 1, autotick = FALSE, autorange="reversed"))
   })
-  
-  
-  
-  
-  #add reactive data information. Dataset = built in diamonds data
-  dataset <- reactive({
-    #diamonds[sample(nrow(diamonds), input$sampleSize),]
-    diamonds[sample(nrow(diamonds), 31),]
-  })
-  
-  output$trendPlot <- renderPlotly({
-    
-    # build graph with ggplot syntax
-    #p <- ggplot(dataset(), aes_string(x = input$x, y = input$y, color = input$color)) + geom_point()
-    p <- ggplot(dataset(), aes_string(x = input$x, y = input$y, color = input$color))
-    
-    # if at least one facet column/row is specified, add it
-    facets <- paste('cut~color')
-    #facets <- paste(input$facet_row, '~', input$facet_col)
-    #if (facets != '. ~ .') p <- p + facet_grid(facets)
-    
-    ggplotly(p) %>% 
-      layout(height = input$plotHeight, autosize=TRUE)
-    
-  })
-   
- 
   
    # Reactive function wrapping dataframe for checkouts two-year comparison table incl. Excel download below
     checkouts_all_tbl <- reactive({
@@ -361,22 +301,4 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
              yaxis = list(showgrid = FALSE, showline = FALSE, showticklabels = TRUE, title = "", type = "category"),
              xaxis = list(zeroline = FALSE, showline = FALSE, showticklabels = TRUE, domain = c(0,2), title = "", type = "line", showgrid = TRUE))
   })
-  
-
-  # Excel spreedsheet downloadHandler
-  # Formatting notes here: https://cran.r-project.org/web/packages/openxlsx/vignettes/formatting.pdf
-  #output$downloadXlsx <- downloadHandler(
-  #  filename = "name.xlsx",
-  #  content = function(file) {
-  #    tempFile <- tempfile(fileext = ".xlsx")
-  #    wb <- createWorkbook()
-  #    addWorksheet(wb, "tabel")
-  #    writeDataTable(wb, 1, checkouts_all_tbl(), startRow = 3, startCol = 2, tableStyle = "TableStyleMedium2")
-  #    saveWorkbook(wb, file=tempFile, overwrite = TRUE)
-  #    #write.xlsx(wb, tempFile)
-  #    file.rename(tempFile, file)
-  #  },
-  #  contentType="application/xlsx"
-  #)
-
 }

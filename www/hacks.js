@@ -1,18 +1,85 @@
+
+// Function forcing plotly plots to scale to div/window width
+function autorangeChart(div) {
+    Plotly.relayout(div, {
+        'xaxis.autorange': true,
+        'yaxis.autorange': true
+    });
+}
+
+/* This function creates a new page, copies relevant content to
+   it, opens the print dialogue and closes the page after printing. */
+   
 function printDiv(divName) {
-  //$('body').width( '600px' );
+  var svgDiv = document.getElementById("materials-checkouts_plot_all");
+  svgDiv.setAttribute('style','width:700px;');
+  autorangeChart('materials-checkouts_plot_all');
+  var printContents = document.getElementById(divName).innerHTML;
+  w = window.open();  // open a new window
+  w.document.write(printContents);
+  var svgs = w.document.getElementsByClassName("main-svg");
+  var svg = svgs[0];
+  var svgb = svgs[1];
+  svg.setAttribute('style','position:absolute;');
+  svgb.setAttribute('style','position:absolute;');
+  var inputs = w.document.getElementsByTagName("input");  // get refs to all input elements (e.g. the print button)
+  while (inputs[0]) inputs[0].parentNode.removeChild(inputs[0]);  // remove all input elements
+  var modebars = w.document.getElementsByClassName("modebar");
+  while (modebars[0]) modebars[0].parentNode.removeChild(modebars[0]);  // remove all modebar elements
+  w.print(); // open the print dialog
+  w.close(); // close the new window
+  svgDiv.setAttribute('style','width:100%;'); // reset plot width to original (100%)
+  autorangeChart('materials-checkouts_plot_all'); // force relayout on plot again to make it fit the width of it's div
+}
+
+/*
+TODO: særlig function kun tilgængelig for sekretariatet (via proxyens env var med login_navn) 
+som viser en knap ved siden af printknappen til at hive svg'er ud i bestemte bredder til den fysiske 
+whitebook og som overholder de ændringer, der er lavet med filtre!
+
+//maybe call this in a 'on window resize' event
+
+  Plotly.relayout('materials-checkouts_plot_all', {
+    'xaxis.autorange': true,
+    'yaxis.autorange': true
+  });
+
+  //var sc = "<link rel='stylesheet' href='plotprint.css' type='text/css'>";
+
+  var sc = w.document.createElement("script");
+  sc.setAttribute("src", "htmlwidgets-1.2/htmlwidgets.js");
+  w.document.head.appendChild(sc);
+  var sc = w.document.createElement("script");
+  sc.setAttribute("src", "plotly-binding-4.8.0/plotly.js");
+  w.document.head.appendChild(sc);
+
+  //var sc = w.document.createElement("script");
+  //sc.setAttribute("rel", "stylesheet");
+  //sc.setAttribute("href", "plotprint.css");
+  //sc.setAttribute("type", "text/css");
+  //w.document.head.appendChild(sc);
+
+
+  //svg.setAttribute('viewbox','800 100 600 600');
+  //svgb.setAttribute('viewbox','800 100 600 600');
+
+function printDiv(divName) {
   var svg = $('.main-svg')[0];
   //var svg = $('.plotteren')[0];
   //svg.setAttribute("style","width:600px");
   //svg.setAttribute("width","600px");
-  //Plotly.relayout(svg);
-  svg.setAttribute('viewbox', '800 100 600 600');
+  svg.setAttribute('viewbox', '800 0 600 600');
   var printContents = document.getElementById(divName).innerHTML;
   w=window.open();
+  //$(':button').addClass('hidden');
   w.document.write(printContents);
+  var linkElement = "<link rel='stylesheet' href='/css/masterBlaster.css' type='text/css' media='screen'>";
+  $(document.documentElement.head).append(linkElement);
   w.print();
-  w.close();
+  //w.close();
+  $(':button').removeClass('hidden');
 }
-/*
+
 function printDiv(printClass) {
   //$('body').width( '600px' );
   var svg = $('.main-svg')[0];
