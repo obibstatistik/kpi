@@ -12,20 +12,9 @@ function autorangeChart(div) {
    
 function printDiv(event) {
   var divName = $(this).closest(".col-sm-12");
-  //var svgDiv = document.getElementById("materials-checkouts_plot_all");
-  var widgetDivs = document.getElementsByClassName("html-widget-output");
-  [].forEach.call(widgetDivs, function (widgetDiv) {
-      widgetDiv.setAttribute('style','width:700px;');
-      console.log(widgetDiv.id);
-      //autorangeChart(widgetDiv);
-  });
-  /* If width is above 700px then set it to that, else keep current width? */
-  //svgDiv.setAttribute('style','width:700px;');
-  //html-widget-output
-  //autorangeChart('materials-checkouts_plot_all');
-  //var printContents = document.getElementById(divName).innerHTML;
+  $(divName).find(".html-widget-output").css('width','700px');
+  $(divName).find(".html-widget-output").each(function() { autorangeChart(this.id); });
   w = window.open();  // open a new window
-  //w.document.write(printContents);
   w.document.write($(divName).html());
   var svgs = w.document.getElementsByClassName("main-svg");  // get refs to all elements with class main-svg
   [].forEach.call(svgs, function (svg) {svg.setAttribute('style','position:absolute;')});  // set position absolute for all svgs to make axis label svg and graph svg stay on top of each other
@@ -37,8 +26,10 @@ function printDiv(event) {
   while (modebars[0]) modebars[0].parentNode.removeChild(modebars[0]);  // remove all modebar elements
   w.print(); // open the print dialog
   w.close(); // close the new window
-  svgDiv.setAttribute('style','width:100%;'); // reset plot width to original (100%)
-  autorangeChart('materials-checkouts_plot_all'); // force relayout on plot again to make it fit the width of it's div
+  //svgDiv.setAttribute('style','width:100%;'); // reset plot width to original (100%)
+  $(divName).find(".html-widget-output").css('width','100%');
+  $(divName).find(".html-widget-output").each(function() { autorangeChart(this.id); });
+  //autorangeChart('materials-checkouts_plot_all'); // force relayout on plot again to make it fit the width of it's div
 }
 
 /*
@@ -54,6 +45,10 @@ whitebook og som overholder de ændringer, der er lavet med filtre!
     }
   );
 
+  //var printContents = document.getElementById(divName).innerHTML;
+  w = window.open();  // open a new window
+  //w.document.write(printContents);
+
   //var svg = svgs[0];
   //var svgb = svgs[1];
   //svg.setAttribute('style','position:absolute;');
@@ -65,6 +60,35 @@ whitebook og som overholder de ændringer, der er lavet med filtre!
     'xaxis.autorange': true,
     'yaxis.autorange': true
   });
+
+
+  ////var divName = $(this).closest(".col-sm-12");
+  //var divName = this.closest(".col-sm-12");
+  //console.log("divName: " + divName);
+  //console.dir(divName);
+  //console.log("event: " + event);
+  ////var svgDiv = document.getElementById("materials-checkouts_plot_all");
+  ////var children = divName.children;
+  //var children = divName.descendants();
+  ////[].filter.call( htmlCollection, element => [].includes.call(elements.classList, 'someclassname') );
+  ////var widgetDivs = children.filter(".html-widget-output");
+  //console.log("children: " + children);
+  //console.dir(children);
+  //[].forEach.call(children, function (child) {
+  //    //child.setAttribute('style','width:700px;');
+  //    console.log("hatte: ");
+  //    console.dir(child);
+  //});
+  //console.dir(widgetDivs);
+  //[].forEach.call(widgetDivs, function (widgetDiv) {
+  //    widgetDiv.setAttribute('style','width:700px;');
+  //    console.log(widgetDiv.id);
+  //    //autorangeChart(widgetDiv);
+  //});
+   If width is above 700px then set it to that, else keep current width?
+  //svgDiv.setAttribute('style','width:700px;');
+  //html-widget-output
+  //autorangeChart('materials-checkouts_plot_all');
 
   //var sc = "<link rel='stylesheet' href='plotprint.css' type='text/css'>";
 
