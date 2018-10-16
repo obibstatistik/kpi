@@ -10,141 +10,25 @@ function autorangeChart(div) {
 /* This function creates a new page, copies relevant content to
    it, opens the print dialogue and closes the page after printing. */
    
-function printDiv(event) {
-  var divName = $(this).closest(".col-sm-12");
-  $(divName).find(".html-widget-output").css('width','700px');
-  $(divName).find(".html-widget-output").each(function() { autorangeChart(this.id); });
-  w = window.open();  // open a new window
+function printDiv(event,parentClass) {
+  var divName = $(this).closest(parentClass);
+  var widgetDivs = $(divName).find(".html-widget-output.plotly");
+  console.dir(widgetDivs);
+  widgetDivs.css('width','700px');
+  widgetDivs.each(function() { autorangeChart(this.id); });
+  w = window.open();                                                                       // open a new window
   w.document.write($(divName).html());
-  var svgs = w.document.getElementsByClassName("main-svg");  // get refs to all elements with class main-svg
+  var svgs = w.document.getElementsByClassName("main-svg");                                // get refs to all elements with class main-svg
   [].forEach.call(svgs, function (svg) {svg.setAttribute('style','position:absolute;')});  // set position absolute for all svgs to make axis label svg and graph svg stay on top of each other
-  //var inputs = w.document.getElementsByTagName("input"); 
-  //[].forEach.call(inputs, function (input) {input.setAttribute('style','display:none;')}); 
-  var inputs = w.document.getElementsByTagName("input");  // get refs to all input elements (e.g. the print button)
-  while (inputs[0]) inputs[0].parentNode.removeChild(inputs[0]);  // remove all input elements
+  var inputs = w.document.getElementsByTagName("input");                                   // get refs to all input elements (e.g. the print button)
+  while (inputs[0]) inputs[0].parentNode.removeChild(inputs[0]);                           // remove all input elements
   var modebars = w.document.getElementsByClassName("modebar");
-  while (modebars[0]) modebars[0].parentNode.removeChild(modebars[0]);  // remove all modebar elements
-  w.print(); // open the print dialog
-  w.close(); // close the new window
-  //svgDiv.setAttribute('style','width:100%;'); // reset plot width to original (100%)
-  $(divName).find(".html-widget-output").css('width','100%');
-  $(divName).find(".html-widget-output").each(function() { autorangeChart(this.id); });
-  //autorangeChart('materials-checkouts_plot_all'); // force relayout on plot again to make it fit the width of it's div
+  while (modebars[0]) modebars[0].parentNode.removeChild(modebars[0]);                     // remove all modebar elements
+  w.print();                                                                               // open the print dialog
+  w.close();                                                                               // close the new window
+  widgetDivs.css('width','100%');
+  widgetDivs.each(function() { autorangeChart(this.id); });
 }
-
-/*
-TODO: særlig function kun tilgængelig for sekretariatet (via proxyens env var med login_navn) 
-som viser en knap ved siden af printknappen til at hive svg'er ud i bestemte bredder til den fysiske 
-whitebook og som overholder de ændringer, der er lavet med filtre!
-
-  var divName = $(this).closest(".col-sm-12");
-  $(divName).children(".html-widget-output").css('width','700px');
-  $(divName).children(".html-widget-output").each(function() {
-      console.log(this.id);
-      autorangeChart(this.id);
-    }
-  );
-
-  //var printContents = document.getElementById(divName).innerHTML;
-  w = window.open();  // open a new window
-  //w.document.write(printContents);
-
-  //var svg = svgs[0];
-  //var svgb = svgs[1];
-  //svg.setAttribute('style','position:absolute;');
-  //svgb.setAttribute('style','position:absolute;');
-
-//maybe call this in a 'on window resize' event
-
-  Plotly.relayout('materials-checkouts_plot_all', {
-    'xaxis.autorange': true,
-    'yaxis.autorange': true
-  });
-
-
-  ////var divName = $(this).closest(".col-sm-12");
-  //var divName = this.closest(".col-sm-12");
-  //console.log("divName: " + divName);
-  //console.dir(divName);
-  //console.log("event: " + event);
-  ////var svgDiv = document.getElementById("materials-checkouts_plot_all");
-  ////var children = divName.children;
-  //var children = divName.descendants();
-  ////[].filter.call( htmlCollection, element => [].includes.call(elements.classList, 'someclassname') );
-  ////var widgetDivs = children.filter(".html-widget-output");
-  //console.log("children: " + children);
-  //console.dir(children);
-  //[].forEach.call(children, function (child) {
-  //    //child.setAttribute('style','width:700px;');
-  //    console.log("hatte: ");
-  //    console.dir(child);
-  //});
-  //console.dir(widgetDivs);
-  //[].forEach.call(widgetDivs, function (widgetDiv) {
-  //    widgetDiv.setAttribute('style','width:700px;');
-  //    console.log(widgetDiv.id);
-  //    //autorangeChart(widgetDiv);
-  //});
-   If width is above 700px then set it to that, else keep current width?
-  //svgDiv.setAttribute('style','width:700px;');
-  //html-widget-output
-  //autorangeChart('materials-checkouts_plot_all');
-
-  //var sc = "<link rel='stylesheet' href='plotprint.css' type='text/css'>";
-
-  var sc = w.document.createElement("script");
-  sc.setAttribute("src", "htmlwidgets-1.2/htmlwidgets.js");
-  w.document.head.appendChild(sc);
-  var sc = w.document.createElement("script");
-  sc.setAttribute("src", "plotly-binding-4.8.0/plotly.js");
-  w.document.head.appendChild(sc);
-
-  //var sc = w.document.createElement("script");
-  //sc.setAttribute("rel", "stylesheet");
-  //sc.setAttribute("href", "plotprint.css");
-  //sc.setAttribute("type", "text/css");
-  //w.document.head.appendChild(sc);
-
-
-  //svg.setAttribute('viewbox','800 100 600 600');
-  //svgb.setAttribute('viewbox','800 100 600 600');
-
-function printDiv(divName) {
-  var svg = $('.main-svg')[0];
-  //var svg = $('.plotteren')[0];
-  //svg.setAttribute("style","width:600px");
-  //svg.setAttribute("width","600px");
-  svg.setAttribute('viewbox', '800 0 600 600');
-  var printContents = document.getElementById(divName).innerHTML;
-  w=window.open();
-  //$(':button').addClass('hidden');
-  w.document.write(printContents);
-  var linkElement = "<link rel='stylesheet' href='/css/masterBlaster.css' type='text/css' media='screen'>";
-  $(document.documentElement.head).append(linkElement);
-  w.print();
-  //w.close();
-  $(':button').removeClass('hidden');
-}
-
-function printDiv(printClass) {
-  //$('body').width( '600px' );
-  var svg = $('.main-svg')[0];
-  //var svg = $('.plotteren')[0];
-  //svg.setAttribute("style","width:600px");
-  //svg.setAttribute("width","600px");
-  //Plotly.relayout(svg);
-  //var divName = $(this).closest(printClass);
-  var divName = $(this).closest(".col-sm-12");
-  console.log(this);
-  svg.setAttribute('viewbox', '800 100 600 600');
-  //var printContents = document.getElementById(divName).innerHTML;
-  var printContents = divName.innerHTML;
-  w = window.open();
-  w.document.write(printContents);
-  w.print();
-  w.close();
-}
-*/
 
 document.addEventListener("DOMContentLoaded", function(event) { 
   

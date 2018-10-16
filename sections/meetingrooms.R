@@ -51,7 +51,8 @@ meetingroomsTabPanelUI <- function(id) {
                                             column(width = 12, class = "col-lg-6",
                                                    h4("Vist på agendaskærm"), 
                                                    plotlyOutput(ns("meetingrooms_agendascreen_plot"))
-                                            )
+                                            ),
+                                            tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
                                             #,
                                             #column(width = 12, class = "col-lg-6",
                                             #       h4("Fordelingen af mødelængde"),

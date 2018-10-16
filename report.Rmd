@@ -3,10 +3,10 @@ always_allow_html: yes
 output: pdf_document
 params:
  client: "bla"
- set_title: "My Title!"
+ set_title: "ingen_titel"
 title: "`r params$set_title`"
 ---
-  
+
 ```{r cars, echo=FALSE, results='asis'}
 myCondition <- TRUE
 if(myCondition) {

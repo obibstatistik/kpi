@@ -23,31 +23,32 @@ materialsTabPanelUI <- function(id) {
                    tabBox(width = 12, id = "tabset2", 
                           tabPanel("Generelt",
                                    fluidRow(
-                                     column(2),
-                                     column(10,
-                                            h4("Samlet udlån på OBB"),
-                                            p("Grafen viser det samlede udlån på OBB fordelt pr. år. De grå søjler er hele året, men farvede søjler i forgrunden er år til dato. Det er dermed muligt at sammenligne indeværende års udlån med de forrige."),
-                                            tags$div( samedate_barchartOutput(ns('checkouts_samedate_plot')), style = "page-break-after: always;" )
-                                     ),
+                                     column(12,
+                                           column(2),
+                                           column(10,
+                                                  h4("Samlet udlån på OBB"),
+                                                  p("Grafen viser det samlede udlån på OBB fordelt pr. år. De grå søjler er hele året, men farvede søjler i forgrunden er år til dato. Det er dermed muligt at sammenligne indeværende års udlån med de forrige."),
+                                                  tags$div( samedate_barchartOutput(ns('checkouts_samedate_plot')), style = "page-break-after: always;" ),
+                                                  tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
+                                                  )
+                                           ),
                                      column(12,tags$div( tags$hr(), class = "hidden-print" )),
                                      column(12,
-                                            tags$div(id = "print-content",
-                                                 column(2,
-                                                        h4("Afgræns"),
-                                                        selectInput(ns("checkouts_mainlibrary_filter1"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))    
-                                                 ),
-                                                 column(10,
-                                                          h4("Samlet udlån på OBB, hele år"),
-                                                          p("Denne graf viser samlet udlån på OBB fordelt pr. år med mulighed for at vælge hovedbibliotekets udlån fra via vælger i venstre side."),
-                                                          # N.B! Hvis man indlejrer plotlyOutput i tags, så kan plottet åbenbart ikke skalere, selv ikke hvis man reloader siden!
-                                                          plotlyOutput(ns("checkouts_plot_all")),
-                                                          #tags$div( plotlyOutput(ns("checkouts_plot_all")), style = "page-break-after: always;", class = "plotteren"),
-                                                          #tags$div(HTML('<input type="button" value="Print this page" onClick="window.print()">'))
-                                                          #tags$div(HTML('<input type="button" onclick="printDiv(\'.col-sm-12\')" value="Print denne sektion"/>'))
-                                                          #tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv(\'print-content\')" value="Print denne sektion"/>'))
-                                                          tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event)" value="Print denne sektion"/>'))
-                                                        )
-                                              )
+                                            column(2,
+                                                   h4("Afgræns"),
+                                                   selectInput(ns("checkouts_mainlibrary_filter1"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))    
+                                            ),
+                                            column(10,
+                                                   h4("Samlet udlån på OBB, hele år"),
+                                                   p("Denne graf viser samlet udlån på OBB fordelt pr. år med mulighed for at vælge hovedbibliotekets udlån fra via vælger i venstre side."),
+                                                   # N.B! Hvis man indlejrer plotlyOutput i tags, så kan plottet åbenbart ikke skalere, selv ikke hvis man reloader siden!
+                                                   plotlyOutput(ns("checkouts_plot_all")),
+                                                   #tags$div( plotlyOutput(ns("checkouts_plot_all")), style = "page-break-after: always;", class = "plotteren"),
+                                                   #tags$div(HTML('<input type="button" value="Print this page" onClick="window.print()">'))
+                                                   #tags$div(HTML('<input type="button" onclick="printDiv(\'.col-sm-12\')" value="Print denne sektion"/>'))
+                                                   #tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv(\'print-content\')" value="Print denne sektion"/>'))
+                                                   tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
+                                                   )
                                      ),
                                      column(12,tags$div( tags$hr(), class = "hidden-print" )),
                                      column(12,

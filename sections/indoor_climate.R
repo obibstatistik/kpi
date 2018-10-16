@@ -132,7 +132,8 @@ indoor_climateTabPanelUI <- function(id) {
                                             device_plotUI(ns(id = "temp-8CAE312E")),
                                             device_plotUI(ns(id = "temp-20F2A02F")),
                                             device_plotUI(ns(id = "temp-F358EC2B")),
-                                            device_plotUI(ns(id = "temp-DDBFED32"))
+                                            device_plotUI(ns(id = "temp-DDBFED32")),
+                                            tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
                                      )
                                    )
                           ),

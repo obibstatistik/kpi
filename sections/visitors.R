@@ -61,7 +61,8 @@ visitorsTabPanelUI <- function(id) {
                                               p("Visningen giver mulighed for at sammenligne mellem to forskellige år samt vælge hvilken lokation der ønskes vist. Det er desuden muligt at vælge Hovedbiblioteket til og fra."),
                                               formattableOutput(ns("visitors_table")),
                                               #csvDownloadUI(ns("visitors_table")),
-                                              xlsxDownloadUI(ns("visitors_table"))
+                                              xlsxDownloadUI(ns("visitors_table")),
+                                              tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
                                        )
                                      ),
                                      column(12,tags$hr()),
@@ -69,7 +70,7 @@ visitorsTabPanelUI <- function(id) {
                                        column(2,
                                               h4("Afgræns"),
                                               selectInput(ns("norm"), "Indekstal/tal:",c('Ikke Normaliseret' = 'not_norm','Indeks 2016' = 'norm')),
-                                              selectInput(ns("mainlibrary3"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))     
+                                              selectInput(ns("mainlibrary3"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))
                                        ),
                                        column(10,
                                               h4("Besøg fordelt på bibliotek"),
@@ -78,7 +79,8 @@ visitorsTabPanelUI <- function(id) {
                                               plotlyOutput(ns("visitsplotindividual")),
                                               formattableOutput(ns("visitorstest")),
                                               #csvDownloadUI(ns("csv_visitors_per_branch")),
-                                              xlsxDownloadUI(ns("csv_visitors_per_branch"))
+                                              xlsxDownloadUI(ns("csv_visitors_per_branch")),
+                                              tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
                                        )
                                      )
                                    )   
