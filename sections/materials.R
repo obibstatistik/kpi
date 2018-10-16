@@ -24,30 +24,27 @@ materialsTabPanelUI <- function(id) {
                           tabPanel("Generelt",
                                    fluidRow(
                                      column(12,
-                                           column(2),
+                                           column(2,
+                                                  tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
+                                           ),
                                            column(10,
                                                   h4("Samlet udlån på OBB"),
                                                   p("Grafen viser det samlede udlån på OBB fordelt pr. år. De grå søjler er hele året, men farvede søjler i forgrunden er år til dato. Det er dermed muligt at sammenligne indeværende års udlån med de forrige."),
-                                                  tags$div( samedate_barchartOutput(ns('checkouts_samedate_plot')), style = "page-break-after: always;" ),
-                                                  tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
-                                                  )
-                                           ),
+                                                  tags$div( samedate_barchartOutput(ns('checkouts_samedate_plot')), style = "page-break-after: always;" )
+                                           )
+                                      ),
                                      column(12,tags$div( tags$hr(), class = "hidden-print" )),
                                      column(12,
                                             column(2,
                                                    h4("Afgræns"),
-                                                   selectInput(ns("checkouts_mainlibrary_filter1"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))    
+                                                   selectInput(ns("checkouts_mainlibrary_filter1"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket')),
+                                                   tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
                                             ),
                                             column(10,
                                                    h4("Samlet udlån på OBB, hele år"),
                                                    p("Denne graf viser samlet udlån på OBB fordelt pr. år med mulighed for at vælge hovedbibliotekets udlån fra via vælger i venstre side."),
                                                    # N.B! Hvis man indlejrer plotlyOutput i tags, så kan plottet åbenbart ikke skalere, selv ikke hvis man reloader siden!
-                                                   plotlyOutput(ns("checkouts_plot_all")),
-                                                   #tags$div( plotlyOutput(ns("checkouts_plot_all")), style = "page-break-after: always;", class = "plotteren"),
-                                                   #tags$div(HTML('<input type="button" value="Print this page" onClick="window.print()">'))
-                                                   #tags$div(HTML('<input type="button" onclick="printDiv(\'.col-sm-12\')" value="Print denne sektion"/>'))
-                                                   #tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv(\'print-content\')" value="Print denne sektion"/>'))
-                                                   tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
+                                                   plotlyOutput(ns("checkouts_plot_all"))
                                                    )
                                      ),
                                      column(12,tags$div( tags$hr(), class = "hidden-print" )),
@@ -68,15 +65,16 @@ materialsTabPanelUI <- function(id) {
                                                                                                      "Musikbiblioteket" = "Musikbiblioteket",
                                                                                                      "Tarup" = "Tarup Bibliotek",
                                                                                                      "Vollsmose" = "Vollsmose Bibliotek")),
-                                                   selectInput(ns("checkouts_mainlibrary_filter2"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))    
+                                                   selectInput(ns("checkouts_mainlibrary_filter2"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket')),
+                                                   xlsxDownloadUI(ns("checkouts")),
+                                                   tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
                                             ),
                                             column(10,
                                                    h4("Udlån på OBB"),
                                                    p("Tabellen viser det samlede udlån på OBB fordelt pr. måned."),
                                                    p("Visningen giver mulighed for at sammenligne mellem to forskellige år samt vælge hvilken lokation der ønskes vist. Det er desuden muligt at vælge Hovedbiblioteket til og fra."),
                                                    p("N.B! Der er en forsinkelse på 3 dage på modtagelsen af seneste statistik fra Cicero"),
-                                                   formattableOutput(ns("checkouts_table")),
-                                                   xlsxDownloadUI(ns("checkouts"))
+                                                   formattableOutput(ns("checkouts_table"))
                                                    #downloadButton(ns("downloadXlsx"), "Hent som Excelark", class = "hidden-print")
                                             )
                                         )
@@ -101,7 +99,8 @@ materialsTabPanelUI <- function(id) {
                                                              label = 'Vælg periode',
                                                              start = Sys.Date() - 182, end = Sys.Date(),
                                                              separator = " - "
-                                              )
+                                              ),
+                                              tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
                                        ),
                                        column(10,height = "900px",
                                               h4("Cirkulationstal fordelt på biblioteker og afdelingerne Børn/Voksen"),

@@ -27,7 +27,9 @@ visitorsTabPanelUI <- function(id) {
                                    ),
                                    fluidRow(
                                      column(12,
-                                       column(2),
+                                       column(2,
+                                              tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
+                                       ),
                                        column(10,
                                               h4("Samlet besøg på OBB"),
                                               p("Grafen viser det samlede besøg på OBB fordelt pr. år. De grå søjler er hele året, men farvede søjler i forgrunden er år til dato. Det er dermed muligt at sammenligne indeværende års besøg med de forrige."),
@@ -38,13 +40,14 @@ visitorsTabPanelUI <- function(id) {
                                      column(12,
                                        column(2,
                                               h4("Afgræns"),
-                                              selectInput(ns("mainlibrary"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))    
-                                       ),
-                                       column(10,
+                                              selectInput(ns("mainlibrary"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket')),
+                                              tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))   
+                                     ),
+                                     column(10,
                                               h4("Samlet besøg på OBB"),
                                               p("Denne graf viser samlet besøg på OBB fordelt pr. år med mulighed for at vælge hovedbibliotekets besøg fra via vælger i venstre side."),
-                                              plotlyOutput(ns("visitsplotall")
-                                              )
+                                              plotlyOutput(ns("visitsplotall"))
+                                       )
                                      ),
                                      column(12,tags$hr()),
                                      column(12,
@@ -53,16 +56,15 @@ visitorsTabPanelUI <- function(id) {
                                               selectInput(ns("visitors_fromyear"), "År 1:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2015", "2014" = "2014"), as.integer(format(Sys.Date(), "%Y"))-1),
                                               selectInput(ns("visitors_toyear"), "År 2:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2014", "2014" = "2013"), as.integer(format(Sys.Date(), "%Y"))),
                                               selectInput(ns("visitorslibrary"), "Bibliotek:", c("Alle" = "all","Bolbro" = "bo","Dalum" = "da","Højby" = "hoj","Historiens Hus" = "lok","Holluf Pile" = "ho","Borgernes Hus" = "hb","Korup" = "kor","Musikbiblioteket" = "mus","Tarup" = "ta","Vollsmose" = "vo")),
-                                              selectInput(ns("mainlibrary2"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))    
+                                              selectInput(ns("mainlibrary2"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket')),
+                                              xlsxDownloadUI(ns("visitors_table")),
+                                              tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))    
                                        ),
                                        column(10,
                                               h4("Samlet besøg på OBB"),
                                               p("Tabellen viser det samlede besøg på OBB fordelt pr. måned."),
                                               p("Visningen giver mulighed for at sammenligne mellem to forskellige år samt vælge hvilken lokation der ønskes vist. Det er desuden muligt at vælge Hovedbiblioteket til og fra."),
-                                              formattableOutput(ns("visitors_table")),
-                                              #csvDownloadUI(ns("visitors_table")),
-                                              xlsxDownloadUI(ns("visitors_table")),
-                                              tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
+                                              formattableOutput(ns("visitors_table"))
                                        )
                                      ),
                                      column(12,tags$hr()),
@@ -70,21 +72,20 @@ visitorsTabPanelUI <- function(id) {
                                        column(2,
                                               h4("Afgræns"),
                                               selectInput(ns("norm"), "Indekstal/tal:",c('Ikke Normaliseret' = 'not_norm','Indeks 2016' = 'norm')),
-                                              selectInput(ns("mainlibrary3"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket'))
+                                              selectInput(ns("mainlibrary3"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket')),
+                                              xlsxDownloadUI(ns("csv_visitors_per_branch")),
+                                              tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
                                        ),
                                        column(10,
                                               h4("Besøg fordelt på bibliotek"),
                                               p("Grafen viser besøget på de enkelte lokationer i OBB i de seneste 5 år. Der er to visninger: ”Ikke normaliseret, hvor antal besøg vises som det reelt er. Og ”Normaliseret” hvor 2016 er brugt som basisår og har værdien 1. Det gør det muligt lettere at sammenligne på tværs af lokationer."),
                                               p("Det er muligt at fravælge og vælge enkelte år via enkeltklik på året i diagrammets højre side. Ved dobbeltklik på et år vælges kun dette år."),
                                               plotlyOutput(ns("visitsplotindividual")),
-                                              formattableOutput(ns("visitorstest")),
-                                              #csvDownloadUI(ns("csv_visitors_per_branch")),
-                                              xlsxDownloadUI(ns("csv_visitors_per_branch")),
-                                              tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
+                                              formattableOutput(ns("visitorstest"))
                                        )
                                      )
                                    )   
-                          )),
+                          ),
                           tabPanel("Timer",
                                    fluidRow(
                                      column(6,
@@ -128,7 +129,6 @@ visitorsTabPanelUI <- function(id) {
                                      column(10,
                                             h4("Besøg fordelt på timer og periode"), 
                                             formattableOutput(ns("visitors_per_hours_table")),
-                                            #csvDownloadUI(ns("csv_visitors_per_hour")),
                                             xlsxDownloadUI(ns("csv_visitors_per_hour")),
                                             conditionalPanel(
                                               paste0("input['", ns("smooth"), "']"),
