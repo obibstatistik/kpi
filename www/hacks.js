@@ -11,10 +11,12 @@ function autorangeChart(div) {
    it, opens the print dialogue and closes the page after printing. */
    
 function printDiv(event,parentClass) {
-  var divName = $(this).closest(parentClass);
-  var widgetDivs = $(divName).find(".html-widget-output.plotly");
+  var divName = $(this).closest(parentClass);                                              // choose a parent div (based on it's class) to copy to a new window/html document for printing
+  var widgetDivs = $(divName).find(".html-widget-output.plotly");                          // find() all divs among the descendants of the print div with classes .html-widget-output and .plotly
   widgetDivs.css('width','700px');
-  widgetDivs.each(function() { autorangeChart(this.id); });                                // force svgs to the parent divs' width
+  //widgetDivs.attr('style','width:700px;');
+  console.dir(widgetDivs);
+  widgetDivs.each(function() { console.dir(this); autorangeChart(this.id); });                                // force svgs to the parent divs' width
   w = window.open();                                                                       // open a new window/html document
   w.document.write($(divName).html());                                                     // write the saved html to the new empty window
   var svgs = w.document.getElementsByClassName("main-svg");                                // get refs to all elements with class main-svg

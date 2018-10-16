@@ -45,7 +45,7 @@ materialsTabPanelUI <- function(id) {
                                                    p("Denne graf viser samlet udlån på OBB fordelt pr. år med mulighed for at vælge hovedbibliotekets udlån fra via vælger i venstre side."),
                                                    # N.B! Hvis man indlejrer plotlyOutput i tags, så kan plottet åbenbart ikke skalere, selv ikke hvis man reloader siden!
                                                    plotlyOutput(ns("checkouts_plot_all"))
-                                                   )
+                                            )
                                      ),
                                      column(12,tags$div( tags$hr(), class = "hidden-print" )),
                                      column(12,
@@ -75,7 +75,6 @@ materialsTabPanelUI <- function(id) {
                                                    p("Visningen giver mulighed for at sammenligne mellem to forskellige år samt vælge hvilken lokation der ønskes vist. Det er desuden muligt at vælge Hovedbiblioteket til og fra."),
                                                    p("N.B! Der er en forsinkelse på 3 dage på modtagelsen af seneste statistik fra Cicero"),
                                                    formattableOutput(ns("checkouts_table"))
-                                                   #downloadButton(ns("downloadXlsx"), "Hent som Excelark", class = "hidden-print")
                                             )
                                         )
                                    )
