@@ -10,31 +10,43 @@ function autorangeChart(div) {
 /* This function creates a new page, copies relevant content to
    it, opens the print dialogue and closes the page after printing. */
    
-function printDiv(event,parentClass) {
-  var divName = $(this).closest(parentClass);                                                 // choose a parent div (based on it's class) to copy to a new window/html document for printing
-  var widgetDivs = $(divName).find(".html-widget-output.plotly");                             // find() all divs among the descendants of the print div with classes .html-widget-output and .plotly
-  var svg = $(divName).find(".main-svg"); 
-  widgetDivs.css('width','700px');
-  widgetDivs.attr('style','width:700px;');
-  widgetDivs.each(function() { autorangeChart(this.id); });                                   // force svgs to the parent divs' width
-  w = window.open();                                                                          // open a new window/html document
-  w.document.write($(divName).html());                                                        // write the saved html to the new empty window
-  var svgs = w.document.getElementsByClassName("main-svg");                                   // get refs to all elements with class main-svg
-  [].forEach.call(svgs, function (svg) {svg.setAttribute('style','position:absolute;')});     // set position absolute for all svgs to make axis label svg and graph svg stay on top of each other
-  var a = w.document.getElementsByTagName("a");                                               // get refs to all a elements (e.g. the print button)
-  while (a[0]) a[0].parentNode.removeChild(a[0]);                                             // remove all a elements
-  var inputs = w.document.getElementsByTagName("input");                                      // get refs to all input elements (e.g. the print button)
-  while (inputs[0]) inputs[0].parentNode.removeChild(inputs[0]);                              // remove all input elements
-  var modebars = w.document.getElementsByClassName("modebar");                                // get refs to modebars i.e. the plotly toolbar
-  while (modebars[0]) modebars[0].parentNode.removeChild(modebars[0]);                        // remove all modebar elements ()
-  w.print();                                                                                  // open the print dialog
-  w.close();                                                                                  // close the new window
-  widgetDivs.css('width','100%');                                                             // reset widths of plot divs and the like
-  widgetDivs.each(function() { autorangeChart(this.id); });                                   // force svgs back to original widths
+function printDiv(event,parentClass) {             
+  var divName = $(this).closest(parentClass);                                                                     // choose a parent div (based on it's class) to copy to a new window/html document for printing
+  var widgetDivs = $(divName).find(".html-widget-output.plotly");                                                 // find() all divs among the descendants of the print div with classes .html-widget-output and .plotly
+  var svg = $(divName).find(".main-svg");           
+  widgetDivs.css('width','700px');          
+  widgetDivs.each(function() { autorangeChart(this.id); });                                                       // force svgs to the parent divs' width
+  w = window.open();                                                                                              // open a new window/html document
+  w.document.write($(divName).html());                                                                            // write the saved html to the new empty window
+  var svgs = w.document.getElementsByClassName("main-svg");                                                       // get refs to all elements with class main-svg
+  [].forEach.call(svgs, function (svg) {svg.setAttribute('style','position:absolute;')});                         // set position absolute for all svgs to make axis label svg and graph svg stay on top of each other
+  var a = w.document.getElementsByTagName("a");                                                                   // get refs to all a elements (e.g. the print button)
+  while (a[0]) a[0].parentNode.removeChild(a[0]);                                                                 // remove all a elements
+  var inputs = w.document.getElementsByTagName("input");                                                          // get refs to all input elements (e.g. the print button)
+  while (inputs[0]) inputs[0].parentNode.removeChild(inputs[0]);                                                  // remove all input elements
+  var modebars = w.document.getElementsByClassName("modebar");                                                    // get refs to modebars i.e. the plotly toolbar
+  while (modebars[0]) modebars[0].parentNode.removeChild(modebars[0]);                                            // remove all modebar elements ()
+  var controlLabels = w.document.getElementsByClassName("control-label");                                         // get refs to modebars i.e. the plotly toolbar
+  [].forEach.call(controlLabels, function (controlLabel) {controlLabel.setAttribute('style','float:left; margin: 0 20px 0 0')}); 
+  var tables = w.document.getElementsByTagName("table");                                                          // get refs to modebars i.e. the plotly toolbar
+  [].forEach.call(tables, function (table) {table.setAttribute('style','width: 700px; margin: 40px 0 0 0; border-spacing: 0;')});
+  var tds = w.document.getElementsByTagName("td");                                                                // get refs to modebars i.e. the plotly toolbar
+  [].forEach.call(tds, function (td) {td.setAttribute('style','border-top: solid 1px lightgrey; text-align: right;')});
+  //var tdCol1 = w.document.getElementsByTagName("td");                                                                // get refs to modebars i.e. the plotly toolbar
+  //[].forEach.call(tds, function (td) {td.setAttribute('style','border-top: solid 1px lightgrey; text-align: right;')});
+  w.print();                                                                                                      // open the print dialog
+  w.close();                                                                                                    // close the new window
+  widgetDivs.css('width','100%');                                                                                 // reset widths of plot divs and the like
+  widgetDivs.each(function() { autorangeChart(this.id); });                                                       // force svgs back to original widths
 }
 
-document.addEventListener("DOMContentLoaded", function(event) { 
-  
+window.addEventListener("resize", function(event) {
+  console.log("resizing!");
+  $(document).find(".html-widget-output.plotly").each(function() { console.log(this.id); /*autorangeChart(this.id);*/ });
+});
+
+document.addEventListener("DOMContentLoaded", function(event) {
+
   //arrangementer
   $( "li.active i.fa-calendar" ).replaceWith( "<img class=\"active\" src=\"icons/arrangementer_negativ_15x15.png\" width=\"15px\" height=\"15px\" />");
   $( "i.fa-calendar" ).replaceWith( "<img class=\"1\" src=\"icons/arrangementer_positiv_15x15.png\" width=\"15px\" height=\"15px\" />");
