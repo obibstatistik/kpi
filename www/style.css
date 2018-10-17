@@ -2,6 +2,14 @@
   width: 1600px;
 }
 
+.btn-print {
+  margin: 15px 0 15px 0;
+}
+
+.shiny-download-link {
+  margin: 15px 0 15px 0;
+}
+
 h3 {
   margin-top: 10px;
   text-transform: uppercase;

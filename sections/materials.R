@@ -25,7 +25,7 @@ materialsTabPanelUI <- function(id) {
                                    fluidRow(
                                      column(12,
                                            column(2,
-                                                  tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
+                                                  tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                            ),
                                            column(10,
                                                   h4("Samlet udlån på OBB"),
@@ -38,7 +38,8 @@ materialsTabPanelUI <- function(id) {
                                             column(2,
                                                    h4("Afgræns"),
                                                    selectInput(ns("checkouts_mainlibrary_filter1"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket')),
-                                                   tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
+                                                   #tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
+                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default" onclick="printDiv.call(this,event,\'.col-sm-12\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                             ),
                                             column(10,
                                                    h4("Samlet udlån på OBB, hele år"),
@@ -67,7 +68,8 @@ materialsTabPanelUI <- function(id) {
                                                                                                      "Vollsmose" = "Vollsmose Bibliotek")),
                                                    selectInput(ns("checkouts_mainlibrary_filter2"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket')),
                                                    xlsxDownloadUI(ns("checkouts")),
-                                                   tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
+                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                                   #tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
                                             ),
                                             column(10,
                                                    h4("Udlån på OBB"),
@@ -99,7 +101,7 @@ materialsTabPanelUI <- function(id) {
                                                              start = Sys.Date() - 182, end = Sys.Date(),
                                                              separator = " - "
                                               ),
-                                              tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
+                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                        ),
                                        column(10,height = "900px",
                                               h4("Cirkulationstal fordelt på biblioteker og afdelingerne Børn/Voksen"),

@@ -28,7 +28,7 @@ visitorsTabPanelUI <- function(id) {
                                    fluidRow(
                                      column(12,
                                        column(2,
-                                              tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
+                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                        ),
                                        column(10,
                                               h4("Samlet besøg på OBB"),
@@ -41,7 +41,7 @@ visitorsTabPanelUI <- function(id) {
                                        column(2,
                                               h4("Afgræns"),
                                               selectInput(ns("mainlibrary"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket')),
-                                              tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))   
+                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\')"><i class="fa fa-print"></i> Print denne sektion</a>'))  
                                      ),
                                      column(10,
                                               h4("Samlet besøg på OBB"),
@@ -58,7 +58,7 @@ visitorsTabPanelUI <- function(id) {
                                               selectInput(ns("visitorslibrary"), "Bibliotek:", c("Alle" = "all","Bolbro" = "bo","Dalum" = "da","Højby" = "hoj","Historiens Hus" = "lok","Holluf Pile" = "ho","Borgernes Hus" = "hb","Korup" = "kor","Musikbiblioteket" = "mus","Tarup" = "ta","Vollsmose" = "vo")),
                                               selectInput(ns("mainlibrary2"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket')),
                                               xlsxDownloadUI(ns("visitors_table")),
-                                              tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))    
+                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\')"><i class="fa fa-print"></i> Print denne sektion</a>'))   
                                        ),
                                        column(10,
                                               h4("Samlet besøg på OBB"),
@@ -74,7 +74,7 @@ visitorsTabPanelUI <- function(id) {
                                               selectInput(ns("norm"), "Indekstal/tal:",c('Ikke Normaliseret' = 'not_norm','Indeks 2016' = 'norm')),
                                               selectInput(ns("mainlibrary3"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket')),
                                               xlsxDownloadUI(ns("csv_visitors_per_branch")),
-                                              tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
+                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                        ),
                                        column(10,
                                               h4("Besøg fordelt på bibliotek"),

@@ -72,7 +72,7 @@ csvDownload <- function(input, output, session, data, name = NULL) {
 ### DOWNLOAD XLSX MODUL ###
 
 # UI
-xlsxDownloadUI <- function(id, label = "Download som Excelark") {
+xlsxDownloadUI <- function(id, label = "Download tabel som Excelark") {
   ns <- NS(id)
   downloadButton(ns("download_xlsx"), label, class = "hidden-print")
 }
