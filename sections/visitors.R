@@ -230,7 +230,8 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
       group_by(year) %>%
       summarise(sum = sum(count)) 
     plot_ly(visitsoverview, x = visitsoverview$year, y = visitsoverview$sum, type = 'bar', marker = list(color = color2)) %>%
-      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'År', dtick = 1, autotick = FALSE))
+      #layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'År', dtick = 1, autotick = FALSE))
+      layout(autosize = TRUE, yaxis = list(title = 'Antal'), xaxis = list(title = 'År', dtick = 1, autotick = FALSE, autorange="reversed"))
   })
 
   # visitors table details
@@ -308,7 +309,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
       add_trace(y = ~`2016`, name = '2016', marker = list(color = color3)) %>%
       add_trace(y = ~`2017`, name = '2017', marker = list(color = color4)) %>%
       add_trace(y = ~`2018`, name = '2018', marker = list(color = color5)) %>%
-      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Bibliotek'), barmode = 'group')
+      layout(autosize = TRUE, yaxis = list(title = 'Antal'), xaxis = list(title = 'Bibliotek'), barmode = 'group')
   })
   
   visitors_per_branch <- reactive({

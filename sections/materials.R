@@ -294,7 +294,8 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
                 marker = list(color = color1, 
                               width = 5)) %>%
       
-      layout(title = "",
+      layout(autosize = TRUE,
+             title = "",
              margin = list(l = 200, r = 10, b = 50, t = 50, pad = 10),
              barmode = 'group',
              bargap = 0.4,
