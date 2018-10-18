@@ -25,8 +25,7 @@ function printDiv(event,parentClass) {
   w.document.body.appendChild(sc);
   var svgs = w.document.getElementsByClassName("main-svg");                                                       // get refs to all elements with class main-svg
   [].forEach.call(svgs, function (svg) {svg.setAttribute('style','position:absolute;')});                         // set position absolute for all svgs to make axis label svg and graph svg stay on top of each other
-  sc.onload = function(){ w.print(); };  
-  //w.close();                                                                                                      // close the new window
+  sc.onload = function(){ w.print(); w.close(); };  
   widgetDivs.css('width','100%');                                                                                 // reset widths of plot divs and the like
   widgetDivs.each(function() { autorangeChart(this.id); });                                                       // force svgs back to original widths
 }
