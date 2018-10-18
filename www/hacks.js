@@ -17,35 +17,15 @@ function printDiv(event,parentClass) {
   widgetDivs.css('width','700px');          
   widgetDivs.each(function() { autorangeChart(this.id); });                                                       // force svgs to the parent divs' width
   w = window.open();                                                                                              // open a new window/html document
-  
+  w.document.write($(divName).html());                                                                            // write the saved html to the new empty window
   var sc = w.document.createElement("link");
   sc.setAttribute("rel", "stylesheet");
-  sc.setAttribute("href", "plotprint.css");
   sc.setAttribute("type", "text/css");
-  w.document.head.appendChild(sc);
-  
-  w.document.write($(divName).html());                                                                            // write the saved html to the new empty window
+  sc.setAttribute("href", "plotprint.css");
+  w.document.body.appendChild(sc);
   var svgs = w.document.getElementsByClassName("main-svg");                                                       // get refs to all elements with class main-svg
   [].forEach.call(svgs, function (svg) {svg.setAttribute('style','position:absolute;')});                         // set position absolute for all svgs to make axis label svg and graph svg stay on top of each other
-  //var a = w.document.getElementsByTagName("a");                                                                   // get refs to all a elements (e.g. the print button)
-  //while (a[0]) a[0].parentNode.removeChild(a[0]);                                                                 // remove all a elements
-  //var inputs = w.document.getElementsByTagName("input");                                                          // get refs to all input elements (e.g. the print button)
-  //while (inputs[0]) inputs[0].parentNode.removeChild(inputs[0]);                                                  // remove all input elements
-  //var modebars = w.document.getElementsByClassName("modebar");                                                    // get refs to modebars i.e. the plotly toolbar
-  //while (modebars[0]) modebars[0].parentNode.removeChild(modebars[0]);                                            // remove all modebar elements ()
-  //var controlLabels = w.document.getElementsByClassName("control-label");                                         // get refs to modebars i.e. the plotly toolbar
-  //[].forEach.call(controlLabels, function (controlLabel) {controlLabel.setAttribute('style','float:left; margin: 0 20px 0 0')}); 
-  //var tables = w.document.getElementsByTagName("table");                                                          // get refs to modebars i.e. the plotly toolbar
-  //[].forEach.call(tables, function (table) {table.setAttribute('style','width: 700px; margin: 40px 0 0 0; border-spacing: 0;')});
-  //var tds = w.document.getElementsByTagName("td");                                                                // get refs to modebars i.e. the plotly toolbar
-  //[].forEach.call(tds, function (td) {td.setAttribute('style','border-top: solid 1px lightgrey; text-align: right;')});
-  
-  //var tdCol1 = w.document.getElementsByTagName("td");                                                           // get refs to modebars i.e. the plotly toolbar
-  //[].forEach.call(tds, function (td) {td.setAttribute('style','border-top: solid 1px lightgrey; text-align: right;')});
-  
-  //w.location.reload(false);
-  
-  w.print();                                                                                                      // open the print dialog
+  sc.onload = function(){ w.print(); };  
   //w.close();                                                                                                      // close the new window
   widgetDivs.css('width','100%');                                                                                 // reset widths of plot divs and the like
   widgetDivs.each(function() { autorangeChart(this.id); });                                                       // force svgs back to original widths

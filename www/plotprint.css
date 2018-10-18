@@ -2,7 +2,7 @@
   display: none;
 }
 
-input {
+input,a {
   display: none;
 }
 
@@ -10,7 +10,7 @@ input {
   display: none;
 }
 
-control-label {
+.control-label {
   float:left;
   margin: 0 20px 0 0;
 }
