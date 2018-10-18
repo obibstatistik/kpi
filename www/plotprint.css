@@ -26,6 +26,11 @@ td  {
   text-align: right;
 }
 
+td:nth-child(1)  {
+  border-top: solid 1px lightgrey;
+  text-align: left;
+}
+
 h3 {
   margin-top: 10px;
   text-transform: uppercase;

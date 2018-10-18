@@ -7,14 +7,22 @@ function autorangeChart(div) {
     });
 }
 
+function myFunction(x) {
+    if (x.matches) { // If media query matches
+        document.body.style.backgroundColor = "yellow";
+    } else {
+        document.body.style.backgroundColor = "pink";
+    }
+}
+
 /* This function creates a new page, copies relevant content to
    it, opens the print dialogue and closes the page after printing. */
    
-function printDiv(event,parentClass) {             
+function printDiv(event,parentClass,divWidth) {             
   var divName = $(this).closest(parentClass);                                                                     // choose a parent div (based on it's class) to copy to a new window/html document for printing
   var widgetDivs = $(divName).find(".html-widget-output.plotly");                                                 // find() all divs among the descendants of the print div with classes .html-widget-output and .plotly
   var svg = $(divName).find(".main-svg");           
-  widgetDivs.css('width','700px');          
+  widgetDivs.css('width',divWidth);          
   widgetDivs.each(function() { autorangeChart(this.id); });                                                       // force svgs to the parent divs' width
   w = window.open();                                                                                              // open a new window/html document
   w.document.write($(divName).html());                                                                            // write the saved html to the new empty window
@@ -30,10 +38,12 @@ function printDiv(event,parentClass) {
   widgetDivs.each(function() { autorangeChart(this.id); });                                                       // force svgs back to original widths
 }
 
+/*
 window.addEventListener("resize", function(event) {
   console.log("resizing!");
-  $(document).find(".html-widget-output.plotly").each(function() { console.log(this.id); /*autorangeChart(this.id);*/ });
+  $(document).find(".html-widget-output.plotly").each(function() { console.log(this.id); autorangeChart(this.id); });
 });
+*/
 
 document.addEventListener("DOMContentLoaded", function(event) {
 

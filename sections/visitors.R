@@ -28,7 +28,7 @@ visitorsTabPanelUI <- function(id) {
                                    fluidRow(
                                      column(12,
                                        column(2,
-                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                        ),
                                        column(10,
                                               h4("Samlet besøg på OBB"),
@@ -41,7 +41,7 @@ visitorsTabPanelUI <- function(id) {
                                        column(2,
                                               h4("Afgræns"),
                                               selectInput(ns("mainlibrary"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket')),
-                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\')"><i class="fa fa-print"></i> Print denne sektion</a>'))  
+                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                      ),
                                      column(10,
                                               h4("Samlet besøg på OBB"),
@@ -58,7 +58,7 @@ visitorsTabPanelUI <- function(id) {
                                               selectInput(ns("visitorslibrary"), "Bibliotek:", c("Alle" = "all","Bolbro" = "bo","Dalum" = "da","Højby" = "hoj","Historiens Hus" = "lok","Holluf Pile" = "ho","Borgernes Hus" = "hb","Korup" = "kor","Musikbiblioteket" = "mus","Tarup" = "ta","Vollsmose" = "vo")),
                                               selectInput(ns("mainlibrary2"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket')),
                                               xlsxDownloadUI(ns("visitors_table")),
-                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\')"><i class="fa fa-print"></i> Print denne sektion</a>'))   
+                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))  
                                        ),
                                        column(10,
                                               h4("Samlet besøg på OBB"),
@@ -74,7 +74,7 @@ visitorsTabPanelUI <- function(id) {
                                               selectInput(ns("norm"), "Indekstal/tal:",c('Ikke Normaliseret' = 'not_norm','Indeks 2016' = 'norm')),
                                               selectInput(ns("mainlibrary3"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket')),
                                               xlsxDownloadUI(ns("csv_visitors_per_branch")),
-                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                        ),
                                        column(10,
                                               h4("Besøg fordelt på bibliotek"),
@@ -99,43 +99,46 @@ visitorsTabPanelUI <- function(id) {
                                            )
                                    ),
                                    fluidRow(
-                                     column(2,
-                                            h4("Afgræns"),       
-                                            checkboxGroupInput(ns("visitors_hours_library"), label = 'Vælg bibliotek', 
-                                            selected = list("Bolbro","Dalum","Højby","Historiens Hus","Holluf Pile","Borgernes Hus","Korup","Musikbiblioteket","Tarup","Vollsmose"),
-                                            choices = list("Bolbro","Dalum","Højby","Historiens Hus","Holluf Pile","Borgernes Hus","Korup","Musikbiblioteket","Tarup","Vollsmose")),
-                                            tags$hr(),
-                                            dateRangeInput(ns("daterange_visitors_hours_library"),
-                                                           label = 'Vælg dato periode 1',
-                                                           start = Sys.Date() - 90, end = Sys.Date(),
-                                                           separator = " - "
-                                            ),
-                                            checkboxInput(ns("smooth"), "Sammenlign med anden periode"),
-                                            conditionalPanel(
-                                              paste0("input['", ns("smooth"), "']"),
-                                              dateRangeInput(ns("daterange2_visitors_hours_library"),
-                                                             label = 'Vælg dato periode 2',
-                                                             start = 0, end = 0,
+                                     column(12,
+                                       column(2,
+                                              h4("Afgræns"),       
+                                              checkboxGroupInput(ns("visitors_hours_library"), label = 'Vælg bibliotek', 
+                                              selected = list("Bolbro","Dalum","Højby","Historiens Hus","Holluf Pile","Borgernes Hus","Korup","Musikbiblioteket","Tarup","Vollsmose"),
+                                              choices = list("Bolbro","Dalum","Højby","Historiens Hus","Holluf Pile","Borgernes Hus","Korup","Musikbiblioteket","Tarup","Vollsmose")),
+                                              xlsxDownloadUI(ns("csv_visitors_per_hour")),
+                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
+                                              tags$hr(),
+                                              dateRangeInput(ns("daterange_visitors_hours_library"),
+                                                             label = 'Vælg dato periode 1',
+                                                             start = Sys.Date() - 90, end = Sys.Date(),
                                                              separator = " - "
+                                              ),
+                                              checkboxInput(ns("smooth"), "Sammenlign med anden periode"),
+                                              conditionalPanel(
+                                                paste0("input['", ns("smooth"), "']"),
+                                                dateRangeInput(ns("daterange2_visitors_hours_library"),
+                                                               label = 'Vælg dato periode 2',
+                                                               start = 0, end = 0,
+                                                               separator = " - "
+                                                )
+                                              ),
+                                              tags$hr(),
+                                              sliderInput(ns("range"), "Vælg tids periode:",
+                                                          min = 0, max = 24,
+                                                          value = c(8,16)),
+                                              tags$hr(),
+                                              selectInput(ns("numberpercent"), "Output metode:",c('Antal' = 'count','Procent af total' = 'percent')) 
+                                       ),
+                                       column(10,
+                                              h4("Besøg fordelt på timer og periode"), 
+                                              formattableOutput(ns("visitors_per_hours_table")),
+                                              conditionalPanel(
+                                                paste0("input['", ns("smooth"), "']"),
+                                                formattableOutput(ns("visitors_per_hours_table2"))
                                               )
-                                            ),
-                                            tags$hr(),
-                                            sliderInput(ns("range"), "Vælg tids periode:",
-                                                        min = 0, max = 24,
-                                                        value = c(8,16)),
-                                            tags$hr(),
-                                            selectInput(ns("numberpercent"), "Output metode:",c('Antal' = 'count','Procent af total' = 'percent')) 
-                                     ),
-                                     column(10,
-                                            h4("Besøg fordelt på timer og periode"), 
-                                            formattableOutput(ns("visitors_per_hours_table")),
-                                            xlsxDownloadUI(ns("csv_visitors_per_hour")),
-                                            conditionalPanel(
-                                              paste0("input['", ns("smooth"), "']"),
-                                              formattableOutput(ns("visitors_per_hours_table2"))
-                                            )
-                                     )
-                                   )  
+                                         )
+                                   )
+                               )
                           )
                           #,tabPanel("Data",
                           #  h4("Generelt"),

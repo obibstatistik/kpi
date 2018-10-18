@@ -38,21 +38,19 @@ meetingroomsTabPanelUI <- function(id) {
                                                              start = Sys.Date() - 90, end = Sys.Date(),
                                                              separator = " - "
                                               ),
-                                              selectInput(ns("timeslot"), "Vælg tidspunkt på dagen",c('Indenfor arbejdstid, indtil kl. 16' = "1",'Udenfor arbejdstid, efter kl. 16' = "2",'Hele åbningstiden' = "3")) 
+                                              selectInput(ns("timeslot"), "Vælg tidspunkt på dagen",c('Indenfor arbejdstid, indtil kl. 16' = "1",'Udenfor arbejdstid, efter kl. 16' = "2",'Hele åbningstiden' = "3")),
+                                              xlsxDownloadUI(ns("Mødelokaleoversigt")),
+                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                        ),
                                        column(width = 10,   
                                             column(width = 12, class = "col-lg-6",
                                                    h4("Oversigtstabel"),
-                                                   tableOutput(ns("tablemeetingrooms_overview")),
-                                                   #csvDownloadUI(ns("meetingsrooms")),
-                                                   xlsxDownloadUI(ns("meetingsrooms"))
-                                                   
+                                                   tableOutput(ns("tablemeetingrooms_overview"))
                                             ),
                                             column(width = 12, class = "col-lg-6",
                                                    h4("Vist på agendaskærm"), 
                                                    plotlyOutput(ns("meetingrooms_agendascreen_plot"))
-                                            ),
-                                            tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
+                                            )
                                             #,
                                             #column(width = 12, class = "col-lg-6",
                                             #       h4("Fordelingen af mødelængde"),
@@ -76,13 +74,14 @@ meetingroomsTabPanelUI <- function(id) {
                                                                   start = Sys.Date() - 90, end = Sys.Date(),
                                                                   separator = " - "
                                                    ),
-                                                   selectInput(ns("timeslot_booker"), "Med/uden andet",c('Med andet' = "1",'Uden andet' = "2")) 
+                                                   selectInput(ns("timeslot_booker"), "Med/uden andet",c('Med andet' = "1",'Uden andet' = "2")),
+                                                   xlsxDownloadUI(ns("Bookingoversigt")),
+                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                                    ),
                                       column(width = 10,
                                             column(width = 12, class = "col-lg-6",
                                                    h4("Booker top 10"),
-                                                   tableOutput(ns("table_meetingrooms_booker")),
-                                                   xlsxDownloadUI(ns("meetingrooms_booker"))
+                                                   tableOutput(ns("table_meetingrooms_booker"))
                                             ),
                                             column(width = 12, class = "col-lg-6",
                                                    h4("Booker top 10"),
@@ -100,7 +99,8 @@ meetingroomsTabPanelUI <- function(id) {
                                                                   label = 'Vælg periode',
                                                                   start = Sys.Date() - 90, end = Sys.Date(),
                                                                   separator = " - "
-                                                   )
+                                                   ),
+                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                             ),
                                             column(width = 10,   
                                                    column(width = 12,
@@ -108,8 +108,6 @@ meetingroomsTabPanelUI <- function(id) {
                                                           p("Grafen viser brugen af de enkelte mødelokaler i Borgerens Hus fordelt på timer. Der kan kun sammenlignes i den enkelte kolonne."),
                                                           p("Jo mørkere markering jo højere brug af lokalet. Hvis et møde strækker sig over mere end én klokketime tæller mødet i begge time intervaller."),
                                                           formattableOutput(ns("tablemeetingrooms_timeslots")), #%>% withSpinner(color="#0dc5c1"),
-                                                          #csvDownloadUI(ns("csv_timeoversigt")),
-                                                          xlsxDownloadUI(ns("xlsx_timeoversigt")),
                                                           h4("Heatmap"),
                                                           p("Grafen viser brugen af mødelokaler i Borgernes Hus fordelt på døgnet. Heatmappet er dermed en indikation af hvordan brugen af huset er i løbet af en dag. Der kan sammenlignes på tværs af kolonner og rækker."),
                                                           plotlyOutput(ns("meetingrooms_time_heatmap"))

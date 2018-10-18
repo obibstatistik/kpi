@@ -53,7 +53,7 @@ inventoryTabPanelUI <- function(id) {
                                   fluidRow(
                                     column(12,
                                       column(2,
-                                             tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),
+                                             #tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),
                                              #h4("Vælg bibliotek"),
                                              selectInput(ns("inv_compare1_bibfilter"),"Vælg bibliotek:",c(
                                                                                                  "Bolbro" = "Bolbro Bibliotek",
@@ -66,7 +66,7 @@ inventoryTabPanelUI <- function(id) {
                                                                                                  "Tarup" = "Tarup Bibliotek",
                                                                                                  "Vollsmose" = "Vollsmose Bibliotek")),
                                              selectInput(ns("inv_compare_niveaufilter"),"Vælg beholdningsniveau:",c("afdeling","opstilling","delopstilling","materialetype")),
-                                             tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),
+                                             #tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),
                                              selectInput(ns("inv_compare2_bibfilter"),"Vælg bibliotek til sammenligning:",c(
                                                                                                   "Bolbro" = "Bolbro Bibliotek",
                                                                                                   "Dalum" = "Dalum Bibliotek",
@@ -76,8 +76,10 @@ inventoryTabPanelUI <- function(id) {
                                                                                                   "Borgernes Hus" = "Odense Hovedbibliotek",
                                                                                                   "Korup" = "Korup Bibliotek",
                                                                                                   "Tarup" = "Tarup Bibliotek",
-                                                                                                  "Vollsmose" = "Vollsmose Bibliotek"))
-                                      ),
+                                                                                                  "Vollsmose" = "Vollsmose Bibliotek")
+                                             ),
+                                             tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                             ),
                                       column(10,
                                              h4("Beholdning"),
                                              p("Brug denne visualisering til at få et overblik over sammensætningen af samlingen på et enkelt bibliotek eller til at sammenligne to biblioteker med hinanden"),
@@ -95,7 +97,9 @@ inventoryTabPanelUI <- function(id) {
                                                                 'Vælg biblioteker:',
                                                                 unique(as.character(beholdning_alt$bibliotek)),
                                                                 selected = unique(as.character(beholdning_alt$bibliotek)),
-                                                                inline = F)
+                                                                inline = F),
+                                             xlsxDownloadUI(ns("inventory")),
+                                             tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                       ),
                                       column(10,
                                              h4("Beholdning fordelt på biblioteker"),
@@ -104,8 +108,7 @@ inventoryTabPanelUI <- function(id) {
                                              p("Totalerne i bunden og i højre side angiver hhv. det samlede antal registrerede eksemplarer for hvert bibliotek og det samlede antal for hvert beholdningsniveau eller materialetype (for de valgte filialer)"),
                                              tags$br(),
                                              tags$br(),
-                                             formattableOutput(ns("inventory_table")),
-                                             xlsxDownloadUI(ns("inventory"))
+                                             formattableOutput(ns("inventory_table"))
                                       )
                                     )
                                   )

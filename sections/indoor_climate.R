@@ -9,7 +9,7 @@ source("~/.postpass")
 device_plotUI <- function(id) {
   ns <- NS(id)
   tagList(
-    column(3,
+    column(4,
            htmlOutput(ns("sensors_room_title")),
            plotlyOutput(ns("sensors_plot"))
     )
@@ -75,7 +75,7 @@ sensors_plot <- function(input, output, session, data, device, room, sensor, lim
              humidity = 5,
              noise_avg = 10)
       }
-      p %>% layout(title = '', xaxis = list(title = 'timer på dagen'), yaxis = list (range = yaxis_range(sensor), title = '', dtick = yaxis_step(sensor), ticksuffix = ticksuffix), showlegend = FALSE)
+      p %>% layout(autosize = TRUE, title = '', xaxis = list(title = 'timer på dagen'), yaxis = list (range = yaxis_range(sensor), title = '', dtick = yaxis_step(sensor), ticksuffix = ticksuffix), showlegend = FALSE)
   })
   
 }
@@ -117,47 +117,50 @@ indoor_climateTabPanelUI <- function(id) {
                           id = "tabset22",
                           tabPanel("Temperatur", 
                                    fluidRow(
-                                     column(12,
-                                            h3("Temperatur i Borgernes Hus"),
-                                            h4(paste0("Gennemsnit af målinger mellem ", fromdate, " og ", todate)),
-                                            tags$br(),
-                                            p("Nedenstående visualiseringer viser temperaturmålinger fra IC-meter enheder i Borgernes Hus over de senste otte dage, fordelt over timer på dagen"),
-                                            p("Den kraftige sorte linje viser temperaturgennemsnittet for de otte dage og de grå linjer er de egentlige målinger, således at maximum og minimumværdier kan aflæses"),
-                                            p("De stiplede snorhøjder på 21°C og 25°C angiver det temperaturvindue, som målingerne ifølge SDU bør ligge indenfor"),
-                                            tags$br(),tags$br(),tags$br(),
-
-                                            device_plotUI(ns(id = "temp-1BE1CA2D")), # 1BE1CA2D var forbyttet navnemæssigt frem til 13-08-2018 kl. ca. 15, dvs. at den var Oplevelse og ikke Viden/Info
-                                            device_plotUI(ns(id = "temp-446AA82F")), # 446AA82F var "Magasinet" (kunne dog ikke levere data) frem til 13-08-2018 kl. ca. 15, derfra er den Viden og Info.
-                                            #device_plotUI(ns(id = "temp-879D5B2C")), # 879D5B2C var forbyttet navnemæssigt frem til samme datotid. dvs. at den var Viden/Info og ikke Oplevelse
-                                            device_plotUI(ns(id = "temp-8CAE312E")),
-                                            device_plotUI(ns(id = "temp-20F2A02F")),
-                                            device_plotUI(ns(id = "temp-F358EC2B")),
-                                            device_plotUI(ns(id = "temp-DDBFED32")),
-                                            tags$div(HTML('<input type="button" class="hidden-print" onclick="printDiv.call(this,event,\'.col-sm-12\')" value="Print denne sektion"/>'))
-                                     )
-                                   )
+                                       column(12,
+                                              h3("Temperatur i Borgernes Hus"),
+                                              h4(paste0("Gennemsnit af målinger mellem ", fromdate, " og ", todate)),
+                                              tags$br(),
+                                              p("Nedenstående visualiseringer viser temperaturmålinger fra IC-meter enheder i Borgernes Hus over de senste otte dage, fordelt over timer på dagen"),
+                                              p("Den kraftige sorte linje viser temperaturgennemsnittet for de otte dage og de grå linjer er de egentlige målinger, således at maximum og minimumværdier kan aflæses"),
+                                              p("De stiplede snorhøjder på 21°C og 25°C angiver det temperaturvindue, som målingerne ifølge SDU bør ligge indenfor"),
+                                              tags$br(),
+                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'300px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
+                                              tags$br(),tags$br(),
+  
+                                              device_plotUI(ns(id = "temp-1BE1CA2D")), # 1BE1CA2D var forbyttet navnemæssigt frem til 13-08-2018 kl. ca. 15, dvs. at den var Oplevelse og ikke Viden/Info
+                                              device_plotUI(ns(id = "temp-446AA82F")), # 446AA82F var "Magasinet" (kunne dog ikke levere data) frem til 13-08-2018 kl. ca. 15, derfra er den Viden og Info.
+                                              #device_plotUI(ns(id = "temp-879D5B2C")), # 879D5B2C var forbyttet navnemæssigt frem til samme datotid. dvs. at den var Viden/Info og ikke Oplevelse
+                                              device_plotUI(ns(id = "temp-8CAE312E")),
+                                              device_plotUI(ns(id = "temp-20F2A02F")),
+                                              device_plotUI(ns(id = "temp-F358EC2B")),
+                                              device_plotUI(ns(id = "temp-DDBFED32"))
+                                       )
+                             )
                           ),
                           tabPanel("Luftkvalitet (CO2)", 
                                    fluidRow(
-                                     column(12,
-                                            h3("Luftkvalitet i Borgernes Hus"),
-                                            h4(paste0("Gennemsnit af målinger mellem ", fromdate, " og ", todate)),
-                                            tags$br(),
-                                            p("Nedenstående visualiseringer viser CO2-målinger fra IC-meter enheder i Borgernes Hus over de senste otte dage, fordelt over timer på dagen"),
-                                            p("Målingerne er foretaget i ppm (parts per million)"),
-                                            p("Den kraftige sorte linje viser temperaturgennemsnittet for de otte dage og de grå linjer er de egentlige målinger, således at maximum og minimumværdier kan aflæses"),
-                                            p("Den stiplede snorhøjde på 1.000ppm angiver den mængde CO2, som ifølge SDU maximalt bør være til stede"),
-                                            tags$br(),tags$br(),tags$br(),
-
-                                            device_plotUI(ns(id = "co2-1BE1CA2D")),
-                                            device_plotUI(ns(id = "co2-446AA82F")),
-                                            #device_plotUI(ns(id = "co2-879D5B2C")),
-                                            device_plotUI(ns(id = "co2-8CAE312E")),
-                                            device_plotUI(ns(id = "co2-20F2A02F")),
-                                            device_plotUI(ns(id = "co2-F358EC2B")),
-                                            device_plotUI(ns(id = "co2-DDBFED32"))
-                                     )
+                                       column(12,
+                                              h3("Luftkvalitet i Borgernes Hus"),
+                                              h4(paste0("Gennemsnit af målinger mellem ", fromdate, " og ", todate)),
+                                              tags$br(),
+                                              p("Nedenstående visualiseringer viser CO2-målinger fra IC-meter enheder i Borgernes Hus over de senste otte dage, fordelt over timer på dagen"),
+                                              p("Målingerne er foretaget i ppm (parts per million)"),
+                                              p("Den kraftige sorte linje viser temperaturgennemsnittet for de otte dage og de grå linjer er de egentlige målinger, således at maximum og minimumværdier kan aflæses"),
+                                              p("Den stiplede snorhøjde på 1.000ppm angiver den mængde CO2, som ifølge SDU maximalt bør være til stede"),
+                                              tags$br(),
+                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'300px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
+                                              tags$br(),tags$br(),
+  
+                                              device_plotUI(ns(id = "co2-1BE1CA2D")),
+                                              device_plotUI(ns(id = "co2-446AA82F")),
+                                              #device_plotUI(ns(id = "co2-879D5B2C")),
+                                              device_plotUI(ns(id = "co2-8CAE312E")),
+                                              device_plotUI(ns(id = "co2-20F2A02F")),
+                                              device_plotUI(ns(id = "co2-F358EC2B")),
+                                              device_plotUI(ns(id = "co2-DDBFED32"))
                                    )
+                               )
                           ),
                           tabPanel("Luftfugtighed", 
                                    fluidRow(
@@ -167,7 +170,9 @@ indoor_climateTabPanelUI <- function(id) {
                                             tags$br(),
                                             p("Nedenstående visualiseringer viser målinger af luftfugtighed fra IC-meter enheder i Borgernes Hus over de senste otte dage, fordelt over timer på dagen"),
                                             p("Den kraftige sorte linje viser gennemsnittet for de otte dage og de grå linjer er de egentlige målinger, således at maximum og minimumværdier kan aflæses"),
-                                            tags$br(),tags$br(),tags$br(),
+                                            tags$br(),
+                                            tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'300px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
+                                            tags$br(),tags$br(),
 
                                             device_plotUI(ns(id = "fugt-1BE1CA2D")),
                                             device_plotUI(ns(id = "fugt-446AA82F")),
@@ -187,7 +192,9 @@ indoor_climateTabPanelUI <- function(id) {
                                             tags$br(),
                                             p("Nedenstående visualiseringer viser målinger af gennemsnitligt lydniveau fra IC-meter enheder i Borgernes Hus over de senste otte dage, fordelt over timer på dagen"),
                                             p("Den kraftige sorte linje viser gennemsnittet for de otte dage og de grå linjer er de egentlige målinger, således at maximum og minimumværdier kan aflæses"),
-                                            tags$br(),tags$br(),tags$br(),
+                                            tags$br(),
+                                            tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'300px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
+                                            tags$br(),tags$br(),
 
                                             device_plotUI(ns(id = "lyd-1BE1CA2D")),
                                             device_plotUI(ns(id = "lyd-446AA82F")),

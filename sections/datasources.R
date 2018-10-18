@@ -21,6 +21,7 @@ datasourcesTabPanelUI <- function(id) {
                                    fluidRow(width = 12,
                                             column(width = 12,
                                                    p("Diagrammet viser alle OBBs datakilder, hvilken type det er og sammenhængen mellem de enkelte kilder."),
+                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
                                                    img(src='DatakildeOversigt.svg', width="100%", height="100%" )
                                             )
                                    )
@@ -28,8 +29,8 @@ datasourcesTabPanelUI <- function(id) {
                           tabPanel("Kildetabel",
                                    fluidRow(width = 12,
                                             column(width = 12,
-                                                   dataTableOutput(ns('datasources_table')),
-                                                   xlsxDownloadUI(ns('datakilder'))
+                                                   xlsxDownloadUI(ns('datakilder')),
+                                                   dataTableOutput(ns('datasources_table'))
                                             )
                                    )       
                           )
