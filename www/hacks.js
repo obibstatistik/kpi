@@ -26,15 +26,15 @@ function printDiv(event,parentClass,divWidth) {
   widgetDivs.each(function() { autorangeChart(this.id); });                                        // force svgs to the parent divs' width
   w = window.open();                                                                               // open a new window/html document
   w.document.write($(divName).html());                                                             // write the saved html to the new empty window
+  var svgs = w.document.getElementsByClassName("main-svg");                                        // get refs to all elements with class main-svg, this time in the new window
+  [].forEach.call(svgs, function (svg) {svg.setAttribute('style','position:absolute;')});          // set position absolute for all svgs to make axis label svg and graph svg stay on top of each other
+  var ylines = w.document.getElementsByClassName("ygrid");
+  [].forEach.call(ylines, function (yline) {yline.setAttribute('style','stroke:black;')});
   var sc = w.document.createElement("link");                                                       // create a link element to put in the new document to point to a css file for styling the print page
   sc.setAttribute("rel", "stylesheet");                                                            // add the necessary attributes to the link
   sc.setAttribute("type", "text/css");
   sc.setAttribute("href", "plotprint.css");
   w.document.body.appendChild(sc);                                                                 // append the element to the body of the new document
-  var svgs = w.document.getElementsByClassName("main-svg");                                        // get refs to all elements with class main-svg, this time in the new window
-  [].forEach.call(svgs, function (svg) {svg.setAttribute('style','position:absolute;')});          // set position absolute for all svgs to make axis label svg and graph svg stay on top of each other
-  var ylines = w.document.getElementsByClassName("ygrid");
-  [].forEach.call(ylines, function (yline) {yline.setAttribute('style','stroke:black;')});
   sc.onload = function(){ w.print(); w.close(); };                                                 // wait for the link element to be loaded before calling print() function and then close() after that
   widgetDivs.css('width','100%');                                                                  // reset widths of plot divs and the like
   widgetDivs.each(function() { autorangeChart(this.id); });                                        // force svgs back to original widths
