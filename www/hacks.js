@@ -19,23 +19,25 @@ function myFunction(x) {
    it, opens the print dialogue and closes the page after printing. */
    
 function printDiv(event,parentClass,divWidth) {             
-  var divName = $(this).closest(parentClass);                                                                     // choose a parent div (based on it's class) to copy to a new window/html document for printing
-  var widgetDivs = $(divName).find(".html-widget-output.plotly");                                                 // find() all divs among the descendants of the print div with classes .html-widget-output and .plotly
-  var svg = $(divName).find(".main-svg");           
-  widgetDivs.css('width',divWidth);          
-  widgetDivs.each(function() { autorangeChart(this.id); });                                                       // force svgs to the parent divs' width
-  w = window.open();                                                                                              // open a new window/html document
-  w.document.write($(divName).html());                                                                            // write the saved html to the new empty window
-  var sc = w.document.createElement("link");
-  sc.setAttribute("rel", "stylesheet");
+  var divName = $(this).closest(parentClass);                                                      // choose a parent div (based on it's class) to copy to a new window/html document for printing
+  var widgetDivs = $(divName).find(".html-widget-output.plotly");                                  // find() all divs among the descendants of the print div with classes .html-widget-output and .plotly
+  var svg = $(divName).find(".main-svg");                                                          // get a ref to the svg elements
+  widgetDivs.css('width',divWidth);                                                                // set the width of the svg elements to the one from the method's parameters
+  widgetDivs.each(function() { autorangeChart(this.id); });                                        // force svgs to the parent divs' width
+  w = window.open();                                                                               // open a new window/html document
+  w.document.write($(divName).html());                                                             // write the saved html to the new empty window
+  var sc = w.document.createElement("link");                                                       // create a link element to put in the new document to point to a css file for styling the print page
+  sc.setAttribute("rel", "stylesheet");                                                            // add the necessary attributes to the link
   sc.setAttribute("type", "text/css");
   sc.setAttribute("href", "plotprint.css");
-  w.document.body.appendChild(sc);
-  var svgs = w.document.getElementsByClassName("main-svg");                                                       // get refs to all elements with class main-svg
-  [].forEach.call(svgs, function (svg) {svg.setAttribute('style','position:absolute;')});                         // set position absolute for all svgs to make axis label svg and graph svg stay on top of each other
-  sc.onload = function(){ w.print(); w.close(); };  
-  widgetDivs.css('width','100%');                                                                                 // reset widths of plot divs and the like
-  widgetDivs.each(function() { autorangeChart(this.id); });                                                       // force svgs back to original widths
+  w.document.body.appendChild(sc);                                                                 // append the element to the body of the new document
+  var svgs = w.document.getElementsByClassName("main-svg");                                        // get refs to all elements with class main-svg, this time in the new window
+  [].forEach.call(svgs, function (svg) {svg.setAttribute('style','position:absolute;')});          // set position absolute for all svgs to make axis label svg and graph svg stay on top of each other
+  var ylines = w.document.getElementsByClassName("ygrid");
+  [].forEach.call(ylines, function (yline) {yline.setAttribute('style','stroke:black;')});
+  sc.onload = function(){ w.print(); w.close(); };                                                 // wait for the link element to be loaded before calling print() function and then close() after that
+  widgetDivs.css('width','100%');                                                                  // reset widths of plot divs and the like
+  widgetDivs.each(function() { autorangeChart(this.id); });                                        // force svgs back to original widths
 }
 
 /*

@@ -3,11 +3,20 @@
 }
 
 @media print {
-    tr:nth-child(even) {
+    tbody tr:nth-child(odd) {
         background-color: #f2f2f2 !important;
         -webkit-print-color-adjust: exact; 
     }
 }
+
+/*
+// does not seem to work on svgs for some reason
+.ygrid {
+  stroke: rgb(100, 100, 100); 
+  stroke-opacity: 1; 
+  stroke-width: 1px;
+}
+*/
 
 input,a {
   display: none;
@@ -33,11 +42,25 @@ td,th  {
   text-align: right;
 }
 
+th  {
+  border-bottom: solid 1px black;
+  /* text-align: left !important;*/
+}
+
+th:nth-child(1)  {
+  text-align: left !important;
+}
+/*
+    th td {
+        border-bottom: solid 1px #555;
+        -webkit-print-color-adjust: exact; 
+    }
+
 td:nth-child(1),th:nth-child(1)  {
   border-top: solid 1px lightgrey;
   text-align: left !important;
 }
-
+*/
 h3 {
   margin-top: 10px;
   text-transform: uppercase;
