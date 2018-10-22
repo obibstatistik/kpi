@@ -14,7 +14,7 @@ materialsTabPanelUI <- function(id) {
   
   tabItem(tabName = "physicalmat",
           
-          box(width = 12, solidHeader = TRUE, id="materialsheader1", class = "hidden-print",
+          box(width = 12, solidHeader = TRUE, id="materialsheader1", class = "pageheader",
               h3("Udlån"),
               img(src='icons/materialer_negativ_45x45.png', align = "right", height="46px")
           ),

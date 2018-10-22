@@ -1,9 +1,17 @@
 
 // Function forcing plotly plots to scale to div/window width
+
 function autorangeChart(div) {
     Plotly.relayout(div, {
         'xaxis.autorange': true,
         'yaxis.autorange': true
+    });
+}
+
+function autorangePie(div) {
+    Plotly.relayout(div, {
+        'height.autorange': true, 
+        'width.autorange': true
     });
 }
 
@@ -18,13 +26,22 @@ function myFunction(x) {
 /* This function creates a new page, copies relevant content to
    it, opens the print dialogue and closes the page after printing. */
    
-function printDiv(event,parentClass,divWidth) {             
+function printDiv(event,parentClass,divWidth,type) {             
   var divName = $(this).closest(parentClass);                                                      // choose a parent div (based on it's class) to copy to a new window/html document for printing
   var widgetDivs = $(divName).find(".html-widget-output.plotly");                                  // find() all divs among the descendants of the print div with classes .html-widget-output and .plotly
+  //var tabPanel = $(this).closest(".tab-pane");                                                     // choose a parent div (based on it's class) to copy to a new window/html document for printing
+  //var pageHeader = $(tabPanel).find(".pageheader");                                                // choose a parent div (based on it's class) to copy to a new window/html document for printing
+  //console.log(pageHeader.id);
+  //console.log(tabPanel.html());
   var svg = $(divName).find(".main-svg");                                                          // get a ref to the svg elements
-  widgetDivs.css('width',divWidth);                                                                // set the width of the svg elements to the one from the method's parameters
-  widgetDivs.each(function() { autorangeChart(this.id); });                                        // force svgs to the parent divs' width
+  widgetDivs.css('width', divWidth);                                                                // set the width of the svg elements to the one from the method's parameters
+  if (type == 'pie') {
+    widgetDivs.each(function() { autorangePie(this.id); });                                        // force svgs to the parent divs' width. Function choosen needs to depend on type of the chart it seems
+  } else {
+    widgetDivs.each(function() { autorangeChart(this.id); });                                     
+  }
   w = window.open();                                                                               // open a new window/html document
+  //w.document.write($(pageHeader).html());                                                             // write the saved html to the new empty window
   w.document.write($(divName).html());                                                             // write the saved html to the new empty window
   var svgs = w.document.getElementsByClassName("main-svg");                                        // get refs to all elements with class main-svg, this time in the new window
   [].forEach.call(svgs, function (svg) {svg.setAttribute('style','position:absolute;')});          // set position absolute for all svgs to make axis label svg and graph svg stay on top of each other
@@ -37,7 +54,12 @@ function printDiv(event,parentClass,divWidth) {
   w.document.head.appendChild(sc);                                                                 // append the element to the body of the new document
   sc.onload = function(){ w.print(); w.close(); };                                                 // wait for the link element to be loaded before calling print() function and then close() after that
   widgetDivs.css('width','100%');                                                                  // reset widths of plot divs and the like
-  widgetDivs.each(function() { autorangeChart(this.id); });                                        // force svgs back to original widths
+  //widgetDivs.each(function() { autorangeChart(this.id); });                                        // force svgs back to original widths
+  if (type == 'pie') {
+    widgetDivs.each(function() { autorangePie(this.id); });                                        // force svgs to the parent divs' width. Function choosen needs to depend on type of the chart it seems
+  } else {
+    widgetDivs.each(function() { autorangeChart(this.id); });                                     
+  }
 }
 
 /*

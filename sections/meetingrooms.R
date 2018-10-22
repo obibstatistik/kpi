@@ -40,7 +40,7 @@ meetingroomsTabPanelUI <- function(id) {
                                               ),
                                               selectInput(ns("timeslot"), "Vælg tidspunkt på dagen",c('Indenfor arbejdstid, indtil kl. 16' = "1",'Udenfor arbejdstid, efter kl. 16' = "2",'Hele åbningstiden' = "3")),
                                               xlsxDownloadUI(ns("Mødelokaleoversigt")),
-                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\',\'pie\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                        ),
                                        column(width = 10,   
                                             column(width = 12, class = "col-lg-6",
@@ -76,7 +76,7 @@ meetingroomsTabPanelUI <- function(id) {
                                                    ),
                                                    selectInput(ns("timeslot_booker"), "Med/uden andet",c('Med andet' = "1",'Uden andet' = "2")),
                                                    xlsxDownloadUI(ns("Bookingoversigt")),
-                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\',\'pie\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                                    ),
                                       column(width = 10,
                                             column(width = 12, class = "col-lg-6",
