@@ -28,8 +28,8 @@ function printDiv(event,parentClass,divWidth) {
   w.document.write($(divName).html());                                                             // write the saved html to the new empty window
   var svgs = w.document.getElementsByClassName("main-svg");                                        // get refs to all elements with class main-svg, this time in the new window
   [].forEach.call(svgs, function (svg) {svg.setAttribute('style','position:absolute;')});          // set position absolute for all svgs to make axis label svg and graph svg stay on top of each other
-  var ylines = w.document.getElementsByClassName("ygrid");
-  [].forEach.call(ylines, function (yline) {yline.setAttribute('style','stroke:black;')});
+  //var ylines = w.document.getElementsByClassName("ygrid");
+  //[].forEach.call(ylines, function (yline) {yline.setAttribute('style','stroke:black; stroke-width: 0.5px;')});
   var sc = w.document.createElement("link");                                                       // create a link element to put in the new document to point to a css file for styling the print page
   sc.setAttribute("rel", "stylesheet");                                                            // add the necessary attributes to the link
   sc.setAttribute("type", "text/css");
