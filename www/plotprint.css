@@ -1,14 +1,14 @@
 .hidden-print {
   display: none;
 }
-
+/*
 @media print {
     tbody tr:nth-child(odd) {
         background-color: #f2f2f2 !important;
         -webkit-print-color-adjust: exact; 
     }
 }
-
+*/
 /*
 // does not seem to work on svgs for some reason
 .ygrid {
