@@ -18,19 +18,19 @@ meetingroomsTabPanelUI <- function(id) {
             column(12,
                    tabBox(width = 12,
                           id = "tabset1",
-                          tabPanel("Generelt",
+                          tabPanel("Generelt", 
                                    fluidRow(
-                                     column(6,
+                                     column(12,
+                                            fluidRow(
+                                              column(6,
                                             h4("Mødelokaleoversigt"),
                                             p("Oversigtstabellen viser aktiviteten i de enkelte mødelokaler i Borgernes Hus for den valgte periode."),
                                             p("Tabellen viser ”Antal møder”, ”Gennemsnitlig mødevarighed” – som er et udtryk for hvor langt møderne i snit varer i de enkelte lokaler, ”Total” – som er den totale tid mødelokalet har været optaget i perioden, samt ”Belægningsprocent” – der viser hvor meget af den totale tid mødelokalet har været booket."),
                                             p("Det er muligt at få vist oversigten ”Indenfor arbejdstid (8-16)”, ”udenfor arbejdstid (16-21)” eller ”hele åbningstiden”"),
                                             p("Den totale tid er defineret som ”hverdage mellem 8 og 21”, hvorfor weekender ikke er medtaget."),
-                                            p("Grafen viser hvor mange møder, der er blevet vist på agendaskærmen i perioden.")
+                                            p("Diagrammet viser hvor mange møder, der er blevet vist på agendaskærmen i perioden.")
                                             )
                                    ),
-                                   fluidRow(
-                                     column(width = 12,
                                        column(2,
                                               h4("Periode"),
                                               dateRangeInput(ns('dateRangeMeetingrooms'),
@@ -60,13 +60,15 @@ meetingroomsTabPanelUI <- function(id) {
                                        )
                                      ),
                                      column(12,tags$hr()),
-                                     column(6,
-                                            h4("Bookingoversigt"),
-                                            p("Bookingoversigten viser top 10 over bookinger fordelt på afdelinger i en valgt periode."),
-                                            p("Andet” dækker over bookinger fra Odense Frivillighedscenter, bookinger fra Borgere, bookinger fra odense.dk brugere udenfor OBB. Fremover vil Odense Frivillighedscenter få særskilt kategori, og disse bookinger fremstå individuelt."),
-                                            p("Det er muligt at fravælge kategorien ”andet” for bedre at kunne se intern OBB brug af mødelokalerne.")
-                                     ),
-                                     column(width = 12,
+                                     column(12,
+                                        fluidRow(
+                                           column(6,
+                                                  h4("Bookingoversigt"),
+                                                  p("Bookingoversigten viser top 10 over bookinger fordelt på afdelinger i en valgt periode."),
+                                                  p("Andet” dækker over bookinger fra Odense Frivillighedscenter, bookinger fra Borgere, bookinger fra odense.dk brugere udenfor OBB. Fremover vil Odense Frivillighedscenter få særskilt kategori, og disse bookinger fremstå individuelt."),
+                                                  p("Det er muligt at fravælge kategorien ”andet” for bedre at kunne se intern OBB brug af mødelokalerne.")
+                                              )
+                                           ),
                                             column(width = 2,
                                                    h4("Periode"),
                                                    dateRangeInput(ns('dateRangeMeetingrooms_booker'),
@@ -78,18 +80,19 @@ meetingroomsTabPanelUI <- function(id) {
                                                    xlsxDownloadUI(ns("Bookingoversigt")),
                                                    tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\',\'pie\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                                    ),
-                                      column(width = 10,
-                                            column(width = 12, class = "col-lg-6",
-                                                   h4("Booker top 10"),
-                                                   tableOutput(ns("table_meetingrooms_booker"))
-                                            ),
-                                            column(width = 12, class = "col-lg-6",
-                                                   h4("Booker top 10"),
-                                                   plotlyOutput(ns("plot_pie_meetingrooms_booker"))
+                                            column(width = 10,
+                                                  column(width = 12, class = "col-lg-6",
+                                                         h4("Booker top 10"),
+                                                         tableOutput(ns("table_meetingrooms_booker"))
+                                                  ),
+                                                  column(width = 12, class = "col-lg-6",
+                                                         h4("Booker top 10"),
+                                                         plotlyOutput(ns("plot_pie_meetingrooms_booker"))
+                                                  )
                                             )
-                                      )
+                                     )
                                 )
-                          )),
+                          ),
                           tabPanel("Timeoversigt",
                                    fluidRow(
                                      column(width = 12,
@@ -102,7 +105,7 @@ meetingroomsTabPanelUI <- function(id) {
                                                    ),
                                                    tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                             ),
-                                            column(width = 10,   
+                                            column(width = 10, style = "page-break-after: always;",  
                                                    column(width = 12,
                                                           h4("Timeoversigt"),
                                                           p("Grafen viser brugen af de enkelte mødelokaler i Borgerens Hus fordelt på timer. Der kan kun sammenlignes i den enkelte kolonne."),
@@ -188,8 +191,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
     meetingrooms_overview()
   )
   
-  #callModule(csvDownload, "meetingsrooms", data = meetingrooms_overview(), name = "meetingrooms")
-  callModule(xlsxDownload, "meetingsrooms", data = reactive(meetingrooms_overview()), name = "meetingsrooms")
+  callModule(xlsxDownload, "Mødelokaleoversigt", data = reactive(meetingrooms_overview()), name = "Mødelokaleoversigt")
   
   meetingrooms_overview_box <- reactive({
     meetingrooms_overview <- meetingrooms %>%
@@ -267,7 +269,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
       head(10) 
   })
   
-  callModule(xlsxDownload, "meetingrooms_booker", data = reactive(meetingrooms_booker()), name = "meetingrooms_booker")
+  callModule(xlsxDownload, "Bookingoversigt", data = reactive(meetingrooms_booker()), name = "Bookingoversigt")
   
   output$table_meetingrooms_booker <- renderTable({
     meetingrooms_booker <- meetingrooms_booker() %>% 

@@ -30,7 +30,7 @@ materialsTabPanelUI <- function(id) {
                                            column(10,
                                                   h4("Samlet udlån på OBB"),
                                                   p("Grafen viser det samlede udlån på OBB fordelt pr. år. De grå søjler er hele året, men farvede søjler i forgrunden er år til dato. Det er dermed muligt at sammenligne indeværende års udlån med de forrige."),
-                                                  tags$div( samedate_barchartOutput(ns('checkouts_samedate_plot')), style = "page-break-after: always;" )
+                                                  tags$div( samedate_barchartOutput(ns('checkouts_samedate_plot')) )
                                            )
                                       ),
                                      column(12,tags$div( tags$hr(), class = "hidden-print" )),

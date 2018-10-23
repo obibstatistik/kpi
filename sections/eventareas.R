@@ -21,7 +21,7 @@ eventareasTabPanelUI <- function(id) {
                           id = "tabset1",
                           tabPanel("Generelt", 
                                    fluidRow(
-                                     column(width = 12,
+                                     column(12,
                                             fluidRow(
                                               column(6,
                                                      h4("Eventområde oversigt"),
@@ -35,13 +35,14 @@ eventareasTabPanelUI <- function(id) {
                                                                   label = 'Vælg periode',
                                                                   start = Sys.Date() - 90, end = Sys.Date(),
                                                                   separator = " - "
-                                                )
+                                                   ),
+                                                   xlsxDownloadUI(ns("eventområde_oversigtstabel")),
+                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'600px\',\'pie\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                             ),
                                             column(width = 10,
                                                    column(width = 12, class = "col-lg-7",
                                                           h4("Oversigtstabel"),
-                                                          tableOutput(ns("tablebhus_events_overview")),
-                                                          xlsxDownloadUI(ns("bh_events_overview"))
+                                                          tableOutput(ns("tablebhus_events_overview"))
                                                          ),
                                                    column(width = 12, class = "col-lg-5",
                                                           h4("Vist på agendaskærm"), 
@@ -50,25 +51,29 @@ eventareasTabPanelUI <- function(id) {
                                                    )
                                            ),
                                      column(12,tags$hr()),
-                                     column(6,
-                                            h4("Bookingoversigt"),
-                                            p("Bookingoversigten viser top 10 over bookinger fordelt på afdelinger i en valgt periode."),
-                                            p("”Andet” dækker over bookinger fra Odense Frivillighedscenter, bookinger fra Borgere, bookinger fra odense.dk brugere udenfor OBB. Fremover vil Odense Frivillighedscenter få særskilt kategori, og disse bookinger fremstå individuelt."),
-                                            p("Det er muligt at fravælge kategorien ”andet” for bedre at kunne se intern OBB brug af mødelokalerne.")
-                                     ),
-                                     column(width = 12,
-                                            column(width = 2),
-                                            column(width = 10,
-                                                   column(width = 12, class = "col-lg-6",
-                                                          h4("Booker top 10"),
-                                                          tableOutput(ns("table_bhus_events_booker")),
-                                                          xlsxDownloadUI(ns("områdebooking"))
-                                                   ),
-                                                   column(width = 12, class = "col-lg-6",
-                                                          h4("Booker top 10"),
-                                                          plotlyOutput(ns("plot_pie_eventarea_booker"))
-                                                   )
-                                            )
+                                     column(12,
+                                            fluidRow(
+                                              column(6,
+                                                  h4("Bookingoversigt"),
+                                                  p("Bookingoversigten viser top 10 over bookinger fordelt på afdelinger i en valgt periode."),
+                                                  p("”Andet” dækker over bookinger fra Odense Frivillighedscenter, bookinger fra Borgere, bookinger fra odense.dk brugere udenfor OBB. Fremover vil Odense Frivillighedscenter få særskilt kategori, og disse bookinger fremstå individuelt."),
+                                                  p("Det er muligt at fravælge kategorien ”andet” for bedre at kunne se intern OBB brug af mødelokalerne.")
+                                              )
+                                           ),
+                                              column(2,
+                                                     xlsxDownloadUI(ns("top10_booker_tabel")),
+                                                     tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'600px\',\'pie\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                                     ),
+                                              column(10,
+                                                     column(12, class = "col-lg-6",
+                                                            h4("Booker top 10"),
+                                                            tableOutput(ns("table_bhus_events_booker"))
+                                                     ),
+                                                     column(12, class = "col-lg-6",
+                                                            h4("Booker top 10"),
+                                                            plotlyOutput(ns("plot_pie_eventarea_booker"))
+                                                     )
+                                                )
                                      )
                                    )),
                           tabPanel("Timer",
@@ -82,11 +87,12 @@ eventareasTabPanelUI <- function(id) {
                                                                   separator = " - "
                                                    )
                                             ),
-                                            column(width = 10,   
+                                            column(width = 10,
                                                    column(width = 12,
                                                           h4("Timetabel"),
                                                           p("Graduering pr. kolonner"),
                                                           formattableOutput(ns("tablebhus_events_timeslots")), #%>% withSpinner(color="#0dc5c1"),
+                                                          tags$div('',style = "page-break-after: always;" ),
                                                           h4("Heatmap"),
                                                           p("Graduering i hele figuren"),
                                                           plotlyOutput(ns("bhus_events_time_heatmap"))
@@ -128,7 +134,7 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
       rename(Lokation = location, Antal = count, Median =	median, 'Total(t)' =	sum, Belægningsprocent = timediff )  
   })
 
-  callModule(xlsxDownload, "bh_events_overview", data = reactive(eventarea_booker()), name = "bh_events_overview")
+  callModule(xlsxDownload, "eventområde_oversigtstabel", data = reactive(eventarea_booker()), name = "eventområde_oversigtstabel")
 
   output$tablebhus_events_overview <- renderTable({ eventarea_booker() })
     
@@ -172,7 +178,7 @@ eventareasTabPanel <- function(input, output, session, data, tablename) {
         head(10)
     })
 
-  callModule(xlsxDownload, "områdebooking", data = reactive(eventarea_booker()), name = "områdebooking")
+  callModule(xlsxDownload, "top10_booker_tabel", data = reactive(eventarea_booker()), name = "top10_booker_tabel")
       
   output$table_bhus_events_booker <- renderTable(
     bhus_events_booker <- eventarea_booker() %>%

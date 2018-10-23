@@ -1,14 +1,14 @@
 .hidden-print {
   display: none;
 }
-/*
+
 @media print {
     tbody tr:nth-child(odd) {
         background-color: #f2f2f2 !important;
         -webkit-print-color-adjust: exact; 
     }
 }
-*/
+
 /*
 // does not seem to work on svgs for some reason
 .ygrid {
@@ -18,7 +18,7 @@
 }
 */
 
-input,a {
+input {
   display: none;
 }
 
@@ -32,24 +32,30 @@ input,a {
 }
 
 table  {
-  width: 700px;
+  width: 100% !important;
+  /*max-width: 700px !important;*/
   margin: 40px 0 0 0;
   border-spacing: 0;
 }
 
 td,th  {
   border-top: solid 1px lightgrey;
-  text-align: right;
+  text-align: right !important;
 }
 
 th  {
-  border-bottom: solid 1px black;
+  border-bottom: solid 1px black !important;
   /* text-align: left !important;*/
 }
 
 th:nth-child(1)  {
   text-align: left !important;
 }
+
+td:nth-child(1)  {
+  text-align: left !important;
+}
+
 
 h3 {
   margin-top: 10px;
