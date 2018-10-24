@@ -1,4 +1,4 @@
-.hidden-print {
+.hidden-print, .modebar, .btn, input {
   display: none;
 }
 
@@ -17,14 +17,6 @@
   stroke-width: 1px;
 }
 */
-
-input {
-  display: none;
-}
-
-.modebar {
-  display: none;
-}
 
 .control-label {
   float:left;
@@ -55,7 +47,6 @@ th:nth-child(1)  {
 td:nth-child(1)  {
   text-align: left !important;
 }
-
 
 h3 {
   margin-top: 10px;

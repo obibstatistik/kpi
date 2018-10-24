@@ -15,6 +15,7 @@ function autorangePie(div) {
     });
 }
 
+/*
 function myFunction(x) {
     if (x.matches) { // If media query matches
         document.body.style.backgroundColor = "yellow";
@@ -22,6 +23,7 @@ function myFunction(x) {
         document.body.style.backgroundColor = "pink";
     }
 }
+*/
 
 /* This function creates a new page, copies relevant content to
    it, opens the print dialogue and closes the page after printing. */
@@ -53,7 +55,7 @@ function printDiv(event,parentClass,divWidth,type) {
   sc.setAttribute("type", "text/css");
   sc.setAttribute("href", "plotprint.css");
   w.document.head.appendChild(sc);                                                                 // append the element to the body of the new document
-  sc.onload = function(){ /* w.print(); w.close(); */ };                                          // wait for the link element to be loaded before calling print() function and then close() after that
+  sc.onload = function(){  w.print(); w.close();  };                                           // wait for the link element to be loaded before calling print() function and then close() after that
   widgetDivs.css('width','100%');                                                                  // reset widths of plot divs and the like
   
   if (type == 'pie') {
