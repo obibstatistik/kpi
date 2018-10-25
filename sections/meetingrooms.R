@@ -242,7 +242,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
             marker = list(colors = colors, 
             line = list(color = '#FFFFFF', width = 1))) %>%
       add_pie(hole = 0.6) %>%
-      layout(showlegend = T,
+      layout(showlegend = T, autosize = T,
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
@@ -288,7 +288,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
             textfont = list(color = '#FFFFFF'),
             marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))) %>%
       add_pie() %>%
-      layout(showlegend = T,
+      layout(showlegend = T, autosize = T,
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
@@ -356,7 +356,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
     
     plot_ly(x=meetingrooms_timeslots$sted, y=meetingrooms_timeslots$startTidspunkt, z = meetingrooms_timeslots$count, 
             colors = colorRamp(c("white", "#aeb051")), type = "heatmap", showscale = FALSE) %>%
-            layout(xaxis = list(showgrid = FALSE, dtick = 1, side = 'top'), yaxis = list(showgrid = FALSE, dtick = 1, autorange = 'reversed'))
+            layout(xaxis = list(showgrid = FALSE, dtick = 1, side = 'top'), yaxis = list(showgrid = FALSE, dtick = 1, autorange = 'reversed', autosize = T))
   })
   
 }
