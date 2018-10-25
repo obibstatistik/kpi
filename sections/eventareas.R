@@ -37,7 +37,7 @@ eventareasTabPanelUI <- function(id) {
                                                                   separator = " - "
                                                    ),
                                                    xlsxDownloadUI(ns("eventområde_oversigtstabel")),
-                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'600px\',\'pie\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'600px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                             ),
                                             column(width = 10,
                                                    column(width = 12, class = "col-lg-7",
@@ -62,7 +62,7 @@ eventareasTabPanelUI <- function(id) {
                                            ),
                                               column(2,
                                                      xlsxDownloadUI(ns("top10_booker_tabel")),
-                                                     tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'600px\',\'pie\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                                     tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'600px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                                      ),
                                               column(10,
                                                      column(12, class = "col-lg-6",

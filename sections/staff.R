@@ -9,46 +9,56 @@ staffTabPanelUI <- function(id) {
   ns <- NS(id)
   
   tabItem(tabName = "personal",
-          
-          box(width = 12, solidHeader = TRUE,
+
+          column(width = 12, solidHeader = TRUE,
               h3("Personale")
-          ),      
-          
-          box(width = 12,
-              column(6, 
-                     h4("Kønsfordeling"),
-                     plotlyOutput(ns("peopleplot"))),
-              column(6, 
-                     h4("Aldersfordeling"),
-                     plotlyOutput(ns("peopleplotage"))
-              ),
-              column(6, 
-                     h4("Fordeling i øvre aldersinterval 2012-2017"),
-                     plotlyOutput(ns("peopleplotageupper"))
-              ),
-              column(6, 
-                     h4("Antal i øvre aldersinterval 2017"),
-                     plotlyOutput(ns("peopleplotageupper2"))
-              ),
-              column(6, 
-                     h4("Fordeling på faggrupper 2012-2017"),
-                     plotlyOutput(ns("peopleplotfag"))
-              ),
-              column(6, 
-                     h4("Antal i faggrupper 2017"),
-                     plotlyOutput(ns("peopleplotfag2"))
-              ),
-              column(6, 
-                     h4("Faggrupper gennemsnitsalder"),
-                     plotlyOutput(ns("peopleplotfaggemall"))
-              ),
-              column(6, 
-                     h4("Faggrupper gennemsnitsalder 2017"),
-                     plotlyOutput(ns("peopleplotfaggem"))
-              )
+          ),
+          fluidRow(
+            column(width = 12,
+                tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
+                column(6, 
+                       h4("Kønsfordeling"),
+                       plotlyOutput(ns("peopleplot"))),
+                column(6, 
+                       h4("Aldersfordeling"),
+                       plotlyOutput(ns("peopleplotage"))
+                )
+            ),
+            column(width = 12,
+                tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
+                column(6, 
+                       h4("Fordeling i øvre aldersinterval 2012-2017"),
+                       plotlyOutput(ns("peopleplotageupper"))
+                ),
+                column(6, 
+                       h4("Antal i øvre aldersinterval 2017"),
+                       plotlyOutput(ns("peopleplotageupper2"))
+                )
+            ),
+            column(width = 12,
+                tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
+                column(6, 
+                       h4("Fordeling på faggrupper 2012-2017"),
+                       plotlyOutput(ns("peopleplotfag"))
+                ),
+                column(6, 
+                       h4("Antal i faggrupper 2017"),
+                       plotlyOutput(ns("peopleplotfag2"))
+                )
+            ),
+            column(width = 12,
+                tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
+                column(6, 
+                       h4("Faggrupper gennemsnitsalder"),
+                       plotlyOutput(ns("peopleplotfaggemall"))
+                ),
+                column(6, 
+                       h4("Faggrupper gennemsnitsalder 2017"),
+                       plotlyOutput(ns("peopleplotfaggem"))
+                )
+            )
           )
-  )
-  
+      )
 }
 
 # SERVER

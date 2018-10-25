@@ -76,7 +76,8 @@ eventsTabPanelUI <- function(id) {
                                                 column(width = 6, class = "col-lg-4",
                                                        h4("Arrangementer børn/voksen"),
                                                        p("Antal arrangementer målrettet hhv. børn og voksne i perioden"),
-                                                       plotlyOutput(ns("eventsmaalgruppeplot"))
+                                                       plotlyOutput(ns("eventsmaalgruppeplot")),
+                                                       tags$div('',style = "page-break-after: always;" )
                                                 ),
                                                 column(width = 6, class = "col-lg-4",
                                                        h4("Kategori"),
@@ -86,7 +87,8 @@ eventsTabPanelUI <- function(id) {
                                                 column(width = 12, class = "col-lg-4",
                                                        h4("Sted"),
                                                        p("Antal arrangementer på de enkelte biblioteker i perioden"),
-                                                       plotlyOutput(ns("eventsstedplot"))
+                                                       plotlyOutput(ns("eventsstedplot")),
+                                                       tags$div('',style = "page-break-after: always;" )
                                                 ),
                                                 column(width = 12,
                                                        h4("Type"),

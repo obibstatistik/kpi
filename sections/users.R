@@ -21,7 +21,7 @@ branchplot <- function(input, output, session, data, branch) {
   output$branchplot <- renderPlotly({
     data <- data %>% filter(name1 == branch) %>% filter(full_date1 < 101)
     plot_ly(data, x = data$full_date1, y = data$loaner_stat_count1 , type = 'bar', name = 'Lånere', marker = list(color = color1)) %>%
-      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Alder', dtick = 20))
+      layout(autosize = T, yaxis = list(title = 'Antal'), xaxis = list(title = 'Alder', dtick = 20))
   })
 }
 
@@ -47,22 +47,25 @@ usersTabPanelUI <- function(id) {
                                                   p("Grafen viser fordelingen af OBBs lånere på alder. Dette sammenlignes med borgere generelt i Odense Kommune. "),
                                                   p("Lånergrafen udgøres af data fra Cicero."),
                                                   p("Borgergrafen udgøres af data fra seneste kvartal fra Danmarks Statistik."),
+                                                  tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
                                                   plotlyOutput(ns("agebranch_plot")),
+                                                  tags$div('',style = "page-break-after: always;" ),
                                                   h4("Aldersfordeling pr. bibliotek"),
                                                   p("Graferne viser aldersfordelingen blandt lånerne, fordelt efter tilhørsbibliotek."),
                                                   branchplotUI(ns(id = "kor"), branch = "Korup"),
                                                   branchplotUI(ns(id = "ta"), branch = "Tarup"),
                                                   branchplotUI(ns(id = "da"), branch = "Dalum"),
                                                   branchplotUI(ns(id = "hb"), branch = "Hovedbiblioteket"),
+                                                  tags$div('',style = "page-break-after: always;" ),
                                                   branchplotUI(ns(id = "vo"), branch = "Vollsmose"),
                                                   branchplotUI(ns(id = "hoj"), branch = "Højby"),
                                                   branchplotUI(ns(id = "bo"), branch = "Bolbro"),
                                                   branchplotUI(ns(id = "ho"), branch = "Holluf Pile"),
+                                                  tags$div('',style = "page-break-after: always;" ),
                                                   h4("Aktive/Inaktive lånere"),
                                                   p("Aktive lånere er lånere som har lånt et materiale indenfor det seneste år. Inaktive lånere har haft et lån mellem 1 til 5 år tilbage i tiden."),
                                                   p("OBS. Lånere kan optræde i flere kategorier"),
                                                   tableOutput(ns('tableloaners')),
-                                                  #csvDownloadUI(ns("inner2")))))
                                                   xlsxDownloadUI(ns("active_inactive")))))
                           #,
                           # tabPanel("Kort",
@@ -116,7 +119,7 @@ usersTabPanel <- function(input, output, session, data, tablename) {
   output$agebranch_plot <- renderPlotly({
     plot_ly(agecitizenloaner, x = agecitizenloaner$full_date1, y = agecitizenloaner$sum, type = 'bar', name = 'Lånere', marker = list(color = color1)) %>%
       add_trace(y = agecitizenloaner$antal, name = 'Borgere i Odense', marker = list(color = color2) ) %>%
-      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Alder', dtick = 20, autotick = FALSE))
+      layout(autosize = T, yaxis = list(title = 'Antal'), xaxis = list(title = 'Alder', dtick = 20, autotick = FALSE))
   })
   
   callModule(branchplot, id = "kor", data = agebranch, branch = 'Korup Bibliotek')
