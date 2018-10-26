@@ -10,55 +10,64 @@ staffTabPanelUI <- function(id) {
   
   tabItem(tabName = "personal",
 
-          column(width = 12, solidHeader = TRUE,
-              h3("Personale")
+          box(width = 12, solidHeader = TRUE, id="staffheader1", class = "pageheader",
+              h3("Personale") #,
+              #img(src='icons/materialer_negativ_45x45.png', align = "right", height="46px")
           ),
           fluidRow(
-            column(width = 12,
-                tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
-                column(6, 
-                       h4("Kønsfordeling"),
-                       plotlyOutput(ns("peopleplot"))),
-                column(6, 
-                       h4("Aldersfordeling"),
-                       plotlyOutput(ns("peopleplotage"))
-                )
-            ),
-            column(width = 12,
-                tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
-                column(6, 
-                       h4("Fordeling i øvre aldersinterval 2012-2017"),
-                       plotlyOutput(ns("peopleplotageupper"))
-                ),
-                column(6, 
-                       h4("Antal i øvre aldersinterval 2017"),
-                       plotlyOutput(ns("peopleplotageupper2"))
-                )
-            ),
-            column(width = 12,
-                tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
-                column(6, 
-                       h4("Fordeling på faggrupper 2012-2017"),
-                       plotlyOutput(ns("peopleplotfag"))
-                ),
-                column(6, 
-                       h4("Antal i faggrupper 2017"),
-                       plotlyOutput(ns("peopleplotfag2"))
-                )
-            ),
-            column(width = 12,
-                tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
-                column(6, 
-                       h4("Faggrupper gennemsnitsalder"),
-                       plotlyOutput(ns("peopleplotfaggemall"))
-                ),
-                column(6, 
-                       h4("Faggrupper gennemsnitsalder 2017"),
-                       plotlyOutput(ns("peopleplotfaggem"))
-                )
-            )
-          )
-      )
+            column(12,
+                   tabBox(width = 12, id = "tabset3", 
+                          tabPanel("Generelt",
+                              fluidRow(     
+                                column(12,
+                                    tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
+                                    column(6, 
+                                           h4("Kønsfordeling"),
+                                           plotlyOutput(ns("peopleplot"))),
+                                    column(6, 
+                                           h4("Aldersfordeling"),
+                                           plotlyOutput(ns("peopleplotage"))
+                                    )
+                                ),
+                                column(width = 12,
+                                    tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
+                                    column(6, 
+                                           h4("Fordeling i øvre aldersinterval 2012-2017"),
+                                           plotlyOutput(ns("peopleplotageupper"))
+                                    ),
+                                    column(6, 
+                                           h4("Antal i øvre aldersinterval 2017"),
+                                           plotlyOutput(ns("peopleplotageupper2"))
+                                    )
+                                ),
+                                column(width = 12,
+                                    tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
+                                    column(6, 
+                                           h4("Fordeling på faggrupper 2012-2017"),
+                                           plotlyOutput(ns("peopleplotfag"))
+                                    ),
+                                    column(6, 
+                                           h4("Antal i faggrupper 2017"),
+                                           plotlyOutput(ns("peopleplotfag2"))
+                                    )
+                                ),
+                                column(width = 12,
+                                    tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
+                                    column(6, 
+                                           h4("Faggrupper gennemsnitsalder"),
+                                           plotlyOutput(ns("peopleplotfaggemall"))
+                                    ),
+                                    column(6, 
+                                           h4("Faggrupper gennemsnitsalder 2017"),
+                                           plotlyOutput(ns("peopleplotfaggem"))
+                                    )
+                                )
+                          )
+                   )
+                 )
+               )
+         )
+     )
 }
 
 # SERVER

@@ -19,7 +19,7 @@ function autorangeChart(div) {
 
 /* This function creates a new page, copies relevant content to
    it, opens the print dialogue and closes the page after printing. */
-   
+
 function printDiv(event, parentClass, divWidth, divHeight) {             
   var divName = $(this).closest(parentClass);                                                      // choose a parent div (based on it's class) to copy to a new window/html document for printing
   var widgetDivs = $(divName).find(".html-widget-output.plotly");                                  // find() all divs among the descendants of the print div with classes .html-widget-output and .plotly
