@@ -20,10 +20,13 @@ function autorangeChart(div) {
 /* This function creates a new page, copies relevant content to
    it, opens the print dialogue and closes the page after printing. */
    
-function printDiv(event, parentClass, divWidth) {             
+function printDiv(event, parentClass, divWidth, divHeight) {             
   var divName = $(this).closest(parentClass);                                                      // choose a parent div (based on it's class) to copy to a new window/html document for printing
   var widgetDivs = $(divName).find(".html-widget-output.plotly");                                  // find() all divs among the descendants of the print div with classes .html-widget-output and .plotly
   widgetDivs.css('width', divWidth);                                                               // set the width of the svg elements to the one from the method's parameters
+  if (divHeight) {
+    widgetDivs.css('height', divHeight);                                                           // set the width of the svg elements to the one from the method's parameters
+  }
   widgetDivs.each(function() { autorangeChart(this.id); });                                     
 
   w = window.open();                                                                               // open a new window/html document
@@ -44,7 +47,11 @@ function printDiv(event, parentClass, divWidth) {
   sc.setAttribute("type", "text/css");
   sc.setAttribute("href", "plotprint.css");
   w.document.head.appendChild(sc);                                                                 // append the element to the body of the new document
-  sc.onload = function(){ w.print(); w.close(); };                                           // wait for the link element to be loaded before calling print() function and then close() after that
+  sc.onload = function(){ w.print(); w.close(); };                                                 // wait for the link element to be loaded before calling print() function and then close() after that
+
+  if (divHeight) {
+    widgetDivs.css('height', '100%');                                                              // set the width of the svg elements to the one from the method's parameters
+  }
   widgetDivs.css('width','100%');                                                                  // reset widths of plot divs and the like
   widgetDivs.each(function() { autorangeChart(this.id); });                                     
 }
