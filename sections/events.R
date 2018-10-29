@@ -69,7 +69,7 @@ eventsTabPanelUI <- function(id) {
                                        fluidRow(
                                          column(2,
                                                 h4("Afgræns pr. år"),
-                                                selectInput(ns("year"), "",c('Alle','2013','2014','2015','2016','2017')),
+                                                selectInput(ns("year"), "",c('2017','2016','2015','2014','2013','Alle')),
                                                 tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                          ),
                                          column(10,
