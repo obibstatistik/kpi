@@ -87,7 +87,7 @@ staffTabPanel <- function(input, output, session, data, tablename) {
   output$peopleplot <- renderPlotly({
     plot_ly(data, x = ~years, y = ~male, type = 'bar', name = 'Mænd', marker = list(color = color2)) %>%
       add_trace(y = ~female, name = 'Kvinder', marker = list(color = color3)) %>%
-      layout(xaxis = list(title = 'Årstal'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
+      layout(xaxis = list(title = 'Årstal', autorange = 'reversed'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
   })
   
   # age # 
@@ -106,7 +106,7 @@ staffTabPanel <- function(input, output, session, data, tablename) {
       add_trace(y = ~secondp, text = toString(second), name = '35-44', marker = list(color = color2)) %>%
       add_trace(y = ~thirdp, name = '45-54', marker = list(color = color3)) %>%
       add_trace(y = ~fourthp, name = '55+', marker = list(color = color4)) %>%
-      layout(xaxis = list(title = 'Årstal'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
+      layout(xaxis = list(title = 'Årstal', autorange = 'reversed'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
   })
   
   # ageupper # 
@@ -123,7 +123,7 @@ staffTabPanel <- function(input, output, session, data, tablename) {
     plot_ly(data2, x = ~years, y = ~firstp, type = 'bar', text = text, name = '55-59', marker = list(color = color1)) %>%
       add_trace(y = ~secondp, text = toString(second), name = '60-64', marker = list(color = color2)) %>%
       add_trace(y = ~thirdp, name = '65+', marker = list(color = color3)) %>%
-      layout(xaxis = list(title = 'Årstal'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
+      layout(xaxis = list(title = 'Årstal', autorange = 'reversed'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
   })
   
   # ageupper2016 # 
@@ -140,7 +140,7 @@ staffTabPanel <- function(input, output, session, data, tablename) {
     plot_ly(data3, x = ~years, y = ~firstp, type = 'bar', text = text, name = '55-59', marker = list(color = color1)) %>%
       add_trace(y = ~secondp, text = toString(second), name = '60-64', marker = list(color = color2)) %>%
       add_trace(y = ~thirdp, name = '65+', marker = list(color = color3)) %>%
-      layout(xaxis = list(title = 'Årstal'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
+      layout(xaxis = list(title = 'Årstal', autorange = 'reversed'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
   })
   
   # ageupper2016 2 # 
@@ -171,7 +171,7 @@ staffTabPanel <- function(input, output, session, data, tablename) {
       add_trace(y = ~secondp, text = toString(second), name = 'HK', marker = list(color = color2)) %>%
       add_trace(y = ~thirdp, name = 'Øvrige AC', marker = list(color = color3)) %>%
       add_trace(y = ~fourthp, name = 'FOA_3F', marker = list(color = color4)) %>%
-      layout(xaxis = list(title = 'Årstal'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
+      layout(xaxis = list(title = 'Årstal', autorange = 'reversed'), yaxis = list(title = 'Procentfordeling'), barmode = 'stack')
   })
   
   # faggrupper gennemsnitsalder # 
@@ -190,25 +190,26 @@ staffTabPanel <- function(input, output, session, data, tablename) {
   output$peopleplotfaggemall <- renderPlotly({
     plot_ly(
       x = c("BF", "HK", "Øvrige ACere", "FOA/3F", "Tjenestemænd", "Overenskomstansatte", "Ledelse", "Samlet"),
-      y = c(49.2, 45.6, 39.3, 58.5, 58.1, 46.3, 49.8, 50.1), name = "2016", type = "bar", marker = list(color = color1)) %>%
+      y = c(48.9,52.2,39.3,54.8,59.9,46.6,50.0,50.2), name = '2017', type = 'bar', marker = list(color = color6)) %>%
+      add_trace(y = c(49.2,45.6,39.3,58.5,58.1,46.3,49.8,50.1), name = "2016", marker = list(color = color1)) %>%
       add_trace(y = c(50.6,51.8,40.1,57.5,59.1,45.6,48.8,50.7), name = '2015', marker = list(color = color2)) %>%
       add_trace(y = c(50.7,51.1,39.1,56.3,58.2,45.9,47.3,49.9), name = '2014', marker = list(color = color3)) %>%
       add_trace(y = c(50.4,50.2,39.4,56.8,57.5,45.2,47.4,49.7), name = '2013', marker = list(color = color4)) %>%
-      add_trace(y = c(49.9,50.7,36.9,51.0,57.4,44.5,52.3,49.7), name = '2012', marker = list(color = color5)) %>%
-      add_trace(y = c(48.9,52.2,39.3,54.8,59.9,46.6,50.0,50.2), name = '2017', marker = list(color = color6))
+      add_trace(y = c(49.9,50.7,36.9,51.0,57.4,44.5,52.3,49.7), name = '2012', marker = list(color = color5))
   })
+  
   
   # faggrupper gennemsnitsalder # 
   
   output$peopleplotfag2 <- renderPlotly({
     plot_ly(
       x = c("BF", "HK", "Øvrige ACere", "FOA/3F"),
-      y = c(55,58,8,4), name = "2016", type = "bar", marker = list(color = color1)) %>%
+      y = c(56,56,7,6), name = '2017', type = "bar", marker = list(color = color6)) %>%
+      add_trace(y = c(55,58,8,4), name = "2016", marker = list(color = color1)) %>%
       add_trace(y = c(56,60,8,4), name = '2015', marker = list(color = color2)) %>%
       add_trace(y = c(57,59,8,3), name = '2014', marker = list(color = color3)) %>%
       add_trace(y = c(58,60,9,4), name = '2013', marker = list(color = color4)) %>%
-      add_trace(y = c(60,65,8,3), name = '2012', marker = list(color = color5)) %>%
-      add_trace(y = c(56,56,7,6), name = '2017', marker = list(color = color6))
+      add_trace(y = c(60,65,8,3), name = '2012', marker = list(color = color5))
   })
   
   
