@@ -45,9 +45,9 @@ function printDiv(event, parentClass, divWidth, divHeight) {
   });
   
   var sc = w.document.createElement("link");                                                       // create a link element to put in the new document to point to a css file for styling the print page
-  //sc.setAttribute("rel", "stylesheet");                                                            // add the necessary attributes to the link
-  //sc.setAttribute("type", "text/css");
-  //sc.setAttribute("href", "plotprint.css");
+  sc.setAttribute("rel", "stylesheet");                                                            // add the necessary attributes to the link
+  sc.setAttribute("type", "text/css");
+  sc.setAttribute("href", "plotprint.css");
   w.document.head.appendChild(sc);                                                                 // append the element to the body of the new document
 
   if(isFirefox) {                                                                                  // firefox does not like waiting for onload for some reason
