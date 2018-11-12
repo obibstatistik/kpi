@@ -8,7 +8,7 @@ source("~/.postpass")
 meetingroomsTabPanelUI <- function(id) {
   
   ns <- NS(id)
-  # asdfæljasdflæ
+
   tabItem(tabName = "meetingrooms",
           box(width = 12, solidHeader = TRUE, id="spaceheader2",
               h3("Mødelokaler"),

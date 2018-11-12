@@ -75,9 +75,15 @@ materialsTabPanelUI <- function(id) {
                                                    p("Visningen giver mulighed for at sammenligne mellem to forskellige år samt vælge hvilken lokation der ønskes vist. Det er desuden muligt at vælge Hovedbiblioteket til og fra."),
                                                    p("N.B! Der er en forsinkelse på 3 dage på modtagelsen af seneste statistik fra Cicero"),
                                                    formattableOutput(ns("checkouts_table"))
+                                            ),
+                                            column(10,
+                                                   h4("eRessource statistik fra DBC"),
+                                                   p("diverse test test test"),
+                                                   plotlyOutput(ns("dbc_eres_stats_plot")),
+                                                   formattableOutput(ns("dbc_eres_stats_table"))
                                             )
-                                        )
-                                   )
+                                      )
+                                )
                           ),
                        #   tabPanel("Timer", 
                        #           fluidRow(
@@ -137,6 +143,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
     from cicero.beholdning
     group by branch,dep
     order by branch,dep")
+  dbc_eres_stats <- dbGetQuery(con, "SELECT * from dbc_eres_stats")
   dbDisconnect(con)
 
   # Calculate latest date with data
@@ -235,6 +242,35 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   # Call Excel download function for tables 
   callModule(xlsxDownload, "checkouts", data = reactive(checkouts_all_tbl()), name = "Udlån_på_OBB")
   
+  
+  
+  
+  dbc_eres_stats_df <- reactive({
+    dbc_eres_stats <- dbc_eres_stats %>%
+      #filter(if(input$mainlibrary3 == 'Uden Hovedbiblioteket')  (location != 'Borgernes Hus') else TRUE) %>%
+      filter(vendor == 'Forfatterweb') %>%
+      filter(stattype == 'visits') %>%
+      filter(aar == '2018') %>%
+      select(isil,vendor,stattype,aar,maaned,antal) %>%
+      #mutate(year = year(date)) %>%
+      group_by(maaned, isil) %>%
+      #summarise(sum = sum(count)) %>%
+      spread(key = isil, value = antal)
+      #ungroup(.self)}
+  })
+    
+    plot_ly(dbc_eres_stats, x = ~maaned, y = ~`746100`, type = 'bar', name = 'Odense', marker = list(color = color1)) %>%
+      add_trace(y = ~`785100`, name = 'Aalborg', marker = list(color = color3)) %>%
+      add_trace(y = ~`765700`, name = 'Herning', marker = list(color = color2)) %>%
+      add_trace(y = ~`763000`, name = 'Vejle', marker = list(color = color4)) %>%
+      #add_trace(y = ~`785100`, name = 'Aarhus', marker = list(color = color5)) %>%
+      #add_trace(y = ~`785100`, name = 'København', marker = list(color = color6)) %>%
+      layout(autosize = TRUE, yaxis = list(title = 'Antal'), xaxis = list(title = 'Måned'), barmode = 'group')
+
+    
+    
+    
+    
   #udlaan_heat <- udlaan %>%
   #  mutate(branch = ifelse(is.na(name), "Andet", name)) %>%
   #  group_by(branch, hour) %>%
