@@ -1,5 +1,20 @@
-# konverter integer til danske måneder
+# konverter biblioteksnummer til kommunens navn
 
+isil2name <- function(x){
+  isil <- case_when(
+    as.character(x) == "746100" ~ "Odense",
+    as.character(x) == "785100" ~ "Aalborg",
+    as.character(x) == "765700" ~ "Herning",
+    as.character(x) == "763000" ~ "Vejle",
+    as.character(x) == "775100" ~ "Aarhus",
+    as.character(x) == "710100" ~ "København",
+    as.character(x) == "726500" ~ "Roskilde",
+    as.character(x) == "715700" ~ "Gentofte"
+  ) 
+  return(isil)
+}
+
+# konverter integer til danske måneder
 danskemåneder <- function(x){
   måned <- case_when(
     as.character(x) == "1" ~ "Januar",

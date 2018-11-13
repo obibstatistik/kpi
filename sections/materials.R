@@ -258,11 +258,13 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   dbc_eres_stats_df <- reactive({
     dbc_eres_stats <- dbc_eres_stats %>%
       #filter(if(input$mainlibrary3 == 'Uden Hovedbiblioteket')  (location != 'Borgernes Hus') else TRUE) %>%
+      mutate_at(vars(1), funs(danskemåneder(.))) %>%
       filter(vendor == 'Forfatterweb') %>%
       filter(stattype == 'visits') %>%
       filter(aar == '2018') %>%
       select(isil,vendor,stattype,aar,maaned,antal) %>%
       #mutate(year = year(date)) %>%
+      mutate_at(vars(5), funs(danskemåneder(.))) %>%
       group_by(maaned, isil) %>%
       #summarise(sum = sum(count)) %>%
       spread(key = isil, value = antal)
