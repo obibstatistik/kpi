@@ -3,9 +3,23 @@ source("functions.R")
 source("modules.R")
 source("~/.postpass") 
 
-data(diamonds, package = "ggplot2")
-nms <- names(diamonds)
+drv <- dbDriver("PostgreSQL")
+con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
+#udlaan <- dbGetQuery(con, "SELECT name, hour, circulation_fact_count FROM cicero.udlaan_per_klokkeslaet")
+#max_date <- dbGetQuery(con, "select max(transact_date) max_date from cicero.udlaan_per_opstillingsprofil")
+checkouts_all <- dbGetQuery(con, "SELECT extract(year from transact_date) aar,transact_date,branch,dep,sum(antal) antal
+        from cicero.udlaan_per_opstillingsprofil
+        where extract(year from (transact_date)) > extract(year from (current_date - interval '5 year'))
+        group by aar,transact_date,branch,dep
+        order by aar,transact_date,branch,dep")
+beholdning <- dbGetQuery(con, "SELECT branch,department dep,sum(material_dim_count)
+    from cicero.beholdning
+    group by branch,dep
+    order by branch,dep")
+dbc_eres_stats <- dbGetQuery(con, "SELECT * from dbc_eres_stats")
+dbDisconnect(con)
 
+  
 # UI
 
 materialsTabPanelUI <- function(id) {
@@ -75,6 +89,21 @@ materialsTabPanelUI <- function(id) {
                                                    p("Visningen giver mulighed for at sammenligne mellem to forskellige år samt vælge hvilken lokation der ønskes vist. Det er desuden muligt at vælge Hovedbiblioteket til og fra."),
                                                    p("N.B! Der er en forsinkelse på 3 dage på modtagelsen af seneste statistik fra Cicero"),
                                                    formattableOutput(ns("checkouts_table"))
+                                            )
+                                     ),
+                                     column(12,tags$div( tags$hr(), class = "hidden-print" )),                                     
+                                     column(12,
+                                            column(2,
+                                                   selectInput(ns("vendor"),"eRessource:", unique(dbc_eres_stats$vendor)),
+                                                   selectInput(ns("stattype"),"Statistik:", unique(dbc_eres_stats$stattype)),
+                                                   selectInput(ns("aar"),"År:", unique(dbc_eres_stats$aar)),
+                                                   checkboxGroupInput(ns("isil_selector"),
+                                                                      'Vælg biblioteker:',
+                                                                      unique(as.character(dbc_eres_stats$isil)),
+                                                                      selected = unique(as.character(dbc_eres_stats$isil)),
+                                                                      inline = F)#,
+                                                   #xlsxDownloadUI(ns("inventory")),
+                                                   #tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                             ),
                                             column(10,
                                                    h4("eRessource statistik fra DBC"),
@@ -83,6 +112,7 @@ materialsTabPanelUI <- function(id) {
                                                    formattableOutput(ns("dbc_eres_stats_table"))
                                             )
                                       )
+                                    
                                 )
                           ),
                        #   tabPanel("Timer", 
@@ -127,24 +157,7 @@ materialsTabPanelUI <- function(id) {
 }
 
 # Server
-
 materialsTabPanel <- function(input, output, session, data, tablename) {
-  
-  drv <- dbDriver("PostgreSQL")
-  con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
-  #udlaan <- dbGetQuery(con, "SELECT name, hour, circulation_fact_count FROM cicero.udlaan_per_klokkeslaet")
-  #max_date <- dbGetQuery(con, "select max(transact_date) max_date from cicero.udlaan_per_opstillingsprofil")
-  checkouts_all <- dbGetQuery(con, "SELECT extract(year from transact_date) aar,transact_date,branch,dep,sum(antal) antal
-        from cicero.udlaan_per_opstillingsprofil
-        where extract(year from (transact_date)) > extract(year from (current_date - interval '5 year'))
-        group by aar,transact_date,branch,dep
-        order by aar,transact_date,branch,dep")
-  beholdning <- dbGetQuery(con, "SELECT branch,department dep,sum(material_dim_count)
-    from cicero.beholdning
-    group by branch,dep
-    order by branch,dep")
-  dbc_eres_stats <- dbGetQuery(con, "SELECT * from dbc_eres_stats")
-  dbDisconnect(con)
 
   # Calculate latest date with data
   max_date <- checkouts_all %>%
@@ -242,9 +255,6 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   # Call Excel download function for tables 
   callModule(xlsxDownload, "checkouts", data = reactive(checkouts_all_tbl()), name = "Udlån_på_OBB")
   
-  
-  
-  
   dbc_eres_stats_df <- reactive({
     dbc_eres_stats <- dbc_eres_stats %>%
       #filter(if(input$mainlibrary3 == 'Uden Hovedbiblioteket')  (location != 'Borgernes Hus') else TRUE) %>%
@@ -258,19 +268,42 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
       spread(key = isil, value = antal)
       #ungroup(.self)}
   })
-    
+
+  # Render the plot
+  output$dbc_eres_stats_plot <- renderPlotly({   
     plot_ly(dbc_eres_stats, x = ~maaned, y = ~`746100`, type = 'bar', name = 'Odense', marker = list(color = color1)) %>%
       add_trace(y = ~`785100`, name = 'Aalborg', marker = list(color = color3)) %>%
       add_trace(y = ~`765700`, name = 'Herning', marker = list(color = color2)) %>%
       add_trace(y = ~`763000`, name = 'Vejle', marker = list(color = color4)) %>%
-      #add_trace(y = ~`785100`, name = 'Aarhus', marker = list(color = color5)) %>%
-      #add_trace(y = ~`785100`, name = 'København', marker = list(color = color6)) %>%
-      layout(autosize = TRUE, yaxis = list(title = 'Antal'), xaxis = list(title = 'Måned'), barmode = 'group')
-
+      add_trace(y = ~`775100`, name = 'Aarhus', marker = list(color = color5)) %>%
+      add_trace(y = ~`710100`, name = 'København', marker = list(color = color6)) %>%
+      add_trace(y = ~`726500`, name = 'Roskilde', marker = list(color = color7)) %>%
+      add_trace(y = ~`715700`, name = 'Gentofte', marker = list(color = color8)) %>%
+      layout(autosize = TRUE, yaxis = list(title = 'Antal'), xaxis = list(title = 'Måned', dtick = 1, autotick = FALSE), barmode = 'group')
+  })
     
+  #  # Render the plot
+  #  output$licenses_plot <- renderPlotly({
+  #    data <- lic_data() %>% spread(produkt, visninger)   # the plot needs a spread (pivot) of produkt
+  #    colNames <- names(data)[-1]                         # ie. get all colnames except the first which is year or month or whatever
+  #    # cf. https://stackoverflow.com/questions/46583282/r-plotly-to-add-traces-conditionally-based-on-available-columns-in-dataframe                                
+  #    p <- plot_ly(data, x = ~month, type = 'scatter', mode = 'lines') 
+  #    for(trace in colNames){
+  #      p <- p %>% add_trace(y = as.formula(paste0("~`", trace, "`")), name = trace, mode = 'lines')   # add_trace(y = as.formula(paste0("~`", trace, "`")), name = trace)
+  #    }
+  #    p %>% layout(xaxis = list(title = 'Måneder'), yaxis = list (title = 'Visninger'))
+  #  })
     
+  # beholdning_alt_tbl <- reactive({
+  #   beholdning_alt %>%
+  #     group_by_at(vars(bibliotek,input$niveau)) %>%
+  #     summarise(antal = sum(antal)) %>%
+  #     spread(key = bibliotek, value = antal, fill = 0) %>%
+  #     select(c(input$niveau,input$branch_selector)) %>%
+  #     adorn_totals(c("row","col"))
+  # })
     
-    
+  
   #udlaan_heat <- udlaan %>%
   #  mutate(branch = ifelse(is.na(name), "Andet", name)) %>%
   #  group_by(branch, hour) %>%
