@@ -10,6 +10,7 @@ shinyServer(function(input, output) {
   source("./sections/acquisition.R")
   source("./sections/datasources.R")
   source("./sections/eressources.R")
+  source("./sections/edatabases.R")
   source("./sections/events.R")
   source("./sections/eventareas.R")
   source("./sections/frontpage.R")
@@ -63,6 +64,8 @@ shinyServer(function(input, output) {
   callModule(indoor_climateTabPanel, id = "indoor_climate")
   # E-Ressources 
   callModule(eressourcesTabPanel, id = "eressources")
+  # E-Databases 
+  callModule(edatabasesTabPanel, id = "edatabases")
   # Users
   callModule(usersTabPanel, id = "users")
   # Staff

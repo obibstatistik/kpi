@@ -13,6 +13,7 @@ source("functions.R")
 source("./sections/acquisition.R")
 source("./sections/datasources.R")
 source("./sections/eressources.R")
+source("./sections/edatabases.R")
 source("./sections/events.R")
 source("./sections/eventareas.R")
 source("./sections/frontpage.R")
@@ -55,12 +56,12 @@ dashboardPage(
                #menuItem("Materialeindkøb", tabName = "acquisition"),
                menuItem("Beholdning", tabName = "inventory")
       ),
-      #menuItem("E-Ressourcer", tabName = "emat", icon = icon("database", lib="font-awesome"),
-               # menuItem("E-Bøger", tabName = "ebooks")#,
-               # menuItem("E-Film", tabName = "emovies"),
-               # menuItem("E-Baser", tabName = "edatabases")
+      menuItem("E-Ressourcer", tabName = "emat", icon = icon("database", lib="font-awesome"),
+               #menuItem("E-Bøger", tabName = "ebooks"),
+               #menuItem("E-Film", tabName = "emovies"),
+               menuItem("E-Baser", tabName = "edatabases")
                #menuItem("Licenser", tabName = "licenses")
-      #),
+      ),
       menuItem("Brugere", tabName = "users", icon = icon("users", lib="font-awesome")),
       menuItem("Personale", tabName = "personal", icon = icon("users", lib="font-awesome")),
       menuItem("Datakilder", tabName = "datasources", icon = icon("database", lib="font-awesome"))#,
@@ -101,6 +102,8 @@ dashboardPage(
       indoor_climateTabPanelUI(id = "indoor_climate"),
       # E-Ressources
       eressourcesTabPanelUI(id = "eressources"),
+      # Users
+      edatabasesTabPanelUI(id = "edatabases"),
       # Users
       usersTabPanelUI(id = "users"),
       # Staff

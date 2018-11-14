@@ -185,7 +185,7 @@ online_odensebibTabPanel <- function(input, output, session) {
         grepl("^en", ga_language$language) ~ "engelsk",
         grepl("^de", ga_language$language) ~ "tysk",
         grepl("^nb", ga_language$language) ~ "norsk",
-        grepl("^pl", ga_language$language) ~ "polen",
+        grepl("^pl", ga_language$language) ~ "polsk",
         grepl("^sv", ga_language$language) ~ "svensk",
         grepl("^zh-cn", ga_language$language) ~ "kinesisk"
       )
