@@ -258,7 +258,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   dbc_eres_stats_df <- reactive({
     dbc_eres_stats <- dbc_eres_stats %>%
       #filter(if(input$mainlibrary3 == 'Uden Hovedbiblioteket')  (location != 'Borgernes Hus') else TRUE) %>%
-      mutate_at(vars(1), funs(danskemåneder(.))) %>%
+      mutate_at(vars(1), funs(isil2name(.))) %>%
       filter(vendor == 'Forfatterweb') %>%
       filter(stattype == 'visits') %>%
       filter(aar == '2018') %>%
@@ -273,14 +273,14 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
 
   # Render the plot
   output$dbc_eres_stats_plot <- renderPlotly({   
-    plot_ly(dbc_eres_stats, x = ~maaned, y = ~`746100`, type = 'bar', name = 'Odense', marker = list(color = color1)) %>%
-      add_trace(y = ~`785100`, name = 'Aalborg', marker = list(color = color3)) %>%
-      add_trace(y = ~`765700`, name = 'Herning', marker = list(color = color2)) %>%
-      add_trace(y = ~`763000`, name = 'Vejle', marker = list(color = color4)) %>%
-      add_trace(y = ~`775100`, name = 'Aarhus', marker = list(color = color5)) %>%
-      add_trace(y = ~`710100`, name = 'København', marker = list(color = color6)) %>%
-      add_trace(y = ~`726500`, name = 'Roskilde', marker = list(color = color7)) %>%
-      add_trace(y = ~`715700`, name = 'Gentofte', marker = list(color = color8)) %>%
+    plot_ly(dbc_eres_stats, x = ~maaned, y = ~Odense, type = 'bar', name = 'Odense', marker = list(color = color1)) %>%
+      add_trace(y = ~Aalborg, name = 'Aalborg', marker = list(color = color3)) %>%
+      add_trace(y = ~Herning, name = 'Herning', marker = list(color = color2)) %>%
+      add_trace(y = ~Vejle, name = 'Vejle', marker = list(color = color4)) %>%
+      add_trace(y = ~Aarhus, name = 'Aarhus', marker = list(color = color5)) %>%
+      add_trace(y = ~København, name = 'København', marker = list(color = color6)) %>%
+      add_trace(y = ~Roskilde, name = 'Roskilde', marker = list(color = color7)) %>%
+      add_trace(y = ~Gentofte, name = 'Gentofte', marker = list(color = color8)) %>%
       layout(autosize = TRUE, yaxis = list(title = 'Antal'), xaxis = list(title = 'Måned', dtick = 1, autotick = FALSE), barmode = 'group')
   })
     
