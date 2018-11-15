@@ -41,8 +41,9 @@ edatabasesTabPanelUI <- function(id) {
                                             ),
                                             column(10,
                                                    h3("Faktalink og Forfatterweb"),
-                                                   #uiOutput(ns("edatabases_title1")),
                                                    span("Følgende statistik stammer fra"),a("https://bibstats.dbc.dk", href = "https://bibstats.dbc.dk"),
+                                                   tags$br(),tags$br(),
+                                                   tags$div(h4(htmlOutput(ns("edatabases_title1"))) ,style = "text-align: center;" ),
                                                    plotlyOutput(ns("dbc_eres_stats_plot")),
                                                    formattableOutput(ns("dbc_eres_stats_table"))
                                             )
@@ -66,8 +67,6 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
       spread(key = isil, value = antal)
   })
   
-  #output$edatabases_title1 <- RenderUI({})
-  
   # Call Excel download function for tables 
   callModule(xlsxDownload, "edatabases", data = reactive(dbc_eres_stats_df()), name = "ebaser")
 
@@ -87,9 +86,31 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
                            name = trace, 
                            marker = list(color = colors[i+2]))
     }
-    if (input$eres_stattype == "visits") {titel <- "Antak besøg"}
-    else if (input$eres_stattype == "actions") {titel <- "Antal handlinger"}
-    else if (input$eres_stattype == "visit_length") {titel <- "Antal minutter"}
+    if (input$eres_stattype == "visits") {titel <- "Besøgende"}
+    else if (input$eres_stattype == "actions") {titel <- "Handlinger"}
+    else if (input$eres_stattype == "visit_length") {titel <- "Minutter"}
     p %>% layout(autosize = TRUE, yaxis = list(title = titel), xaxis = list(title = 'Måned', dtick = 1, autotick = FALSE), barmode = 'group')
   })
-}
+  
+  # Create dynamic title for the page based on the filter choices
+  output$edatabases_title1 <- renderText(
+    paste0(case_when(input$eres_stattype == "visits" ~ "Antal unikke besøgende",
+                     input$eres_stattype == "actions" ~ "Samlede antal handlinger",
+                     input$eres_stattype == "visit_length" ~ "Gennemsnitlig besøgstid i minutter")," ",
+                     input$eres_aar," ", 
+                     input$eres_vendor))
+  
+  #dbc_eres_stats_table_df <- reactive({
+  #  dbc_eres_stats %>%
+  #    select(vendor,stattype,maaned,antal) %>%
+  #    filter??????
+  #    group_by_at(vars(bibliotek,input$niveau)) %>%
+  #    #summarise(antal = sum(antal)) %>%
+  #    spread(key = bibliotek, value = antal, fill = 0) %>%
+  #    select(c(input$niveau,input$branch_selector)) %>%
+  #    adorn_totals(c("row","col"))
+  #})
+  #
+  #output$dbc_eres_stats_table <- renderFormattable({ formattable(dbc_eres_stats_table_df()) })
+  
+  }
