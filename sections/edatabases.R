@@ -28,22 +28,23 @@ edatabasesTabPanelUI <- function(id) {
                                      column(12,
                                             column(2,
                                                    selectInput(ns("eres_vendor"),"eRessource:", unique(dbc_eres_stats$vendor)),
-                                                   selectInput(ns("eres_stattype"),"Statistik:", unique(dbc_eres_stats$stattype)),
+                                                   selectInput(ns("eres_stattype"),"Statistik:", c("Antal unikke besøgende" = "visits","Samlede antal handlinger" = "actions","Gennemsnitlig besøgstid i minutter" = "visit_length")),
                                                    selectInput(ns("eres_aar"),"År:", unique(dbc_eres_stats$aar)),
                                                    p("Vælg evt. andre CB'er eller København og Aarhus til sammenligning:"),
                                                    checkboxGroupInput(ns("eres_isil"),
                                                                       'Vælg biblioteker:',
                                                                       unique(as.character(isil2name(dbc_eres_stats$isil))),
-                                                                      selected = unique(as.character(isil2name(dbc_eres_stats$isil))),
+                                                                      selected = "Odense",
                                                                       inline = F),
                                                    xlsxDownloadUI(ns("edatabases")),
                                                    tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                             ),
                                             column(10,
-                                                   h4("Faktalink og Forfatterweb"),
+                                                   h3("Faktalink og Forfatterweb"),
+                                                   #uiOutput(ns("edatabases_title1")),
                                                    span("Følgende statistik stammer fra"),a("https://bibstats.dbc.dk", href = "https://bibstats.dbc.dk"),
-                                                   plotlyOutput(ns("dbc_eres_stats_plot"))#,
-                                                   #formattableOutput(ns("dbc_eres_stats_table"))
+                                                   plotlyOutput(ns("dbc_eres_stats_plot")),
+                                                   formattableOutput(ns("dbc_eres_stats_table"))
                                             )
                                      ))))))
       )
@@ -51,9 +52,6 @@ edatabasesTabPanelUI <- function(id) {
 
 # SERVER
 edatabasesTabPanel <- function(input, output, session, data, tablename) {
-  
-  # Manuel, kronologisk sortering af data fra ud fra måneder, så det ikke bliver alfabetisk
-  #dbc_eres_stats$maaned <- factor(dbc_eres_stats$maaned, levels = c("januar","februar","marts","april","maj","juni","juli","august","september","oktober","november","december"))
   
   dbc_eres_stats_df <- reactive({
     dbc_eres_stats <- dbc_eres_stats %>%
@@ -63,45 +61,35 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
       filter(aar == input$eres_aar) %>%
       filter(isil %in% input$eres_isil) %>%
       select(isil,vendor,stattype,aar,maaned,antal) %>%
-      mutate_at(vars(5), funs(danskemåneder(.))) %>%
+      #mutate_at(vars(5), funs(danskemåneder(.))) %>%
       group_by(maaned, isil) %>%
       spread(key = isil, value = antal)
   })
   
+  #output$edatabases_title1 <- RenderUI({})
+  
   # Call Excel download function for tables 
   callModule(xlsxDownload, "edatabases", data = reactive(dbc_eres_stats_df()), name = "ebaser")
-  
-  # Render the plot
-  #output$dbc_eres_stats_plot <- renderPlotly({   
-  #  plot_ly(dbc_eres_stats_df(), x = ~maaned, y = ~Odense, type = 'bar', name = 'Odense', marker = list(color = color1)) %>%
-  #    add_trace(y = ~Aalborg, name = 'Aalborg', marker = list(color = color3)) %>%
-  #    add_trace(y = ~Herning, name = 'Herning', marker = list(color = color2)) %>%
-  #    add_trace(y = ~Vejle, name = 'Vejle', marker = list(color = color4)) %>%
-  #    add_trace(y = ~Aarhus, name = 'Aarhus', marker = list(color = color5)) %>%
-  #    add_trace(y = ~København, name = 'København', marker = list(color = color6)) %>%
-  #    add_trace(y = ~Roskilde, name = 'Roskilde', marker = list(color = color7)) %>%
-  #    add_trace(y = ~Gentofte, name = 'Gentofte', marker = list(color = color8)) %>%
-  #    layout(autosize = TRUE, yaxis = list(title = 'Antal'), xaxis = list(title = 'Måned', dtick = 1, autotick = FALSE), barmode = 'group')
-  #})
-  
+
   # Render the plot
   output$dbc_eres_stats_plot <- renderPlotly({
     colNames <- names(dbc_eres_stats_df())[-1:-5]                         # ie. get all colnames except the first thru the fifth
-    p <- plot_ly(dbc_eres_stats_df(), x = ~maaned, y = as.formula(paste0("~`", names(dbc_eres_stats_df())[5],"`")), type = 'bar', name = names(dbc_eres_stats_df())[5], marker = list(color = color1)) 
+    p <- plot_ly(dbc_eres_stats_df(), 
+                 x = factor(month.abb[dbc_eres_stats_df()$maaned],levels=month.abb), 
+                 y = as.formula(paste0("~`", names(dbc_eres_stats_df())[5],"`")), 
+                 type = 'bar', name = names(dbc_eres_stats_df())[5], 
+                 marker = list(color = color1)) 
     len <- length(colNames)
     for(i in 0:len){
       trace <- colNames[i+1]
-      p <- p %>% add_trace(y = as.formula(paste0("~", trace)), type = 'bar', name = trace, marker = list(color = colors[i+2]))
+      p <- p %>% add_trace(y = as.formula(paste0("~", trace)), 
+                           type = 'bar', 
+                           name = trace, 
+                           marker = list(color = colors[i+2]))
     }
-    p %>% layout(autosize = TRUE, yaxis = list(title = 'Antal'), xaxis = list(title = 'Måned', dtick = 1, autotick = FALSE), barmode = 'group')
+    if (input$eres_stattype == "visits") {titel <- "Antak besøg"}
+    else if (input$eres_stattype == "actions") {titel <- "Antal handlinger"}
+    else if (input$eres_stattype == "visit_length") {titel <- "Antal minutter"}
+    p %>% layout(autosize = TRUE, yaxis = list(title = titel), xaxis = list(title = 'Måned', dtick = 1, autotick = FALSE), barmode = 'group')
   })
-  
-  # beholdning_alt_tbl <- reactive({
-  #   beholdning_alt %>%
-  #     group_by_at(vars(bibliotek,input$niveau)) %>%
-  #     summarise(antal = sum(antal)) %>%
-  #     spread(key = bibliotek, value = antal, fill = 0) %>%
-  #     select(c(input$niveau,input$branch_selector)) %>%
-  #     adorn_totals(c("row","col"))
-  # })
 }
