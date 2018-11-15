@@ -45,7 +45,12 @@ edatabasesTabPanelUI <- function(id) {
                                                    tags$br(),tags$br(),
                                                    tags$div(h4(htmlOutput(ns("edatabases_title1"))) ,style = "text-align: center;" ),
                                                    plotlyOutput(ns("dbc_eres_stats_plot")),
-                                                   formattableOutput(ns("dbc_eres_stats_table"))
+                                                   tags$br(),tags$br(),
+                                                   h4("Faktalink"),
+                                                   formattableOutput(ns("dbc_eres_faktalink_table")),
+                                                   tags$br(),tags$br(),
+                                                   h4("Forfatterweb"),
+                                                   formattableOutput(ns("dbc_eres_forfatterweb_table"))
                                             )
                                      ))))))
       )
@@ -55,7 +60,7 @@ edatabasesTabPanelUI <- function(id) {
 edatabasesTabPanel <- function(input, output, session, data, tablename) {
   
   dbc_eres_stats_df <- reactive({
-    dbc_eres_stats <- dbc_eres_stats %>%
+    dbc_eres_stats %>%
       mutate_at(vars(2), funs(isil2name(.))) %>%
       filter(vendor == input$eres_vendor) %>%
       filter(stattype == input$eres_stattype) %>%
@@ -100,17 +105,33 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
                      input$eres_aar," ", 
                      input$eres_vendor))
   
-  #dbc_eres_stats_table_df <- reactive({
-  #  dbc_eres_stats %>%
-  #    select(vendor,stattype,maaned,antal) %>%
-  #    filter??????
-  #    group_by_at(vars(bibliotek,input$niveau)) %>%
-  #    #summarise(antal = sum(antal)) %>%
-  #    spread(key = bibliotek, value = antal, fill = 0) %>%
-  #    select(c(input$niveau,input$branch_selector)) %>%
-  #    adorn_totals(c("row","col"))
-  #})
-  #
-  #output$dbc_eres_stats_table <- renderFormattable({ formattable(dbc_eres_stats_table_df()) })
+  dbc_eres_faktalink_table_df <- reactive({
+    dbc_eres_stats %>%
+      filter(aar == input$eres_aar) %>%
+      filter(isil == 746100) %>%
+      filter(vendor == 'Faktalink') %>%
+      select(stattype,aar,maaned,antal) %>%
+      mutate_at(vars(3), funs(danskemåneder(.))) %>%
+      group_by(stattype,maaned) %>%
+      summarise(antal = sum(antal)) %>%
+      spread(key = maaned, value = antal, fill = 0) %>%
+      adorn_totals(c("row","col"))
+  })
   
-  }
+  output$dbc_eres_faktalink_table <- renderFormattable({ formattable(dbc_eres_faktalink_table_df()) })
+
+  dbc_eres_forfatterweb_table_df <- reactive({
+    dbc_eres_stats %>%
+      filter(aar == input$eres_aar) %>%
+      filter(isil == 746100) %>%
+      filter(vendor == 'Forfatterweb') %>%
+      select(stattype,aar,maaned,antal) %>%
+      mutate_at(vars(3), funs(danskemåneder(.))) %>%
+      group_by(stattype,maaned) %>%
+      summarise(antal = sum(antal)) %>%
+      spread(key = maaned, value = antal, fill = 0) %>%
+      adorn_totals(c("row","col"))
+  })
+    
+  output$dbc_eres_forfatterweb_table <- renderFormattable({ formattable(dbc_eres_forfatterweb_table_df()) })
+}
