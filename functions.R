@@ -14,6 +14,36 @@ isil2name <- function(x){
   return(isil)
 }
 
+eresstattypedansk <- function(x){
+ stattype <- case_when(
+   as.character(x) == "stattype" ~ "Statistiktype",
+   as.character(x) == "visits" ~ "Antal unikke besøgende",
+   as.character(x) == "actions" ~ "Samlede antal handlinger",
+   as.character(x) == "visit_length" ~ "Gennemsnitlig besøgstid i minutter"
+ ) 
+ return(stattype)
+}
+       
+       
+# konverter integer til danske måneder, forkortet
+kortemåneder <- function(x){
+  måned <- case_when(
+    as.character(x) == "1" ~ "jan",
+    as.character(x) == "2" ~ "feb",
+    as.character(x) == "3" ~ "mar",
+    as.character(x) == "4" ~ "apr",
+    as.character(x) == "5" ~ "maj",
+    as.character(x) == "6" ~ "jun",
+    as.character(x) == "7" ~ "jul",
+    as.character(x) == "8" ~ "aug",
+    as.character(x) == "9" ~ "sep",
+    as.character(x) == "10" ~ "okt",
+    as.character(x) == "11" ~ "nov",
+    as.character(x) == "12" ~ "dec"
+  )
+  return(måned)
+}
+
 # konverter integer til danske måneder
 danskemåneder <- function(x){
   måned <- case_when(

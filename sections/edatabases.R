@@ -27,12 +27,16 @@ edatabasesTabPanelUI <- function(id) {
                                    fluidRow(
                                      column(12,
                                             column(2,
+                                                   h4("Afgrænsning"),
+                                                   tags$br(),
                                                    selectInput(ns("eres_vendor"),"eRessource:", unique(dbc_eres_stats$vendor)),
                                                    selectInput(ns("eres_stattype"),"Statistik:", c("Antal unikke besøgende" = "visits","Samlede antal handlinger" = "actions","Gennemsnitlig besøgstid i minutter" = "visit_length")),
                                                    selectInput(ns("eres_aar"),"År:", unique(dbc_eres_stats$aar)),
+                                                   #selectInput(ns("eres_abs_vs_pro"),"Værditype", c("Absolutte tal","Procent af kommunens befolkning")),
+                                                   tags$br(),tags$br(),
                                                    p("Vælg evt. andre CB'er eller København og Aarhus til sammenligning:"),
                                                    checkboxGroupInput(ns("eres_isil"),
-                                                                      'Vælg biblioteker:',
+                                                                      'Biblioteker:',
                                                                       unique(as.character(isil2name(dbc_eres_stats$isil))),
                                                                       selected = "Odense",
                                                                       inline = F),
@@ -41,16 +45,18 @@ edatabasesTabPanelUI <- function(id) {
                                             ),
                                             column(10,
                                                    h3("Faktalink og Forfatterweb"),
-                                                   span("Følgende statistik stammer fra"),a("https://bibstats.dbc.dk", href = "https://bibstats.dbc.dk"),
+                                                   span("Følgende statistik stammer fra"),a("https://bibstats.dbc.dk", href = "https://bibstats.dbc.dk", target="_blank" ),
                                                    tags$br(),tags$br(),
-                                                   tags$div(h4(htmlOutput(ns("edatabases_title1"))) ,style = "text-align: center;" ),
+                                                   tags$div( h4(htmlOutput(ns("edatabases_title1"))),style = "text-align: center;" ),
                                                    plotlyOutput(ns("dbc_eres_stats_plot")),
                                                    tags$br(),tags$br(),
-                                                   h4("Faktalink"),
-                                                   formattableOutput(ns("dbc_eres_faktalink_table")),
-                                                   tags$br(),tags$br(),
-                                                   h4("Forfatterweb"),
-                                                   formattableOutput(ns("dbc_eres_forfatterweb_table"))
+                                                   column(10,
+                                                       tags$div(h4(htmlOutput(ns("edatabases_title2")))),
+                                                       formattableOutput(ns("dbc_eres_faktalink_table")),
+                                                       tags$br(),tags$br(),
+                                                       tags$div(h4(htmlOutput(ns("edatabases_title3")))),
+                                                       formattableOutput(ns("dbc_eres_forfatterweb_table"))
+                                                   )
                                             )
                                      ))))))
       )
@@ -97,13 +103,17 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
     p %>% layout(autosize = TRUE, yaxis = list(title = titel), xaxis = list(title = 'Måned', dtick = 1, autotick = FALSE), barmode = 'group')
   })
   
-  # Create dynamic title for the page based on the filter choices
+  # Create dynamic titles based on the filter choices
   output$edatabases_title1 <- renderText(
     paste0(case_when(input$eres_stattype == "visits" ~ "Antal unikke besøgende",
                      input$eres_stattype == "actions" ~ "Samlede antal handlinger",
                      input$eres_stattype == "visit_length" ~ "Gennemsnitlig besøgstid i minutter")," ",
                      input$eres_aar," ", 
                      input$eres_vendor))
+
+  output$edatabases_title2 <- renderText( paste0("Faktalink, Odense ",input$eres_aar) )
+  output$edatabases_title3 <- renderText( paste0("Forfatterweb, Odense ",input$eres_aar) )
+  
   
   dbc_eres_faktalink_table_df <- reactive({
     dbc_eres_stats %>%
@@ -112,9 +122,12 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
       filter(vendor == 'Faktalink') %>%
       select(stattype,aar,maaned,antal) %>%
       mutate_at(vars(3), funs(danskemåneder(.))) %>%
+      mutate_at(vars(1), funs(eresstattypedansk(.))) %>%
       group_by(stattype,maaned) %>%
       summarise(antal = sum(antal)) %>%
       spread(key = maaned, value = antal, fill = 0) %>%
+      select(stattype,Januar,Februar,Marts,April,Maj,Juni,Juli,August,September,Oktober,November,December) %>% # select is needed to maintain column ordering...
+      rename(statistik = stattype) %>%
       adorn_totals(c("row","col"))
   })
   
@@ -127,9 +140,12 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
       filter(vendor == 'Forfatterweb') %>%
       select(stattype,aar,maaned,antal) %>%
       mutate_at(vars(3), funs(danskemåneder(.))) %>%
+      mutate_at(vars(1), funs(eresstattypedansk(.))) %>%
       group_by(stattype,maaned) %>%
       summarise(antal = sum(antal)) %>%
       spread(key = maaned, value = antal, fill = 0) %>%
+      select(stattype,Januar,Februar,Marts,April,Maj,Juni,Juli,August,September,Oktober,November,December) %>% # select is needed to maintain column ordering...
+      rename(statistik = stattype) %>%
       adorn_totals(c("row","col"))
   })
     
