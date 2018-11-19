@@ -22,6 +22,7 @@ shinyServer(function(input, output) {
   source("./sections/staff.R")
   source("./sections/users.R")
   source("./sections/visitors.R")
+  source("./sections/citizenservice.R")
   
   source("~/.postpass")
   
@@ -70,6 +71,8 @@ shinyServer(function(input, output) {
   callModule(usersTabPanel, id = "users")
   # Staff
   callModule(staffTabPanel, id = "staff")
+  # Citizenservice
+  callModule(citizenserviceTabPanel, id = "citizenservice")
   # Datasources
   callModule(datasourcesTabPanel, id = "datasources")
   

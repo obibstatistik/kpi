@@ -24,6 +24,7 @@ source("./sections/meetingrooms.R")
 source("./sections/online_odensebib.R")
 source("./sections/staff.R")
 source("./sections/users.R")
+source("./sections/citizenservice.R")
 source("./sections/visitors.R")
 
 #  Dashboard Layout
@@ -64,6 +65,7 @@ dashboardPage(
       ),
       menuItem("Brugere", tabName = "users", icon = icon("users", lib="font-awesome")),
       menuItem("Personale", tabName = "personal", icon = icon("users", lib="font-awesome")),
+      menuItem("Borgerservice", tabName = "citizenservice", icon = icon("building", lib="font-awesome")),
       menuItem("Datakilder", tabName = "datasources", icon = icon("database", lib="font-awesome"))#,
       #menuItem("Test", tabName = "test")
     )
@@ -108,6 +110,8 @@ dashboardPage(
       usersTabPanelUI(id = "users"),
       # Staff
       staffTabPanelUI(id = "staff"),
+      # Citizen Service
+      citizenserviceTabPanelUI(id = "citizenservice"),
       # Datasources
       datasourcesTabPanelUI(id = "datasources")#,
       # tabItem(tabName = "test",
