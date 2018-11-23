@@ -14,7 +14,7 @@ dbDisconnect(con)
 #licenses_df <- as.data.frame(licenses_df,stringsAsFactors = FALSE)
 
 # UI
-eressourcesTabPanelUI <- function(id) {
+licensesTabPanelUI <- function(id) {
   
   ns <- NS(id)
   
@@ -58,7 +58,7 @@ eressourcesTabPanelUI <- function(id) {
 }
 
 # SERVER
-eressourcesTabPanel <- function(input, output, session, data, tablename) {
+licensesTabPanel <- function(input, output, session, data, tablename) {
   
   # Manuel, kronologisk sortering af data fra ud fra måneder, så det ikke bliver alfabetisk
   licenses_df$month <- factor(licenses_df$month, levels = c("jan","feb","mar","apr","maj","jun","jul","aug","sep","okt","nov","dec"))

@@ -24,7 +24,6 @@ source("./sections/meetingrooms.R")
 source("./sections/online_odensebib.R")
 source("./sections/staff.R")
 source("./sections/users.R")
-source("./sections/citizenservice.R")
 source("./sections/visitors.R")
 
 #  Dashboard Layout
@@ -60,12 +59,11 @@ dashboardPage(
       menuItem("E-Ressourcer", tabName = "emat", icon = icon("database", lib="font-awesome"),
                #menuItem("E-Bøger", tabName = "ebooks"),
                #menuItem("E-Film", tabName = "emovies"),
-               menuItem("E-Baser", tabName = "edatabases")
-               #menuItem("Licenser", tabName = "licenses")
+               menuItem("E-Baser", tabName = "edatabases"),
+               menuItem("Licenser", tabName = "licenses")
       ),
       menuItem("Brugere", tabName = "users", icon = icon("users", lib="font-awesome")),
       menuItem("Personale", tabName = "personal", icon = icon("users", lib="font-awesome")),
-      menuItem("Borgerservice", tabName = "citizenservice", icon = icon("building", lib="font-awesome")),
       menuItem("Datakilder", tabName = "datasources", icon = icon("database", lib="font-awesome"))#,
       #menuItem("Test", tabName = "test")
     )
@@ -103,15 +101,13 @@ dashboardPage(
       # Indoor Climate
       indoor_climateTabPanelUI(id = "indoor_climate"),
       # E-Ressources
-      eressourcesTabPanelUI(id = "eressources"),
-      # Users
+      licensesTabPanelUI(id = "licenses"),
+      # E-Databases
       edatabasesTabPanelUI(id = "edatabases"),
       # Users
       usersTabPanelUI(id = "users"),
       # Staff
       staffTabPanelUI(id = "staff"),
-      # Citizen Service
-      citizenserviceTabPanelUI(id = "citizenservice"),
       # Datasources
       datasourcesTabPanelUI(id = "datasources")#,
       # tabItem(tabName = "test",
