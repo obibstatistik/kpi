@@ -10,6 +10,7 @@ from datamart.eressourcer_ddb
 left join datamart.eressourcer_ddb_kategorier on datamart.eressourcer_ddb_kategorier.name_match = datamart.eressourcer_ddb.product 
 where type = 'visninger' 
 group by brug,pris,statbank,year,month,datamart.eressourcer_ddb.product")
+#produkter <- dbGetQuery(con, "select distinct product,statbank from datamart.eressourcer_ddb_kategorier")
 dbDisconnect(con)
 #licenses_df <- as.data.frame(licenses_df,stringsAsFactors = FALSE)
 
@@ -44,12 +45,14 @@ licensesTabPanelUI <- function(id) {
                                                    plotlyOutput(ns("licenses_plot"))
                                             ),
                                             column(2,
-                                                   checkboxGroupInput(ns("lic_productselector"),
-                                                   'Vælg eRessource:',
-                                                   #unique(as.character(licenses_df$produkt)),
-                                                   unique(as.character(lic_data()$produkt)),
-                                                   selected = unique(as.character(licenses_df$produkt)),
-                                                   inline = F)
+                                                   #checkboxGroupInput(ns("lic_productselector"),
+                                                   #                      'Vælg eRessource:',
+                                                   #                      selected = unique(as.character(licenses_df$produkt)),
+                                                   #                      inline = F),
+                                                   #p("The first checkbox group controls the second"),
+                                                   checkboxGroupInput(ns("inCheckboxGroup2"),        
+                                                                      'Vælg eRessource:',
+                                                                      inline = F)
                                             ),
                                             column(8,
                                                    formattableOutput(ns("licenses_table"))
@@ -73,15 +76,18 @@ licensesTabPanel <- function(input, output, session, data, tablename) {
       filter(brug == input$lic_brugskategori) %>%
       filter(statbank == input$lic_statbank) %>%
       select(produkt,month,visninger) %>%
+      #filter(produkt %in% input$inCheckboxGroup2) %>%
       # filter(produkt %in% input$lic_productselector) %>%
       group_by(produkt,month) %>%
       summarise(visninger = sum(visninger)) %>%
       mutate_at(vars(-1), funs(replace(., is.na(.), 0)))
   })
- 
+  
   # Render the plot
   output$licenses_plot <- renderPlotly({
-    data <- lic_data() %>% spread(produkt, visninger)   # the plot needs a spread (pivot) of produkt
+    data <- lic_data() %>%
+    filter(produkt %in% input$inCheckboxGroup2) %>%
+    spread(produkt, visninger)   # the plot needs a spread (pivot) of produkt
     colNames <- names(data)[-1]                         # ie. get all colnames except the first which is year or month or whatever
     # cf. https://stackoverflow.com/questions/46583282/r-plotly-to-add-traces-conditionally-based-on-available-columns-in-dataframe                                
     p <- plot_ly(data, x = ~month, type = 'scatter', mode = 'lines') 
@@ -93,7 +99,29 @@ licensesTabPanel <- function(input, output, session, data, tablename) {
   
   # Render the table
   output$licenses_table <- renderFormattable({
-    data <- lic_data() %>% spread(month, visninger)     # the table needs a spread (pivot) of month
+    data <- lic_data() %>%
+    filter(produkt == input$inCheckboxGroup2) %>%
+    spread(month, visninger)   # the table needs a spread (pivot) of month
     formattable(data)
   })
+  
+  observe({
+    x <- unique(lic_data()$statbank)
+    y <- unique(lic_data()$produkt)
+    
+    # Can use character(0) to remove all choices
+    if (is.null(x))
+      x <- character(0)
+    
+    # Can also set the label and select items
+    updateCheckboxGroupInput(session, "inCheckboxGroup2",
+                             #label = paste("Checkboxgroup label", length(x)),
+                             choices = y,
+                             selected = y
+    )
+  })
+    
+  #lic_loc <- reactive({
+  #  produkter <- produkter %>% filter(statbank == input$lic_statter)
+  #})
 }
