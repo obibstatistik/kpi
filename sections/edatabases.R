@@ -6,6 +6,7 @@ source("~/.postpass")
 drv <- dbDriver("PostgreSQL")
 con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
 dbc_eres_stats <- dbGetQuery(con, "SELECT * from dbc_eres_stats")
+
 dbDisconnect(con)
 
 
@@ -150,4 +151,9 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
   })
     
   output$dbc_eres_forfatterweb_table <- renderFormattable({ formattable(dbc_eres_forfatterweb_table_df()) })
+  
+  
+  
+  
+
 }

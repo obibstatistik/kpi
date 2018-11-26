@@ -64,7 +64,7 @@ shinyServer(function(input, output) {
   # Indoor climate 
   callModule(indoor_climateTabPanel, id = "indoor_climate")
   # E-Ressources 
-  callModule(eressourcesTabPanel, id = "eressources")
+  callModule(licensesTabPanel, id = "licenses")
   # E-Databases 
   callModule(edatabasesTabPanel, id = "edatabases")
   # Users

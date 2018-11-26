@@ -32,23 +32,24 @@ licensesTabPanelUI <- function(id) {
                                      column(12,
                                             column(2,
                                                    h4("Afgræns"),
-                                                   selectInput(ns("eres_fromyear"), "År:", unique(as.numeric(licenses_df$year))),
-                                                   #selectInput(ns("eres_statbank"), "Statistikbankens typer:", c("Seriepublikationer" = "serie","eBøger" = "ebooks","Multimedier" = "multimedia","Databaser" = "databaser")),
-                                                   selectInput(ns("eres_statbank"), "Statistikbankens typer:", unique(as.character(licenses_df$statbank))),
-                                                   selectInput(ns("eres_priskategori"), "Priskategori:", unique(as.character(licenses_df$pris))),
-                                                   selectInput(ns("eres_brugskategori"), "Brugskategori:", unique(as.character(licenses_df$brug)))
+                                                   selectInput(ns("lic_fromyear"), "År:", unique(as.numeric(licenses_df$year))),
+                                                   #selectInput(ns("lic_statbank"), "Statistikbankens typer:", c("Seriepublikationer" = "serie","eBøger" = "ebooks","Multimedier" = "multimedia","Databaser" = "databaser")),
+                                                   selectInput(ns("lic_statbank"), "Statistikbankens typer:", unique(as.character(licenses_df$statbank))),
+                                                   selectInput(ns("lic_priskategori"), "Priskategori:", unique(as.character(licenses_df$pris))),
+                                                   selectInput(ns("lic_brugskategori"), "Brugskategori:", unique(as.character(licenses_df$brug)))
                                             ),
                                             column(10,
                                                    h4("Licenser"),
                                                    p("Kategoriseret efter sammenlignelighed"),
                                                    plotlyOutput(ns("licenses_plot"))
                                             ),
-                                            column(2
-                                            #       checkboxGroupInput(ns("eres_productselector"),
-                                            #       'Vælg eRessource:',
-                                            #       unique(as.character(licenses_df$produkt)),
-                                            #       selected = unique(as.character(licenses_df$produkt)),
-                                            #       inline = F)
+                                            column(2,
+                                                   checkboxGroupInput(ns("lic_productselector"),
+                                                   'Vælg eRessource:',
+                                                   #unique(as.character(licenses_df$produkt)),
+                                                   unique(as.character(lic_data()$produkt)),
+                                                   selected = unique(as.character(licenses_df$produkt)),
+                                                   inline = F)
                                             ),
                                             column(8,
                                                    formattableOutput(ns("licenses_table"))
@@ -67,12 +68,12 @@ licensesTabPanel <- function(input, output, session, data, tablename) {
   # Store data and its filters in reactive function (gives reusability)
   lic_data <- reactive({
     licenses <- licenses_df %>%
-      filter(year == input$eres_fromyear) %>%
-      filter(pris == input$eres_priskategori) %>%
-      filter(brug == input$eres_brugskategori) %>%
-      filter(statbank == input$eres_statbank) %>%
+      filter(year == input$lic_fromyear) %>%
+      filter(pris == input$lic_priskategori) %>%
+      filter(brug == input$lic_brugskategori) %>%
+      filter(statbank == input$lic_statbank) %>%
       select(produkt,month,visninger) %>%
-      # filter(produkt %in% input$eres_productselector) %>%
+      # filter(produkt %in% input$lic_productselector) %>%
       group_by(produkt,month) %>%
       summarise(visninger = sum(visninger)) %>%
       mutate_at(vars(-1), funs(replace(., is.na(.), 0)))

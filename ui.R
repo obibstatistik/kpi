@@ -100,7 +100,7 @@ dashboardPage(
       inventoryTabPanelUI(id = "inventory"),
       # Indoor Climate
       indoor_climateTabPanelUI(id = "indoor_climate"),
-      # E-Ressources
+      # Licenses
       licensesTabPanelUI(id = "licenses"),
       # E-Databases
       edatabasesTabPanelUI(id = "edatabases"),
