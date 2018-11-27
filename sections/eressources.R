@@ -69,12 +69,16 @@ licensesTabPanel <- function(input, output, session, data, tablename) {
   licenses_df = licenses_df[order(licenses_df$month,decreasing=FALSE),]
   
   # Store data and its filters in reactive function (gives reusability)
-  lic_data <- reactive({
+  lic_data_0 <- reactive({
     licenses <- licenses_df %>%
       filter(year == input$lic_fromyear) %>%
       filter(pris == input$lic_priskategori) %>%
       filter(brug == input$lic_brugskategori) %>%
-      filter(statbank == input$lic_statbank) %>%
+      filter(statbank == input$lic_statbank)
+  })
+  
+  lic_data <- reactive({
+    lunk <- lic_data_0() %>%
       select(produkt,month,visninger) %>%
       #filter(produkt %in% input$inCheckboxGroup2) %>%
       # filter(produkt %in% input$lic_productselector) %>%
@@ -104,14 +108,21 @@ licensesTabPanel <- function(input, output, session, data, tablename) {
     spread(month, visninger)   # the table needs a spread (pivot) of month
     formattable(data)
   })
-  
+ 
   observe({
-    x <- unique(lic_data()$statbank)
-    y <- unique(lic_data()$produkt)
+    x <- unique(lic_data_0()$statbank)
+    y <- unique(lic_data_0()$produkt)
+    z <- unique(lic_data_0()$pris)
+    w <- unique(lic_data_0()$brug)
     
     # Can use character(0) to remove all choices
-    if (is.null(x))
-      x <- character(0)
+    #  if (is.null(z))
+    #    z <- character(0)
+    
+    updateSelectInput(session, "lic_statbank",
+                      choices = x,
+                      selected = x
+    )
     
     # Can also set the label and select items
     updateCheckboxGroupInput(session, "inCheckboxGroup2",
@@ -119,7 +130,18 @@ licensesTabPanel <- function(input, output, session, data, tablename) {
                              choices = y,
                              selected = y
     )
-  })
+
+    updateSelectInput(session, "lic_priskategori",
+                      choices = z,
+                      selected = z
+    )   
+    
+    updateSelectInput(session, "lic_brugskategori",
+                      choices = w,
+                      selected = w
+    )   
+    
+ })
     
   #lic_loc <- reactive({
   #  produkter <- produkter %>% filter(statbank == input$lic_statter)
