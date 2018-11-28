@@ -69,17 +69,22 @@ licensesTabPanel <- function(input, output, session, data, tablename) {
   licenses_df = licenses_df[order(licenses_df$month,decreasing=FALSE),]
   
   # Store data and its filters in reactive function (gives reusability)
-  lic_data_0 <- reactive({
+  #lic_data_0 <- reactive({
+  #  licenses <- licenses_df %>%
+  #    filter(year == input$lic_fromyear) %>%
+  #    filter(pris == input$lic_priskategori) %>%
+  #    filter(brug == input$lic_brugskategori) %>%
+  #    filter(statbank == input$lic_statbank)
+  #})
+  
+  lic_data <- reactive({
+    #lunk <- lic_data_0() %>%
     licenses <- licenses_df %>%
       filter(year == input$lic_fromyear) %>%
       filter(pris == input$lic_priskategori) %>%
       filter(brug == input$lic_brugskategori) %>%
       filter(statbank == input$lic_statbank)
-  })
-  
-  lic_data <- reactive({
-    lunk <- lic_data_0() %>%
-      select(produkt,month,visninger) %>%
+      select(brug,statbank,produkt,month,visninger) %>%
       #filter(produkt %in% input$inCheckboxGroup2) %>%
       # filter(produkt %in% input$lic_productselector) %>%
       group_by(produkt,month) %>%
@@ -110,19 +115,19 @@ licensesTabPanel <- function(input, output, session, data, tablename) {
   })
  
   observe({
-    x <- unique(lic_data_0()$statbank)
-    y <- unique(lic_data_0()$produkt)
-    z <- unique(lic_data_0()$pris)
-    w <- unique(lic_data_0()$brug)
+    #x <- unique(lic_data()$statbank)
+    y <- unique(lic_data()$produkt)
+    z <- unique(lic_data()$pris)
+    w <- unique(lic_data()$brug)
     
     # Can use character(0) to remove all choices
     #  if (is.null(z))
     #    z <- character(0)
     
-    updateSelectInput(session, "lic_statbank",
-                      choices = x,
-                      selected = x
-    )
+    #updateSelectInput(session, "lic_statbank",
+    #                  choices = x,
+    #                  selected = x
+    #)
     
     # Can also set the label and select items
     updateCheckboxGroupInput(session, "inCheckboxGroup2",
