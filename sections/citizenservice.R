@@ -1,6 +1,41 @@
 source("global.R")
 source("modules.R")
 source("~/.postpass")
+source("functions.R")
+
+# Queries
+
+drv <- dbDriver("PostgreSQL")
+con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
+
+  # OVERSIGT OVER TYPE & KATEGORI: select "Type", "Kategori", count(*) FROM borgerservice.x_betjeninger WHERE "Lokation" = 'Borgerservice Odense' GROUP BY "Type", "Kategori" ORDER BY "Type", count(*) desc
+  betjeninger_years <- dbGetQuery(con, "SELECT distinct(extract(year from \"Tid\")) as year FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense'")
+  betjeninger_categories <- dbGetQuery(con, "SELECT distinct(\"Kategori\") as category FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense'")
+  
+  betjeninger_count_years <- dbGetQuery(con, "SELECT extract(year from (\"Tid\")::date) as year, count(*) as count FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY year")
+  betjeninger_count_date_category <- dbGetQuery(con, "SELECT date_trunc('month', \"Tid\") as date, count('ID') as count, \"Kategori\" as category FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY date, category")
+  
+  betjeninger_wait_year <- dbGetQuery(con, "SELECT date_trunc('year', \"Tid\") as year, round((EXTRACT(epoch FROM avg(\"Ventetid\"))/60)::numeric, 2) as avgwait FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY year")
+  #betjeninger_wait_year_category <- dbGetQuery(con, "SELECT date_trunc('year', \"Tid\") as year, \"Kategori\" as category, avg(\"Ventetid\") as avgwait FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY year, category")
+  betjeninger_wait_month <- dbGetQuery(con, "SELECT extract(month from \"Tid\") as month, round((EXTRACT(epoch FROM avg(\"Ventetid\"))/60)::numeric, 2) as avgwait FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY month ORDER BY month")
+  #betjeninger_wait_month_category <- dbGetQuery(con, "SELECT extract(month from \"Tid\") as month, \"Kategori\" as category, avg(\"Behandlingstid\") as avgserve FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY month, category")
+  
+  betjeninger_service_year <- dbGetQuery(con, "SELECT date_trunc('year', \"Tid\") as year, round((EXTRACT(epoch FROM avg(\"Behandlingstid\"))/60)::numeric, 2) as avgservice FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY year")
+  #betjeninger_service_year_category <- dbGetQuery(con, "SELECT date_trunc('year', \"Tid\") as year, \"Kategori\" as category, avg(\"Ventetid\") as avgwait FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY year, category")
+  betjeninger_service_month <- dbGetQuery(con, "SELECT extract(month from \"Tid\") as month, round((EXTRACT(epoch FROM avg(\"Behandlingstid\"))/60)::numeric, 2) as avgservice FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY month ORDER BY month")
+  #betjeninger_service_month_category <- dbGetQuery(con, "SELECT extract(month from \"Tid\") as month, \"Kategori\" as category, avg(\"Behandlingstid\") as avgserve FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY month, category")
+  
+  visitors_per_day <- dbGetQuery(con, "SELECT date, sum as bibcount FROM datamart.visitors_per_day WHERE location='hb' and date > '2016-08-11'") 
+  betjeninger_per_day <- dbGetQuery(con, "SELECT distinct(\"Tid\"::date) as date, count(*) as borgcount FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY date")
+  
+  betjeninger_heat_1 <- dbGetQuery(con, "SELECT date_trunc('day', \"Tid\") as date, extract(isodow from \"Tid\") as weekday, extract(hour from \"Tid\") as hour, count(*) as count FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY weekday, hour, date")
+  betjeninger_heat_2 <- dbGetQuery(con, "SELECT date_trunc('day', \"Tid\") as date, extract(isodow from \"Tid\") as weekday, extract(hour from \"Tid\") as hour, count(*) as count FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY weekday, hour, date")
+  betjeninger_heat_3 <- dbGetQuery(con, "SELECT date_trunc('day', \"Tid\") as date, extract(isodow from \"Tid\") as weekday, extract(hour from \"Tid\") as hour, avg(\"Ventetid\") as avgvente FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY weekday, hour, date")
+  betjeninger_heat_4 <- dbGetQuery(con, "SELECT date_trunc('day', \"Tid\") as date, extract(isodow from \"Tid\") as weekday, extract(hour from \"Tid\") as hour, avg(\"Behandlingstid\") as avgserve FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY weekday, hour, date")
+
+  kategorier <- dbGetQuery(con, "select \"Type\", \"Kategori\", count(*) FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY \"Type\", \"Kategori\" ORDER BY \"Type\", count(*) desc")
+  
+  dbDisconnect(con)
 
 # UI
 
@@ -22,32 +57,91 @@ citizenserviceTabPanelUI <- function(id) {
         id = "tabset12",
         tabPanel("Generelt",
                  fluidRow(
-                   width = 12,
-                   column(
-                     width = 12,
-                     h4("Betjeninger"),
-                     column(width = 6, plotlyOutput(ns(
-                       "betjeninger_plot"
-                     ))),
-                     column(width = 6, tableOutput(ns('betjeninger'))),
-                     h4("aftalte_møder"),
-                     tableOutput(ns('aftalte_møder')),
-                     h4("reservationer"),
-                     tableOutput(ns('reservationer')),
-                     h4("skranke_check_ins"),
-                     tableOutput(ns('skranke_check_ins')),
-                     h4("stander_events"),
-                     tableOutput(ns('stander_events'))
-                   )
-                 )),
-        tabPanel("Borgerservice vs Bib",
+                     column(width = 12,
+                       h4("Betjeninger pr. år"),      
+                       column(width = 2#, 
+                              #checkboxFromDataUI(ns(id = "citizen"), data = betjeninger_years$year, text = "Vælg årstal"),
+                              #checkboxFromDataUI(ns(id = "citizen11"), data = betjeninger_categories$category, text = "Vælg kategori")
+                       ),
+                       column(width = 10, plotlyOutput(ns("betjeninger_count_year_plot")))
+                     ),
+                     column(12,tags$hr()),
+                     column(width = 12,
+                       h4("Betjeninger pr. måned"),
+                       column(width = 2#, årstalfilter er skjult i første omgang
+                              #checkboxFromDataUI(ns(id = "citizen2"), data = betjeninger_years$year, text = "Vælg årstal")
+                       ),
+                       column(width = 10, plotlyOutput(ns("betjeninger_count_month_plot")))
+                     ),
+                     column(12,tags$hr()),
+                     column(width = 12,
+                       h4("Gennemsnitlig ventetid / år"),
+                       column(width = 2#, årstalfilter er skjult i første omgang
+                              #checkboxFromDataUI(ns(id = "citizen3"), data = betjeninger_years$year, text = "Vælg årstal")
+                       ),
+                       column(width = 10, plotlyOutput(ns("betjeninger_avgwait_category_plot")))
+                     ),
+                     column(12,tags$hr()),
+                     column(width = 12,
+                       h4("Gennemsnitlig ventetid / måned"),
+                       column(width = 2#, 
+                         #checkboxFromDataUI(ns(id = "citizen3"), data = betjeninger_categories$category, text = "Vælg kategori")
+                       ),
+                       column(width = 10, plotlyOutput(ns("betjeninger_avgwait_month_plot")))
+                     ),
+                     column(12,tags$hr()),
+                     column(width = 12,
+                       h4("Gennemsnitlig betjeningstid / år"),
+                       column(width = 2#, 
+                         #checkboxFromDataUI(ns(id = "citizen4"), data = betjeninger_years$year, text = "Vælg årstal")
+                       ),
+                       column(width = 10, plotlyOutput(ns("betjeninger_service_year_plot")))
+                     ),
+                     column(12,tags$hr()),
+                     column(width = 12,
+                       h4("Gennemsnitlig betjeningstid / måned"),
+                       column(width = 2#, 
+                         #checkboxFromDataUI(ns(id = "citizen4"), data = betjeninger_years$year, text = "Vælg årstal")
+                       ),
+                       column(width = 10, plotlyOutput(ns("betjeninger_service_month_plot")))
+                     )
+                ))
+                 ,
+        tabPanel("Borgerservice / Bibliotek",
                  fluidRow(width = 12,
                     column(
                       width = 12,
-                      h4("Besøgende - Bibliotek vs Borgerservice"),
-                      column(width = 6, plotlyOutput(ns("borgvsbib_plot"))),
-                      column(width = 6, tableOutput(ns('borgvsbib')))
-                    )))
+                      h4("Besøgende Borgernes Hus / Betjeninger Borgerservice"),
+                      column(width = 12, plotlyOutput(ns("borgvsbib_plot")))
+                    ))),
+        tabPanel("Dag / tid heatmaps",
+                 fluidRow(width = 12,
+                    column(
+                      width = 6,
+                      heatmapWeekTableUI(ns(id = "heat1"), title = "Antal Betjeninger")
+                    ),
+                    column(
+                      width = 6,          
+                      heatmapWeekTableUI(ns(id = "heat2"), title = "Antal Unikke Betjeninger")
+                    ),
+                    column(
+                      width = 6,          
+                      heatmapWeekTableUI(ns(id = "heat3"), title = "Gennemsnitlig ventetid")
+                    ),
+                    column(
+                      width = 6,
+                      heatmapWeekTableUI(ns(id = "heat4"), title = "Gennemsnitlig betjeningstid")
+                    )
+                 )
+               ),
+         tabPanel("Kategorier",
+                  fluidRow(width = 12,
+                   column(
+                     width = 12,
+                     h4("Kategorioverblik"),
+                     column(width = 12, tableOutput(ns("kategorier")))
+                   )))
+        
       )
     ))
   )
@@ -58,78 +152,154 @@ citizenserviceTabPanelUI <- function(id) {
 
 citizenserviceTabPanel <-
   function(input, output, session, data, tablename) {
-    drv <- dbDriver("PostgreSQL")
-    con <-
-      dbConnect(
-        drv,
-        dbname = dbname,
-        host = host,
-        port = port,
-        user = user,
-        password = password
-      )
-    aftalte_møder <-
-      dbGetQuery(con, "SELECT * FROM borgerservice.x_aftalte_møder LIMIT 10")
-    betjeninger <-
-      dbGetQuery(con, "SELECT date_trunc('month', \"Tid\") as date, count('ID') as borg FROM borgerservice.x_betjeninger group by date")
-    reservationer <-
-      dbGetQuery(con, "SELECT * FROM borgerservice.x_reservationer LIMIT 10")
-    skranke_check_ins <-
-      dbGetQuery(con, "SELECT * FROM borgerservice.x_skranke_check_ins LIMIT 10")
-    stander_events <-
-      dbGetQuery(con, "SELECT * FROM borgerservice.x_stander_events LIMIT 10")
-    visitors <-
-      dbGetQuery(con, "SELECT date_trunc('month', registertime) as date, count(delta) as bib FROM visitor_counter where location='hb' and direction='In' group by date")
-    dbDisconnect(con)
     
-    #betjeninger
-    #betjeninger_plot <- reactive({
-    #  betjeninger <- betjeninger %>%
-    #    select(ID, Tid) %>%
-    #    mutate(date = floor_date(Tid, "month")) %>%
-    #    group_by(date) %>%
-    #    summarise(borg = n())
-    #})
+    # GENERELT #
     
-    output$betjeninger_plot <- renderPlotly({
-      plot_ly(
-        betjeninger,
-        x = ~ date,
-        y = ~ borg,
-        type = 'scatter',
-        mode = 'lines'
-      )
+    # modules
+    callModule(checkboxFromData, id = "citizen", data = betjeninger)
+    
+    # betjeninger year / count 
+
+    output$betjeninger_count_year_plot <- renderPlotly({
+      data <- betjeninger_count_years %>%
+        mutate_at(vars(1), funs(as.character(.)))
+      plot_ly(data, x = ~year, y = ~count, type = 'bar', marker = list(color = color5), autosize = T) %>%
+        layout(xaxis = list(title = 'År'), yaxis = list(title = 'Antal'))
+    }) 
+    
+    # betjeninger year / count med kategorier
+    
+    # output$betjeninger_count_year_plot <- renderPlotly({
+    #   data <- betjeninger_count_date_category %>%
+    #     mutate(year = year(date)) %>%
+    #     select(-date) %>%
+    #     group_by(category, year) %>%
+    #     summarise(count = sum(count)) %>%
+    #     spread(key = category, value = count)
+    #   colNames <- names(data)[-1] 
+    #   p <- plot_ly(data) 
+    #   for(trace in colNames){
+    #     p <- p %>% add_trace(x = ~year, y = as.formula(paste0("~`", trace, "`")), name = trace, type = 'bar')
+    #   }
+    #   p %>% layout(xaxis = list(title = 'Årstal', nticks = 3), yaxis = list (title = 'Antal betjeninger'), barmode = 'stack')
+    # })
+    
+    # betjeninger month / count
+    
+    output$betjeninger_count_month_plot <- renderPlotly({
+      data <- betjeninger_count_date_category %>%
+        select(date, count) %>%
+        mutate(month = month(date), year = year(date)) %>%
+        #filter(year %in% input$INPUTNAVN) hvis der sættes års filter på 
+        select(-date) %>%
+        group_by(month, year) %>%
+        summarise(count = sum(count)) %>%
+        spread(key = year, value = count)
+      colNames <- names(data)[-1] 
+      p <- plot_ly(data)
+      i<-0
+      for(trace in colNames){
+        i<-i+1
+        p <- p %>% add_trace(x = ~month, y = as.formula(paste0("~`", trace, "`")), marker = list(color = colors[i]), name = trace, type = 'bar')
+      }
+      p %>% layout(xaxis = list(title = 'Måneder'), yaxis = list (title = 'Antal'), barmode = 'group')
     })
-    output$betjeninger <- renderTable(betjeninger)
     
-    output$visitors <- renderTable(visitors)
+    # betjeninger ventetid / år
     
-    borgvsbib  <- reactive({
-      borgvsbib <- betjeninger %>%
-        right_join(visitors, by = c("date" = "date"))
+    output$betjeninger_avgwait_category_plot <- renderPlotly({
+      data <- betjeninger_wait_year %>%
+        mutate_at(vars(1), funs(as.character(.))) %>%
+        mutate_at(vars(1), funs(substr(., 1, 4)))
+      plot_ly(data, x = ~year, y = ~avgwait, type = 'bar', marker = list(color = color5)) %>%
+        layout(xaxis = list(title = 'År'), yaxis = list(title = 'Sekunder'))
     })
     
-    output$borgvsbib <- renderTable(
-      borgvsbib()
-    )
+    # betjeninger kategori / ventetid / år 
+    
+    # output$betjeninger_avgwait_category_plot <- renderPlotly({
+    #   data <- betjeninger_wait_year_category %>%
+    #     spread(key = year, value = avgwait)
+    #   colNames <- names(data)[-1] 
+    #   p <- plot_ly(data) 
+    #   for(trace in colNames){
+    #     p <- p %>% add_trace(x = ~category, y = as.formula(paste0("~`", trace, "`")), name = trace, type = 'bar')
+    #   }
+    #   p %>% layout(xaxis = list(title = 'Kategorier'), yaxis = list (title = 'Gennemsnitlig ventetid'), barmode = 'group')
+    # })
+    
+    # betjeninger måned / ventetid
+    
+    output$betjeninger_avgwait_month_plot <- renderPlotly({
+      data <- betjeninger_wait_month
+      plot_ly(data, x = ~month, y = ~avgwait, type = 'bar', marker = list(color = color5)) %>%
+        layout(xaxis = list(title = 'Måned'), yaxis = list(title = 'Sekunder'))
+    })
+    
+    # output$betjeninger_avgwait_month_plot <- renderPlotly({
+    #   data <- betjeninger_wait_month_category %>%
+    #     spread(key = category, value = avgserve)
+    #   colNames <- names(data)[-1] 
+    #   p <- plot_ly(data) 
+    #   for(trace in colNames){
+    #     p <- p %>% add_trace(x = ~month, y = as.formula(paste0("~`", trace, "`")), name = trace, type = 'scatter', mode =  'lines')
+    #   }
+    #   p %>% layout(xaxis = list(title = 'Måneder'), yaxis = list (title = 'Gennemsnitlig ventetid'), barmode = 'group')
+    # })
+    
+    # betjeninger kategori / betjeningstid
+    
+    output$betjeninger_service_year_plot <- renderPlotly({
+      data <- betjeninger_service_year %>%
+        mutate_at(vars(1), funs(as.character(.))) %>%
+        mutate_at(vars(1), funs(substr(., 1, 4)))
+      plot_ly(data, x = ~year, y = ~avgservice, type = 'bar', marker = list(color = color5)) %>%
+        layout(xaxis = list(title = 'År'), yaxis = list(title = 'Sekunder'))
+    })
+    
+    # betjeninger måned / betjeningstid
+    
+    output$betjeninger_service_month_plot <- renderPlotly({
+      data <- betjeninger_service_month %>%
+        arrange(month)
+      plot_ly(data, x = ~month, y = ~avgservice, type = 'bar', marker = list(color = color5)) %>%
+        layout(xaxis = list(title = 'Måned'), yaxis = list(title = 'Sekunder'))
+    })
+    
+    # BORGERNES HUS / BORGERSERVICE #
     
     output$borgvsbib_plot <- renderPlotly({
-      plot_ly(
-        borgvsbib(), x = ~date, y = ~`borg`, type = 'scatter', mode = 'lines', name = 'Borgerservice', line = list(color = color1)) %>%
-          add_trace(y = ~`bib`, name = 'Bibliotek', line = list(color = color2)) %>%
-        layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Dato'))
+      data <- visitors_per_day %>%
+        full_join(betjeninger_per_day)
+      plot_ly(data, x = ~date, y = ~bibcount, name = 'Indgang Borgernes Hus', type = 'scatter', mode = 'lines') %>%
+        add_trace(y = ~borgcount, name = 'Betjeninger Borgerservice', mode = 'lines') %>% 
+        layout(xaxis = list(title = 'Dato'), yaxis = list(title = 'Antal'))
     })
     
-    # test
-    output$aftalte_møder <- renderTable(aftalte_møder)
+    # HEATMAPS #
     
-    # test
-    output$reservationer <- renderTable(reservationer)
+    betjeninger_heat_1 <- betjeninger_heat_1 %>%
+      filter(hour > 7 & hour < 19)
     
-    # test
-    output$skranke_check_ins <- renderTable(skranke_check_ins)
+    betjeninger_heat_3 <- betjeninger_heat_3 %>%
+      filter(hour > 7 & hour < 19) %>%
+      mutate(tid = paste0(substr(avgvente, 4, 5),".",substr(avgvente, 7, 8))) %>%
+      select(-avgvente) %>%
+      mutate_at(vars(3), funs(as.numeric(.)))
     
-    # test
-    output$stander_events <- renderTable(stander_events)
+    betjeninger_heat_4 <- betjeninger_heat_4 %>%
+      filter(hour > 7 & hour < 19) %>%
+      mutate(tid = paste0(substr(avgserve, 4, 5),".",substr(avgserve, 7, 8))) %>%
+      select(-avgserve) %>%
+      mutate_at(vars(3), funs(as.numeric(.))) 
+    
+    callModule(heatmapWeekTable, id = "heat1", data = betjeninger_heat_1, type = "count")
+    callModule(heatmapWeekTable, id = "heat2", data = betjeninger_heat_1, type = "count")
+    callModule(heatmapWeekTable, id = "heat3", data = betjeninger_heat_3, type = "mean")
+    callModule(heatmapWeekTable, id = "heat4", data = betjeninger_heat_4, type = "mean")
+    
+    # KATEGORIER
+    
+    output$kategorier <- renderTable(kategorier)
     
   }

@@ -1,3 +1,5 @@
+source("global.R")
+
 # konverter biblioteksnummer til kommunens navn
 
 isil2name <- function(x){
@@ -63,6 +65,27 @@ danskemåneder <- function(x){
   return(måned)
 }
 
+# konverter integer til danske dage
+danskedage <- function(x){
+  måned <- case_when(
+    as.character(x) == "1" ~ "Mandag",
+    as.character(x) == "2" ~ "Tirsdag",
+    as.character(x) == "3" ~ "Onsdag",
+    as.character(x) == "4" ~ "Torsdag",
+    as.character(x) == "5" ~ "Fredag",
+    as.character(x) == "6" ~ "Lørdag",
+    as.character(x) == "7" ~ "Søndag"
+  ) 
+  return(måned)
+}
+
+# fjerner na værdier fra tabel
+fjernna = function(var, decimal.places) {
+  var = sprintf(paste0("%1.",decimal.places,"f"), var)
+  var[var=="NA"] = ""
+  var
+}
+
 # procent funktion, som ser ud til at virke overalt
 
 procenten <- function(x){
@@ -73,3 +96,4 @@ procenten <- function(x){
 
 Nweekdays <- Vectorize(function(a, b) 
   sum(!weekdays(seq(a, b, "days")) %in% c("Saturday", "Sunday", "lørdag", "søndag" )))
+
