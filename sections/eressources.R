@@ -6,7 +6,7 @@ source("~/.postpass")
 library(shiny)
 library(ggplot2)
 library(dplyr)
-bcl <- read.csv("http://deanattali.com/files/bcl-data.csv", stringsAsFactors = F)
+bcl <- read.csv("http://pub.data.gov.bc.ca/datasets/176284/BC_Liquor_Store_Product_Price_List.csv", stringsAsFactors = F)
 
 
 
@@ -46,7 +46,9 @@ licensesTabPanelUI <- function(id) {
                                                    #selectInput(ns("lic_priskategori"), "Priskategori:", unique(as.character(licenses_df$pris))),
                                                    #selectInput(ns("lic_brugskategori"), "Brugskategori:", unique(as.character(licenses_df$brug)))
                                                    #selectInput(ns("lic_statbank"), "Statistikbankens typer:", unique(as.character(licenses_df$statbank))),
-                                                   selectInput(ns("lic_statbank_input"), "Statistikbankens typer:",sort(unique(bcl$Country))),
+                                                   #selectInput(ns("lic_statbank_input"), "Statistikbankens typer:",sort(unique(bcl$Country))),
+                                                   selectInput(ns("countryInput"), "Country",sort(unique(bcl$PRODUCT_COUNTRY_ORIGIN_NAME))),
+                                                   sliderInput(ns("priceInput"), "Price", min = 0, max = 100, value=c(0,50), pre="$"),
                                                    uiOutput(ns("lic_priskategori_output")),
                                                    uiOutput(ns("lic_brugskategori_output"))
                                             ),
@@ -58,7 +60,7 @@ licensesTabPanelUI <- function(id) {
                                                    tableOutput(ns("results"))
                                             ),
                                             column(2,
-                                                   uiOutput(ns("lic_produt_output"))
+                                                   uiOutput(ns("lic_produkt_output"))
                                                    #checkboxGroupInput(ns("lic_productselector"),
                                                    #                      'Vælg eRessource:',
                                                    #                      selected = unique(as.character(licenses_df$produkt)),
@@ -85,16 +87,16 @@ licensesTabPanel <- function(input, output, session, data, tablename) {
 
   lic_data <- reactive({
     licenses <- licenses_df %>%
-      filter(year == input$lic_fromyear) %>%
-      filter(pris == input$lic_priskategori) %>%
-      filter(brug == input$lic_brugskategori) %>%
-      filter(statbank == input$lic_statbank) %>%
+      #filter(year == input$lic_fromyear) %>%
+      #filter(pris == input$lic_priskategori) %>%
+      #filter(brug == input$lic_brugskategori) %>%
+      #filter(statbank == input$lic_statbank) %>%
       
-      #filter(year == input$lic_fromyear_input) %>%  # HUSK AT FILTRERE PÅ DENNE NEDENFOR!!!
-      #filter(statbank == input$lic_statbank_input) %>%
-      #filter(pris == input$lic_priskategori_input) %>%
-      #filter(brug == input$lic_brugskategori_input) %>%
-      #filter(produkt %in% input$lic_produkt_input) %>%
+      filter(year == input$lic_fromyear_input) %>%  # HUSK AT FILTRERE PÅ DENNE NEDENFOR!!!
+      filter(statbank == input$lic_statbank_input) %>%
+      filter(pris == input$lic_priskategori_input) %>%
+      filter(brug == input$lic_brugskategori_input) %>%
+      filter(produkt %in% input$lic_produkt_input) %>%
       
       select(brug,statbank,produkt,month,visninger) %>%
       #group_by(produkt,month) %>%
@@ -119,49 +121,78 @@ licensesTabPanel <- function(input, output, session, data, tablename) {
   })
 
   
+    # create a reactive to filter the dataset
+    
+    df0 <- eventReactive(input$countryInput,{
+      bcl %>% filter(PRODUCT_COUNTRY_ORIGIN_NAME %in% input$countryInput)
+    })
+    output$lic_priskategori_output <- renderUI({
+      selectInput(ns("typeInput"), "Product type",sort(unique(df0()$PRODUCT_CLASS_NAME)))
+    })
+    
+    df1 <- eventReactive(input$typeInput,{
+      print(df0())
+      df0() %>% filter(PRODUCT_CLASS_NAME %in% input$typeInput)
+    })
+    output$lic_brugskategori_output <- renderUI({
+      selectInput(ns("subtypeInput"), "Product subtype",sort(unique(df1()$PRODUCT_MINOR_CLASS_NAME)))
+    })
+    
+    df2 <- reactive({
+      print(df1())
+      df1() %>% filter(CURRENT_DISPLAY_PRICE >= input$priceInput[1],
+                       CURRENT_DISPLAY_PRICE <= input$priceInput[2],
+                       PRODUCT_MINOR_CLASS_NAME %in% input$subtypeInput)
+    })
+    
+    output$coolplot <- renderPlot({
+      ggplot(df2(), aes(PRODUCT_ALCOHOL_PERCENT)) + geom_histogram(binwidth = 1)
+    })
+    output$results <- renderTable({
+      df2()
+    })
   
-  df0 <- eventReactive(input$lic_statbank_input,{
-    bcl %>% 
-      rename(statbank = Country) %>%
-      filter(statbank %in% input$lic_statbank_input)
-  })
-  
-  output$lic_priskategori_output <- renderUI({
-    selectInput(ns("lic_priskategori_input"), "Priskategori",sort(unique(df0()$Name)))
-  })
-  
-  df1 <- eventReactive(input$lic_priskategori_input,{
-    df0() %>%
-      filter(statbank %in% input$lic_statbank_input)    # the statbank filter is simply repeated here. priskategori filter only filters the filters below it, not the actual dataframe
-  })
-  
-  output$lic_brugskategori_output <- renderUI({
-    selectInput(ns("lic_brugskategori_input"), "Brugskategori",sort(unique(df1()$Subtype)))
-  })
-  
-  df2 <- reactive({
-    #df1() %>% filter(Price >= input$priceInput[1], Price <= input$priceInput[2],Subtype %in% input$subtypeInput)
-    df1() %>%
-      filter(Subtype %in% input$lic_brugskategori_input)
-  })
-  
-  output$lic_produkt_output <- renderUI({
-    selectInput(ns("lic_produkt_input"), "Licens",sort(unique(lic_data()$produkt)))
-  })
   
   
-  output$coolplot <- renderPlot({
-    ggplot(df2(), aes(Alcohol_Content)) + geom_histogram(binwidth = 1)
-    #ggplot(bcl, aes(Alcohol_Content)) + geom_histogram(binwidth = 1)
-  })
-  
-  output$results <- renderTable({
-    df2()
-  })
+ #df0 <- eventReactive(input$lic_statbank_input,{
+ #  bcl %>% 
+ #    rename(statbank = Country) %>%
+ #    filter(statbank %in% input$lic_statbank_input)
+ #})
+ #output$lic_priskategori_output <- renderUI({
+ #  selectInput(ns("lic_priskategori_input"), "Priskategori",sort(unique(df0()$Type)))
+ #})
+ #
+ #df1 <- eventReactive(input$lic_priskategori_input,{
+ #  print(df0())
+ #  df0() %>%
+ #    filter(Type %in% input$lic_priskategori_input)
+ #})
+ #output$lic_brugskategori_output <- renderUI({
+ #  selectInput(ns("lic_brugskategori_input"), "Brugskategori",sort(unique(df1()$Subtype)))
+ #})
+ #
+ #df2 <- reactive({
+ #  print(df1())
+ #  #df1() %>% filter(Price >= input$priceInput[1], Price <= input$priceInput[2],Subtype %in% input$subtypeInput)
+ #  df1() %>%
+ #    filter(Subtype %in% input$lic_brugskategori_input)
+ #})
+ #output$lic_produkt_output <- renderUI({
+ #  checkboxGroupInput(ns("lic_produkt_input"), "Licens",sort(unique(lic_data()$produkt)))
+ #})
+ #
+ #output$coolplot <- renderPlot({
+ #  ggplot(df2(), aes(Alcohol_Content)) + geom_histogram(binwidth = 1)
+ #})
+ #output$results <- renderTable({
+ #  print(df2())
+ #  df2()
+ #})
 
-  output$lick <- renderTable({
-    lic_data()
-  })
+  #output$lick <- renderTable({
+  #  lic_data()
+  #})
   
   
 #  observe({
