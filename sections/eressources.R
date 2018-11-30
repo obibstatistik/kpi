@@ -29,7 +29,7 @@ licensesTabPanelUI <- function(id) {
   
   tabItem(tabName = "licenses",
           box(width = 12, solidHeader = TRUE, id = "eressourcesheader",
-              h3("Elektroniske Ressourcer"),
+              h3("Licenser"),
               img(src='icons/eressourcer_negativ_45x45.png', align = "right", height="46px")
           ),     
           fluidRow(
@@ -40,19 +40,15 @@ licensesTabPanelUI <- function(id) {
                                    fluidRow(
                                      column(12,
                                             column(2,
-                                                   h4("Afgræns"),
-                                                   selectInput(ns("lic_fromyear"), "År:", unique(as.numeric(licenses_df$year))),
+                                                   h4("Afgrænsning"),
+                                                   selectInput(ns("lic_fromyear_input"), "År:", unique(as.numeric(licenses_df$year))),
                                                    #selectInput(ns("lic_statbank"), "Statistikbankens typer:", c("Seriepublikationer" = "serie","eBøger" = "ebooks","Multimedier" = "multimedia","Databaser" = "databaser")),
-                                                   #selectInput(ns("lic_statbank"), "Statistikbankens typer:", unique(as.character(licenses_df$statbank))),
                                                    #selectInput(ns("lic_priskategori"), "Priskategori:", unique(as.character(licenses_df$pris))),
                                                    #selectInput(ns("lic_brugskategori"), "Brugskategori:", unique(as.character(licenses_df$brug)))
-                                                   #uiOutput(ns("lic_statbank_output")),
-                                                   #uiOutput(ns("lic_priskategori_output")),
-                                                   #uiOutput(ns("lic_brugskategori_output"))
-                                                   selectInput(ns("countryInput"), "Country",sort(unique(bcl$Country))),
-                                                   sliderInput(ns("priceInput"), "Price", min = 0, max = 100, value=c(0,50), pre="$"),
-                                                   uiOutput(ns("typeOutput")),
-                                                   uiOutput(ns("subtypeOutput"))    
+                                                   #selectInput(ns("lic_statbank"), "Statistikbankens typer:", unique(as.character(licenses_df$statbank))),
+                                                   selectInput(ns("lic_statbank_input"), "Statistikbankens typer:",sort(unique(bcl$Country))),
+                                                   uiOutput(ns("lic_priskategori_output")),
+                                                   uiOutput(ns("lic_brugskategori_output"))
                                             ),
                                             column(10,
                                                    h4("Licenser"),
@@ -62,18 +58,15 @@ licensesTabPanelUI <- function(id) {
                                                    tableOutput(ns("results"))
                                             ),
                                             column(2,
+                                                   uiOutput(ns("lic_produt_output"))
                                                    #checkboxGroupInput(ns("lic_productselector"),
                                                    #                      'Vælg eRessource:',
                                                    #                      selected = unique(as.character(licenses_df$produkt)),
-                                                   #                      inline = F),
-                                                   #p("The first checkbox group controls the second"),
-                                                   checkboxGroupInput(ns("inCheckboxGroup2"),        
-                                                                      'Vælg eRessource:',
-                                                                      inline = F)
+                                                   #                      inline = F),s
                                             ),
                                             column(8,
                                                    formattableOutput(ns("licenses_table")),
-                                                   tableOutput('test')
+                                                   tableOutput(ns('lick'))
                                             ),
                                             column(12,tags$hr())
                                      )))))))
@@ -81,31 +74,33 @@ licensesTabPanelUI <- function(id) {
 
 # SERVER
 licensesTabPanel <- function(input, output, session, data, tablename) {
+  
+  # In the server function you can get the ns from the session var
+  # this is needed for renderUI having 
+  ns <- session$ns
+  
   # Manuel, kronologisk sortering af data fra ud fra måneder, så det ikke bliver alfabetisk
   licenses_df$month <- factor(licenses_df$month, levels = c("jan","feb","mar","apr","maj","jun","jul","aug","sep","okt","nov","dec"))
   licenses_df = licenses_df[order(licenses_df$month,decreasing=FALSE),]
-  
-  # Store data and its filters in reactive function (gives reusability)
-  #lic_data_0 <- reactive({
-  #  licenses <- licenses_df %>%
-  #    filter(year == input$lic_fromyear) %>%
-  #    filter(pris == input$lic_priskategori) %>%
-  #    filter(brug == input$lic_brugskategori) %>%
-  #    filter(statbank == input$lic_statbank)
-  #})
-  
+
   lic_data <- reactive({
-    #lunk <- lic_data_0() %>%
     licenses <- licenses_df %>%
       filter(year == input$lic_fromyear) %>%
       filter(pris == input$lic_priskategori) %>%
       filter(brug == input$lic_brugskategori) %>%
-      filter(statbank == input$lic_statbank)
+      filter(statbank == input$lic_statbank) %>%
+      
+      #filter(year == input$lic_fromyear_input) %>%  # HUSK AT FILTRERE PÅ DENNE NEDENFOR!!!
+      #filter(statbank == input$lic_statbank_input) %>%
+      #filter(pris == input$lic_priskategori_input) %>%
+      #filter(brug == input$lic_brugskategori_input) %>%
+      #filter(produkt %in% input$lic_produkt_input) %>%
+      
       select(brug,statbank,produkt,month,visninger) %>%
-      #filter(produkt %in% input$inCheckboxGroup2) %>%
-      # filter(produkt %in% input$lic_productselector) %>%
-      group_by(produkt,month) %>%
+      #group_by(produkt,month) %>%
+      group_by(brug,statbank,produkt,month) %>%
       summarise(visninger = sum(visninger)) %>%
+      ungroup() %>%
       mutate_at(vars(-1), funs(replace(., is.na(.), 0)))
   })
   
@@ -125,106 +120,49 @@ licensesTabPanel <- function(input, output, session, data, tablename) {
 
   
   
-  
- # output$lic_statbank <- renderUI({
- #   selectInput(ns("lic_statbank"), "Statistikbankens typer:",choices = var_statbank())
- # })
- # 
- # output$lic_priskategori <- renderUI({
- #   selectInput(ns("lic_priskategori"), "Priskategori:",choices = var_priskategori())
- # })
- # 
- # output$lic_brugskategori <- renderUI({
- #   selectInput(ns("lic_brugskategori"), "Brugskategori:",choices = var_brugskategori())
- # })
-  
-  # if(is.null(lic_data())){return()}
-  
-  # returnerer en liste over statbankens kategorier
-  # som eksisterer i lic_data() dataframen til brug i et filters choices
-  
- #var_statbank <- reactive({
- #  file1 <- lic_data()
- #  as.list(unique(file1$statbank))
- #})
-  
-# # subsæt dataframen med det der vælges statbank inputtet
-# 
-# statbank_function <- reactive({
-#   lic_data() %>% filter(statbank == input$lic_statbank)
-# })
-# 
-# var_priskategori <- reactive({
-#   file1 <- statbank_function()
-#   as.list(unique(file1$lic_priskategori))
-# })
-# 
-# priskategori_function <- reactive({
-#   lic_data() %>% filter(pris == input$lic_priskategori)
-# })
-# 
-# var_brugskategori <- reactive({
-#   file1 <- priskategori_function()
-#   as.list(unique(file1$lic_brugsskategori))
-# })
-# 
-# brugskategori_function <- reactive({
-#   lic_data() %>% filter(brug == input$lic_brugkategori)
-# })
-  
-  
-  df0 <- eventReactive(input$countryInput,{
-    bcl %>% filter(Country %in% input$countryInput)
+  df0 <- eventReactive(input$lic_statbank_input,{
+    bcl %>% 
+      rename(statbank = Country) %>%
+      filter(statbank %in% input$lic_statbank_input)
   })
   
-  output$typeOutput <- renderUI({
-    selectInput("typeInput", "Product type",sort(unique(df0()$Name)))
+  output$lic_priskategori_output <- renderUI({
+    selectInput(ns("lic_priskategori_input"), "Priskategori",sort(unique(df0()$Name)))
   })
   
-  df1 <- eventReactive(input$typeInput,{
-    df0() %>% filter(Country %in% input$countryInput)
+  df1 <- eventReactive(input$lic_priskategori_input,{
+    df0() %>%
+      filter(statbank %in% input$lic_statbank_input)    # the statbank filter is simply repeated here. priskategori filter only filters the filters below it, not the actual dataframe
   })
   
-  output$subtypeOutput <- renderUI({
-    selectInput("subtypeInput", "Product subtype",sort(unique(df1()$Subtype)))
+  output$lic_brugskategori_output <- renderUI({
+    selectInput(ns("lic_brugskategori_input"), "Brugskategori",sort(unique(df1()$Subtype)))
   })
   
   df2 <- reactive({
-    df1() %>% filter(Price >= input$priceInput[1], Price <= input$priceInput[2],Subtype %in% input$subtypeInput)
+    #df1() %>% filter(Price >= input$priceInput[1], Price <= input$priceInput[2],Subtype %in% input$subtypeInput)
+    df1() %>%
+      filter(Subtype %in% input$lic_brugskategori_input)
   })
   
-  output$coolplot <- renderPlot({
-    #ggplot(df2(), aes(Alcohol_Content)) + geom_histogram(binwidth = 1)
-    ggplot(bcl, aes(Alcohol_Content)) + geom_histogram(binwidth = 1)
+  output$lic_produkt_output <- renderUI({
+    selectInput(ns("lic_produkt_input"), "Licens",sort(unique(lic_data()$produkt)))
   })
-
+  
+  
+  output$coolplot <- renderPlot({
+    ggplot(df2(), aes(Alcohol_Content)) + geom_histogram(binwidth = 1)
+    #ggplot(bcl, aes(Alcohol_Content)) + geom_histogram(binwidth = 1)
+  })
+  
   output$results <- renderTable({
     df2()
   })
 
-  #state_function <- reactive({
-  #  file1 <- continent_function()
-  #  country <- input$Country
-  #  file2 <- sqldf(sprintf("select * from file1 where Country = '%s' ", country))
-  #  return (file2)
-  #})
+  output$lick <- renderTable({
+    lic_data()
+  })
   
-  #var_state <- reactive({
-  #  file1 <- state_function()
-  #  as.list(unique(file1$State))
-  #})
-  
-  # Render the table
- #output$licenses_table <- renderFormattable({
- #  data <- lic_data() %>%
- #    filter(brug == input$lic_brugskategori) %>%
- #    spread(month, visninger)   # the table needs a spread (pivot) of month
- #  formattable(data)
- #})
- #
- #output$test <- renderTable({
- #  lic_data()
- #})
   
 #  observe({
 #    #x <- unique(lic_data()$statbank)
