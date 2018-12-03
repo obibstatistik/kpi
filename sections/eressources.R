@@ -10,6 +10,9 @@ licenses_df <- dbGetQuery(con, "select brug,pris,statbank,year,month,datamart.er
                           left join datamart.eressourcer_ddb_kategorier on datamart.eressourcer_ddb_kategorier.name_match = datamart.eressourcer_ddb.product 
                           where type = 'visninger' 
                           group by brug,pris,statbank,year,month,datamart.eressourcer_ddb.product")
+#select navn,eressourcer.x_erms.endelig_pris_dkk endpris,product,downloads,soegninger,taelleaar,datamart.eressourcer_ddb_kategorier.pris,brug,statbank,erms
+#from eressourcer.x_erms
+#left join datamart.eressourcer_ddb_kategorier on datamart.eressourcer_ddb_kategorier.name_match ilike '%'||eressourcer.x_erms.navn||'%'
 dbDisconnect(con)
 #licenses_df <- as.data.frame(licenses_df,stringsAsFactors = FALSE)
 
