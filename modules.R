@@ -125,9 +125,13 @@ kpitileUI <- function(id, image, text, color, width) {
 
 # SERVER
 kpitile <- function(input, output, session, data) {
-  data_as_string <- paste( unlist(data), collapse='')
-  data_as_string_with_thousand_seperator <- paste(substr(data_as_string, 1, 4-1), ".", substr(data_as_string, 4, nchar(data_as_string)), sep = "")
-  output$kpitile <- renderText(ifelse(nchar(data) > 3, data_as_string_with_thousand_seperator, data_as_string))
+  # convert dataframe to string
+  data_as_string <- paste( unlist(data), collapse='') 
+  # format data with thousand seperator
+  data <- format(round(as.numeric(data_as_string), 1), nsmall=0, big.mark=".")
+  # output text to ui
+  output$kpitile <- renderText(data)
+  
 }
 
 ### GENERISK CHECKBOX UDFRA DATA ###
