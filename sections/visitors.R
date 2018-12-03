@@ -22,7 +22,9 @@ visitorsTabPanelUI <- function(id) {
                                    fluidRow(
                                      column(6,
                                             h4("Info"),
-                                            p("Besøgstallet stemmer ikke fuldstændigt overens med de officielle besøgstal, da der fortages forskellige justeringer grundet specifikke forhold i OBB.")
+                                            p("Besøgstallet stemmer ikke fuldstændigt overens med de officielle besøgstal, da der fortages forskellige justeringer grundet specifikke forhold i OBB."),
+                                            p("Der har været udfordringer med tælleren i Korup, hvilket bevirker, at der ikke er opsamlet besøgstal siden marts. Der arbejdes på at løse problemet."),
+                                            p("* I 2017 blev Borgernes Hus bygget, hvorfor besøgsmønstret var mærkbart anderledes end øvrige år.")
                                      )
                                    ),
                                    fluidRow(

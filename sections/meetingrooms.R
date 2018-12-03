@@ -83,13 +83,19 @@ meetingroomsTabPanelUI <- function(id) {
                                             column(width = 10,
                                                   column(width = 12, class = "col-lg-6",
                                                          h4("Booker top 10"),
-                                                         tableOutput(ns("table_meetingrooms_booker"))
-                                                  ),
+                                                         tableOutput(ns("table_meetingrooms_booker"))),
                                                   column(width = 12, class = "col-lg-6",
                                                          h4("Booker top 10"),
                                                          plotlyOutput(ns("plot_pie_meetingrooms_booker"))
                                                   )
-                                            )
+                                                  
+                                            ),
+                                            column(width = 12, class = "col-lg-6",
+                                               p("Mødelokalebelægningen er udelukkende et udtryk for bookede lokaler. Det vil sige, at belægningsgraden ikke viser interessen for at booke et lokale i et givent tidsrum. Det betyder at det ikke er muligt at se om der er mange som har haft interesse for at booke lokale, hvor det allerede har været booket. Dette kan skævvride billedet over mod en lavere belægningsgrad, da der ikke differentieres mellem reel belægning og ønsket belægning.
+                                                         Hvis en medarbejder eksempelvis har behov for at booke lokale 3.5 kl. 11, men det er booket til en konference, er det ikke sikkert at medarbejderen har mulighed for at flytte sin aktivitet til kl. 15, hvor der er ledige lokaler.
+                                                         Dette vil også gøre sig gældende i det tilfælde, hvor en medarbejder har behov for at have flere deltagende til sit møde end ledige lokaler kan tilbyde. I det tilfælde er medarbejderen nødt til at finde en alternativ placering til sit møde.")
+                                               
+                                        )
                                      )
                                 )
                           ),
