@@ -7,9 +7,9 @@ shinyServer(function(input, output) {
   source("modules.R")
   
   # Sections (Modules)
-  source("./sections/acquisition.R")
+  #source("./sections/acquisition.R")
   source("./sections/datasources.R")
-  source("./sections/eressources.R")
+  #source("./sections/eressources.R")
   source("./sections/edatabases.R")
   source("./sections/events.R")
   source("./sections/eventareas.R")

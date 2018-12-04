@@ -10,9 +10,9 @@ source("modules.R")
 source("functions.R")
 
 # Sections (Modules)
-source("./sections/acquisition.R")
+#source("./sections/acquisition.R")
 source("./sections/datasources.R")
-source("./sections/eressources.R")
+#source("./sections/eressources.R")
 source("./sections/edatabases.R")
 source("./sections/events.R")
 source("./sections/eventareas.R")
@@ -97,13 +97,13 @@ dashboardPage(
       # Materials Circulation 
       materialsTabPanelUI(id = "materials"),
       # Materials Acquisition
-      acquisitionTabPanelUI(id = "acquisition"),
+      #acquisitionTabPanelUI(id = "acquisition"),
       # Materials Inventory
       inventoryTabPanelUI(id = "inventory"),
       # Indoor Climate
       indoor_climateTabPanelUI(id = "indoor_climate"),
       # E-Ressources
-      eressourcesTabPanelUI(id = "eressources"),
+      #eressourcesTabPanelUI(id = "eressources"),
       # Users
       edatabasesTabPanelUI(id = "edatabases"),
       # Users

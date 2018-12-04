@@ -311,6 +311,6 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
       #layout(xaxis = list(title = "deltagere", range = c(0, 500)), yaxis = list(title = switch(input$yakse, forberedelsestid = "forberedelsestid", id = "id", "forberedelsestid")))
   })
   
-  callModule(metaTabPanel, id = "events", schema = "datamart",  table = "arrangementer", description = "Arrangementsdatabase i brug indtil 3. kvartal 2018")
+  #callModule(metaTabPanel, id = "events", schema = "datamart",  table = "arrangementer", description = "Arrangementsdatabase i brug indtil 3. kvartal 2018")
   
 }

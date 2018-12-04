@@ -1,13 +1,13 @@
 source("global.R")
 source("modules.R")
 source("~/.postpass")
+source("~/.postpass_dwh")
 
 # UI
 
 online_odensebibTabPanelUI <- function(id) {
   
   ns <- NS(id)
-  
   
   tabItem(tabName = "odensebib",
           
@@ -91,13 +91,14 @@ online_odensebibTabPanel <- function(input, output, session) {
   
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
+  con_dwh <- dbConnect(drv, dbname = dbname_dwh, host = host_dwh, port = port_dwh, user = user_dwh, password = password_dwh)
   ga_pageviews <- dbGetQuery(con, "SELECT * FROM datamart.ga_pageviews where pageviews > 0")
   ga_device <- dbGetQuery(con, "select device, sum(users) as users from datamart.ga_device group by device")
   ga_top10 <- dbGetQuery(con, "SELECT title, pageviews FROM datamart.ga_top10 order by pageviews desc limit 11 offset 1")
   ga_browser <- dbGetQuery(con, "select browser, to_date(yearmonth::text, 'YYYYMM') as datoen, pageviews from datamart.ga_browser")
   ga_language <- dbGetQuery(con, "select language, to_date(yearmonth::text, 'YYYYMM') as datoen, pageviews from datamart.ga_language")
   ga_path <- dbGetQuery(con, "SELECT * FROM datamart.ga_path")
-  ga_events <- dbGetQuery(con, "SELECT * FROM datamart.ga_events")
+  events <- dbGetQuery(con_dwh, "SELECT * FROM hjemmesider.ga_events_out")
   sites <- dbGetQuery(con, "SELECT * FROM datamart.sites")
   dbDisconnect(con)
   
@@ -325,29 +326,29 @@ online_odensebibTabPanel <- function(input, output, session) {
       spread(eventaction, sum)
   )
 
-  events <- ga_events %>%
-    filter(eventcategory == 'Outbound links') %>%
-    select(eventlabel, yearmonth) %>%
-    mutate(
-      destination = case_when(
-        grepl("^https://www.place2book.com", .$eventlabel) ~ "Place2book",
-        grepl("^http://www.litteratursiden.dk", .$eventlabel) ~ "Litteratursiden",
-        grepl("^https://www.litteratursiden.dk", .$eventlabel) ~ "Litteratursiden",
-        grepl("^https://litteratursiden.dk/", .$eventlabel) ~ "Litteratursiden",
-        grepl("^https://adm.biblioteksvagten.dk", .$eventlabel) ~ "Biblioteksvagten",
-        grepl("^https://bibliotek.dk", .$eventlabel) ~ "Bibliotek.dk",
-        grepl("^http://bibliotek.dk", .$eventlabel) ~ "Bibliotek.dk",
-        grepl("^https://ereolen.dk/", .$eventlabel) ~ "Ereolen",
-        grepl("^http://ereolen.dk/", .$eventlabel) ~ "Ereolen",
-        grepl("^http://ereolenglobal", .$eventlabel) ~ "Ereolen",
-        grepl("^https://biblioteksbaser.dk/linkme/", .$eventlabel) ~ "Proxy",
-        grepl("^http://biblioteksbaser.dk/linkme/", .$eventlabel) ~ "Proxy",
-        grepl("^http://bib461.bibbaser.dk/", .$eventlabel) ~ "Proxy",
-        grepl("^http://ebookcentral.proquest.com/", .$eventlabel) ~ "Ebook Central",
-        grepl("^http://danmarkshistorien.dk", .$eventlabel) ~ "Danmark.dk"
-      )) %>%
-    select(destination, eventlabel, yearmonth) %>%
-    arrange(desc(destination), eventlabel) 
+  # events <- ga_events %>%
+  #   filter(eventcategory == 'Outbound links') %>%
+  #   select(eventlabel, yearmonth) %>%
+  #   mutate(
+  #     destination = case_when(
+  #       grepl("^https://www.place2book.com", .$eventlabel) ~ "Place2book",
+  #       grepl("^http://www.litteratursiden.dk", .$eventlabel) ~ "Litteratursiden",
+  #       grepl("^https://www.litteratursiden.dk", .$eventlabel) ~ "Litteratursiden",
+  #       grepl("^https://litteratursiden.dk/", .$eventlabel) ~ "Litteratursiden",
+  #       grepl("^https://adm.biblioteksvagten.dk", .$eventlabel) ~ "Biblioteksvagten",
+  #       grepl("^https://bibliotek.dk", .$eventlabel) ~ "Bibliotek.dk",
+  #       grepl("^http://bibliotek.dk", .$eventlabel) ~ "Bibliotek.dk",
+  #       grepl("^https://ereolen.dk/", .$eventlabel) ~ "Ereolen",
+  #       grepl("^http://ereolen.dk/", .$eventlabel) ~ "Ereolen",
+  #       grepl("^http://ereolenglobal", .$eventlabel) ~ "Ereolen",
+  #       grepl("^https://biblioteksbaser.dk/linkme/", .$eventlabel) ~ "Proxy",
+  #       grepl("^http://biblioteksbaser.dk/linkme/", .$eventlabel) ~ "Proxy",
+  #       grepl("^http://bib461.bibbaser.dk/", .$eventlabel) ~ "Proxy",
+  #       grepl("^http://ebookcentral.proquest.com/", .$eventlabel) ~ "Ebook Central",
+  #       grepl("^http://danmarkshistorien.dk", .$eventlabel) ~ "Danmark.dk"
+  #     )) %>%
+  #   select(destination, eventlabel, yearmonth) %>%
+  #   arrange(desc(destination), eventlabel) 
   
   output$table_events_clicks <- renderTable (
     events %>% 
