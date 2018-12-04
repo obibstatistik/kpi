@@ -232,7 +232,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   barWidth <- 0.8    # This is a percentage. 1 means no gap between bars (i.e. 100%)
   barsOffset <- 10
   
-  output$test <- renderTable(visitors6)
+  #output$test <- renderTable(visitors6)
   
   output$whity <- renderSamedate_barchart({
     samedate_barchart(visitors6,curDate,sortx,frontColors,backColor,labelx,labely,tickNumY,showScaleY,barWidth,barsOffset)
