@@ -58,13 +58,13 @@ shinyServer(function(input, output) {
   # Materials Circulation
   callModule(materialsTabPanel, id = "materials")
   # Materials Acquisition
-  callModule(acquisitionTabPanel, id = "acquisition")
+  #callModule(acquisitionTabPanel, id = "acquisition")
   # Materials Inventory
   callModule(inventoryTabPanel, id = "inventory")
   # Indoor climate 
   callModule(indoor_climateTabPanel, id = "indoor_climate")
   # E-Ressources 
-  callModule(eressourcesTabPanel, id = "eressources")
+  #callModule(eressourcesTabPanel, id = "eressources")
   # E-Databases 
   callModule(edatabasesTabPanel, id = "edatabases")
   # Users
