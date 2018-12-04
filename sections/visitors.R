@@ -33,7 +33,6 @@ visitorsTabPanelUI <- function(id) {
                                               tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                        ),
                                        column(10,
-                                              tableOutput(ns('test')),
                                               h4("Samlet besøg på OBB"),
                                               p("Grafen viser det samlede besøg på OBB fordelt pr. år. De grå søjler er hele året, men farvede søjler i forgrunden er år til dato. Det er dermed muligt at sammenligne indeværende års besøg med de forrige."),
                                               samedate_barchartOutput(ns('whity'))
@@ -231,8 +230,6 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   fontSizeY <- ""
   barWidth <- 0.8    # This is a percentage. 1 means no gap between bars (i.e. 100%)
   barsOffset <- 10
-  
-  #output$test <- renderTable(visitors6)
   
   output$whity <- renderSamedate_barchart({
     samedate_barchart(visitors6,curDate,sortx,frontColors,backColor,labelx,labely,tickNumY,showScaleY,barWidth,barsOffset)
