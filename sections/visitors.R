@@ -33,6 +33,7 @@ visitorsTabPanelUI <- function(id) {
                                               tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                        ),
                                        column(10,
+                                              tableOutput(ns('test')),
                                               h4("Samlet besøg på OBB"),
                                               p("Grafen viser det samlede besøg på OBB fordelt pr. år. De grå søjler er hele året, men farvede søjler i forgrunden er år til dato. Det er dermed muligt at sammenligne indeværende års besøg med de forrige."),
                                               samedate_barchartOutput(ns('whity'))
@@ -163,10 +164,16 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
 
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
-  visitors <- dbGetQuery(con, "SELECT * FROM public.people_counter")
+  
+  visitors_p1 <- dbGetQuery(con, "SELECT date, location, count FROM public.people_counter WHERE date<'2017-04-06' ORDER BY date desc")
+  visitors_p2 <- dbGetQuery(con, "SELECT date_trunc('day', registertime)::date as date, location, sum(delta) as count FROM public.visitor_counter WHERE direction = 'In' and ref>0 GROUP BY date, location")
+  visitors <- visitors_p1 %>% union_all(visitors_p2)
+  
   visitors_hours <- dbGetQuery(con, "SELECT * FROM datamart.visitors_per_hour")  
   dbDisconnect(con)
 
+  output$test <- renderTable(visitors)
+  
   ### ###
   
   # basic calculation
@@ -189,13 +196,19 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   # get current day
   visitors4 <- visitors2 %>%
     filter(
-      if(year(date) == '2014' | year(date) == '2015') {
+      if(year(date) == '2014') {
         month(date) == month(Sys.Date())
       }
+      # else if(
+      #   year(date) == '2014' & date > x {
+      #     
+      #   }
+      # )
       else {
         date == Sys.Date()-1 | 
         date == Sys.Date() - years(1)-1 |
-        date == Sys.Date() - years(2)-1
+        date == Sys.Date() - years(2)-1 |
+        date == Sys.Date() - years(3)-1
       }
     ) %>%
     mutate(date = if_else(year(date) %in% c('2014','2015'), date + (day(Sys.Date())-2), date, NULL)) %>%
@@ -218,6 +231,8 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   fontSizeY <- ""
   barWidth <- 0.8    # This is a percentage. 1 means no gap between bars (i.e. 100%)
   barsOffset <- 10
+  
+  output$test <- renderTable(visitors6)
   
   output$whity <- renderSamedate_barchart({
     samedate_barchart(visitors6,curDate,sortx,frontColors,backColor,labelx,labely,tickNumY,showScaleY,barWidth,barsOffset)
