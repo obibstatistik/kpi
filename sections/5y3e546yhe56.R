@@ -42,7 +42,6 @@ server <- function(input, output) {
   df1 <- eventReactive(input$typeInput,{
     df0() %>% filter(PRODUCT_CLASS_NAME %in% input$typeInput)
   })
-  
   output$subtypeOutput <- renderUI({
     selectInput("subtypeInput", "Product subtype",sort(unique(df1()$PRODUCT_MINOR_CLASS_NAME)))
   })
