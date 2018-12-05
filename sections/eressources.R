@@ -108,8 +108,8 @@ licensesTabPanel <- function(input, output, session, data, tablename) {
       select(navn,taelleaar,downloads) %>%
       # filter(produkt %in% input$lic_productselector) %>%
       group_by(navn,taelleaar) %>%
-      summarise(downloads = sum(downloads)) %>%
-      mutate_at(vars(-1), funs(replace(., is.na(.), 0)))
+      summarise(downloads = sum(downloads)) #%>%
+      #mutate_at(vars(-1), funs(replace(., is.na(.), 0)))
   })
   
   # Render the plot as a scatterplot
@@ -130,7 +130,7 @@ licensesTabPanel <- function(input, output, session, data, tablename) {
     colNames <- names(data)[-1]
     p <- plot_ly(data, x = ~taelleaar, type = 'bar') 
     for(trace in colNames){
-      p <- p %>% add_trace(y = as.formula(paste0("~`", trace, "`")), name = trace, mode = 'bar')   
+      p <- p %>% add_trace(y = as.formula(paste0("~`", trace, "`")), name = trace, mode = 'bar')
     }
     p %>% layout(xaxis = list(title = '', autorange = 'reversed'), yaxis = list (title = 'Visninger'))
   })
@@ -144,7 +144,10 @@ licensesTabPanel <- function(input, output, session, data, tablename) {
   
   # Render the table
   output$licenses_table <- renderFormattable({
-    data <- lic_data() %>% spread(taelleaar, downloads)     # the table needs a spread (pivot) of month
-    formattable(data)
+    data <- lic_data() %>% 
+      spread(taelleaar, downloads)  %>%     # the table needs a spread (pivot) of month
+      #mutate_at(vars(-1), funs(replace(., is.na(.), '-')))
+      mutate_at(vars(-1), funs(replace(., is.na(.), '0')))
+    formattable(data[,c(1,ncol(data):2)])
   })
 }
