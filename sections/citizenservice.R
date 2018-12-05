@@ -112,8 +112,14 @@ citizenserviceTabPanelUI <- function(id) {
                     column(
                       width = 12,
                       h4("Besøgende Borgernes Hus / Betjeninger Borgerservice"),
-                      column(width = 12, plotlyOutput(ns("borgvsbib_plot")))
-                    ))),
+                      column(width = 12, 
+                        plotlyOutput(ns("borgvsbib_plot"))
+                        )
+                      )#,
+                      #column(width = 4, tableOutput(ns("joined"))),
+                      #column(width = 4, tableOutput(ns("borghus"))),
+                      #column(width = 4, tableOutput(ns("borgserv")))
+                    )),
         tabPanel("Dag / tid heatmaps",
                  fluidRow(width = 12,
                     column(
@@ -212,7 +218,7 @@ citizenserviceTabPanel <-
         mutate_at(vars(1), funs(as.character(.))) %>%
         mutate_at(vars(1), funs(substr(., 1, 4)))
       plot_ly(data, x = ~year, y = ~avgwait, type = 'bar', marker = list(color = color5)) %>%
-        layout(xaxis = list(title = 'År'), yaxis = list(title = 'Sekunder'))
+        layout(xaxis = list(title = 'År'), yaxis = list(title = 'Minutter'))
     })
     
     # betjeninger kategori / ventetid / år 
@@ -233,7 +239,7 @@ citizenserviceTabPanel <-
     output$betjeninger_avgwait_month_plot <- renderPlotly({
       data <- betjeninger_wait_month
       plot_ly(data, x = ~month, y = ~avgwait, type = 'bar', marker = list(color = color5)) %>%
-        layout(xaxis = list(title = 'Måned'), yaxis = list(title = 'Sekunder'))
+        layout(xaxis = list(title = 'Måned'), yaxis = list(title = 'Minutter'))
     })
     
     # output$betjeninger_avgwait_month_plot <- renderPlotly({
@@ -254,7 +260,7 @@ citizenserviceTabPanel <-
         mutate_at(vars(1), funs(as.character(.))) %>%
         mutate_at(vars(1), funs(substr(., 1, 4)))
       plot_ly(data, x = ~year, y = ~avgservice, type = 'bar', marker = list(color = color5)) %>%
-        layout(xaxis = list(title = 'År'), yaxis = list(title = 'Sekunder'))
+        layout(xaxis = list(title = 'År'), yaxis = list(title = 'Minutter'))
     })
     
     # betjeninger måned / betjeningstid
@@ -263,18 +269,44 @@ citizenserviceTabPanel <-
       data <- betjeninger_service_month %>%
         arrange(month)
       plot_ly(data, x = ~month, y = ~avgservice, type = 'bar', marker = list(color = color5)) %>%
-        layout(xaxis = list(title = 'Måned'), yaxis = list(title = 'Sekunder'))
+        layout(xaxis = list(title = 'Måned'), yaxis = list(title = 'Minutter'))
     })
     
     # BORGERNES HUS / BORGERSERVICE #
     
+    visitors_per_day <- visitors_per_day %>% 
+      group_by(date = round_date(date, unit="month")) %>%
+      summarise(bibcount = as.integer(sum(bibcount)))
+    
+    betjeninger_per_day <- betjeninger_per_day %>% 
+      group_by(date = round_date(date, unit="month")) %>%
+      summarise(borgcount = as.integer(sum(borgcount)))            
+        
+    datadata <- visitors_per_day %>%
+      full_join(betjeninger_per_day) %>%
+      mutate_all(funs(ifelse(is.na(.), 0,.)))
+                      
     output$borgvsbib_plot <- renderPlotly({
-      data <- visitors_per_day %>%
-        full_join(betjeninger_per_day)
-      plot_ly(data, x = ~date, y = ~bibcount, name = 'Indgang Borgernes Hus', type = 'scatter', mode = 'lines') %>%
-        add_trace(y = ~borgcount, name = 'Betjeninger Borgerservice', mode = 'lines') %>% 
-        layout(xaxis = list(title = 'Dato'), yaxis = list(title = 'Antal'))
+      plot_ly(datadata) %>%
+        add_lines(x = ~date, y = ~bibcount, name = 'Indgang Borgernes Hus', line = list(color = color3)) %>%
+        add_lines(x = ~date, y = ~borgcount, name = 'Betjeninger Borgerservice', yaxis = "y2", line = list(color = color4)) %>%
+        layout(
+          xaxis = list(title="Dato"),
+          yaxis = list(
+            tickfont = list(color = color3),
+            title = "Indgang Borgernes Hus"),
+          yaxis2 = list(
+            tickfont = list(color = color4),
+            overlaying = "y",
+            side = "right",
+            title = "Betjeninger Borgerservice"
+          )
+        )
     })
+    
+    output$borghus <- renderTable(visitors_per_day)
+    output$borgserv <- renderTable(betjeninger_per_day)
+    output$joined <- renderTable(datadata)
     
     # HEATMAPS #
     
