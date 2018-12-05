@@ -101,6 +101,7 @@ online_odensebibTabPanel <- function(input, output, session) {
   events <- dbGetQuery(con_dwh, "SELECT * FROM hjemmesider.ga_events_out")
   sites <- dbGetQuery(con, "SELECT * FROM datamart.sites")
   dbDisconnect(con)
+  dbDisconnect(con_dwh)
   
   # sites
   
