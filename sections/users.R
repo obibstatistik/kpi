@@ -66,7 +66,9 @@ usersTabPanelUI <- function(id) {
                                                   h4("Aktive/Inaktive lånere"),
                                                   p("Aktive lånere er lånere som har lånt et materiale indenfor det seneste år. Inaktive lånere har haft et lån mellem 1 til 5 år tilbage i tiden."),
                                                   p("OBS. Lånere kan optræde i flere kategorier"),
-                                                  tableOutput(ns('tableloaners')),
+                                                  selectInput(ns("sampledate"), "Udtrækstidspunkt:", c("2018 2. kvartal" = "2018-06-12", "2018 4. kvartal" = "2017-12-12")),
+                                                  plotlyOutput(ns("active_inactive_plot")),
+                                                  #tableOutput(ns('tableloaners')),
                                                   xlsxDownloadUI(ns("active_inactive")))))
                           #,
                           # tabPanel("Kort",
@@ -166,13 +168,17 @@ usersTabPanel <- function(input, output, session, data, tablename) {
     group_by(lånertype = location, dato = format(date, format="%Y-%m-%d")) %>%
     summarise(aktive = sum(ifelse(type == "Aktive", loaner_stat_count, 0)), total = sum(ifelse(type == "Inaktive", loaner_stat_count, 0))) %>%
     mutate(inaktive = total-aktive) %>%
-    select(lånertype,dato,aktive,inaktive,total)
+    select(lånertype,dato,aktive,inaktive,total) %>%
+    mutate(inaktive_percent = (inaktive/total)*100, aktive_percent = (aktive/total)*100)
     
   output$tableloaners <- renderTable(loaners)
   
   output$active_inactive_plot <- renderPlotly({
-    plot_ly(loaners, x = agecitizenloaner$full_date1, y = agecitizenloaner$sum, type = 'bar', name = 'Lånere', marker = list(color = color1)) %>%
-      layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Alder', dtick = 1, autotick = FALSE))
+    loaners <- loaners %>%
+      filter(input$sampledate == dato)
+    plot_ly(loaners, y = loaners$lånertype, x = loaners$inaktive_percent, type = 'bar', name = 'Inaktive', marker = list(color = color1), orientation = "h") %>%
+      add_trace(x=loaners$aktive_percent, name = 'Aktive', marker = list(color = color2)) %>%
+      layout(yaxis = list(title = ''), xaxis = list(title = 'Procent fordeling', showticklabels = FALSE), barmode = 'stack', margin = list(l = 250, r = 10, b = 50, t = 50, pad = 10))
   })
   
   #innerResult <- callModule(csvDownload, "inner2", data = loaners, name = "users")
