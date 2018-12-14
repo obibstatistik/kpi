@@ -34,7 +34,8 @@ usersTabPanelUI <- function(id) {
   
   tabItem(tabName = "users",
           box(width = 12, solidHeader = TRUE, id="userheader",
-              h3("Brugere")
+              h3("Brugere"),
+              img(src='icons/brugere_positiv_45x45.png', align = "right", height="45px")
           ),
           fluidRow(
             column(12,

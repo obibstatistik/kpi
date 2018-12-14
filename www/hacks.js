@@ -139,10 +139,23 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
   });
   
-  //
-  $( "li.active i.fa-database").replaceWith( "<img class=\"active\" src=\"icons/datakilder_negativ_15x15.png\" width=\"15px\" height=\"15px\" />");
-  $( "i.fa-database" ).replaceWith( "<img class=\"6\" src=\"icons/datakilder_positiv_15x15.png\" width=\"15px\" height=\"15px\" />");
+  //brugere
+  $( "li.active i.fa-users").replaceWith( "<img class=\"active\" src=\"icons/brugere_negativ_15x15.png\" width=\"15px\" height=\"15px\" />");
+  $( "i.fa-users" ).first().replaceWith( "<img class=\"6\" src=\"icons/brugere_positiv_15x15.png\" width=\"15px\" height=\"15px\" />");
   $( ".6").parent().hover(function(e){
+    $(this).find('img').replaceWith( "<img class=\"test\" src=\"icons/brugere_negativ_15x15.png\" width=\"15px\" height=\"15px\" />");
+  },
+  function(e){
+    var img_elem = $(this).find('img');
+    if(!img_elem.parent().parent().hasClass('active')){
+      $(this).find('img').replaceWith( "<img class=\"test\" src=\"icons/brugere_positiv_15x15.png\" width=\"15px\" height=\"15px\" />");
+    }
+  });
+  
+  //databases
+  $( "li.active i.fa-database").replaceWith( "<img class=\"active\" src=\"icons/datakilder_negativ_15x15.png\" width=\"15px\" height=\"15px\" />");
+  $( "i.fa-database" ).replaceWith( "<img class=\"7\" src=\"icons/datakilder_positiv_15x15.png\" width=\"15px\" height=\"15px\" />");
+  $( ".7").parent().hover(function(e){
     $(this).find('img').replaceWith( "<img class=\"test\" src=\"icons/datakilder_negativ_15x15.png\" width=\"15px\" height=\"15px\" />");
   },
   function(e){
