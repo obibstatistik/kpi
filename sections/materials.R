@@ -44,7 +44,15 @@ materialsTabPanelUI <- function(id) {
                                            column(10,
                                                   h4("Samlet udlån på OBB"),
                                                   p("Grafen viser det samlede udlån på OBB fordelt pr. år. De grå søjler er hele året, men farvede søjler i forgrunden er år til dato. Det er dermed muligt at sammenligne indeværende års udlån med de forrige."),
-                                                  tags$div( samedate_barchartOutput(ns('checkouts_samedate_plot')) )
+                                                  column(10,
+                                                    tags$div( samedate_barchartOutput(ns('checkouts_samedate_plot')) )
+                                                  ),
+                                                  column(10,
+                                                    tags$br(),
+                                                    tags$br(),
+                                                    p("Udlånsstatistikken bygger på data fra Cicero. Der er ikke fuld gennemsigtighed i forhold til datakilden, hvorfor unøjagtigheder kan forekomme. Nyeste data har pt. en forsinkelse på tre døgn."),
+                                                    p("* I 2017 blev Borgernes Hus bygget, hvorfor udlånsmønstret var mærkbart anderledes end øvrige år.")
+                                                  )
                                            )
                                       ),
                                      column(12,tags$div( tags$hr(), class = "hidden-print" )),
