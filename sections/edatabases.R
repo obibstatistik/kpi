@@ -70,9 +70,10 @@ edatabasesTabPanelUI <- function(id) {
 # SERVER
 edatabasesTabPanel <- function(input, output, session, data, tablename) {
   
+  # Testing group permissions
   output$username <- reactive({
     x <- as.list(strsplit(Sys.getenv('SHINYPROXY_USERGROUPS'), ",")[[1]])     # convert comma separated string from env var into an R list
-    'WHITEBOOKREDAKTØRER' %in% x                                              # returns true (as does the function) 
+    'WHITEBOOKREDAKTØRER' %in% x                                              # returns true (and so the enclosing function) if the env usergroup var contains whitebookredaktører
   })
   
   outputOptions(output, "username", suspendWhenHidden = FALSE)    
