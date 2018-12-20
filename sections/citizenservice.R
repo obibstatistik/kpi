@@ -47,8 +47,9 @@ citizenserviceTabPanelUI <- function(id) {
     box(
       width = 12,
       solidHeader = TRUE,
-      id = "userheader",
-      h3("Borgerservice")
+      id = "citizenheader",
+      h3("Borgerservice"),
+      img(src='icons/borgerservice_positiv_45x45.png', align = "right", height="46px")
     ),
     fluidRow(column(
       12,

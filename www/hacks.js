@@ -152,10 +152,23 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
   });
   
+  //borgerservice
+  $( "li.active i.fa-ban").replaceWith( "<img class=\"active\" src=\"icons/borgerservice_negativ_15x15.png\" width=\"15px\" height=\"15px\" />");
+  $( "i.fa-ban" ).first().replaceWith( "<img class=\"7\" src=\"icons/borgerservice_positiv_15x15.png\" width=\"15px\" height=\"15px\" />");
+  $( ".7").parent().hover(function(e){
+    $(this).find('img').replaceWith( "<img class=\"test\" src=\"icons/borgerservice_negativ_15x15.png\" width=\"15px\" height=\"15px\" />");
+  },
+  function(e){
+    var img_elem = $(this).find('img');
+    if(!img_elem.parent().parent().hasClass('active')){
+      $(this).find('img').replaceWith( "<img class=\"test\" src=\"icons/borgerservice_positiv_15x15.png\" width=\"15px\" height=\"15px\" />");
+    }
+  });
+  
   //databases
   $( "li.active i.fa-database").replaceWith( "<img class=\"active\" src=\"icons/datakilder_negativ_15x15.png\" width=\"15px\" height=\"15px\" />");
-  $( "i.fa-database" ).replaceWith( "<img class=\"7\" src=\"icons/datakilder_positiv_15x15.png\" width=\"15px\" height=\"15px\" />");
-  $( ".7").parent().hover(function(e){
+  $( "i.fa-database" ).replaceWith( "<img class=\"8\" src=\"icons/datakilder_positiv_15x15.png\" width=\"15px\" height=\"15px\" />");
+  $( ".8").parent().hover(function(e){
     $(this).find('img').replaceWith( "<img class=\"test\" src=\"icons/datakilder_negativ_15x15.png\" width=\"15px\" height=\"15px\" />");
   },
   function(e){

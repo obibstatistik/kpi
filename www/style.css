@@ -48,7 +48,7 @@ th {
 	color: white;
 }
 
-#eventsheader h3, #spaceheader1 h3, #spaceheader2 h3, #spaceheader3 h3, #spaceheader4 h3, #onlineheader1 h3, #onlineheader2 h3, #materialsheader1 h3, #materialsheader2 h3 , #eressourcesheader h3, #datasourcesheader h3, #userheader h3 {
+#eventsheader h3, #spaceheader1 h3, #spaceheader2 h3, #spaceheader3 h3, #spaceheader4 h3, #onlineheader1 h3, #onlineheader2 h3, #materialsheader1 h3, #materialsheader2 h3 , #eressourcesheader h3, #datasourcesheader h3, #userheader h3, #citizenheader h3 {
   display: inline-block;
 }
 
