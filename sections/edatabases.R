@@ -8,7 +8,6 @@ con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, pa
 dbc_eres_stats <- dbGetQuery(con, "SELECT * from dbc_eres_stats")
 dbDisconnect(con)
 
-
 # UI
 edatabasesTabPanelUI <- function(id) {
   
@@ -41,7 +40,11 @@ edatabasesTabPanelUI <- function(id) {
                                                                       selected = "Odense",
                                                                       inline = F),
                                                    xlsxDownloadUI(ns("edatabases")),
-                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
+                                                   conditionalPanel(
+                                                     condition = paste0("output['", ns("username"), "']"),
+                                                     tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Gem til pdf</a>'))
+                                                   )
                                             ),
                                             column(10,
                                                    h3("Faktalink og Forfatterweb"),
@@ -81,6 +84,12 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
   # Call Excel download function for tables 
   callModule(xlsxDownload, "edatabases", data = reactive(dbc_eres_stats_df()), name = "ebaser")
 
+  output$username <- reactive({
+    Sys.getenv('SHINYPROXY_USERNAME') == 'soeb'
+  })
+  
+  outputOptions(output, "username", suspendWhenHidden = FALSE)  
+  
   # Render the plot
   output$dbc_eres_stats_plot <- renderPlotly({
     colNames <- names(dbc_eres_stats_df())[-1:-5]                         # ie. get all colnames except the first thru the fifth
@@ -151,3 +160,4 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
     
   output$dbc_eres_forfatterweb_table <- renderFormattable({ formattable(dbc_eres_forfatterweb_table_df()) })
 }
+
