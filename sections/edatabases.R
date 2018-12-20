@@ -8,6 +8,8 @@ con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, pa
 dbc_eres_stats <- dbGetQuery(con, "SELECT * from dbc_eres_stats")
 dbDisconnect(con)
 
+#Sys.setenv('SHINYPROXY_USERGROUPS' = 'WHITEBOOKREDAKTØRER,TESTGROUP')
+
 # UI
 edatabasesTabPanelUI <- function(id) {
   
@@ -68,6 +70,13 @@ edatabasesTabPanelUI <- function(id) {
 # SERVER
 edatabasesTabPanel <- function(input, output, session, data, tablename) {
   
+  output$username <- reactive({
+    x <- as.list(strsplit(Sys.getenv('SHINYPROXY_USERGROUPS'), ",")[[1]])     # convert comma separated string from env var into an R list
+    'WHITEBOOKREDAKTØRER' %in% x                                              # returns true (as does the function) 
+  })
+  
+  outputOptions(output, "username", suspendWhenHidden = FALSE)    
+  
   dbc_eres_stats_df <- reactive({
     dbc_eres_stats %>%
       mutate_at(vars(2), funs(isil2name(.))) %>%
@@ -83,12 +92,6 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
   
   # Call Excel download function for tables 
   callModule(xlsxDownload, "edatabases", data = reactive(dbc_eres_stats_df()), name = "ebaser")
-
-  output$username <- reactive({
-    Sys.getenv('SHINYPROXY_USERNAME') == 'soeb'
-  })
-  
-  outputOptions(output, "username", suspendWhenHidden = FALSE)  
   
   # Render the plot
   output$dbc_eres_stats_plot <- renderPlotly({
