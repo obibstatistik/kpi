@@ -20,116 +20,116 @@ eventsTabPanelUI <- function(id) {
                           id = "tabset3",
                           tabPanel("Antal",
                                    fluidRow(
-                                            column(12,
-                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
-                                                   column(width = 6,
+                                     column(12,
+                                            tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
+                                            column(width = 6,
                                                    h4("Arrangementer pr. år"),
                                                    p("Graferne viser det samlede antal arrangementer og undervisning/læringsseancer afholdt på OBB, samt antal deltagere i arrangementer pr. år i de sidste 5 år."),
                                                    plotlyOutput(ns("eventsyearplot"))),
-                                                   column(width = 6,
+                                            column(width = 6,
                                                    h4("Deltagere pr. år"),
                                                    p("Antal deltagere pr. år de sidste 5 år"),
                                                    plotlyOutput(ns("eventsparticipantyearplot")))
-                                            ),
-                                            column(12,tags$hr()),
-                                            column(12,
-                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
-                                                   #column(width = 2,
-                                                          # h4("Afgrænser"),
-                                                          # checkboxGroupInput(ns("event_year"), label = 'Vælg år', 
-                                                          #   selected = list("2017"),
-                                                          #   choices = list("2018","2017","2016","2015","2014"))
-                                                   #),
-                                                   column(12, class = "col-lg-6",
-                                                          h4("Arrangementer pr. måned"),
-                                                          p("Graferne viser antal afholdte arrangementer, samt antal deltagere fordelt pr. måned. Det er muligt at vælge år via ”vælgeren” i venstre side – Det er også muligt at sammenligne to år via valg i drop down menuer"),
-                                                          plotlyOutput(ns("eventsmonthplot"))),
-                                                   column(12, class = "col-lg-6",
-                                                          h4("Deltagere pr. måned"),
-                                                          p("Antal deltagere pr. måned de sidste 5 år"),
-                                                          plotlyOutput(ns("eventsparticipantmonthplot")))
-                                                   ),
-                                            column(12,tags$hr()),
-                                            column(12,
-                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
-                                                   h4("Deltagere pr. år fordelt på arrangementstype"),
-                                                   plotlyOutput(ns("test2"))
-                                                   #,plotlyOutput(ns("test3"))
-                                                   )
+                                     ),
+                                     column(12,tags$hr()),
+                                     column(12,
+                                            tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
+                                            #column(width = 2,
+                                            # h4("Afgrænser"),
+                                            # checkboxGroupInput(ns("event_year"), label = 'Vælg år', 
+                                            #   selected = list("2017"),
+                                            #   choices = list("2018","2017","2016","2015","2014"))
+                                            #),
+                                            column(12, class = "col-lg-6",
+                                                   h4("Arrangementer pr. måned"),
+                                                   p("Graferne viser antal afholdte arrangementer, samt antal deltagere fordelt pr. måned. Det er muligt at vælge år via ”vælgeren” i venstre side – Det er også muligt at sammenligne to år via valg i drop down menuer"),
+                                                   plotlyOutput(ns("eventsmonthplot"))),
+                                            column(12, class = "col-lg-6",
+                                                   h4("Deltagere pr. måned"),
+                                                   p("Antal deltagere pr. måned de sidste 5 år"),
+                                                   plotlyOutput(ns("eventsparticipantmonthplot")))
+                                     ),
+                                     column(12,tags$hr()),
+                                     column(12,
+                                            tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
+                                            h4("Deltagere pr. år fordelt på arrangementstype"),
+                                            plotlyOutput(ns("test2"))
+                                            #,plotlyOutput(ns("test3"))
+                                     )
                                    )       
                           ),
                           tabPanel("Type",
                                    fluidRow(
                                      column(12,
-                                       fluidRow(
-                                         column(6,
-                                                h4("Info"),
-                                                p("Den første graf viser fordelingen pr. år mellem børne og voksen arrangementer. Den anden graf fordeling i arrangementskategorier. Det tredje diagram viser afholdte arrangementer på hvert bibliotek. Det er muligt at skifte mellem forskellige år via ”vælgeren” i venstre side.")
-                                                )
-                                       ),
-                                       fluidRow(
-                                         column(2,
-                                                h4("Afgræns pr. år"),
-                                                selectInput(ns("year"), "",c('2017','2016','2015','2014','2013','Alle')),
-                                                tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
-                                         ),
-                                         column(10,
-                                                column(width = 6, class = "col-lg-4",
-                                                       h4("Arrangementer børn/voksen"),
-                                                       p("Antal arrangementer målrettet hhv. børn og voksne i perioden"),
-                                                       plotlyOutput(ns("eventsmaalgruppeplot")),
-                                                       tags$div('',style = "page-break-after: always;" )
-                                                ),
-                                                column(width = 6, class = "col-lg-4",
-                                                       h4("Kategori"),
-                                                       p("Antal arrangementer målrettet hhv. arrangementer og læring/undervisning i perioden"),
-                                                       plotlyOutput(ns("eventskategoriplot"))
-                                                ),
-                                                column(width = 12, class = "col-lg-4",
-                                                       h4("Sted"),
-                                                       p("Antal arrangementer på de enkelte biblioteker i perioden"),
-                                                       plotlyOutput(ns("eventsstedplot")),
-                                                       tags$div('',style = "page-break-after: always;" )
-                                                ),
-                                                column(width = 12,
-                                                       h4("Type"),
-                                                       p("Antal deltager pr. arrangementstype i perioden"),
-                                                       plotlyOutput(ns("eventstypeplot"))
-                                                )
-                                         )
-                                       )
+                                            fluidRow(
+                                              column(6,
+                                                     h4("Info"),
+                                                     p("Den første graf viser fordelingen pr. år mellem børne og voksen arrangementer. Den anden graf fordeling i arrangementskategorier. Det tredje diagram viser afholdte arrangementer på hvert bibliotek. Det er muligt at skifte mellem forskellige år via ”vælgeren” i venstre side.")
+                                              )
+                                            ),
+                                            fluidRow(
+                                              column(2,
+                                                     h4("Afgræns pr. år"),
+                                                     selectInput(ns("year"), "",c('2018','2017','2016','2015','2014','2013','Alle')),
+                                                     tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                              ),
+                                              column(10,
+                                                     column(width = 6, class = "col-lg-4",
+                                                            h4("Arrangementer børn/voksen"),
+                                                            p("Antal arrangementer målrettet hhv. børn og voksne i perioden"),
+                                                            plotlyOutput(ns("eventsmaalgruppeplot")),
+                                                            tags$div('',style = "page-break-after: always;" )
+                                                     ),
+                                                     column(width = 6, class = "col-lg-4",
+                                                            h4("Kategori"),
+                                                            p("Antal arrangementer målrettet hhv. arrangementer og læring/undervisning i perioden"),
+                                                            plotlyOutput(ns("eventskategoriplot"))
+                                                     ),
+                                                     column(width = 12, class = "col-lg-4",
+                                                            h4("Sted"),
+                                                            p("Antal arrangementer på de enkelte biblioteker i perioden"),
+                                                            plotlyOutput(ns("eventsstedplot")),
+                                                            tags$div('',style = "page-break-after: always;" )
+                                                     ),
+                                                     column(width = 12,
+                                                            h4("Type"),
+                                                            p("Antal deltager pr. arrangementstype i perioden"),
+                                                            plotlyOutput(ns("eventstypeplot"))
+                                                     )
+                                              )
+                                            )
                                      )
                                    )
                           ),
                           tabPanel("Effekt",
                                    fluidRow(
                                      column(12,
-                                           h4("Forhold imellem forberedelse og deltagere"),
+                                            h4("Forhold imellem forberedelse og deltagere"),
                                             p("Grafen viser forholdet mellem forberedelsestid og antal deltagere fordelt på arrangementskategorier. Holdes musen henover det enkelte arrangement vises titel og specifikke data."),
                                             p("OBS. Maks mulige forberedelsestid i indberetning er 999 minutter."),
                                             p("Ved at klikke én gang på en arrangementstype fravælges denne i visningen. Ved at dobbeltklikke på en arrangementstype vises kun denne."), 
-                                       column(2,      
-                                            #selectInput(ns("effectyear"), "",c('Alle','2013','2014','2015','2016','2017','2018')),
-                                            h4("Afgræns"),
-                                            checkboxGroupInput(ns("effectyear"), label = 'Vælg år:', 
-                                                               selected = list('Alle','2013','2014','2015','2016','2017','2018'),
-                                                               choices = list('Alle','2013','2014','2015','2016','2017','2018')),
-                                            #,radioButtons(ns("yakse"), "Vælg Y akse:",
-                                            #             c("Forberedelsestid" = "forberedelsestid",
-                                            #               "ID" = "id")
-                                            #),
-                                            tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
-                                            
-                                       ),  
-                                       column(width = 10,
-                                              plotlyOutput(ns("eventsratioplot"))
-                                     ) )
+                                            column(2,      
+                                                   #selectInput(ns("effectyear"), "",c('Alle','2013','2014','2015','2016','2017','2018')),
+                                                   h4("Afgræns"),
+                                                   checkboxGroupInput(ns("effectyear"), label = 'Vælg år:', 
+                                                                      selected = list('Alle','2013','2014','2015','2016','2017','2018'),
+                                                                      choices = list('Alle','2013','2014','2015','2016','2017','2018')),
+                                                   #,radioButtons(ns("yakse"), "Vælg Y akse:",
+                                                   #             c("Forberedelsestid" = "forberedelsestid",
+                                                   #               "ID" = "id")
+                                                   #),
+                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                                   
+                                            ),  
+                                            column(width = 10,
+                                                   plotlyOutput(ns("eventsratioplot"))
+                                            ) )
                                    )
                           )
                           #,tabPanel("Dokumentation og data",
                           #  metaTabPanelUI(ns("events"))
                           #)  
-                    )
+                   )
             )
           )
   )
@@ -139,16 +139,16 @@ eventsTabPanelUI <- function(id) {
 # SERVER
 
 eventsTabPanel <- function(input, output, session, data, tablename) {
-
+  
   drv <- dbDriver("PostgreSQL")
   con_dwh <- dbConnect(drv, dbname = dbname_dwh, host = host_dwh, port = port_dwh, user = user_dwh, password = password_dwh)
-    events <- dbGetQuery(con_dwh, "SELECT * FROM arrangementer.x_obib_arrangement_old")
-    eventsmaalgruppe <- dbGetQuery(con_dwh, "select extract(year from dato) as year, maalgruppe, count(*) from arrangementer.x_obib_arrangement_old group by maalgruppe, year")
-    eventsyear <- dbGetQuery(con_dwh, "select extract(year from dato) as year, count(*) from arrangementer.x_obib_arrangement_old where extract(year from dato) > 2012 group by year order by year")
-    eventsdeltagere <- dbGetQuery(con_dwh, "select sum(deltagere), extract(year from dato) as year from arrangementer.x_obib_arrangement_old where extract(year from dato) > 2012 group by year order by year")
-    eventssted <- dbGetQuery(con_dwh, "select lokation, extract(year from dato) as year, count(*) from arrangementer.x_obib_arrangement_old group by lokation, year")
-    eventskategori <- dbGetQuery(con_dwh, "select kategori, extract(year from dato) as year, count(*) from arrangementer.x_obib_arrangement_old group by kategori, year")
-    eventsratio <- dbGetQuery(con_dwh, "select titel, arrangementstype, deltagere, forberedelsestid from arrangementer.x_obib_arrangement_old where arrangementstype != ''")
+  events <- dbGetQuery(con_dwh, "SELECT * FROM arrangementer.obib_arrangementer")
+  eventsmaalgruppe <- dbGetQuery(con_dwh, "select extract(year from start_dato) as year, maalgruppe, count(*) from arrangementer.obib_arrangementer group by maalgruppe, year")
+  eventsyear <- dbGetQuery(con_dwh, "select extract(year from start_dato) as year, count(*) from arrangementer.obib_arrangementer where extract(year from start_dato) > 2012 group by year order by year")
+  eventsdeltagere <- dbGetQuery(con_dwh, "select sum(antal_deltagere), extract(year from start_dato) as year from arrangementer.obib_arrangementer where extract(year from start_dato) > 2012 group by year order by year")
+  eventssted <- dbGetQuery(con_dwh, "select lokation, extract(year from start_dato) as year, count(*) from arrangementer.obib_arrangementer group by lokation, year")
+  eventskategori <- dbGetQuery(con_dwh, "select kategori, extract(year from start_dato) as year, count(*) from arrangementer.obib_arrangementer group by kategori, year")
+  eventsratio <- dbGetQuery(con_dwh, "select titel, arrangementstype, antal_deltagere as deltagere, forberedelsestid from arrangementer.obib_arrangementer where arrangementstype != ''")
   dbDisconnect(con_dwh)
   
   # arrangementer pr aar #
@@ -163,15 +163,15 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
   
   eventspermonth <- reactive({
     eventspermonth <- events %>%
-      select(deltagere, dato) %>%
-      mutate(aar = year(dato), maaned = month(dato)) %>%
-      select(-dato)
+      select(antal_deltagere, start_dato) %>%
+      mutate(aar = year(start_dato), maaned = month(start_dato)) %>%
+      select(-start_dato)
   }) 
   
   # arrangementer pr maaned #
   output$eventsmonthplot <- renderPlotly({
     eventsmonth2 <- eventspermonth() %>%
-      select(-deltagere) %>%
+      select(-antal_deltagere) %>%
       group_by(aar, maaned) %>%
       summarise(count = n()) %>% 
       spread(aar, count)
@@ -180,7 +180,7 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
       add_trace(y = ~`2015`, name = '2015', marker = list(color = color3)) %>%
       add_trace(y = ~`2016`, name = '2016', marker = list(color = color4)) %>%
       add_trace(y = ~`2017`, name = '2017', marker = list(color = color5)) %>%
-      #add_trace(y = ~`2018`, name = '2018', marker = list(color = color6))
+      add_trace(y = ~`2018`, name = '2018', marker = list(color = color6)) %>%
       layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Måned'),  autosize = T, barmode = 'group')
   })
   
@@ -188,30 +188,30 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
   output$eventsparticipantmonthplot <- renderPlotly({
     participantmonth <- eventspermonth() %>%
       group_by(aar, maaned) %>%
-      summarise(count = sum(deltagere)) %>% 
+      summarise(count = sum(antal_deltagere)) %>% 
       spread(aar, count)
     plot_ly(participantmonth, x = factor(month.abb[participantmonth$maaned],levels=month.abb), y = ~`2013`, name = '2013', type = 'bar', text = text, marker = list(color = color1)) %>%
       add_trace(y = ~`2014`, name = '2014', marker = list(color = color2)) %>%
       add_trace(y = ~`2015`, name = '2015', marker = list(color = color3)) %>%
       add_trace(y = ~`2016`, name = '2016', marker = list(color = color4)) %>%
       add_trace(y = ~`2017`, name = '2017', marker = list(color = color5)) %>%
-      #add_trace(y = ~`2018`, name = '2018', marker = list(color = color6)) %>%
+      add_trace(y = ~`2018`, name = '2018', marker = list(color = color6)) %>%
       layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'Måned'), autosize = T, barmode = 'group')
   })
-
+  
   #deltagere pr aar fordelt på arrangementstype
   output$test2 <- renderPlotly({
     events <- events %>%
-      mutate(aar = year(dato)) %>%
+      mutate(aar = year(start_dato)) %>%
       group_by(aar, arrangementstype) %>%
-      summarise(count = sum(deltagere)) %>%
+      summarise(count = sum(antal_deltagere)) %>%
       spread(aar, count)
     plot_ly(events, x = events$arrangementstype, y = ~`2013`, name = '2013', type = 'bar', text = text, marker = list(color = color1)) %>%
       add_trace(y = ~`2014`, name = '2014', marker = list(color = color2)) %>%
       add_trace(y = ~`2015`, name = '2015', marker = list(color = color3)) %>%
       add_trace(y = ~`2016`, name = '2016', marker = list(color = color4)) %>%
       add_trace(y = ~`2017`, name = '2017', marker = list(color = color5)) %>%
-      #add_trace(y = ~`2018`, name = '2018', marker = list(color = color6)) %>%
+      add_trace(y = ~`2018`, name = '2018', marker = list(color = color6)) %>%
       layout(autosize = T, separators=",.", barmode = 'group', xaxis = list(tickmode="linear", title = "Arrangementstype"), yaxis = list(title = "Antal deltagere", separatethousands = TRUE, exponentformat='none')) 
   })
   
@@ -234,14 +234,14 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
   # målgruppe #
   output$eventsmaalgruppeplot <- renderPlotly({
     if (input$year != "Alle") {eventsmaalgruppe <- eventsmaalgruppe %>% 
-                                                   filter(year == input$year) %>% 
-                                                   mutate(colors = if_else(maalgruppe=="Voksne", color1, color2))}
+      filter(year == input$year) %>% 
+      mutate(colors = if_else(maalgruppe=="Voksne", color1, color2))}
     
     if (input$year == "Alle") {eventsmaalgruppe <- eventsmaalgruppe %>% 
-                                                   filter(year %in% c("2013","2014","2015","2016","2017")) %>% 
-                                                   group_by(maalgruppe) %>% 
-                                                   summarise(count = sum(count)) %>% 
-                                                   mutate(colors = if_else(maalgruppe=="Voksne", color1, color2))}
+      filter(year %in% c("2013","2014","2015","2016","2017")) %>% 
+      group_by(maalgruppe) %>% 
+      summarise(count = sum(count)) %>% 
+      mutate(colors = if_else(maalgruppe=="Voksne", color1, color2))}
     plot_ly(eventsmaalgruppe,
             labels = ~maalgruppe,
             values = ~count,
@@ -293,10 +293,10 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
   
   # arrangementstype
   output$eventstypeplot <- renderPlotly({
-    if (input$year != "Alle") {events <- events %>% filter(year(dato) == input$year)}
+    if (input$year != "Alle") {events <- events %>% filter(year(start_dato) == input$year)}
     events <- events %>%
       group_by(arrangementstype) %>%
-      summarise(count = sum(deltagere))
+      summarise(count = sum(antal_deltagere))
     plot_ly(events, x = events$arrangementstype, y = events$count, type = 'bar', text = text, marker = list(color = color1)) %>%
       layout(autosize = T, separators=",.", xaxis = list(tickmode="linear", title = "Arrangementstype"), yaxis = list(title = "Antal deltagere", separatethousands = TRUE, exponentformat='none')) 
   })
@@ -307,7 +307,7 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
     #plot_ly(events, x = events$deltagere, y = switch(input$yakse, forberedelsestid = events$forberedelsestid, id = events$id, events$forberedelsestid), text = text, color = events$arrangementstype) %>%
     plot_ly(events, x = events$deltagere, y = events$forberedelsestid, text = text, color = events$arrangementstype) %>%
       layout(xaxis = list(title = "deltagere", range = c(0, 500)), yaxis = list(title = "forberedelsestid"), autosize = T)
-      #layout(xaxis = list(title = "deltagere", range = c(0, 500)), yaxis = list(title = switch(input$yakse, forberedelsestid = "forberedelsestid", id = "id", "forberedelsestid")))
+    #layout(xaxis = list(title = "deltagere", range = c(0, 500)), yaxis = list(title = switch(input$yakse, forberedelsestid = "forberedelsestid", id = "id", "forberedelsestid")))
   })
   
   #callModule(metaTabPanel, id = "events", schema = "datamart",  table = "arrangementer", description = "Arrangementsdatabase i brug indtil 3. kvartal 2018")
