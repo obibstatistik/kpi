@@ -1,6 +1,7 @@
 source("global.R")
 source("modules.R")
 source("~/.postpass")
+source("~/.postpass_dwh")
 
 # UI
 
@@ -140,17 +141,15 @@ eventsTabPanelUI <- function(id) {
 eventsTabPanel <- function(input, output, session, data, tablename) {
 
   drv <- dbDriver("PostgreSQL")
-  con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
-    events <- dbGetQuery(con, "SELECT * FROM datamart.arrangementer_old")
-    eventsmaalgruppe <- dbGetQuery(con, "select extract(year from dato) as year, maalgruppe, count(*) from datamart.arrangementer_old group by maalgruppe, year")
-    eventsyear <- dbGetQuery(con, "select extract(year from dato) as year, count(*) from datamart.arrangementer_old where extract(year from dato) > 2012 group by year order by year")
-    #eventsmonth <- dbGetQuery(con, "select extract(month from dato) as month, count(*) from datamart.arrangementer where extract(year from dato) > 2012 group by month order by month")
-    eventsdeltagere <- dbGetQuery(con, "select sum(deltagere), extract(year from dato) as year from datamart.arrangementer_old where extract(year from dato) > 2012 group by year order by year")
-    #eventsparticipantmonth <- dbGetQuery(con, "select sum(deltagere), extract(month from dato) as month from datamart.arrangementer_old where extract(year from dato) > 2012 group by month order by month")
-    eventssted <- dbGetQuery(con, "select lokation, extract(year from dato) as year, count(*) from datamart.arrangementer_old group by lokation, year")
-    eventskategori <- dbGetQuery(con, "select kategori, extract(year from dato) as year, count(*) from datamart.arrangementer_old group by kategori, year")
-    eventsratio <- dbGetQuery(con, "select titel, arrangementstype, deltagere, forberedelsestid from datamart.arrangementer_old where arrangementstype != ''")
-  dbDisconnect(con)
+  con_dwh <- dbConnect(drv, dbname = dbname_dwh, host = host_dwh, port = port_dwh, user = user_dwh, password = password_dwh)
+    events <- dbGetQuery(con_dwh, "SELECT * FROM arrangementer.x_obib_arrangement_old")
+    eventsmaalgruppe <- dbGetQuery(con_dwh, "select extract(year from dato) as year, maalgruppe, count(*) from arrangementer.x_obib_arrangement_old group by maalgruppe, year")
+    eventsyear <- dbGetQuery(con_dwh, "select extract(year from dato) as year, count(*) from arrangementer.x_obib_arrangement_old where extract(year from dato) > 2012 group by year order by year")
+    eventsdeltagere <- dbGetQuery(con_dwh, "select sum(deltagere), extract(year from dato) as year from arrangementer.x_obib_arrangement_old where extract(year from dato) > 2012 group by year order by year")
+    eventssted <- dbGetQuery(con_dwh, "select lokation, extract(year from dato) as year, count(*) from arrangementer.x_obib_arrangement_old group by lokation, year")
+    eventskategori <- dbGetQuery(con_dwh, "select kategori, extract(year from dato) as year, count(*) from arrangementer.x_obib_arrangement_old group by kategori, year")
+    eventsratio <- dbGetQuery(con_dwh, "select titel, arrangementstype, deltagere, forberedelsestid from arrangementer.x_obib_arrangement_old where arrangementstype != ''")
+  dbDisconnect(con_dwh)
   
   # arrangementer pr aar #
   output$eventsyearplot <- renderPlotly({
