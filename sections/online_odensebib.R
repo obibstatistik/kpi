@@ -29,6 +29,7 @@ online_odensebibTabPanelUI <- function(id) {
                                             p("Grafen viser antal sidevisninger fordelt på måneder."),
                                             p("År vælges til og fra ved klik på årstallet i højre side af diagrammet. Igangværende måned vises indtil dags dato."),
                                             p("Der er forskel mellem officielle tal og WB tal, da officielle tal stammer fra Webtrekk, men WB tal trækkes fra Google Analytics."),
+                                            selectInput(ns("pageviews_x_axis"), "Sidevisninger pr:",c('Måned','År')),
                                             plotlyOutput(ns("plot1")),
                                             tableOutput(ns("ga_pageviewstable"))
                                      )),
@@ -66,6 +67,16 @@ online_odensebibTabPanelUI <- function(id) {
                                    )
                                    
                           )#,
+                          # tabPanel("Kryds",
+                          #           fluidRow(width = 12,
+                          #                    column(
+                          #                      width = 12,
+                          #                      h4("Sidevisninger kontra udlån"),
+                          #                      plotlyOutput(ns("udlaan_sidevisninger_plot")),
+                          #                      column(width = 6,tableOutput(ns("table1"))),
+                          #                      column(width = 6,tableOutput(ns("table2")))
+                          #                    )))
+                          #,
                           # tabPanel("Indholdsgrupper",
                           #          p("Data fra 22-05-2018"),
                           #          plotOutput(ns('treemap')),
@@ -100,6 +111,7 @@ online_odensebibTabPanel <- function(input, output, session) {
   ga_path <- dbGetQuery(con, "SELECT * FROM datamart.ga_path")
   events <- dbGetQuery(con_dwh, "SELECT * FROM hjemmesider.ga_events_out")
   sites <- dbGetQuery(con, "SELECT * FROM datamart.sites")
+  udlaan <- dbGetQuery(con, "SELECT transact_date as date, sum(antal) from cicero.udlaan_per_opstillingsprofil where extract(year from (transact_date)) > extract(year from (current_date - interval '5 year')) group by date")
   dbDisconnect(con)
   dbDisconnect(con_dwh)
   
@@ -110,19 +122,27 @@ online_odensebibTabPanel <- function(input, output, session) {
   
   # pageviews
   
-  ga_pageviews <- ga_pageviews %>%
+  ga_pageviews_month <- ga_pageviews %>%
     mutate(pv2018 = ifelse(aar == "2018", pageviews, 0), pv2017 = ifelse(aar == "2017", pageviews, 0), pv2016 = ifelse(aar == "2016", pageviews, 0), pv2015 = ifelse(aar == "2015", pageviews, 0)) %>%
     select(maaned,pv2015,pv2016,pv2017,pv2018) %>%
     group_by(maaned) %>%
     summarise(v2018 = sum(pv2018), v2017 = sum(pv2017), v2016 = sum(pv2016), v2015 = sum(pv2015))
   is.na(ga_pageviews) <- !ga_pageviews
   
+  ga_pageviews_year <- ga_pageviews %>%
+    group_by(aar) %>%
+    summarise(pageviews = sum(pageviews))
+    
   output$plot1 <- renderPlotly({
-    plot_ly(ga_pageviews, x = factor(month.abb[ga_pageviews$maaned],levels=month.abb), y = ~v2015 , type = "bar", name = '2015', marker = list(color = color1)) %>%
-      add_trace(y = ~v2016, name = '2016', marker = list(color = color2)) %>%
-      add_trace(y = ~v2017, name = '2017', marker = list(color = color3)) %>%
-      add_trace(y = ~v2018, name = '2018', marker = list(color = color4)) %>%
-      layout(showlegend = T, separators=",.", xaxis = list(tickmode="linear", title = "Måned"), yaxis = list(title = "Antal", separatethousands = TRUE, exponentformat='none'))  
+    if(input$pageviews_x_axis == "Måned") 
+      plot_ly(ga_pageviews_month, x = factor(month.abb[ga_pageviews_month$maaned],levels=month.abb), y = ~v2015 , type = "bar", name = '2015', marker = list(color = color1)) %>%
+        add_trace(y = ~v2016, name = '2016', marker = list(color = color2)) %>%
+        add_trace(y = ~v2017, name = '2017', marker = list(color = color3)) %>%
+        add_trace(y = ~v2018, name = '2018', marker = list(color = color4)) %>%
+        layout(showlegend = T, separators=",.", xaxis = list(tickmode="linear", title = "Måned"), yaxis = list(title = "Antal", separatethousands = TRUE, exponentformat='none'))  
+    else
+      plot_ly(ga_pageviews_year, x = ga_pageviews_year$aar, y = ga_pageviews_year$pageviews, type = 'bar', marker = list(color = color2)) %>%
+        layout(autosize = TRUE, yaxis = list(title = 'Antal'), xaxis = list(title = 'År', dtick = 1, autotick = FALSE, autorange="reversed"))
   })
   
   # device
@@ -308,7 +328,6 @@ online_odensebibTabPanel <- function(input, output, session) {
     
   )
   
-  
   #events - outlinks
   
   output$table_events_category <- renderTable (
@@ -366,5 +385,45 @@ online_odensebibTabPanel <- function(input, output, session) {
   
   #
   areas <- c("eReolen","eReolen Go","eReolen Global","Fynsbibliografien","Historisk Atlas","Infomedia","Litteraturens Verden.dk","Matematikfessor")
+  
+  ### KRYDS ###
+  
+  output$table1 <- renderTable({
+    data <- udlaan %>% mutate(datoen = format(date, format="%B %d %Y"))
+  })
+  
+  udlaan <- udlaan %>% 
+    rename(sum_udlaan = sum) %>%
+    mutate(date = round_date(date, unit="month")) 
+  pageviews <- ga_pageviews %>% gather(key = column, value = sum_pageviews, -maaned) %>%
+    mutate(date = as.Date(paste0(gsub("v","",column), maaned), "%Y%d")) %>%
+    select(-maaned, -column) 
+  data<- udlaan %>%
+    full_join(pageviews) %>%
+    mutate_all(funs(ifelse(is.na(.), 0,.))) %>%
+    arrange(date) %>%
+    mutate(datoen = format(date, format="%B %d %Y")) %>%
+    filter(sum_udlaan > 0 & sum_pageviews > 0)
+  output$table2 <- renderTable(data)
+  
+  print(typeof(data$date))
+  
+  output$udlaan_sidevisninger_plot <- renderPlotly({
+    plot_ly(data) %>%
+      add_lines(x = ~date, y = ~sum_udlaan, name = 'Udlån', line = list(color = color3)) %>%
+      add_lines(x = ~date, y = ~sum_pageviews, name = 'Sidevisninger', yaxis = "y2", line = list(color = color4)) %>%
+      layout(
+        xaxis = list(title="Dato"),
+        yaxis = list(
+          tickfont = list(color = color3),
+          title = "Udlån"),
+        yaxis2 = list(
+          tickfont = list(color = color4),
+          overlaying = "y",
+          side = "right",
+          title = "Sidevisninger"
+        )
+      )
+  })
   
 }
