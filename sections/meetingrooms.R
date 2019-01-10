@@ -2,6 +2,7 @@ source("global.R")
 source("modules.R")
 source("functions.R")
 source("~/.postpass")
+source("~/.postpass_dwh")
 
 # UI
 
@@ -147,9 +148,11 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
   
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
-  meetingrooms <- dbGetQuery(con, "SELECT * FROM datamart.meetingrooms")
+  con_dwh <- dbConnect(drv, dbname = dbname_dwh, host = host_dwh, port = port_dwh, user = user_dwh, password = password_dwh)
+  meetingrooms <- dbGetQuery(con_dwh, "SELECT * FROM lokaler.meetingrooms")
   employees <- dbGetQuery(con, "SELECT navn,  email, enhedsnavnniv5, enhedsnavnniv6 FROM web.ansatte")
   dbDisconnect(con)
+  dbDisconnect(con_dwh)
   
   employees <- rbind(employees, c("Team Musik", "teammusik@odense.dk", "Team Musik", "Team Musik"))
   employees <- rbind(employees, c("Team Børn", "teamboern@odense.dk", "Team Børn", "Team Børn"))
@@ -161,6 +164,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
       sted = case_when(
         meetingrooms$roomnumber == "lok11_borghus@odense.dk" ~ "Lokale 1.1",
         meetingrooms$roomnumber == "lok12_borghus@odense.dk" ~ "Lokale 1.2",
+        meetingrooms$roomnumber == "lok13_borghus@odense.dk" ~ "Lokale 1.3",
         meetingrooms$roomnumber == "lok21_borghus@odense.dk" ~ "Lokale 2.1",
         meetingrooms$roomnumber == "lok22_borghus@odense.dk" ~ "Lokale 2.2",
         meetingrooms$roomnumber == "lok31_borghus@odense.dk" ~ "Lokale 3.1",
@@ -211,6 +215,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
   output$plot_meetingrooms_overview <- renderPlotly({
     meetingrooms_overview_box_11 <- meetingrooms_overview_box() %>% filter(sted == 'Lokale 1.1')
     meetingrooms_overview_box_12 <- meetingrooms_overview_box() %>% filter(sted == 'Lokale 1.2')
+    meetingrooms_overview_box_13 <- meetingrooms_overview_box() %>% filter(sted == 'Lokale 1.3')
     meetingrooms_overview_box_21 <- meetingrooms_overview_box() %>% filter(sted == 'Lokale 2.1')
     meetingrooms_overview_box_22 <- meetingrooms_overview_box() %>% filter(sted == 'Lokale 2.2')
     meetingrooms_overview_box_31 <- meetingrooms_overview_box() %>% filter(sted == 'Lokale 3.1')
@@ -221,6 +226,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
     meetingrooms_overview_box_36 <- meetingrooms_overview_box() %>% filter(sted == 'Lokale 3.6')
     plot_ly(y = meetingrooms_overview_box_11$tid, type = "box", name = meetingrooms_overview_box_11$sted) %>%
       add_trace(y = meetingrooms_overview_box_12$tid, name = meetingrooms_overview_box_12$sted) %>%
+      add_trace(y = meetingrooms_overview_box_13$tid, name = meetingrooms_overview_box_13$sted) %>%
       add_trace(y = meetingrooms_overview_box_21$tid, name = meetingrooms_overview_box_21$sted) %>%
       add_trace(y = meetingrooms_overview_box_22$tid, name = meetingrooms_overview_box_22$sted) %>%
       add_trace(y = meetingrooms_overview_box_31$tid, name = meetingrooms_overview_box_31$sted) %>%
@@ -338,6 +344,7 @@ meetingroomsTabPanel <- function(input, output, session, data, tablename) {
     formattable(meetingrooms_timeslots(), list(
       'Lokale 1.1' = color_tile("white", "#aeb051"),
       'Lokale 1.2' = color_tile("white", "#aeb051"),
+      'Lokale 1.3' = color_tile("white", "#aeb051"),
       'Lokale 2.1' = color_tile("white", "#aeb051"),
       'Lokale 2.2' = color_tile("white", "#aeb051"),
       'Lokale 3.1' = color_tile("white", "#aeb051"),
