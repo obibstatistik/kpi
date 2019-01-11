@@ -224,7 +224,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
       mutate(akk = percent((akku2-akku1)/akku1, digits = 0)) %>%
       select(c(1,2,4,3,5,6,7)) %>%
       mutate_at(vars(-1), funs(replace(., is.na(.), 0))) %>%
-      mutate_at(vars(c(-1,-6,-7)), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark="."))) %>%
+      mutate_at(vars(c(-1,-6,-7)), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".", decimal.mark=","))) %>%
       mutate_at(vars(1), funs(danskemåneder(.))) %>%
       rename(Måned = month, Akkumuleret = akku1, "Akkumuleret " = akku2, 'Ændring pr. mdr.' = mdr, 'Ændring akkumuleret' = akk)
   })

@@ -128,7 +128,7 @@ kpitile <- function(input, output, session, data) {
   # convert dataframe to string
   data_as_string <- paste( unlist(data), collapse='') 
   # format data with thousand seperator
-  data <- format(round(as.numeric(data_as_string), 1), nsmall=0, big.mark=".")
+  data <- format(round(as.numeric(data_as_string), 1), nsmall=0, big.mark=".", decimal.mark=",")
   # output text to ui
   output$kpitile <- renderText(data)
   

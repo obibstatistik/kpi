@@ -137,7 +137,7 @@ inventoryTabPanel <- function(input, output, session, data, tablename) {
       replace_na(list(afdeling="INGEN AFDELING",opstilling="INGEN OPSTILLING",delopstilling="INGEN DELOPSTILLING")) %>%
       rename("niveau" = names(.)[1]) %>%
       # tilføj en label til hver kasse med beholdningsniveauets navn og antal eksemplarer
-      mutate(kasse_label = paste(niveau, format(round(as.numeric(antal), 0), nsmall=0, big.mark="."),sep = "\n"))
+      mutate(kasse_label = paste(niveau, format(round(as.numeric(antal), 0), nsmall=0, big.mark=".", decimal.mark=","),sep = "\n"))
   })
   
   treemapdata2 <- reactive({
@@ -148,7 +148,7 @@ inventoryTabPanel <- function(input, output, session, data, tablename) {
       summarise(antal = sum(antal)) %>%
       replace_na(list(afdeling="INGEN AFDELING",opstilling="INGEN OPSTILLING",delopstilling="INGEN DELOPSTILLING")) %>%
       rename("niveau" = names(.)[1]) %>%
-      mutate(kasse_label = paste(niveau, format(round(as.numeric(antal), 0), nsmall=0, big.mark="."),sep = "\n"))
+      mutate(kasse_label = paste(niveau, format(round(as.numeric(antal), 0), nsmall=0, big.mark=".", decimal.mark=","),sep = "\n"))
   })
   
   output$inv_treemap_compare1 <- renderPlot(

@@ -165,7 +165,7 @@ online_odensebibTabPanel <- function(input, output, session) {
   
   ga_top10 <- ga_top10 %>% 
     filter(title != "Adgang nægtet | Odense Bibliotekerne") %>%
-    mutate(pageviews = format(round(as.numeric(pageviews), 0), nsmall=0, big.mark=".")) %>%
+    mutate(pageviews = format(round(as.numeric(pageviews), 0), nsmall=0, big.mark=".", decimal.mark=",")) %>%
     rename(Titel = title, Sidevisninger = pageviews )
   
   output$tableplot3 <- renderTable({formattable(ga_top10)}, rownames = TRUE)
@@ -284,7 +284,7 @@ online_odensebibTabPanel <- function(input, output, session) {
   
   output$content_groups <- renderTable(
     ga_path <- ga_path %>%
-      mutate(sum = format(round(as.numeric(sum), 0), nsmall=0, big.mark=".")) %>%
+      mutate(sum = format(round(as.numeric(sum), 0), nsmall=0, big.mark=".", decimal.mark=",")) %>%
       arrange(gruppe)  
   )
   
@@ -399,14 +399,12 @@ online_odensebibTabPanel <- function(input, output, session) {
     mutate(date = as.Date(paste0(gsub("v","",column), maaned), "%Y%d")) %>%
     select(-maaned, -column) 
   data<- udlaan %>%
-    full_join(pageviews) %>%
+    full_join(pageviews, by = c("date" = "date")) %>%
     mutate_all(funs(ifelse(is.na(.), 0,.))) %>%
     arrange(date) %>%
     mutate(datoen = format(date, format="%B %d %Y")) %>%
     filter(sum_udlaan > 0 & sum_pageviews > 0)
   output$table2 <- renderTable(data)
-  
-  print(typeof(data$date))
   
   output$udlaan_sidevisninger_plot <- renderPlotly({
     plot_ly(data) %>%

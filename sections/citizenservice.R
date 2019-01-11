@@ -170,7 +170,7 @@ citizenserviceTabPanel <-
     output$betjeninger_count_year_plot <- renderPlotly({
       data <- betjeninger_count_years %>%
         mutate_at(vars(1), funs(as.character(.)))
-      plot_ly(data, x = ~year, y = ~count, type = 'bar', marker = list(color = color5), autosize = T) %>%
+      plot_ly(data, x = ~year, y = ~count, type = 'bar', marker = list(color = color5)) %>%
         layout(xaxis = list(title = 'År'), yaxis = list(title = 'Antal'))
     }) 
     
@@ -284,7 +284,7 @@ citizenserviceTabPanel <-
       summarise(borgcount = as.integer(sum(borgcount)))            
         
     datadata <- visitors_per_day %>%
-      full_join(betjeninger_per_day) %>%
+      full_join(betjeninger_per_day, by = c("date" = "date")) %>%
       mutate_all(funs(ifelse(is.na(.), 0,.)))
                       
     output$borgvsbib_plot <- renderPlotly({
