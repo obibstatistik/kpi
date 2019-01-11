@@ -1,8 +1,3 @@
-source("global.R")
-source("functions.R")
-source("modules.R")
-source("~/.postpass") 
-
 ### Deviceplot MODUL ###
 
 # Modul UI

@@ -1,8 +1,3 @@
-source("global.R")
-source("modules.R")
-source("~/.postpass")
-source("functions.R")
-
 # Queries
 
 drv <- dbDriver("PostgreSQL")

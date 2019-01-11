@@ -1,8 +1,3 @@
-source("global.R")
-source("modules.R")
-source("~/.postpass")
-
-
 ### Branchplot MODUL ###
 
 # UI

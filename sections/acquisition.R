@@ -1,7 +1,3 @@
-source("global.R")
-source("modules.R")
-source("~/.postpass")
-
 # UI
 
 acquisitionTabPanelUI <- function(id) {

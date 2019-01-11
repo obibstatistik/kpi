@@ -1,7 +1,3 @@
-source("global.R")
-source("modules.R")
-source("~/.postpass")
-
 ### DB QUERIES ###
 drv <- dbDriver("PostgreSQL")
 con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)

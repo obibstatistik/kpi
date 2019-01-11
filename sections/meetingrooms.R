@@ -1,9 +1,3 @@
-source("global.R")
-source("modules.R")
-source("functions.R")
-source("~/.postpass")
-source("~/.postpass_dwh")
-
 # UI
 
 meetingroomsTabPanelUI <- function(id) {

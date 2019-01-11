@@ -1,8 +1,3 @@
-source("global.R")
-source("functions.R")
-source("modules.R")
-source("~/.postpass") 
-
 drv <- dbDriver("PostgreSQL")
 con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
 #udlaan <- dbGetQuery(con, "SELECT name, hour, circulation_fact_count FROM cicero.udlaan_per_klokkeslaet")

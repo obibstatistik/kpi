@@ -1,31 +1,23 @@
-# Libraries
-source("global.R")
-
 shinyServer(function(input, output) {
-  
-  # Modules
-  source("modules.R")
   
   # Sections (Modules)
   #source("./sections/acquisition.R")
-  source("./sections/datasources.R")
+  source("./sections/datasources.R", local = TRUE)
   #source("./sections/eressources.R")
-  source("./sections/edatabases.R")
-  source("./sections/events.R")
-  source("./sections/eventareas.R")
-  source("./sections/frontpage.R")
-  source("./sections/materials.R")
-  source("./sections/inventory.R")
-  source("./sections/meetingrooms.R")
-  source("./sections/indoor_climate.R")
-  source("./sections/online_odensebib.R")
-  source("./sections/staff.R")
-  source("./sections/users.R")
-  source("./sections/visitors.R")
-  source("./sections/citizenservice.R")
-  
-  source("~/.postpass")
-  
+  source("./sections/edatabases.R", local = TRUE)
+  source("./sections/events.R", local = TRUE)
+  source("./sections/eventareas.R", local = TRUE)
+  source("./sections/frontpage.R", local = TRUE)
+  source("./sections/materials.R", local = TRUE)
+  source("./sections/inventory.R", local = TRUE)
+  source("./sections/meetingrooms.R", local = TRUE)
+  source("./sections/indoor_climate.R", local = TRUE)
+  source("./sections/online_odensebib.R", local = TRUE)
+  source("./sections/staff.R", local = TRUE)
+  source("./sections/users.R", local = TRUE)
+  source("./sections/visitors.R", local = TRUE)
+  source("./sections/citizenservice.R", local = TRUE)
+
   ### DB QUERIES ###
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
