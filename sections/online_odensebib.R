@@ -32,10 +32,10 @@ online_odensebibTabPanelUI <- function(id) {
                                      column(width = 12,
                                        tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
                                        column(width = 6,
-                                              h4("Top 10 sider 2017"),
-                                              p("Viser en oversigt over de mest besøgte sider på odensebib.dk i 2017."),
+                                              h4("Top 10 sider det seneste år"),
+                                              p("Viser en oversigt over de mest besøgte sider på odensebib.dk det seneste år."),
                                               withSpinner(tableOutput(ns("tableplot3"))),
-                                              xlsxDownloadUI(ns("top10_sider_2017"))
+                                              xlsxDownloadUI(ns("top10_sider"))
                                        ),
                                        column(width = 6,
                                               h4("Enheder"),
@@ -166,7 +166,7 @@ online_odensebibTabPanel <- function(input, output, session) {
   output$tableplot3 <- renderTable({formattable(ga_top10)}, rownames = TRUE)
   
   # Call Excel download function for tables 
-  callModule(xlsxDownload, "top10_sider_2017", data = reactive(ga_top10), name = "top10_sider_2017")
+  callModule(xlsxDownload, "top10_sider", data = reactive(ga_top10), name = "top10_sider")
   
   # browser
   
