@@ -37,11 +37,11 @@ eventareasTabPanelUI <- function(id) {
                                             column(width = 10,
                                                    column(width = 12, class = "col-lg-7",
                                                           h4("Oversigtstabel"),
-                                                          tableOutput(ns("tablebhus_events_overview"))
+                                                          withSpinner(tableOutput(ns("tablebhus_events_overview")))
                                                          ),
                                                    column(width = 12, class = "col-lg-5",
                                                           h4("Vist på agendaskærm"), 
-                                                          plotlyOutput(ns("bhus_events_agendascreen_plot"))
+                                                          withSpinner(plotlyOutput(ns("bhus_events_agendascreen_plot")))
                                                          )
                                                    )
                                            ),
@@ -62,11 +62,11 @@ eventareasTabPanelUI <- function(id) {
                                               column(10,
                                                      column(12, class = "col-lg-6",
                                                             h4("Booker top 10"),
-                                                            tableOutput(ns("table_bhus_events_booker"))
+                                                            withSpinner(tableOutput(ns("table_bhus_events_booker")))
                                                      ),
                                                      column(12, class = "col-lg-6",
                                                             h4("Booker top 10"),
-                                                            plotlyOutput(ns("plot_pie_eventarea_booker"))
+                                                            withSpinner(plotlyOutput(ns("plot_pie_eventarea_booker")))
                                                      )
                                                 )
                                      )
@@ -86,11 +86,11 @@ eventareasTabPanelUI <- function(id) {
                                                    column(width = 12,
                                                           h4("Timetabel"),
                                                           p("Graduering pr. kolonner"),
-                                                          formattableOutput(ns("tablebhus_events_timeslots")), #%>% withSpinner(color="#0dc5c1"),
+                                                          withSpinner(formattableOutput(ns("tablebhus_events_timeslots")), proxy.height="150px;"),
                                                           tags$div('',style = "page-break-after: always;" ),
                                                           h4("Heatmap"),
                                                           p("Graduering i hele figuren"),
-                                                          plotlyOutput(ns("bhus_events_time_heatmap"))
+                                                          withSpinner(plotlyOutput(ns("bhus_events_time_heatmap")))
                                                  )
                                             )
                                         )

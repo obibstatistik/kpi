@@ -27,7 +27,6 @@ source("./sections/visitors.R", local = TRUE)
 options(spinner.size=0.75)  
 options(spinner.color="#555555")
 options(spinner.type=1)
-options(spinner.proxy.height="100%")
     
 #  Dashboard Layout
 dashboardPage(

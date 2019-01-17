@@ -40,11 +40,11 @@ meetingroomsTabPanelUI <- function(id) {
                                        column(width = 10,   
                                             column(width = 12, class = "col-lg-6",
                                                    h4("Oversigtstabel"),
-                                                   tableOutput(ns("tablemeetingrooms_overview"))
+                                                   withSpinner(tableOutput(ns("tablemeetingrooms_overview")))
                                             ),
                                             column(width = 12, class = "col-lg-6",
                                                    h4("Vist på agendaskærm"), 
-                                                   plotlyOutput(ns("meetingrooms_agendascreen_plot"))
+                                                   withSpinner(plotlyOutput(ns("meetingrooms_agendascreen_plot")))
                                             )
                                             #,
                                             #column(width = 12, class = "col-lg-6",
@@ -78,10 +78,10 @@ meetingroomsTabPanelUI <- function(id) {
                                             column(width = 10,
                                                   column(width = 12, class = "col-lg-6",
                                                          h4("Booker top 10"),
-                                                         tableOutput(ns("table_meetingrooms_booker"))),
+                                                         withSpinner(tableOutput(ns("table_meetingrooms_booker")))),
                                                   column(width = 12, class = "col-lg-6",
                                                          h4("Booker top 10"),
-                                                         plotlyOutput(ns("plot_pie_meetingrooms_booker"))
+                                                         withSpinner(plotlyOutput(ns("plot_pie_meetingrooms_booker")))
                                                   )
                                                   
                                             ),
@@ -111,10 +111,10 @@ meetingroomsTabPanelUI <- function(id) {
                                                           h4("Timeoversigt"),
                                                           p("Grafen viser brugen af de enkelte mødelokaler i Borgerens Hus fordelt på timer. Der kan kun sammenlignes i den enkelte kolonne."),
                                                           p("Jo mørkere markering jo højere brug af lokalet. Hvis et møde strækker sig over mere end én klokketime tæller mødet i begge time intervaller."),
-                                                          formattableOutput(ns("tablemeetingrooms_timeslots")), #%>% withSpinner(color="#0dc5c1"),
+                                                          withSpinner(formattableOutput(ns("tablemeetingrooms_timeslots")), proxy.height="150px;"), #%>% withSpinner(color="#0dc5c1"),
                                                           h4("Heatmap"),
                                                           p("Grafen viser brugen af mødelokaler i Borgernes Hus fordelt på døgnet. Heatmappet er dermed en indikation af hvordan brugen af huset er i løbet af en dag. Der kan sammenlignes på tværs af kolonner og rækker."),
-                                                          plotlyOutput(ns("meetingrooms_time_heatmap"))
+                                                          withSpinner(plotlyOutput(ns("meetingrooms_time_heatmap")))
                                                    )
                                             )
                                      )

@@ -25,7 +25,7 @@ online_odensebibTabPanelUI <- function(id) {
                                             p("År vælges til og fra ved klik på årstallet i højre side af diagrammet. Igangværende måned vises indtil dags dato."),
                                             p("Der er forskel mellem officielle tal og WB tal, da officielle tal stammer fra Webtrekk, men WB tal trækkes fra Google Analytics."),
                                             selectInput(ns("pageviews_x_axis"), "Sidevisninger pr:",c('Måned','År')),
-                                            plotlyOutput(ns("plot1")),
+                                            withSpinner(plotlyOutput(ns("plot1"))),
                                             tableOutput(ns("ga_pageviewstable"))
                                      )),
                                    fluidRow(
@@ -34,13 +34,13 @@ online_odensebibTabPanelUI <- function(id) {
                                        column(width = 6,
                                               h4("Top 10 sider 2017"),
                                               p("Viser en oversigt over de mest besøgte sider på odensebib.dk i 2017."),
-                                              tableOutput(ns("tableplot3")),
+                                              withSpinner(tableOutput(ns("tableplot3"))),
                                               xlsxDownloadUI(ns("top10_sider_2017"))
                                        ),
                                        column(width = 6,
                                               h4("Enheder"),
                                               p("Viser hvilken enhedstype der typisk benyttes til at tilgå odensebib.dk."),
-                                              plotlyOutput(ns("ga_device_plot"))
+                                              withSpinner(plotlyOutput(ns("ga_device_plot")))
                                        )
                                      )
                                    ),
@@ -50,13 +50,13 @@ online_odensebibTabPanelUI <- function(id) {
                                      column(width = 12, class = "col-lg-6",
                                             h4("Browser"), 
                                             p("Viser hvilken type browser der typisk benyttes til at tilgå odensebib.dk"),
-                                            plotlyOutput(ns("ga_browser_plot"))
+                                            withSpinner(plotlyOutput(ns("ga_browser_plot")))
                                      ),
                                      column(width = 12, class = "col-lg-6",
                                             h4("Sprog"), 
                                             p("Viser hvilket sprog der er installeret som standard på brugernes enheder."),
                                             p("Det er muligt at vælge dansk til og fra for at fokusere på andre sprog."),
-                                            plotlyOutput(ns("ga_language_plot"))
+                                            withSpinner(plotlyOutput(ns("ga_language_plot")))
                                      )
                                      )
                                    )

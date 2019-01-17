@@ -6,7 +6,7 @@ branchplotUI <- function(id, branch) {
     tagList(
       column(3,
         p(branch),
-        plotlyOutput(ns("branchplot"))
+        withSpinner(plotlyOutput(ns("branchplot")))
       )
   )
 }
@@ -44,7 +44,7 @@ usersTabPanelUI <- function(id) {
                                                   p("Lånergrafen udgøres af data fra Cicero."),
                                                   p("Borgergrafen udgøres af data fra seneste kvartal fra Danmarks Statistik."),
                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
-                                                  plotlyOutput(ns("agebranch_plot")),
+                                                  withSpinner(plotlyOutput(ns("agebranch_plot"))),
                                                   tags$div('',style = "page-break-after: always;" ),
                                                   h4("Aldersfordeling pr. bibliotek"),
                                                   p("Graferne viser aldersfordelingen blandt lånerne, fordelt efter tilhørsbibliotek."),
@@ -62,7 +62,7 @@ usersTabPanelUI <- function(id) {
                                                   p("Aktive lånere er lånere som har lånt et materiale indenfor det seneste år. Inaktive lånere har haft et lån mellem 1 til 5 år tilbage i tiden."),
                                                   p("OBS. Lånere kan optræde i flere kategorier"),
                                                   selectInput(ns("sampledate"), "Udtrækstidspunkt:", c("2018 2. kvartal" = "2018-06-12", "2018 4. kvartal" = "2017-12-12")),
-                                                  plotlyOutput(ns("active_inactive_plot")),
+                                                  withSpinner(plotlyOutput(ns("active_inactive_plot"))),
                                                   #tableOutput(ns('tableloaners')),
                                                   xlsxDownloadUI(ns("active_inactive")))))
                           #,

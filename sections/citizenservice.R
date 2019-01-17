@@ -25,7 +25,7 @@ citizenserviceTabPanelUI <- function(id) {
                               #checkboxFromDataUI(ns(id = "citizen"), data = betjeninger_years$year, text = "Vælg årstal"),
                               #checkboxFromDataUI(ns(id = "citizen11"), data = betjeninger_categories$category, text = "Vælg kategori")
                        ),
-                       column(width = 10, plotlyOutput(ns("betjeninger_count_year_plot")))
+                       column(width = 10, withSpinner(plotlyOutput(ns("betjeninger_count_year_plot"))))
                      ),
                      column(12,tags$hr()),
                      column(width = 12,
@@ -33,7 +33,7 @@ citizenserviceTabPanelUI <- function(id) {
                        column(width = 2#, årstalfilter er skjult i første omgang
                               #checkboxFromDataUI(ns(id = "citizen2"), data = betjeninger_years$year, text = "Vælg årstal")
                        ),
-                       column(width = 10, plotlyOutput(ns("betjeninger_count_month_plot")))
+                       column(width = 10, withSpinner(plotlyOutput(ns("betjeninger_count_month_plot"))))
                      ),
                      column(12,tags$hr()),
                      column(width = 12,
@@ -41,7 +41,7 @@ citizenserviceTabPanelUI <- function(id) {
                        column(width = 2#, årstalfilter er skjult i første omgang
                               #checkboxFromDataUI(ns(id = "citizen3"), data = betjeninger_years$year, text = "Vælg årstal")
                        ),
-                       column(width = 10, plotlyOutput(ns("betjeninger_avgwait_category_plot")))
+                       column(width = 10, withSpinner(plotlyOutput(ns("betjeninger_avgwait_category_plot"))))
                      ),
                      column(12,tags$hr()),
                      column(width = 12,
@@ -49,7 +49,7 @@ citizenserviceTabPanelUI <- function(id) {
                        column(width = 2#, 
                          #checkboxFromDataUI(ns(id = "citizen3"), data = betjeninger_categories$category, text = "Vælg kategori")
                        ),
-                       column(width = 10, plotlyOutput(ns("betjeninger_avgwait_month_plot")))
+                       column(width = 10, withSpinner(plotlyOutput(ns("betjeninger_avgwait_month_plot"))))
                      ),
                      column(12,tags$hr()),
                      column(width = 12,
@@ -57,7 +57,7 @@ citizenserviceTabPanelUI <- function(id) {
                        column(width = 2#, 
                          #checkboxFromDataUI(ns(id = "citizen4"), data = betjeninger_years$year, text = "Vælg årstal")
                        ),
-                       column(width = 10, plotlyOutput(ns("betjeninger_service_year_plot")))
+                       column(width = 10, withSpinner(plotlyOutput(ns("betjeninger_service_year_plot"))))
                      ),
                      column(12,tags$hr()),
                      column(width = 12,
@@ -65,7 +65,7 @@ citizenserviceTabPanelUI <- function(id) {
                        column(width = 2#, 
                          #checkboxFromDataUI(ns(id = "citizen4"), data = betjeninger_years$year, text = "Vælg årstal")
                        ),
-                       column(width = 10, plotlyOutput(ns("betjeninger_service_month_plot")))
+                       column(width = 10, withSpinner(plotlyOutput(ns("betjeninger_service_month_plot"))))
                      )
                 ))
                  ,
@@ -75,7 +75,7 @@ citizenserviceTabPanelUI <- function(id) {
                       width = 12,
                       h4("Besøgende Borgernes Hus / Betjeninger Borgerservice"),
                       column(width = 12, 
-                        plotlyOutput(ns("borgvsbib_plot"))
+                             withSpinner(plotlyOutput(ns("borgvsbib_plot")))
                         )
                       )#,
                       #column(width = 4, tableOutput(ns("joined"))),

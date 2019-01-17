@@ -6,7 +6,7 @@ device_plotUI <- function(id) {
   tagList(
     column(4,
            htmlOutput(ns("sensors_room_title")),
-           plotlyOutput(ns("sensors_plot"))
+           withSpinner(plotlyOutput(ns("sensors_plot")))
     )
   )
 }

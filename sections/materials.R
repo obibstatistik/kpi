@@ -23,7 +23,7 @@ materialsTabPanelUI <- function(id) {
                                                   h4("Samlet udlån på OBB"),
                                                   p("Grafen viser det samlede udlån på OBB fordelt pr. år. De grå søjler er hele året, men farvede søjler i forgrunden er år til dato. Det er dermed muligt at sammenligne indeværende års udlån med de forrige."),
                                                   column(8,
-                                                    tags$div( samedate_barchartOutput(ns('checkouts_samedate_plot')) )
+                                                    tags$div( withSpinner(samedate_barchartOutput(ns('checkouts_samedate_plot'))) )
                                                   ),
                                                   column(10,
                                                     p("Udlånsstatistikken bygger på data fra Cicero. Der er ikke fuld gennemsigtighed i forhold til datakilden, hvorfor unøjagtigheder kan forekomme. Nyeste data har pt. en forsinkelse på tre døgn."),
@@ -42,7 +42,7 @@ materialsTabPanelUI <- function(id) {
                                                    h4("Samlet udlån på OBB, hele år"),
                                                    p("Denne graf viser samlet udlån på OBB fordelt pr. år med mulighed for at vælge hovedbibliotekets udlån fra via vælger i venstre side."),
                                                    # N.B! Hvis man indlejrer plotlyOutput i tags, så kan plottet åbenbart ikke skalere, selv ikke hvis man reloader siden!
-                                                   plotlyOutput(ns("checkouts_plot_all"))
+                                                   withSpinner(plotlyOutput(ns("checkouts_plot_all")))
                                             )
                                      ),
                                      column(12,tags$div( tags$hr(), class = "hidden-print" )),
@@ -72,7 +72,7 @@ materialsTabPanelUI <- function(id) {
                                                    p("Tabellen viser det samlede udlån på OBB fordelt pr. måned."),
                                                    p("Visningen giver mulighed for at sammenligne mellem to forskellige år samt vælge hvilken lokation der ønskes vist. Det er desuden muligt at vælge Hovedbiblioteket til og fra."),
                                                    p("N.B! Der er en forsinkelse på 3 dage på modtagelsen af seneste statistik fra Cicero"),
-                                                   formattableOutput(ns("checkouts_table"))
+                                                   withSpinner(formattableOutput(ns("checkouts_table")), proxy.height="400px")
                                             )
                                      ),
                                      column(12,tags$div( tags$hr(), class = "hidden-print" ))                                   
@@ -104,7 +104,7 @@ materialsTabPanelUI <- function(id) {
                                               h4("Cirkulationstal fordelt på biblioteker og afdelingerne Børn/Voksen"),
                                               p("Grafen viser cirkulationstallet, dvs. gennemsnitligt udlån pr. eksemplar over en given periode."),
                                               p("Perioden kan vælges i venstre side. Default er et halvt år tilbage (182 dage)"),
-                                              plotlyOutput(ns("circ_join_plot"), height = "700px")
+                                              withSpinner(plotlyOutput(ns("circ_join_plot"), height = "700px"))
                                        )
                                      )
                                    )

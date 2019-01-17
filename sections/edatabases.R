@@ -49,14 +49,14 @@ edatabasesTabPanelUI <- function(id) {
                                                    span("Følgende statistik stammer fra"),a("https://bibstats.dbc.dk", href = "https://bibstats.dbc.dk", target="_blank" ),
                                                    tags$br(),tags$br(),
                                                    tags$div( h4(htmlOutput(ns("edatabases_title1"))),style = "text-align: center;" ),
-                                                   plotlyOutput(ns("dbc_eres_stats_plot")),
+                                                   withSpinner(plotlyOutput(ns("dbc_eres_stats_plot"))),
                                                    tags$br(),tags$br(),
                                                    column(10,
                                                        tags$div(h4(htmlOutput(ns("edatabases_title2")))),
-                                                       formattableOutput(ns("dbc_eres_faktalink_table")),
+                                                       withSpinner(formattableOutput(ns("dbc_eres_faktalink_table")), proxy.height="150px"),
                                                        tags$br(),tags$br(),
                                                        tags$div(h4(htmlOutput(ns("edatabases_title3")))),
-                                                       formattableOutput(ns("dbc_eres_forfatterweb_table"))
+                                                       withSpinner(formattableOutput(ns("dbc_eres_forfatterweb_table")), proxy.height="150px")
                                                    )
                                             )
                                      ))))))

@@ -24,7 +24,7 @@ eventsTabPanelUI <- function(id) {
                                             column(width = 6,
                                                    h4("Deltagere pr. år"),
                                                    p("Antal deltagere pr. år de sidste 5 år"),
-                                                   plotlyOutput(ns("eventsparticipantyearplot")))
+                                                   withSpinner(plotlyOutput(ns("eventsparticipantyearplot"))))
                                      ),
                                      column(12,tags$hr()),
                                      column(12,
@@ -38,17 +38,17 @@ eventsTabPanelUI <- function(id) {
                                             column(12, class = "col-lg-6",
                                                    h4("Arrangementer pr. måned"),
                                                    p("Graferne viser antal afholdte arrangementer, samt antal deltagere fordelt pr. måned. Det er muligt at vælge år via ”vælgeren” i venstre side – Det er også muligt at sammenligne to år via valg i drop down menuer"),
-                                                   plotlyOutput(ns("eventsmonthplot"))),
+                                                   withSpinner(plotlyOutput(ns("eventsmonthplot")))),
                                             column(12, class = "col-lg-6",
                                                    h4("Deltagere pr. måned"),
                                                    p("Antal deltagere pr. måned de sidste 5 år"),
-                                                   plotlyOutput(ns("eventsparticipantmonthplot")))
+                                                   withSpinner(plotlyOutput(ns("eventsparticipantmonthplot"))))
                                      ),
                                      column(12,tags$hr()),
                                      column(12,
                                             tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
                                             h4("Deltagere pr. år fordelt på arrangementstype"),
-                                            plotlyOutput(ns("test2"))
+                                            withSpinner(plotlyOutput(ns("test2")))
                                             #,plotlyOutput(ns("test3"))
                                      )
                                    )       
@@ -72,24 +72,24 @@ eventsTabPanelUI <- function(id) {
                                                      column(width = 6, class = "col-lg-4",
                                                             h4("Arrangementer børn/voksen"),
                                                             p("Antal arrangementer målrettet hhv. børn og voksne i perioden"),
-                                                            plotlyOutput(ns("eventsmaalgruppeplot")),
+                                                            withSpinner(plotlyOutput(ns("eventsmaalgruppeplot"))),
                                                             tags$div('',style = "page-break-after: always;" )
                                                      ),
                                                      column(width = 6, class = "col-lg-4",
                                                             h4("Kategori"),
                                                             p("Antal arrangementer målrettet hhv. arrangementer og læring/undervisning i perioden"),
-                                                            plotlyOutput(ns("eventskategoriplot"))
+                                                            withSpinner(plotlyOutput(ns("eventskategoriplot")))
                                                      ),
                                                      column(width = 12, class = "col-lg-4",
                                                             h4("Sted"),
                                                             p("Antal arrangementer på de enkelte biblioteker i perioden"),
-                                                            plotlyOutput(ns("eventsstedplot")),
+                                                            withSpinner(plotlyOutput(ns("eventsstedplot"))),
                                                             tags$div('',style = "page-break-after: always;" )
                                                      ),
                                                      column(width = 12,
                                                             h4("Type"),
                                                             p("Antal deltager pr. arrangementstype i perioden"),
-                                                            plotlyOutput(ns("eventstypeplot"))
+                                                            withSpinner(plotlyOutput(ns("eventstypeplot")))
                                                      )
                                               )
                                             )

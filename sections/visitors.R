@@ -30,7 +30,7 @@ visitorsTabPanelUI <- function(id) {
                                        column(10,
                                               h4("Samlet besøg på OBB"),
                                               p("Grafen viser det samlede besøg på OBB fordelt pr. år. De grå søjler er hele året, men farvede søjler i forgrunden er år til dato. Det er dermed muligt at sammenligne indeværende års besøg med de forrige."),
-                                              samedate_barchartOutput(ns('whity'))
+                                              withSpinner(samedate_barchartOutput(ns('whity')))
                                        )
                                      ),
                                      column(12,tags$hr()),
@@ -43,7 +43,7 @@ visitorsTabPanelUI <- function(id) {
                                      column(10,
                                               h4("Samlet besøg på OBB"),
                                               p("Denne graf viser samlet besøg på OBB fordelt pr. år med mulighed for at vælge hovedbibliotekets besøg fra via vælger i venstre side."),
-                                              plotlyOutput(ns("visitsplotall"))
+                                              withSpinner(plotlyOutput(ns("visitsplotall")))
                                        )
                                      ),
                                      column(12,tags$hr()),
@@ -61,7 +61,7 @@ visitorsTabPanelUI <- function(id) {
                                               h4("Samlet besøg på OBB"),
                                               p("Tabellen viser det samlede besøg på OBB fordelt pr. måned."),
                                               p("Visningen giver mulighed for at sammenligne mellem to forskellige år samt vælge hvilken lokation der ønskes vist. Det er desuden muligt at vælge Hovedbiblioteket til og fra."),
-                                              formattableOutput(ns("visitors_table"))
+                                              withSpinner(formattableOutput(ns("visitors_table")))
                                        )
                                      ),
                                      column(12,tags$hr()),
@@ -78,7 +78,7 @@ visitorsTabPanelUI <- function(id) {
                                               p("Grafen viser besøget på de enkelte lokationer i OBB i de seneste 5 år. Der er to visninger: ”Ikke normaliseret, hvor antal besøg vises som det reelt er. Og ”Normaliseret” hvor 2016 er brugt som basisår og har værdien 1. Det gør det muligt lettere at sammenligne på tværs af lokationer."),
                                               p("Det er muligt at fravælge og vælge enkelte år via enkeltklik på året i diagrammets højre side. Ved dobbeltklik på et år vælges kun dette år."),
                                               plotlyOutput(ns("visitsplotindividual")),
-                                              formattableOutput(ns("visitorstest"))
+                                              withSpinner(formattableOutput(ns("visitorstest")))
                                        )
                                      )
                                    )   
@@ -128,10 +128,10 @@ visitorsTabPanelUI <- function(id) {
                                        ),
                                        column(10,
                                               h4("Besøg fordelt på timer og periode"), 
-                                              formattableOutput(ns("visitors_per_hours_table")),
+                                              withSpinner(formattableOutput(ns("visitors_per_hours_table"))),
                                               conditionalPanel(
                                                 paste0("input['", ns("smooth"), "']"),
-                                                formattableOutput(ns("visitors_per_hours_table2"))
+                                                withSpinner(formattableOutput(ns("visitors_per_hours_table2")))
                                               )
                                          )
                                    )

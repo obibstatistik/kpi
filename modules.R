@@ -162,7 +162,7 @@ heatmapWeekTableUI <- function(id, title) {
                 step = 1,
                 timeFormat="%Y-%m-%d"),
     #uiOutput(ns("timeslider")), # se kommentar i server funktion
-    formattableOutput(ns("heatmapWeekTable"))
+    withSpinner(formattableOutput(ns("heatmapWeekTable")), proxy.height="150px")
   )
 }
 

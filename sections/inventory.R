@@ -80,8 +80,8 @@ inventoryTabPanelUI <- function(id) {
                                              p("Brug denne visualisering til at få et overblik over sammensætningen af samlingen på et enkelt bibliotek eller til at sammenligne to biblioteker med hinanden"),
                                              p("Arealet af hver firkant er proportionelt med antallet af eksemplarer i den viste kategori. Antallet er desuden angivet i hver boks"),
                                              p("Materialegrupper (tidl. materialesamlinger/udlånsregler) er ikke medtaget, da de ikke forekommer i datagrundlaget"),
-                                             plotOutput(ns("inv_treemap_compare1")),
-                                             plotOutput(ns("inv_treemap_compare2"))
+                                             withSpinner(plotOutput(ns("inv_treemap_compare1"))),
+                                             withSpinner(plotOutput(ns("inv_treemap_compare2")))
                                       )
                                     ),
                                     column(12,tags$hr()),
@@ -103,7 +103,7 @@ inventoryTabPanelUI <- function(id) {
                                              p("Totalerne i bunden og i højre side angiver hhv. det samlede antal registrerede eksemplarer for hvert bibliotek og det samlede antal for hvert beholdningsniveau eller materialetype (for de valgte filialer)"),
                                              tags$br(),
                                              tags$br(),
-                                             formattableOutput(ns("inventory_table"))
+                                             withSpinner(formattableOutput(ns("inventory_table")), proxy.height="400px")
                                       )
                                     )
                                   )
