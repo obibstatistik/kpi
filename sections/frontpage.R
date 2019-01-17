@@ -1,3 +1,13 @@
+current_year = year(Sys.Date())
+
+drv <- dbDriver("PostgreSQL")
+con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
+#visitors_current_year <- dbGetQuery(con, "SELECT sum(count) FROM people_counter WHERE direction = 'in' and extract(year from date) = 2018")
+loans_current_year <- dbGetQuery(con, "SELECT sum(antal) FROM cicero.udlaan_per_opstillingsprofil WHERE extract(year from (transact_date)) = 2018")
+events_current_year <- dbGetQuery(con, "SELECT count(*) FROM datamart.arrangementer_old WHERE extract(year from dato) = 2018")
+citizenservice_current_year <- dbGetQuery(con, "SELECT count(*) as count FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' and extract(year from (\"Tid\")) = 2018")
+dbDisconnect(con)
+
 # UI
 
 frontpageTabPanelUI <- function(id) {
@@ -28,16 +38,6 @@ frontpageTabPanelUI <- function(id) {
 # SERVER
 
 frontpageTabPanel <- function(input, output, session) {
-  
-  current_year = year(Sys.Date())
-  
-  drv <- dbDriver("PostgreSQL")
-  con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
-  visitors_current_year <- dbGetQuery(con, "SELECT sum(count) FROM people_counter WHERE direction = 'in' and extract(year from date) = 2018")
-  loans_current_year <- dbGetQuery(con, "SELECT sum(antal) FROM cicero.udlaan_per_opstillingsprofil WHERE extract(year from (transact_date)) = 2018")
-  events_current_year <- dbGetQuery(con, "SELECT count(*) FROM datamart.arrangementer_old WHERE extract(year from dato) = 2018")
-  citizenservice_current_year <- dbGetQuery(con, "SELECT count(*) as count FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' and extract(year from (\"Tid\")) = 2018")
-  dbDisconnect(con)
   
   callModule(kpitile, id = "loans", data = loans_current_year)
   callModule(kpitile, id = "events", data = events_current_year)

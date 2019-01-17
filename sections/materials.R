@@ -1,20 +1,3 @@
-drv <- dbDriver("PostgreSQL")
-con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
-#udlaan <- dbGetQuery(con, "SELECT name, hour, circulation_fact_count FROM cicero.udlaan_per_klokkeslaet")
-#max_date <- dbGetQuery(con, "select max(transact_date) max_date from cicero.udlaan_per_opstillingsprofil")
-checkouts_all <- dbGetQuery(con, "SELECT extract(year from transact_date) aar,transact_date,branch,dep,sum(antal) antal
-        from cicero.udlaan_per_opstillingsprofil
-        where extract(year from (transact_date)) > extract(year from (current_date - interval '5 year'))
-        group by aar,transact_date,branch,dep
-        order by aar,transact_date,branch,dep")
-beholdning <- dbGetQuery(con, "SELECT branch,department dep,sum(material_dim_count)
-    from cicero.beholdning
-    group by branch,dep
-    order by branch,dep")
-#dbc_eres_stats <- dbGetQuery(con, "SELECT * from dbc_eres_stats")
-dbDisconnect(con)
-
-  
 # UI
 
 materialsTabPanelUI <- function(id) {
@@ -67,8 +50,8 @@ materialsTabPanelUI <- function(id) {
                                             column(2,
                                                    h4("Afgræns"),
                                                    # TODO hvad med Arresten (er det med??) og hvad med opsøgende (skal den ikke med ind under hb?? eller er den tom for udlån?)
-                                                   selectInput(ns("checkouts_fromyear"), "Fra:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2015", "2014" = "2014"), as.integer(format(Sys.Date(), "%Y"))-1),
-                                                   selectInput(ns("checkouts_toyear"), "Til:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2014", "2014" = "2013"), as.integer(format(Sys.Date(), "%Y"))),
+                                                   selectInput(ns("checkouts_fromyear"), "Fra:", c("2019" = "2019", "2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2015", "2014" = "2014"), as.integer(format(Sys.Date(), "%Y"))-1),
+                                                   selectInput(ns("checkouts_toyear"), "Til:", c("2019" = "2019", "2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2014", "2014" = "2013"), as.integer(format(Sys.Date(), "%Y"))),
                                                    selectInput(ns("checkouts_library"), "Bibliotek:", c("Alle" = "all",
                                                                                                      "Bolbro" = "Bolbro Bibliotek",
                                                                                                      "Dalum" = "Dalum Bibliotek",
@@ -139,6 +122,22 @@ materialsTabPanelUI <- function(id) {
 # Server
 materialsTabPanel <- function(input, output, session, data, tablename) {
 
+  drv <- dbDriver("PostgreSQL")
+  con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
+  #udlaan <- dbGetQuery(con, "SELECT name, hour, circulation_fact_count FROM cicero.udlaan_per_klokkeslaet")
+  #max_date <- dbGetQuery(con, "select max(transact_date) max_date from cicero.udlaan_per_opstillingsprofil")
+  checkouts_all <- dbGetQuery(con, "SELECT extract(year from transact_date) aar,transact_date,branch,dep,sum(antal) antal
+        from cicero.udlaan_per_opstillingsprofil
+        where extract(year from (transact_date)) > extract(year from (current_date - interval '5 year'))
+        group by aar,transact_date,branch,dep
+        order by aar,transact_date,branch,dep")
+  beholdning <- dbGetQuery(con, "SELECT branch,department dep,sum(material_dim_count)
+    from cicero.beholdning
+    group by branch,dep
+    order by branch,dep")
+  #dbc_eres_stats <- dbGetQuery(con, "SELECT * from dbc_eres_stats")
+  dbDisconnect(con)
+  
   # Calculate latest date with data
   max_date <- checkouts_all %>%
     summarize(max_date = max(transact_date))

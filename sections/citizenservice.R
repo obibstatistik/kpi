@@ -1,37 +1,3 @@
-# Queries
-
-drv <- dbDriver("PostgreSQL")
-con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
-
-  # OVERSIGT OVER TYPE & KATEGORI: select "Type", "Kategori", count(*) FROM borgerservice.x_betjeninger WHERE "Lokation" = 'Borgerservice Odense' GROUP BY "Type", "Kategori" ORDER BY "Type", count(*) desc
-  betjeninger_years <- dbGetQuery(con, "SELECT distinct(extract(year from \"Tid\")) as year FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense'")
-  betjeninger_categories <- dbGetQuery(con, "SELECT distinct(\"Kategori\") as category FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense'")
-  
-  betjeninger_count_years <- dbGetQuery(con, "SELECT extract(year from (\"Tid\")::date) as year, count(*) as count FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY year")
-  betjeninger_count_date_category <- dbGetQuery(con, "SELECT date_trunc('month', \"Tid\") as date, count('ID') as count, \"Kategori\" as category FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY date, category")
-  
-  betjeninger_wait_year <- dbGetQuery(con, "SELECT date_trunc('year', \"Tid\") as year, round((EXTRACT(epoch FROM avg(\"Ventetid\"))/60)::numeric, 2) as avgwait FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY year")
-  #betjeninger_wait_year_category <- dbGetQuery(con, "SELECT date_trunc('year', \"Tid\") as year, \"Kategori\" as category, avg(\"Ventetid\") as avgwait FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY year, category")
-  betjeninger_wait_month <- dbGetQuery(con, "SELECT extract(month from \"Tid\") as month, round((EXTRACT(epoch FROM avg(\"Ventetid\"))/60)::numeric, 2) as avgwait FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY month ORDER BY month")
-  #betjeninger_wait_month_category <- dbGetQuery(con, "SELECT extract(month from \"Tid\") as month, \"Kategori\" as category, avg(\"Behandlingstid\") as avgserve FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY month, category")
-  
-  betjeninger_service_year <- dbGetQuery(con, "SELECT date_trunc('year', \"Tid\") as year, round((EXTRACT(epoch FROM avg(\"Behandlingstid\"))/60)::numeric, 2) as avgservice FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY year")
-  #betjeninger_service_year_category <- dbGetQuery(con, "SELECT date_trunc('year', \"Tid\") as year, \"Kategori\" as category, avg(\"Ventetid\") as avgwait FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY year, category")
-  betjeninger_service_month <- dbGetQuery(con, "SELECT extract(month from \"Tid\") as month, round((EXTRACT(epoch FROM avg(\"Behandlingstid\"))/60)::numeric, 2) as avgservice FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY month ORDER BY month")
-  #betjeninger_service_month_category <- dbGetQuery(con, "SELECT extract(month from \"Tid\") as month, \"Kategori\" as category, avg(\"Behandlingstid\") as avgserve FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY month, category")
-  
-  visitors_per_day <- dbGetQuery(con, "SELECT date, sum as bibcount FROM datamart.visitors_per_day WHERE location='hb' and date > '2016-08-11'") 
-  betjeninger_per_day <- dbGetQuery(con, "SELECT distinct(\"Tid\"::date) as date, count(*) as borgcount FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY date")
-  
-  betjeninger_heat_1 <- dbGetQuery(con, "SELECT date_trunc('day', \"Tid\") as date, extract(isodow from \"Tid\") as weekday, extract(hour from \"Tid\") as hour, count(*) as count FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY weekday, hour, date")
-  betjeninger_heat_2 <- dbGetQuery(con, "SELECT date_trunc('day', \"Tid\") as date, extract(isodow from \"Tid\") as weekday, extract(hour from \"Tid\") as hour, count(*) as count FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY weekday, hour, date")
-  betjeninger_heat_3 <- dbGetQuery(con, "SELECT date_trunc('day', \"Tid\") as date, extract(isodow from \"Tid\") as weekday, extract(hour from \"Tid\") as hour, avg(\"Ventetid\") as avgvente FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY weekday, hour, date")
-  betjeninger_heat_4 <- dbGetQuery(con, "SELECT date_trunc('day', \"Tid\") as date, extract(isodow from \"Tid\") as weekday, extract(hour from \"Tid\") as hour, avg(\"Behandlingstid\") as avgserve FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY weekday, hour, date")
-
-  kategorier <- dbGetQuery(con, "select \"Type\", \"Kategori\", count(*) FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY \"Type\", \"Kategori\" ORDER BY \"Type\", count(*) desc")
-  
-  dbDisconnect(con)
-
 # UI
 
 citizenserviceTabPanelUI <- function(id) {
@@ -156,6 +122,37 @@ citizenserviceTabPanel <-
   function(input, output, session, data, tablename) {
     
     # GENERELT #
+    drv <- dbDriver("PostgreSQL")
+    con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
+    
+    # OVERSIGT OVER TYPE & KATEGORI: select "Type", "Kategori", count(*) FROM borgerservice.x_betjeninger WHERE "Lokation" = 'Borgerservice Odense' GROUP BY "Type", "Kategori" ORDER BY "Type", count(*) desc
+    betjeninger_years <- dbGetQuery(con, "SELECT distinct(extract(year from \"Tid\")) as year FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense'")
+    betjeninger_categories <- dbGetQuery(con, "SELECT distinct(\"Kategori\") as category FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense'")
+    
+    betjeninger_count_years <- dbGetQuery(con, "SELECT extract(year from (\"Tid\")::date) as year, count(*) as count FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY year")
+    betjeninger_count_date_category <- dbGetQuery(con, "SELECT date_trunc('month', \"Tid\") as date, count('ID') as count, \"Kategori\" as category FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY date, category")
+    
+    betjeninger_wait_year <- dbGetQuery(con, "SELECT date_trunc('year', \"Tid\") as year, round((EXTRACT(epoch FROM avg(\"Ventetid\"))/60)::numeric, 2) as avgwait FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY year")
+    #betjeninger_wait_year_category <- dbGetQuery(con, "SELECT date_trunc('year', \"Tid\") as year, \"Kategori\" as category, avg(\"Ventetid\") as avgwait FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY year, category")
+    betjeninger_wait_month <- dbGetQuery(con, "SELECT extract(month from \"Tid\") as month, round((EXTRACT(epoch FROM avg(\"Ventetid\"))/60)::numeric, 2) as avgwait FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY month ORDER BY month")
+    #betjeninger_wait_month_category <- dbGetQuery(con, "SELECT extract(month from \"Tid\") as month, \"Kategori\" as category, avg(\"Behandlingstid\") as avgserve FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY month, category")
+    
+    betjeninger_service_year <- dbGetQuery(con, "SELECT date_trunc('year', \"Tid\") as year, round((EXTRACT(epoch FROM avg(\"Behandlingstid\"))/60)::numeric, 2) as avgservice FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY year")
+    #betjeninger_service_year_category <- dbGetQuery(con, "SELECT date_trunc('year', \"Tid\") as year, \"Kategori\" as category, avg(\"Ventetid\") as avgwait FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY year, category")
+    betjeninger_service_month <- dbGetQuery(con, "SELECT extract(month from \"Tid\") as month, round((EXTRACT(epoch FROM avg(\"Behandlingstid\"))/60)::numeric, 2) as avgservice FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY month ORDER BY month")
+    #betjeninger_service_month_category <- dbGetQuery(con, "SELECT extract(month from \"Tid\") as month, \"Kategori\" as category, avg(\"Behandlingstid\") as avgserve FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY month, category")
+    
+    visitors_per_day <- dbGetQuery(con, "SELECT date, sum as bibcount FROM datamart.visitors_per_day WHERE location='hb' and date > '2016-08-11'") 
+    betjeninger_per_day <- dbGetQuery(con, "SELECT distinct(\"Tid\"::date) as date, count(*) as borgcount FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY date")
+    
+    betjeninger_heat_1 <- dbGetQuery(con, "SELECT date_trunc('day', \"Tid\") as date, extract(isodow from \"Tid\") as weekday, extract(hour from \"Tid\") as hour, count(*) as count FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY weekday, hour, date")
+    betjeninger_heat_2 <- dbGetQuery(con, "SELECT date_trunc('day', \"Tid\") as date, extract(isodow from \"Tid\") as weekday, extract(hour from \"Tid\") as hour, count(*) as count FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY weekday, hour, date")
+    betjeninger_heat_3 <- dbGetQuery(con, "SELECT date_trunc('day', \"Tid\") as date, extract(isodow from \"Tid\") as weekday, extract(hour from \"Tid\") as hour, avg(\"Ventetid\") as avgvente FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY weekday, hour, date")
+    betjeninger_heat_4 <- dbGetQuery(con, "SELECT date_trunc('day', \"Tid\") as date, extract(isodow from \"Tid\") as weekday, extract(hour from \"Tid\") as hour, avg(\"Behandlingstid\") as avgserve FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY weekday, hour, date")
+    
+    kategorier <- dbGetQuery(con, "select \"Type\", \"Kategori\", count(*) FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' GROUP BY \"Type\", \"Kategori\" ORDER BY \"Type\", count(*) desc")
+    
+    dbDisconnect(con)
     
     # modules
     callModule(checkboxFromData, id = "citizen", data = betjeninger)
