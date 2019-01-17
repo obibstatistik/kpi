@@ -23,7 +23,12 @@ source("./sections/users.R", local = TRUE)
 source("./sections/citizenservice.R", local = TRUE)
 source("./sections/visitors.R", local = TRUE)
 
-  
+# Spinner options  
+options(spinner.size=0.75)  
+options(spinner.color="#555555")
+options(spinner.type=1)
+options(spinner.proxy.height="100%")
+    
 #  Dashboard Layout
 dashboardPage(
   skin = "black",

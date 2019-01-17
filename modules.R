@@ -113,7 +113,7 @@ kpitileUI <- function(id, image, text, color, width) {
         span(tags$img(src = image, width = "45px", height = "45px"), class="info-box-icon", style=paste0("background-color:",color)),
         div(
           span(text, class="info-box-text"),
-          span(htmlOutput(ns("kpitile")), class="info-box-number"),
+          span(withSpinner(htmlOutput(ns("kpitile")), proxy.height="100%", type=7), class="info-box-number"),
           class="info-box-content"
         ), 
         class = "info-box"

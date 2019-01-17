@@ -20,7 +20,7 @@ eventsTabPanelUI <- function(id) {
                                             column(width = 6,
                                                    h4("Arrangementer pr. år"),
                                                    p("Graferne viser det samlede antal arrangementer og undervisning/læringsseancer afholdt på OBB, samt antal deltagere i arrangementer pr. år i de sidste 5 år."),
-                                                   plotlyOutput(ns("eventsyearplot"))),
+                                                   withSpinner(plotlyOutput(ns("eventsyearplot")))),
                                             column(width = 6,
                                                    h4("Deltagere pr. år"),
                                                    p("Antal deltagere pr. år de sidste 5 år"),
