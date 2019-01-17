@@ -50,8 +50,8 @@ visitorsTabPanelUI <- function(id) {
                                      column(12,
                                        column(2,
                                               h4("Afgræns"),
-                                              selectInput(ns("visitors_fromyear"), "År 1:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2015", "2014" = "2014"), as.integer(format(Sys.Date(), "%Y"))-1),
-                                              selectInput(ns("visitors_toyear"), "År 2:", c("2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2014", "2014" = "2013"), as.integer(format(Sys.Date(), "%Y"))),
+                                              selectInput(ns("visitors_fromyear"), "År 1:", c("2019" = "2019", "2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2015", "2014" = "2014"), as.integer(format(Sys.Date(), "%Y"))-1),
+                                              selectInput(ns("visitors_toyear"), "År 2:", c("2019" = "2019", "2018" = "2018", "2017" = "2017", "2016" = "2016", "2015" = "2014", "2014" = "2013"), as.integer(format(Sys.Date(), "%Y"))),
                                               selectInput(ns("visitorslibrary"), "Bibliotek:", c("Alle" = "all","Bolbro" = "bo","Dalum" = "da","Højby" = "hoj","Historiens Hus" = "lok","Holluf Pile" = "ho","Borgernes Hus" = "hb","Korup" = "kor","Musikbiblioteket" = "mus","Tarup" = "ta","Vollsmose" = "vo")),
                                               selectInput(ns("mainlibrary2"), "Total/Lokal:",c('Med Hovedbiblioteket','Uden Hovedbiblioteket')),
                                               xlsxDownloadUI(ns("visitors_table")),
@@ -190,24 +190,20 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   # get current day
   visitors4 <- visitors2 %>%
     filter(
-      if(year(date) == '2014') {
+      if(year(date) == '2014' | date < '2015-11-17') {
         month(date) == month(Sys.Date())
-      }
-      # else if(
-      #   year(date) == '2014' & date > x {
-      #     
-      #   }
-      # )
+      } #filter on old data which only has monthly data rows
       else {
-        date == Sys.Date()-1 | 
-        date == Sys.Date() - years(1)-1 |
-        date == Sys.Date() - years(2)-1 |
-        date == Sys.Date() - years(3)-1
+        date == Sys.Date()-1 | #yesterday
+        date == Sys.Date() - years(1)-1 | #1 year ago
+        date == Sys.Date() - years(2)-1 | #2 years ago
+        date == Sys.Date() - years(3)-1 #3 years ago
       }
     ) %>%
-    mutate(date = if_else(year(date) %in% c('2014','2015'), date + (day(Sys.Date())-2), date, NULL)) %>%
-    mutate(date = format(as.POSIXct(date, tz = "GMT", format, tryFormats = c("%Y-%m-%d %H:%M:%OS"), optional = FALSE)))
-
+    mutate(date = if_else(date < '2015-11-17', date + (day(Sys.Date())-2), date, NULL)) %>% #sets dates of old data to current day of month 
+    mutate(count = if_else(date < '2015-11-17', count*(mday(date)/days_in_month(Sys.Date())), count)) %>% #calculates count of old data to fraction of month gone
+    mutate(date = format(as.POSIXct(date, tz = "GMT", format, tryFormats = c("%Y-%m-%d %H:%M:%OS"), optional = FALSE)))  
+  
   visitors6 <- rbind(visitors3, visitors4)
   visitors6 <- visitors6 %>%
     arrange(year, desc(date))
