@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -y \
 RUN R -e "install.packages(c('devtools','markdown','DiagrammeR','RPostgreSQL','shiny','shinydashboard','plotly','formattable','httr','curl','dplyr','foreach','openxlsx','shinyLP','data.table','data.tree','gridSVG','XML','lubridate','tidyr','ggplot2','profvis','leaflet','janitor','treemap','RColorBrewer'), repos='https://cloud.r-project.org/')"
 
 # install dependencies from github
-RUN R -e "devtools::install_github('sorenb/whitebookviz')"
+RUN R -e "devtools::install_github(c('sorenb/whitebookviz','andrewsali/shinycssloaders@escape'))"
 
 # copy the app to the image
 RUN mkdir /root/whitebook
