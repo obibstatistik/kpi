@@ -30,7 +30,7 @@ visitorsTabPanelUI <- function(id) {
                                        column(10,
                                               h4("Samlet besøg på OBB"),
                                               p("Grafen viser det samlede besøg på OBB fordelt pr. år. De grå søjler er hele året, men farvede søjler i forgrunden er år til dato. Det er dermed muligt at sammenligne indeværende års besøg med de forrige."),
-                                              column(12, tags$div( withSpinner(samedate_barchartOutput(ns('whity'))) ))
+                                              column(10, tags$div( withSpinner(samedate_barchartOutput(ns('whity'))) ))
                                        )
                                      ),
                                      column(12,tags$hr()),
