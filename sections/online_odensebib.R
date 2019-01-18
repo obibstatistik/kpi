@@ -61,16 +61,17 @@ online_odensebibTabPanelUI <- function(id) {
                                      )
                                    )
                                    
-                          )#,
-                          # tabPanel("Kryds",
-                          #           fluidRow(width = 12,
-                          #                    column(
-                          #                      width = 12,
-                          #                      h4("Sidevisninger kontra udlån"),
-                          #                      plotlyOutput(ns("udlaan_sidevisninger_plot")),
-                          #                      column(width = 6,tableOutput(ns("table1"))),
-                          #                      column(width = 6,tableOutput(ns("table2")))
-                          #                    )))
+                          ),
+                           tabPanel("Sidevisninger / udlån",
+                                     fluidRow(width = 12,
+                                              column(
+                                                width = 12,
+                                                h4("Sidevisninger kontra udlån"),
+                                                withSpinner(plotlyOutput(ns("udlaan_sidevisninger_plot"))),
+                                                column(width = 4,tableOutput(ns("table1"))),
+                                                column(width = 4,tableOutput(ns("table2"))),
+                                                column(width = 4,tableOutput(ns("table3")))
+                                              )))
                           #,
                           # tabPanel("Indholdsgrupper",
                           #          p("Data fra 22-05-2018"),
@@ -103,17 +104,21 @@ online_odensebibTabPanel <- function(input, output, session) {
   ga_top10 <- dbGetQuery(con, "SELECT title, pageviews FROM datamart.ga_top10 order by pageviews desc limit 11 offset 1")
   ga_browser <- dbGetQuery(con, "select browser, to_date(yearmonth::text, 'YYYYMM') as datoen, pageviews from datamart.ga_browser")
   ga_language <- dbGetQuery(con, "select language, to_date(yearmonth::text, 'YYYYMM') as datoen, pageviews from datamart.ga_language")
-  ga_path <- dbGetQuery(con, "SELECT * FROM datamart.ga_path")
-  events <- dbGetQuery(con_dwh, "SELECT * FROM hjemmesider.ga_events_out")
-  sites <- dbGetQuery(con, "SELECT * FROM datamart.sites")
-  udlaan <- dbGetQuery(con, "SELECT transact_date as date, sum(antal) from cicero.udlaan_per_opstillingsprofil where extract(year from (transact_date)) > extract(year from (current_date - interval '5 year')) group by date")
+  #ga_path <- dbGetQuery(con, "SELECT * FROM datamart.ga_path")
+  #events <- dbGetQuery(con_dwh, "SELECT * FROM hjemmesider.ga_events_out")
+  #sites <- dbGetQuery(con, "SELECT * FROM datamart.sites")
+  #udlaan <- dbGetQuery(con, "SELECT transact_date as date, sum(antal) from cicero.udlaan_per_opstillingsprofil where extract(year from (transact_date)) > extract(year from (current_date - interval '5 year')) group by date")
+  udlaan <- dbGetQuery(con, "SELECT extract(year from transact_date) as aar, extract(month from transact_date) as maaned, sum(antal) as sum_udlaan from cicero.udlaan_per_opstillingsprofil where extract(year from (transact_date)) > extract(year from (current_date - interval '5 year')) group by aar, maaned order by aar desc, maaned desc")
   dbDisconnect(con)
   dbDisconnect(con_dwh)
   
+  
+  
+  
   # sites
   
-  sites <- sites %>% select("Organisation" = titel, "URL" = url)
-  output$tablesites <- renderTable(sites)
+  #sites <- sites %>% select("Organisation" = titel, "URL" = url)
+  #output$tablesites <- renderTable(sites)
   
   # pageviews
   
@@ -232,114 +237,114 @@ online_odensebibTabPanel <- function(input, output, session) {
   })
   
   #content groups
-  ga_path <- ga_path %>%
-    mutate(
-      content_group = case_when(
-        grepl("biblioteker/hovedbiblioteket", ga_path$path) ~ "Afdelingsside Hovedbiblioteket",
-        grepl("biblioteker/bolbro", ga_path$path) ~ "Afdelingsside Bolbro",
-        grepl("biblioteker/dalum", ga_path$path) ~ "Afdelingsside Dalum",
-        grepl("biblioteker/slug-dalum", ga_path$path) ~ "Afdelingsside Dalum",
-        grepl("biblioteker/node/73", ga_path$path) ~ "Afdelingsside Historiens Hus",
-        grepl("biblioteker/slug-holluf", ga_path$path) ~ "Afdelingsside Holluf Pile",
-        grepl("biblioteker/node/142", ga_path$path) ~ "Afdelingsside Højby",
-        grepl("biblioteker/slug-korup", ga_path$path) ~ "Afdelingsside Korup",
-        grepl("biblioteker/musikbiblioteket", ga_path$path) ~ "Afdelingsside Musikbiblioteket",
-        grepl("biblioteker/slug-tarup", ga_path$path) ~ "Afdelingsside Tarup",
-        grepl("biblioteker/slug-vollsmose", ga_path$path) ~ "Afdelingsside Vollsmose",
-        grepl("^/biblioteker", ga_path$path) ~ "Biblioteker oversigtsiden",
-        grepl("page/feedback", ga_path$path) ~ "Kontaktformularsiden",
-        grepl("page/kontakt-personalet", ga_path$path) ~ "Personale oversigten",
-        grepl("page/pas_paa_biblioteket", ga_path$path) ~ "Borgerservice siden",
-        grepl("^/search/ting", ga_path$path) ~ "Søgning Brønd",
-        grepl("^/search/node", ga_path$path) ~ "Søgning Hjemmeside",
-        grepl("^/ting/collection/", ga_path$path) ~ "Visning Værker",
-        grepl("^/ting/collection/", ga_path$path) ~ "Visning Værker",
-        grepl("^/ting/object/", ga_path$path) ~ "Visning Objekt",
-        grepl("^/ting/infomedia/", ga_path$path) ~ "Visning Infomedia",
-        grepl("^/user/password", ga_path$path) ~ "Bruger Glemt kodeord",
-        grepl("^/user/$", ga_path$path) ~ "Bruger Profil",
-        grepl("^/user$", ga_path$path) ~ "Bruger Profil",
-        grepl("^/payment/dibs", ga_path$path) ~ "Bruger Betaling Mellemværende",
-        grepl("^/nyheder", ga_path$path) ~ "Nyheder Enkelte",
-        grepl("^/news-category", ga_path$path) ~ "Nyheder Oversigtssider",
-        grepl("^/arrangementer", ga_path$path) ~ "Arrangementer",
-        grepl("^/403.html", ga_path$path) ~ "Adgang nægtet",
-        grepl("^/404.html", ga_path$path) ~ "Ikke fundet",
-        grepl("^/media/browser", ga_path$path) ~ "Medie browser!",
-        grepl("^/ding_frontpage", ga_path$path) ~ "Bruger Log ind",
-        grepl("^/page/netbiblioteket-oversigt", ga_path$path) ~ "Netbiblioteket Oversigt",
-        grepl("^/$", ga_path$path) ~ "Forside"
-        
-      ) 
-    ) %>%
-    mutate(gruppe = ifelse(is.na(content_group), "Andet", content_group)) %>%
-    select(gruppe, pageviews) %>%
-    group_by(gruppe) %>%
-    summarise(sum = sum(pageviews))
+  # ga_path <- ga_path %>%
+  #   mutate(
+  #     content_group = case_when(
+  #       grepl("biblioteker/hovedbiblioteket", ga_path$path) ~ "Afdelingsside Hovedbiblioteket",
+  #       grepl("biblioteker/bolbro", ga_path$path) ~ "Afdelingsside Bolbro",
+  #       grepl("biblioteker/dalum", ga_path$path) ~ "Afdelingsside Dalum",
+  #       grepl("biblioteker/slug-dalum", ga_path$path) ~ "Afdelingsside Dalum",
+  #       grepl("biblioteker/node/73", ga_path$path) ~ "Afdelingsside Historiens Hus",
+  #       grepl("biblioteker/slug-holluf", ga_path$path) ~ "Afdelingsside Holluf Pile",
+  #       grepl("biblioteker/node/142", ga_path$path) ~ "Afdelingsside Højby",
+  #       grepl("biblioteker/slug-korup", ga_path$path) ~ "Afdelingsside Korup",
+  #       grepl("biblioteker/musikbiblioteket", ga_path$path) ~ "Afdelingsside Musikbiblioteket",
+  #       grepl("biblioteker/slug-tarup", ga_path$path) ~ "Afdelingsside Tarup",
+  #       grepl("biblioteker/slug-vollsmose", ga_path$path) ~ "Afdelingsside Vollsmose",
+  #       grepl("^/biblioteker", ga_path$path) ~ "Biblioteker oversigtsiden",
+  #       grepl("page/feedback", ga_path$path) ~ "Kontaktformularsiden",
+  #       grepl("page/kontakt-personalet", ga_path$path) ~ "Personale oversigten",
+  #       grepl("page/pas_paa_biblioteket", ga_path$path) ~ "Borgerservice siden",
+  #       grepl("^/search/ting", ga_path$path) ~ "Søgning Brønd",
+  #       grepl("^/search/node", ga_path$path) ~ "Søgning Hjemmeside",
+  #       grepl("^/ting/collection/", ga_path$path) ~ "Visning Værker",
+  #       grepl("^/ting/collection/", ga_path$path) ~ "Visning Værker",
+  #       grepl("^/ting/object/", ga_path$path) ~ "Visning Objekt",
+  #       grepl("^/ting/infomedia/", ga_path$path) ~ "Visning Infomedia",
+  #       grepl("^/user/password", ga_path$path) ~ "Bruger Glemt kodeord",
+  #       grepl("^/user/$", ga_path$path) ~ "Bruger Profil",
+  #       grepl("^/user$", ga_path$path) ~ "Bruger Profil",
+  #       grepl("^/payment/dibs", ga_path$path) ~ "Bruger Betaling Mellemværende",
+  #       grepl("^/nyheder", ga_path$path) ~ "Nyheder Enkelte",
+  #       grepl("^/news-category", ga_path$path) ~ "Nyheder Oversigtssider",
+  #       grepl("^/arrangementer", ga_path$path) ~ "Arrangementer",
+  #       grepl("^/403.html", ga_path$path) ~ "Adgang nægtet",
+  #       grepl("^/404.html", ga_path$path) ~ "Ikke fundet",
+  #       grepl("^/media/browser", ga_path$path) ~ "Medie browser!",
+  #       grepl("^/ding_frontpage", ga_path$path) ~ "Bruger Log ind",
+  #       grepl("^/page/netbiblioteket-oversigt", ga_path$path) ~ "Netbiblioteket Oversigt",
+  #       grepl("^/$", ga_path$path) ~ "Forside"
+  #       
+  #     ) 
+  #   ) %>%
+  #   mutate(gruppe = ifelse(is.na(content_group), "Andet", content_group)) %>%
+  #   select(gruppe, pageviews) %>%
+  #   group_by(gruppe) %>%
+  #   summarise(sum = sum(pageviews))
+  # 
+  # output$content_groups <- renderTable(
+  #   ga_path <- ga_path %>%
+  #     mutate(sum = format(round(as.numeric(sum), 0), nsmall=0, big.mark=".", decimal.mark=",")) %>%
+  #     arrange(gruppe)  
+  # )
   
-  output$content_groups <- renderTable(
-    ga_path <- ga_path %>%
-      mutate(sum = format(round(as.numeric(sum), 0), nsmall=0, big.mark=".", decimal.mark=",")) %>%
-      arrange(gruppe)  
-  )
+  # treemapdata <- reactive({
+  #   ga_path <- ga_path %>%
+  #     mutate(
+  #       overgruppe = case_when(
+  #         grepl("^Afdelingsside", ga_path$gruppe) ~ "Biblioteker",
+  #         grepl("^Biblioteker oversigtsiden", ga_path$gruppe) ~ "Biblioteker",
+  #         grepl("page/feedback", ga_path$gruppe) ~ "Kontaktformularsiden",
+  #         grepl("page/kontakt-personalet", ga_path$gruppe) ~ "Personale oversigten",
+  #         grepl("page/pas_paa_biblioteket", ga_path$gruppe) ~ "Borgerservice siden",
+  #         grepl("^Søgning", ga_path$gruppe) ~ "Materialer",
+  #         grepl("^Visning", ga_path$gruppe) ~ "Materialer",
+  #         grepl("^/ting/collection/", ga_path$gruppe) ~ "Visning Værker",
+  #         grepl("^/ting/object/", ga_path$gruppe) ~ "Visning Objekt",
+  #         grepl("^/ting/infomedia/", ga_path$gruppe) ~ "Visning Infomedia",
+  #         grepl("^Bruger", ga_path$gruppe) ~ "Brugerprofil",
+  #         grepl("^Nyheder", ga_path$gruppe) ~ "Nyheder",
+  #         grepl("^Arrangementer", ga_path$gruppe) ~ "Arrangementer",
+  #         grepl("^Adgang nægtet", ga_path$gruppe) ~ "Fejl",
+  #         grepl("^Ikke fundet", ga_path$gruppe) ~ "Fejl",
+  #         grepl("^/media/browser", ga_path$gruppe) ~ "Medie browser!",
+  #         grepl("^/page/netbiblioteket-oversigt", ga_path$gruppe) ~ "Netbiblioteket Oversigt",
+  #         grepl("^/$", ga_path$gruppe) ~ "Forside",
+  #         TRUE ~ "Andet"
+  #       ) 
+  #     )
+  # })
   
-  treemapdata <- reactive({
-    ga_path <- ga_path %>%
-      mutate(
-        overgruppe = case_when(
-          grepl("^Afdelingsside", ga_path$gruppe) ~ "Biblioteker",
-          grepl("^Biblioteker oversigtsiden", ga_path$gruppe) ~ "Biblioteker",
-          grepl("page/feedback", ga_path$gruppe) ~ "Kontaktformularsiden",
-          grepl("page/kontakt-personalet", ga_path$gruppe) ~ "Personale oversigten",
-          grepl("page/pas_paa_biblioteket", ga_path$gruppe) ~ "Borgerservice siden",
-          grepl("^Søgning", ga_path$gruppe) ~ "Materialer",
-          grepl("^Visning", ga_path$gruppe) ~ "Materialer",
-          grepl("^/ting/collection/", ga_path$gruppe) ~ "Visning Værker",
-          grepl("^/ting/object/", ga_path$gruppe) ~ "Visning Objekt",
-          grepl("^/ting/infomedia/", ga_path$gruppe) ~ "Visning Infomedia",
-          grepl("^Bruger", ga_path$gruppe) ~ "Brugerprofil",
-          grepl("^Nyheder", ga_path$gruppe) ~ "Nyheder",
-          grepl("^Arrangementer", ga_path$gruppe) ~ "Arrangementer",
-          grepl("^Adgang nægtet", ga_path$gruppe) ~ "Fejl",
-          grepl("^Ikke fundet", ga_path$gruppe) ~ "Fejl",
-          grepl("^/media/browser", ga_path$gruppe) ~ "Medie browser!",
-          grepl("^/page/netbiblioteket-oversigt", ga_path$gruppe) ~ "Netbiblioteket Oversigt",
-          grepl("^/$", ga_path$gruppe) ~ "Forside",
-          TRUE ~ "Andet"
-        ) 
-      )
-  })
-  
-  output$treemap <- renderPlot(
-    treemap(treemapdata(),
-          index=c("overgruppe","gruppe"),
-          vSize="sum",
-          type="index",
-          fontsize.title=14,
-          title="Treemap"#,
-          #vColor="sum",
-          #palette=terrain.colors(10)
-          )
-    
-  )
+  # output$treemap <- renderPlot(
+  #   treemap(treemapdata(),
+  #         index=c("overgruppe","gruppe"),
+  #         vSize="sum",
+  #         type="index",
+  #         fontsize.title=14,
+  #         title="Treemap"#,
+  #         #vColor="sum",
+  #         #palette=terrain.colors(10)
+  #         )
+  #   
+  # )
   
   #events - outlinks
   
-  output$table_events_category <- renderTable (
-    ga_events <- ga_events %>%
-      select(eventcategory, yearmonth) %>%
-      group_by(eventcategory, yearmonth) %>%
-      summarise(sum = n()) %>%
-      spread(eventcategory, sum)
-  )
+  # output$table_events_category <- renderTable (
+  #   ga_events <- ga_events %>%
+  #     select(eventcategory, yearmonth) %>%
+  #     group_by(eventcategory, yearmonth) %>%
+  #     summarise(sum = n()) %>%
+  #     spread(eventcategory, sum)
+  # )
   
-  output$table_events_action <- renderTable (
-    ga_events <- ga_events %>%
-      select(eventaction, yearmonth) %>%
-      group_by(eventaction, yearmonth) %>%
-      summarise(sum = n()) %>%
-      spread(eventaction, sum)
-  )
+  # output$table_events_action <- renderTable (
+  #   ga_events <- ga_events %>%
+  #     select(eventaction, yearmonth) %>%
+  #     group_by(eventaction, yearmonth) %>%
+  #     summarise(sum = n()) %>%
+  #     spread(eventaction, sum)
+  # )
 
   # events <- ga_events %>%
   #   filter(eventcategory == 'Outbound links') %>%
@@ -365,56 +370,53 @@ online_odensebibTabPanel <- function(input, output, session) {
   #   select(destination, eventlabel, yearmonth) %>%
   #   arrange(desc(destination), eventlabel) 
   
-  output$table_events_clicks <- renderTable (
-    events %>% 
-      filter(!is.na(destination)) %>%
-      group_by(destination, yearmonth) %>%
-      summarize(sum = n()) %>%
-      spread(destination, sum)
-    , rownames = TRUE
-  )
+  # output$table_events_clicks <- renderTable (
+  #   events %>% 
+  #     filter(!is.na(destination)) %>%
+  #     group_by(destination, yearmonth) %>%
+  #     summarize(sum = n()) %>%
+  #     spread(destination, sum)
+  #   , rownames = TRUE
+  # )
   
-  output$table_events_clicks_na <- renderTable (
-    events %>% filter(is.na(destination)), rownames = TRUE  
-  )
+  # output$table_events_clicks_na <- renderTable (
+  #   events %>% filter(is.na(destination)), rownames = TRUE  
+  # )
   
   #
-  areas <- c("eReolen","eReolen Go","eReolen Global","Fynsbibliografien","Historisk Atlas","Infomedia","Litteraturens Verden.dk","Matematikfessor")
+  #areas <- c("eReolen","eReolen Go","eReolen Global","Fynsbibliografien","Historisk Atlas","Infomedia","Litteraturens Verden.dk","Matematikfessor")
   
   ### KRYDS ###
   
-  output$table1 <- renderTable({
-    data <- udlaan %>% mutate(datoen = format(date, format="%B %d %Y"))
-  })
-  
-  udlaan <- udlaan %>% 
-    rename(sum_udlaan = sum) %>%
-    mutate(date = round_date(date, unit="month")) 
-  pageviews <- ga_pageviews %>% gather(key = column, value = sum_pageviews, -maaned) %>%
-    mutate(date = as.Date(paste0(gsub("v","",column), maaned), "%Y%d")) %>%
-    select(-maaned, -column) 
+  udlaan <- udlaan
+  pageviews <- ga_pageviews %>%
+    arrange(desc(aar), desc(maaned)) %>% 
+    rename(sum_pageviews = pageviews) 
   data<- udlaan %>%
-    full_join(pageviews, by = c("date" = "date")) %>%
+    left_join(pageviews, by = c("aar" = "aar", "maaned" = "maaned")) %>%
+    mutate(datoen = paste0(aar,"-", maaned,"-","01")) %>%
+    mutate(date = format(as.Date(datoen, "%Y-%m-%d"), format="%Y-%m")) %>%
     mutate_all(funs(ifelse(is.na(.), 0,.))) %>%
     arrange(date) %>%
-    mutate(datoen = format(date, format="%B %d %Y")) %>%
-    filter(sum_udlaan > 0 & sum_pageviews > 0)
-  output$table2 <- renderTable(data)
-  
+    slice(1:(n()-1)) 
+
   output$udlaan_sidevisninger_plot <- renderPlotly({
     plot_ly(data) %>%
       add_lines(x = ~date, y = ~sum_udlaan, name = 'Udlån', line = list(color = color3)) %>%
       add_lines(x = ~date, y = ~sum_pageviews, name = 'Sidevisninger', yaxis = "y2", line = list(color = color4)) %>%
       layout(
-        xaxis = list(title="Dato"),
+        xaxis = list(title="Dato", tickangle ="45"),
         yaxis = list(
           tickfont = list(color = color3),
-          title = "Udlån"),
+          title = "Udlån",
+          showgrid = FALSE
+        ),
         yaxis2 = list(
           tickfont = list(color = color4),
           overlaying = "y",
           side = "right",
-          title = "Sidevisninger"
+          title = "Sidevisninger",
+          showgrid = FALSE
         )
       )
   })
