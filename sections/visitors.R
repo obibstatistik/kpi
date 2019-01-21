@@ -189,17 +189,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   
   # get current day
   visitors4 <- visitors2 %>%
-    filter(
-      if(year(date) == '2014' | date < '2015-11-17') {
-        month(date) == month(Sys.Date())
-      } #filter on old data which only has monthly data rows
-      else {
-        date == Sys.Date()-1 | #yesterday
-        date == Sys.Date() - years(1)-1 | #1 year ago
-        date == Sys.Date() - years(2)-1 | #2 years ago
-        date == Sys.Date() - years(3)-1 #3 years ago
-      }
-    ) %>%
+    filter(if_else(date < '2015-11-17', month(date) == month(Sys.Date()), date == Sys.Date()-1 | date == Sys.Date() - years(1)-1 | date == Sys.Date() - years(2)-1 | date == Sys.Date() - years(3)-1 )) %>%
     mutate(date = if_else(date < '2015-11-17', date + (day(Sys.Date())-2), date, NULL)) %>% #sets dates of old data to current day of month 
     mutate(count = if_else(date < '2015-11-17', count*(mday(date)/days_in_month(Sys.Date())), count)) %>% #calculates count of old data to fraction of month gone
     mutate(date = format(as.POSIXct(date, tz = "GMT", format, tryFormats = c("%Y-%m-%d %H:%M:%OS"), optional = FALSE)))  
@@ -261,7 +251,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
       mutate(akk = percent((akku2-akku1)/akku1, digits = 0)) %>%
       select(c(1,2,4,3,5,6,7)) %>%
       mutate_at(vars(-1), funs(replace(., is.na(.), 0))) %>%
-      mutate_at(vars(c(-1,-6,-7)), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark="."))) %>%
+      mutate_at(vars(c(-1,-6,-7)), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".", decimal.mark=","))) %>%
       mutate_at(vars(1), funs(danskemåneder(.))) %>%
       rename(Måned = month, Akkumuleret = akku1, "Akkumuleret " = akku2, 'Ændring pr. mdr.' = mdr, 'Ændring akkumuleret' = akk)
   })
@@ -400,7 +390,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
         spread(key = location, value = sum) %>%
         adorn_totals("row") %>%
         mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
-        mutate_at(vars(-tid), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".")))
+        mutate_at(vars(-tid), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".", decimal.mark=",")))
   })
   
   output$visitors_per_hours_table <- renderFormattable({
@@ -436,7 +426,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
         summarise(sum = sum(count)) %>%
         spread(key = location, value = sum) %>%
         mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
-        mutate_at(vars(-tid), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".")))
+        mutate_at(vars(-tid), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".", decimal.mark=",")))
     formattable(visitors_hours)
   })
   
