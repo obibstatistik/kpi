@@ -77,10 +77,7 @@ citizenserviceTabPanelUI <- function(id) {
                       column(width = 12, 
                              withSpinner(plotlyOutput(ns("borgvsbib_plot")))
                         )
-                      )#,
-                      #column(width = 4, tableOutput(ns("joined"))),
-                      #column(width = 4, tableOutput(ns("borghus"))),
-                      #column(width = 4, tableOutput(ns("borgserv")))
+                      )
                     )),
         tabPanel("Dag / tid heatmaps",
                  fluidRow(width = 12,
@@ -101,14 +98,14 @@ citizenserviceTabPanelUI <- function(id) {
                       heatmapWeekTableUI(ns(id = "heat4"), title = "Gennemsnitlig betjeningstid")
                     )
                  )
-               ),
-         tabPanel("Kategorier",
-                  fluidRow(width = 12,
-                   column(
-                     width = 12,
-                     h4("Kategorioverblik"),
-                     column(width = 12, tableOutput(ns("kategorier")))
-                   )))
+               )#,
+         # tabPanel("Kategorier",
+         #          fluidRow(width = 12,
+         #           column(
+         #             width = 12,
+         #             h4("Kategorioverblik"),
+         #             column(width = 12, tableOutput(ns("kategorier")))
+         #           )))
         
       )
     ))
@@ -277,23 +274,27 @@ citizenserviceTabPanel <-
         
     datadata <- visitors_per_day %>%
       full_join(betjeninger_per_day, by = c("date" = "date")) %>%
-      mutate_all(funs(ifelse(is.na(.), 0,.)))
-                      
+      mutate_all(funs(ifelse(is.na(.), 0,.)))  %>%
+      mutate(date = format(as.Date(date, origin="1970-01-01"), format="%Y-%m")) %>%
+      slice(1:(n()-2)) 
+      
     output$borgvsbib_plot <- renderPlotly({
       plot_ly(datadata) %>%
         add_lines(x = ~date, y = ~bibcount, name = 'Indgang Borgernes Hus', line = list(color = color3)) %>%
         add_lines(x = ~date, y = ~borgcount, name = 'Betjeninger Borgerservice', yaxis = "y2", line = list(color = color4)) %>%
         layout(
-          xaxis = list(title="Dato"),
+          xaxis = list(title="Dato", showgrid = FALSE),
           yaxis = list(
             tickfont = list(color = color3),
             title = "Indgang Borgernes Hus"),
-          yaxis2 = list(
-            tickfont = list(color = color4),
-            overlaying = "y",
-            side = "right",
-            title = "Betjeninger Borgerservice"
-          )
+            showgrid = FALSE,
+            yaxis2 = list(
+              tickfont = list(color = color4),
+              overlaying = "y",
+              side = "right",
+              title = "Betjeninger Borgerservice",
+              showgrid = FALSE
+            )
         )
     })
     
