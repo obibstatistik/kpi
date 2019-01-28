@@ -78,6 +78,26 @@ materialsTabPanelUI <- function(id) {
                                      column(12,tags$div( tags$hr(), class = "hidden-print" ))                                   
                                 )
                           ),
+                          tabPanel("Interurban", 
+                                   fluidRow(
+                                     column(12,
+                                            column(2,
+                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                            ),
+                                            column(10,
+                                                   h4("Samlet interurbane udlån på OBB"),
+                                                   p("Grafen viser det samlede interurbane udlån fra OBB til andre biblioteksvæsner, fordelt pr. år. De grå søjler er hele året, men farvede søjler i forgrunden er år til dato. Det er dermed muligt at sammenligne indeværende års udlån med de forrige."),
+                                                   column(8,
+                                                       tags$div( withSpinner(samedate_barchartOutput(ns('interurban_samedate_plot'))) )
+                                                   ),
+                                                   column(10,
+                                                          p("Udlånsstatistikken bygger på data fra Cicero. Der er ikke fuld gennemsigtighed i forhold til datakilden, hvorfor unøjagtigheder kan forekomme. Nyeste data har pt. en forsinkelse på tre døgn."),
+                                                          p("* I 2017 blev Borgernes Hus bygget, hvorfor udlånsmønstret var mærkbart anderledes end øvrige år.")
+                                                   )
+                                            )
+                                        )
+                                     )
+                          ),
                        #   tabPanel("Timer", 
                        #           fluidRow(
                        #             column(2, h4("Afgræns")),
@@ -87,28 +107,28 @@ materialsTabPanelUI <- function(id) {
                        #             )
                        #           )
                        #  ),
-                          tabPanel("Cirkulation", 
-                                   fluidRow(
-                                     column(12,
-                                       column(2,
-                                              tags$br(),
-                                              h4("Periode"),
-                                              dateRangeInput(ns('dateRange_circ'),
-                                                             label = 'Vælg periode',
-                                                             start = Sys.Date() - 182, end = Sys.Date(),
-                                                             separator = " - "
-                                              ),
-                                              tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
-                                       ),
-                                       column(10,height = "900px",
-                                              h4("Cirkulationstal fordelt på biblioteker og afdelingerne Børn/Voksen"),
-                                              p("Grafen viser cirkulationstallet, dvs. gennemsnitligt udlån pr. eksemplar over en given periode."),
-                                              p("Perioden kan vælges i venstre side. Default er et halvt år tilbage (182 dage)"),
-                                              withSpinner(plotlyOutput(ns("circ_join_plot"), height = "700px"))
-                                       )
-                                     )
-                                   )
-                          )
+                       tabPanel("Cirkulation", 
+                                fluidRow(
+                                  column(12,
+                                         column(2,
+                                                tags$br(),
+                                                h4("Periode"),
+                                                dateRangeInput(ns('dateRange_circ'),
+                                                               label = 'Vælg periode',
+                                                               start = Sys.Date() - 182, end = Sys.Date(),
+                                                               separator = " - "
+                                                ),
+                                                tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                         ),
+                                         column(10,height = "900px",
+                                                h4("Cirkulationstal fordelt på biblioteker og afdelingerne Børn/Voksen"),
+                                                p("Grafen viser cirkulationstallet, dvs. gennemsnitligt udlån pr. eksemplar over en given periode."),
+                                                p("Perioden kan vælges i venstre side. Default er et halvt år tilbage (182 dage)"),
+                                                withSpinner(plotlyOutput(ns("circ_join_plot"), height = "700px"))
+                                         )
+                                  )
+                                )
+                       )
                           #,tabPanel("Data og dokumentation",
                           #         fluidRow(
                           #           column(12,
@@ -182,6 +202,11 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   
   # Render barchart comparing whole and partial years
   output$checkouts_samedate_plot <- renderSamedate_barchart({
+    samedate_barchart(checkouts_samedate,curDate,sortx,frontColors,backColor,labelx,labely,tickNumY,showScaleY,barWidth,barsOffset)
+  })
+  
+  # Render barchart comparing whole and partial years for interlibrary loans
+  output$interurban_samedate_plot <- renderSamedate_barchart({
     samedate_barchart(checkouts_samedate,curDate,sortx,frontColors,backColor,labelx,labely,tickNumY,showScaleY,barWidth,barsOffset)
   })
   
