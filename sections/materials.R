@@ -144,6 +144,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
 
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
+  con_dwh <- dbConnect(drv, dbname = dbname_dwh, host = host_dwh, port = port_dwh, user = user_dwh, password = password_dwh)
   #udlaan <- dbGetQuery(con, "SELECT name, hour, circulation_fact_count FROM cicero.udlaan_per_klokkeslaet")
   #max_date <- dbGetQuery(con, "select max(transact_date) max_date from cicero.udlaan_per_opstillingsprofil")
   checkouts_all <- dbGetQuery(con, "SELECT extract(year from transact_date) aar,transact_date,branch,dep,sum(antal) antal
@@ -156,6 +157,17 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
     group by branch,dep
     order by branch,dep")
   #dbc_eres_stats <- dbGetQuery(con, "SELECT * from dbc_eres_stats")
+  comp_years_interurban <- dbGetQuery(con_dwh, "SELECT DISTINCT(EXTRACT(YEAR FROM transact_date)) aar,SUM(antal) sum,extract(YEAR FROM MAX(transact_date))::TEXT || '-12-31' dato
+    FROM cicero.udlaan_per_laanersegment
+    WHERE cat ILIKE '%ibliotek%'
+    GROUP BY aar
+    UNION ALL																   
+    SELECT distinct(EXTRACT(YEAR FROM transact_date)) aar,SUM(antal) sum, extract(YEAR FROM transact_date)::text || to_char((SELECT max(transact_date) FROM cicero.udlaan_per_laanersegment), '-MM-DD') dato
+    FROM cicero.udlaan_per_laanersegment
+    WHERE cat ILIKE '%ibliotek%'
+    AND to_char(transact_date,'MM-DD') <= to_char((SELECT max(transact_date) FROM cicero.udlaan_per_laanersegment), 'MM-DD')																					   
+    GROUP BY aar
+    ORDER BY aar,dato DESC")
   dbDisconnect(con)
   
   # Calculate latest date with data
@@ -205,9 +217,13 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
     samedate_barchart(checkouts_samedate,curDate,sortx,frontColors,backColor,labelx,labely,tickNumY,showScaleY,barWidth,barsOffset)
   })
   
+  # Reordering and renaming columns
+  comp_years_interurban <- comp_years_interurban[c(1,3,2)]      # does the column order matter?
+  names(comp_years_interurban) <- c("year","date","count")   # unsure if the column names matter, but renaming just to be safe
+  
   # Render barchart comparing whole and partial years for interlibrary loans
   output$interurban_samedate_plot <- renderSamedate_barchart({
-    samedate_barchart(checkouts_samedate,curDate,sortx,frontColors,backColor,labelx,labely,tickNumY,showScaleY,barWidth,barsOffset)
+    samedate_barchart(comp_years_interurban,curDate,sortx,frontColors,backColor,labelx,labely,tickNumY,showScaleY,barWidth,barsOffset)
   })
   
   # Whole years dataframe with branches for filtering main library
