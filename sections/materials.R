@@ -170,6 +170,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
     GROUP BY aar
     ORDER BY aar,dato DESC")
   dbDisconnect(con)
+  dbDisconnect(con_dwh)
   
   # Calculate latest date with data
   max_date <- checkouts_all %>%
@@ -368,48 +369,6 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
              bargap = 0.4,
              #height = 600,
              #width = 800,
-             yaxis = list(showgrid = FALSE, showline = FALSE, showticklabels = TRUE, title = "", type = "category"),
-             xaxis = list(zeroline = FALSE, showline = FALSE, showticklabels = TRUE, domain = c(0,2), title = "", type = "line", showgrid = TRUE))
-  })
-  
-  output$circ_all_plot <- renderPlotly({
-
-    circ_behold <- beholdning %>%
-      group_by(dep) %>%
-      summarise(sum = sum(sum))
-    
-    circ_udlån <- checkouts_all %>%
-      filter( transact_date >= input$dateRange_circ[1] & transact_date <= input$dateRange_circ[2]) %>%
-      filter(!branch %in% c('Odense Arrest')) %>%
-      group_by(dep) %>%
-      summarise(sum = sum(antal))
-
-    circ_join <- full_join(circ_udlån, circ_behold, by = c("dep")) %>%
-      mutate(cirkulationstal = format(round(sum.x / sum.y, 1)) ) %>%
-      select(dep,cirkulationstal) %>%
-      spread(key = dep, value = cirkulationstal)
-
-    plot_ly() %>%
-
-      add_trace(x = ~circ_join$Børn,
-                type = 'bar',
-                orientation = 'h',
-                name = 'Børn',
-                marker = list(color = color2,
-                              width = 5)) %>%
-
-      add_trace(x = ~circ_join$Voksen,
-                type = 'bar',
-                orientation = 'h',
-                name = 'Voksen',
-                marker = list(color = color1,
-                              width = 5)) %>%
-
-      layout(autosize = TRUE,
-             title = "",
-             margin = list(l = 200, r = 10, b = 50, t = 50, pad = 10),
-             barmode = 'group',
-             bargap = 0.4,
              yaxis = list(showgrid = FALSE, showline = FALSE, showticklabels = TRUE, title = "", type = "category"),
              xaxis = list(zeroline = FALSE, showline = FALSE, showticklabels = TRUE, domain = c(0,2), title = "", type = "line", showgrid = TRUE))
   })
