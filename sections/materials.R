@@ -306,14 +306,14 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
     circ_behold <- rbind(as.data.frame(circ_behold),as.data.frame(circ_behold_sum))
 
     circ_udlån <- checkouts_all %>%
-      filter( transact_date >= as.Date("2018-01-01") & transact_date <= as.Date("2018-06-30") ) %>%
-      # filter( transact_date >= input$dateRange_circ[1] & transact_date <= input$dateRange_circ[2]) %>%
+      # filter( transact_date >= as.Date("2018-01-01") & transact_date <= as.Date("2018-06-30") ) %>%
+      filter( transact_date >= input$dateRange_circ[1] & transact_date <= input$dateRange_circ[2]) %>%
       group_by(branch,dep) %>%
       summarise(sum = sum(antal))
     
     circ_checkouts_sum <- checkouts_all %>%
-      # filter( transact_date >= input$dateRange_circ[1] & transact_date <= input$dateRange_circ[2]) %>%
-      filter( transact_date >= '2018-01-01' & transact_date <= '2018-12-31') %>%
+      filter( transact_date >= input$dateRange_circ[1] & transact_date <= input$dateRange_circ[2]) %>%
+      # filter( transact_date >= '2018-01-01' & transact_date <= '2018-12-31') %>%
       select(antal) %>%
       summarise(sum = sum(antal))
     
