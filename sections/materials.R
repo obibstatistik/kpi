@@ -124,7 +124,8 @@ materialsTabPanelUI <- function(id) {
                                                 h4("Cirkulationstal fordelt på biblioteker og afdelingerne Børn/Voksen"),
                                                 p("Grafen viser cirkulationstallet, dvs. gennemsnitligt udlån pr. eksemplar over en given periode."),
                                                 p("Perioden kan vælges i venstre side. Default er et halvt år tilbage (182 dage)"),
-                                                withSpinner(plotlyOutput(ns("circ_join_plot"), height = "700px"))
+                                                withSpinner(plotlyOutput(ns("circ_join_plot"), height = "700px")),
+                                                withSpinner(plotlyOutput(ns("circ_all_plot"), height = "700px"))
                                          )
                                   )
                                 )
@@ -288,23 +289,43 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   
   # Circulation numbers. Horizontal barchart
   # TODO tilføj søjlepar, med gennemsnit ligesom kbh. (gerne med to andre farver, så de fremhæves) + vælger til magasin vs. udlån
+  
   output$circ_join_plot <- renderPlotly({
-    circ_behold <- beholdning %>%
-      group_by(branch,dep) %>%
-      summarise(sum = sum(sum))
     
+    circ_behold <- beholdning %>%
+       group_by(branch,dep) %>%
+       summarise(sum = sum(sum))
+    
+    circ_behold_sum <- beholdning %>%
+      select(sum) %>%
+      summarise(sum = sum(sum))
+
+    circ_behold_sum <- cbind(branch = 'OBB Samlet', dep = 'Alle', circ_behold_sum)
+    
+    circ_behold <- rbind(as.data.frame(circ_behold),as.data.frame(circ_behold_sum))
+
     circ_udlån <- checkouts_all %>%
-      #filter( transact_date >= as.Date("2018-01-01") & transact_date <= as.Date("2018-06-30") ) %>%
-      filter( transact_date >= input$dateRange_circ[1] & transact_date <= input$dateRange_circ[2]) %>%
+      filter( transact_date >= as.Date("2018-01-01") & transact_date <= as.Date("2018-06-30") ) %>%
+      # filter( transact_date >= input$dateRange_circ[1] & transact_date <= input$dateRange_circ[2]) %>%
       group_by(branch,dep) %>%
       summarise(sum = sum(antal))
+    
+    circ_checkouts_sum <- checkouts_all %>%
+      # filter( transact_date >= input$dateRange_circ[1] & transact_date <= input$dateRange_circ[2]) %>%
+      filter( transact_date >= '2018-01-01' & transact_date <= '2018-12-31') %>%
+      select(antal) %>%
+      summarise(sum = sum(antal))
+    
+    circ_checkouts_sum <- cbind(branch = 'OBB Samlet', dep = 'Alle', circ_checkouts_sum)
+    
+    circ_udlån <- rbind(as.data.frame(circ_udlån),as.data.frame(circ_checkouts_sum))
     
     circ_join <- full_join(circ_udlån, circ_behold, by = c("branch","dep")) %>%
       filter(!branch %in% c('Fællessamlingen',
                             'Lokalhistorisk Bibliotek',
                             'Odense Arrest',
                             'Opsøgende afdeling Odense Bibliotekerne')) %>%
-      filter(dep %in% c('Børn','Voksen','Musik')) %>%
+      filter(dep %in% c('Børn','Voksen','Musik','Alle')) %>%
       #mutate(cirkulationstal = format(round(sum.x / sum.y, 1), nsmall=0, big.mark=".", decimal.mark=",") ) %>%
       mutate(cirkulationstal = format(round(sum.x / sum.y, 1)) ) %>%
       select(branch,dep,cirkulationstal) %>%
@@ -332,6 +353,14 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
                 marker = list(color = color1, 
                               width = 5)) %>%
       
+      add_trace(y = ~circ_join$branch, 
+                x = ~circ_join$Alle, 
+                type = 'bar', 
+                orientation = 'h', 
+                name = 'Samlet',
+                marker = list(color = color5, 
+                              width = 15)) %>%
+
       layout(autosize = TRUE,
              title = "",
              margin = list(l = 200, r = 10, b = 50, t = 50, pad = 10),
@@ -339,6 +368,48 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
              bargap = 0.4,
              #height = 600,
              #width = 800,
+             yaxis = list(showgrid = FALSE, showline = FALSE, showticklabels = TRUE, title = "", type = "category"),
+             xaxis = list(zeroline = FALSE, showline = FALSE, showticklabels = TRUE, domain = c(0,2), title = "", type = "line", showgrid = TRUE))
+  })
+  
+  output$circ_all_plot <- renderPlotly({
+
+    circ_behold <- beholdning %>%
+      group_by(dep) %>%
+      summarise(sum = sum(sum))
+    
+    circ_udlån <- checkouts_all %>%
+      filter( transact_date >= input$dateRange_circ[1] & transact_date <= input$dateRange_circ[2]) %>%
+      filter(!branch %in% c('Odense Arrest')) %>%
+      group_by(dep) %>%
+      summarise(sum = sum(antal))
+
+    circ_join <- full_join(circ_udlån, circ_behold, by = c("dep")) %>%
+      mutate(cirkulationstal = format(round(sum.x / sum.y, 1)) ) %>%
+      select(dep,cirkulationstal) %>%
+      spread(key = dep, value = cirkulationstal)
+
+    plot_ly() %>%
+
+      add_trace(x = ~circ_join$Børn,
+                type = 'bar',
+                orientation = 'h',
+                name = 'Børn',
+                marker = list(color = color2,
+                              width = 5)) %>%
+
+      add_trace(x = ~circ_join$Voksen,
+                type = 'bar',
+                orientation = 'h',
+                name = 'Voksen',
+                marker = list(color = color1,
+                              width = 5)) %>%
+
+      layout(autosize = TRUE,
+             title = "",
+             margin = list(l = 200, r = 10, b = 50, t = 50, pad = 10),
+             barmode = 'group',
+             bargap = 0.4,
              yaxis = list(showgrid = FALSE, showline = FALSE, showticklabels = TRUE, title = "", type = "category"),
              xaxis = list(zeroline = FALSE, showline = FALSE, showticklabels = TRUE, domain = c(0,2), title = "", type = "line", showgrid = TRUE))
   })
