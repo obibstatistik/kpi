@@ -393,6 +393,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
       add_trace(y = ~circ_join$branch, 
                 x = ~circ_join$Børn, 
                 type = 'bar', 
+                hoverinfo = 'x',
                 orientation = 'h', 
                 name = 'Børn',
                 marker = list(color = color2, 
@@ -401,6 +402,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
       add_trace(y = ~circ_join$branch, 
                 x = ~circ_join$Voksen, 
                 type = 'bar', 
+                hoverinfo = 'x',
                 orientation = 'h', 
                 name = 'Voksen',
                 marker = list(color = color1, 
@@ -409,6 +411,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
       add_trace(y = ~circ_join$branch, 
                 x = ~circ_join$Alle, 
                 type = 'bar', 
+                hoverinfo = 'x',
                 orientation = 'h', 
                 name = 'Samlet',
                 marker = list(color = color5, 
@@ -416,6 +419,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
 
       layout(autosize = TRUE,
              title = "",
+             hovermode = 'closest',
              margin = list(l = 200, r = 10, b = 50, t = 50, pad = 10),
              barmode = 'group',
              bargap = 0.4,
@@ -443,19 +447,25 @@ output$cpv_join_plot <- renderPlotly({
       mutate(cpv = format(round(checkouts / visits, 1)) ) %>%
       select(cpv) %>%
       summarise(cpv = sum(as.numeric(cpv)))
-      
+    
+    # extra, empty column called 'alle'
     cpv_plot_df$alle <- NA
     
+    # create one-line dataframe with the collective cpv
     cpv_sum_line <- as.data.frame(c('OBB Samlet', NA, cpv_sum))
     colnames(cpv_sum_line) <- c('branch','cpv','alle')
 
     cpv_plot_df <- rbind(as.data.frame(cpv_plot_df),as.data.frame(cpv_sum_line))
 
+    cpv_plot_df$branch <- factor(cpv_plot_df$branch, 
+                               levels = unique(cpv_plot_df$branch)[order(cpv_plot_df$cpv, decreasing = FALSE)])
+    
     plot_ly() %>%
       
       add_trace(y = ~cpv_plot_df$branch, 
                 x = ~cpv_plot_df$alle, 
                 type = 'bar', 
+                hoverinfo = 'x',
                 orientation = 'h', 
                 name = 'Samlet udlån pr. besøg',
                 marker = list(color = color5, width = 1)) %>%
@@ -463,6 +473,7 @@ output$cpv_join_plot <- renderPlotly({
       add_trace(y = ~cpv_plot_df$branch, 
                 x = ~cpv_plot_df$cpv, 
                 type = 'bar', 
+                hoverinfo = 'x',
                 orientation = 'h', 
                 name = 'Udlån pr. besøg',
                 marker = list(color = color2, width = 1)) %>%
