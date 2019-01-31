@@ -124,8 +124,32 @@ materialsTabPanelUI <- function(id) {
                                                 h4("Cirkulationstal fordelt på biblioteker og afdelingerne Børn/Voksen"),
                                                 p("Grafen viser cirkulationstallet, dvs. gennemsnitligt udlån pr. eksemplar over en given periode."),
                                                 p("Perioden kan vælges i venstre side. Default er et halvt år tilbage (182 dage)"),
-                                                withSpinner(plotlyOutput(ns("circ_join_plot"), height = "700px")),
-                                                withSpinner(plotlyOutput(ns("circ_all_plot"), height = "700px"))
+                                                withSpinner(plotlyOutput(ns("circ_join_plot"), height = "700px"))
+                                         )
+                                  )
+                                )
+                       ),
+                       tabPanel("Lån pr. besøg", 
+                                fluidRow(
+                                  column(12,
+                                         column(2,
+                                                tags$br(),
+                                                h4("Periode"),
+                                                dateRangeInput(ns('dateRange_cpv'),
+                                                               label = 'Vælg periode',
+                                                               start = Sys.Date() - 21, end = Sys.Date(),
+                                                               separator = " - "
+                                                ),
+                                                tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                         ),
+                                         column(10,height = "900px",
+                                                h4("Antal lån pr. besøg fordelt på biblioteker"),
+                                                p("Grafen viser det gennemsnitlige udlån pr. eksemplar i bibliotekets beholdning over en given periode."),
+                                                p("Perioden kan vælges i venstre side. Default er 21 dage"),
+                                                p("* Der kan pt. kun anvendes tal fra 9. januar 2019 og frem, da tidligere datoer er forbundet med store usikkerheder."),
+                                                p("** Interurbane udlån og andre autoudlån indgår pt. i beregningen, selvom det ikke er udlån til brugere, der fysisk besøger bibliotekerne."),
+                                                withSpinner(plotlyOutput(ns("cpv_join_plot"), height = "700px")),
+                                                p("Sammenlignet med filialerne vil Hovedbiblioteket have en større andel af udlånet, der ikke er udlån til besøgende, hvorfor udlån pr. besøg vil være relativit højt. Mange besøg af elever på kombibibliotekerne Holluf Pile og Højby bliver ikke talt i gaten og disse to lokationer vil ligeledes have et relativt højt udlån pr. besøg.")
                                          )
                                   )
                                 )
@@ -169,6 +193,34 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
     AND to_char(transact_date,'MM-DD') <= to_char((SELECT max(transact_date) FROM cicero.udlaan_per_laanersegment), 'MM-DD')																					   
     GROUP BY aar
     ORDER BY aar,dato DESC")
+  cpv_df <- dbGetQuery(con, "select visits.branch,visits.dato,visits.sum visits,checkouts.sum checkouts from (
+          select (
+              case
+                  when location = 'da' then 'Dalum Bibliotek'
+                  when location = 'ta' then 'Tarup Bibliotek'
+                  when location = 'vo' then 'Vollsmose Bibliotek'
+                  when location = 'hoj' then 'Højby Bibliotek'
+                  when location = 'ho' then 'Holluf Pile Bibliotek'
+                  when location = 'bo' then 'Bolbro Bibliotek'
+                  when location = 'kor' then 'Korup Bibliotek'
+                  when location = 'hb' then 'Odense Hovedbibliotek'
+              end) branch,
+              to_char(registertime,'YYYY-MM-DD')::date dato,
+              sum(delta)
+              from public.visitor_counter
+              where direction = 'In'
+              and registertime > '2019-01-08'
+              group by location, dato
+      ) visits
+      
+      join (
+          select branch, transact_date dato, sum(antal)
+          from cicero.udlaan_per_opstillingsprofil
+          where transact_date > '2019-01-08'
+          group by branch, dato
+      ) checkouts
+      on checkouts.branch = visits.branch and checkouts.dato = visits.dato
+      order by dato desc")
   dbDisconnect(con)
   dbDisconnect(con_dwh)
   
@@ -312,8 +364,8 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
       summarise(sum = sum(antal))
     
     circ_checkouts_sum <- checkouts_all %>%
-      filter( transact_date >= input$dateRange_circ[1] & transact_date <= input$dateRange_circ[2]) %>%
       # filter( transact_date >= '2018-01-01' & transact_date <= '2018-12-31') %>%
+      filter( transact_date >= input$dateRange_circ[1] & transact_date <= input$dateRange_circ[2]) %>%
       select(antal) %>%
       summarise(sum = sum(antal))
     
@@ -372,4 +424,57 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
              yaxis = list(showgrid = FALSE, showline = FALSE, showticklabels = TRUE, title = "", type = "category"),
              xaxis = list(zeroline = FALSE, showline = FALSE, showticklabels = TRUE, domain = c(0,2), title = "", type = "line", showgrid = TRUE))
   })
+  
+      
+output$cpv_join_plot <- renderPlotly({
+
+    cpv_plot_df <- cpv_df %>%
+      filter( dato >= input$dateRange_cpv[1] & dato <= input$dateRange_cpv[2]) %>%
+      # filter( dato >= '2019-01-09' & dato <= '2019-01-31' ) %>%
+      group_by(branch) %>%
+      summarise(visits = sum(visits), checkouts = sum(checkouts)) %>%
+      mutate(cpv = format(round(checkouts / visits, 1)) ) %>%
+      select(branch,cpv)
+    
+    cpv_sum <- cpv_df %>% 
+      filter( dato >= input$dateRange_cpv[1] & dato <= input$dateRange_cpv[2]) %>%
+      # filter( dato >= '2019-01-09' & dato <= '2019-01-31' ) %>%
+      summarise(visits = sum(visits), checkouts = sum(checkouts)) %>%
+      mutate(cpv = format(round(checkouts / visits, 1)) ) %>%
+      select(cpv) %>%
+      summarise(cpv = sum(as.numeric(cpv)))
+      
+    cpv_plot_df$alle <- NA
+    
+    cpv_sum_line <- as.data.frame(c('OBB Samlet', NA, cpv_sum))
+    colnames(cpv_sum_line) <- c('branch','cpv','alle')
+
+    cpv_plot_df <- rbind(as.data.frame(cpv_plot_df),as.data.frame(cpv_sum_line))
+
+    plot_ly() %>%
+      
+      add_trace(y = ~cpv_plot_df$branch, 
+                x = ~cpv_plot_df$alle, 
+                type = 'bar', 
+                orientation = 'h', 
+                name = 'Samlet udlån pr. besøg',
+                marker = list(color = color5, width = 1)) %>%
+      
+      add_trace(y = ~cpv_plot_df$branch, 
+                x = ~cpv_plot_df$cpv, 
+                type = 'bar', 
+                orientation = 'h', 
+                name = 'Udlån pr. besøg',
+                marker = list(color = color2, width = 1)) %>%
+
+      layout(autosize = TRUE,
+             showlegend = FALSE,
+             title = "",
+             margin = list(l = 200, r = 10, b = 50, t = 50, pad = 10),
+             barmode = 'group',
+             bargap = 0.4,
+             yaxis = list(showgrid = FALSE, showline = FALSE, showticklabels = TRUE, title = "", type = "category"),
+             xaxis = list(zeroline = FALSE, showline = FALSE, showticklabels = TRUE, domain = c(0,2), title = "", type = "line", showgrid = TRUE))
+  })
+  
 }
