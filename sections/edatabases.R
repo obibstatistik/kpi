@@ -2,6 +2,8 @@
 drv <- dbDriver("PostgreSQL")
 con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
 dbc_eres_stats <- dbGetQuery(con, "SELECT * from dbc_eres_stats")
+licenses_df <- dbGetQuery(con, "select navn,eressourcer.x_erms.endelig_pris_dkk endpris,product,downloads,soegninger,taelleaar,datamart.eressourcer_ddb_kategorier.pris,brug,statbank,erms
+                          from eressourcer.x_erms left join datamart.eressourcer_ddb_kategorier on datamart.eressourcer_ddb_kategorier.name_match_erms ilike '%'||eressourcer.x_erms.navn||'%'")
 dbDisconnect(con)
 
 #Sys.setenv('SHINYPROXY_USERGROUPS' = 'WHITEBOOKREDAKTØRER,TESTGROUP')
@@ -59,7 +61,60 @@ edatabasesTabPanelUI <- function(id) {
                                                        withSpinner(formattableOutput(ns("dbc_eres_forfatterweb_table")), proxy.height="150px")
                                                    )
                                             )
-                                     ))))))
+                                     )
+                                )
+                           ),
+                           # conditionalPanel(
+                           #     condition = paste0("output['", ns("username"), "']"),
+                                  tabPanel("Licenser", 
+                                           fluidRow(
+                                             column(12,
+                                                    column(2,
+                                                           h4("Afgrænsning"),
+                                                           #selectInput(ns("lic_fromyear"), "År:", unique(as.numeric(licenses_df$year))),
+                                                           #selectInput(ns("lic_statbank"), "Statistikbankens typer:", c("Seriepublikationer" = "serie","eBøger" = "ebooks","Multimedier" = "multimedia","Databaser" = "databaser")),
+                                                           selectInput(ns("lic_statbank"), "Statistikbankens typer:", unique(as.character(licenses_df$statbank))),
+                                                           selectInput(ns("lic_priskategori"), "Priskategori:", unique(as.character(licenses_df$pris))),
+                                                           selectInput(ns("lic_brugskategori"), "Brugskategori:", unique(as.character(licenses_df$brug))),
+                                                           radioButtons(ns("viztype"), "Graftype:", c("Linjer" = "lines", "Søjler" = "bar") ),
+                                                           xlsxDownloadUI(ns("edatabases2")),
+                                                           tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                                    ),
+                                                    column(10,
+                                                           h3("eRessource-licenser"),
+                                                           span("Data for de fleste licenser stammer fra ERMS (Consortiamanager), men tal for Digital Artikelservice og Mediastream leveres af Statsbiblioteket ("),
+                                                           a("www.statsbiblioteket.dk/digital-artikelservice/statistik",href = "https://www.statsbiblioteket.dk/digital-artikelservice/statistik", target="_blank" ),span(')'),
+                                                           span("og tal for Faktalink og Forfatterweb leveres af DBC ("),
+                                                           a("bibstats.dbc.dk", href = "https://bibstats.dbc.dk", target="_blank" ),span(')'),
+                                                           p('De talte "visninger" dækker over forskellige brugstyper. Dvs. der kan være tale om downloads eller andre typer af handlinger.'),
+                                                           p("Licenserne er forsøgt kategoriseret efter sammenlignelighed"),
+                                                           # Only show this panel if 'lines', i.e. 'scatterplot' is selected
+                                                           conditionalPanel(
+                                                             paste0("input['", ns("viztype"), "'] == 'lines'"), plotlyOutput(ns("lic_scatterplot"))
+                                                           ),
+                                                           # Only show this panel if 'bar', i.e. 'barplot' is selected
+                                                           conditionalPanel(
+                                                             paste0("input['", ns("viztype"), "'] == 'bar'"), plotlyOutput(ns("lic_barplot"))
+                                                           ),
+                                                           tags$br(),tags$br(),
+                                                           column(10,
+                                                                  tags$div(h4(htmlOutput(ns("lic_title1"))))
+                                                           )
+                                                    ),
+                                                    column(2,
+                                                           checkboxGroupInput(ns("lic_productselector"),
+                                                                              'Vælg eRessource:',
+                                                                              unique(as.character(licenses_df$navn)),
+                                                                              selected = unique(as.character(licenses_df$navn)),
+                                                                              inline = F)
+                                                    ),
+                                                    column(8,
+                                                           formattableOutput(ns("licenses_table"))
+                                                    ),
+                                                    column(12,tags$hr())
+                                             )))
+                                  # )
+                )))
       )
 }
 
@@ -159,5 +214,57 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
   })
     
   output$dbc_eres_forfatterweb_table <- renderFormattable({ formattable(dbc_eres_forfatterweb_table_df()) })
+  
+  lic_data <- reactive({
+    licenses <- licenses_df %>%
+      #filter(taelleaar == input$lic_fromyear) %>%
+      filter(pris == input$lic_priskategori) %>%
+      filter(brug == input$lic_brugskategori) %>%
+      filter(statbank == input$lic_statbank) %>%
+      select(navn,taelleaar,downloads) %>%
+      # filter(produkt %in% input$lic_productselector) %>%
+      group_by(navn,taelleaar) %>%
+      summarise(downloads = sum(downloads)) #%>%
+    #mutate_at(vars(-1), funs(replace(., is.na(.), 0)))
+  })
+  
+  # Render the plot as a scatterplot
+  output$lic_scatterplot <- renderPlotly({
+    data <- lic_data() %>% spread(navn, downloads)   # the plot needs a spread (pivot) of produkt
+    colNames <- names(data)[-1]                         # ie. get all colnames except the first which is year or month or whatever
+    # cf. https://stackoverflow.com/questions/46583282/r-plotly-to-add-traces-conditionally-based-on-available-columns-in-dataframe                                
+    p <- plot_ly(data, x = ~taelleaar, type = 'scatter', mode = 'lines') 
+    for(trace in colNames){
+      p <- p %>% add_trace(y = as.formula(paste0("~`", trace, "`")), name = trace, mode = 'lines')   # add_trace(y = as.formula(paste0("~`", trace, "`")), name = trace)
+    }
+    p %>% layout(xaxis = list(title = '', autorange = 'reversed'), yaxis = list (title = 'Visninger'))
+  })
+  
+  # Render the plot as a barchart
+  output$lic_barplot <- renderPlotly({
+    data <- lic_data() %>% spread(navn, downloads) 
+    colNames <- names(data)[-1]
+    p <- plot_ly(data, x = ~taelleaar, type = 'bar') 
+    for(trace in colNames){
+      p <- p %>% add_trace(y = as.formula(paste0("~`", trace, "`")), name = trace, mode = 'bar')
+    }
+    p %>% layout(xaxis = list(title = '', autorange = 'reversed'), yaxis = list (title = 'Visninger'))
+  })
+  
+  # Create dynamic titles based on the filter choices
+  output$lic_title1 <- renderText(
+    paste0(input$lic_statbank," med ",
+           input$lic_priskategori,", ", 
+           input$lic_brugskategori, " brug")
+  )
+  
+  # Render the table
+  output$licenses_table <- renderFormattable({
+    data <- lic_data() %>% 
+      spread(taelleaar, downloads)  %>%     # the table needs a spread (pivot) of month
+      #mutate_at(vars(-1), funs(replace(., is.na(.), '-')))
+      mutate_at(vars(-1), funs(replace(., is.na(.), '0')))
+    formattable(data[,c(1,ncol(data):2)])
+  })
 }
 
