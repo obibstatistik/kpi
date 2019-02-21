@@ -6,6 +6,7 @@ licenses_df <- dbGetQuery(con, "select navn,eressourcer.x_erms.endelig_pris_dkk 
                           from eressourcer.x_erms left join datamart.eressourcer_ddb_kategorier on datamart.eressourcer_ddb_kategorier.name_match_erms ilike '%'||eressourcer.x_erms.navn||'%'")
 dbDisconnect(con)
 
+# Necessary for testing outside shinyproxy env:
 #Sys.setenv('SHINYPROXY_USERGROUPS' = 'WHITEBOOKREDAKTØRER,TESTGROUP')
 
 # UI
@@ -41,10 +42,9 @@ edatabasesTabPanelUI <- function(id) {
                                                                       inline = F),
                                                    xlsxDownloadUI(ns("edatabases")),
                                                    tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
-                                                   conditionalPanel(
-                                                     condition = paste0("output['", ns("username"), "']"),
+                                                   if ('WHITEBOOKREDAKTØRER' %in% ldap_usergroups) {
                                                      tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Gem til pdf</a>'))
-                                                   )
+                                                   }
                                             ),
                                             column(10,
                                                    h3("Faktalink og Forfatterweb"),
@@ -64,71 +64,63 @@ edatabasesTabPanelUI <- function(id) {
                                      )
                                 )
                            ),
-                           # conditionalPanel(
-                           #     condition = paste0("output['", ns("username"), "']"),
-                                  tabPanel("Licenser", 
-                                           fluidRow(
-                                             column(12,
-                                                    column(2,
-                                                           h4("Afgrænsning"),
-                                                           #selectInput(ns("lic_fromyear"), "År:", unique(as.numeric(licenses_df$year))),
-                                                           #selectInput(ns("lic_statbank"), "Statistikbankens typer:", c("Seriepublikationer" = "serie","eBøger" = "ebooks","Multimedier" = "multimedia","Databaser" = "databaser")),
-                                                           selectInput(ns("lic_statbank"), "Statistikbankens typer:", unique(as.character(licenses_df$statbank))),
-                                                           selectInput(ns("lic_priskategori"), "Priskategori:", unique(as.character(licenses_df$pris))),
-                                                           selectInput(ns("lic_brugskategori"), "Brugskategori:", unique(as.character(licenses_df$brug))),
-                                                           radioButtons(ns("viztype"), "Graftype:", c("Linjer" = "lines", "Søjler" = "bar") ),
-                                                           xlsxDownloadUI(ns("edatabases2")),
-                                                           tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
-                                                    ),
-                                                    column(10,
-                                                           h3("eRessource-licenser"),
-                                                           span("Data for de fleste licenser stammer fra ERMS (Consortiamanager), men tal for Digital Artikelservice og Mediastream leveres af Statsbiblioteket ("),
-                                                           a("www.statsbiblioteket.dk/digital-artikelservice/statistik",href = "https://www.statsbiblioteket.dk/digital-artikelservice/statistik", target="_blank" ),span(')'),
-                                                           span("og tal for Faktalink og Forfatterweb leveres af DBC ("),
-                                                           a("bibstats.dbc.dk", href = "https://bibstats.dbc.dk", target="_blank" ),span(')'),
-                                                           p('De talte "visninger" dækker over forskellige brugstyper. Dvs. der kan være tale om downloads eller andre typer af handlinger.'),
-                                                           p("Licenserne er forsøgt kategoriseret efter sammenlignelighed"),
-                                                           # Only show this panel if 'lines', i.e. 'scatterplot' is selected
-                                                           conditionalPanel(
-                                                             paste0("input['", ns("viztype"), "'] == 'lines'"), plotlyOutput(ns("lic_scatterplot"))
-                                                           ),
-                                                           # Only show this panel if 'bar', i.e. 'barplot' is selected
-                                                           conditionalPanel(
-                                                             paste0("input['", ns("viztype"), "'] == 'bar'"), plotlyOutput(ns("lic_barplot"))
-                                                           ),
-                                                           tags$br(),tags$br(),
-                                                           column(10,
-                                                                  tags$div(h4(htmlOutput(ns("lic_title1"))))
-                                                           )
-                                                    ),
-                                                    column(2,
-                                                           checkboxGroupInput(ns("lic_productselector"),
-                                                                              'Vælg eRessource:',
-                                                                              unique(as.character(licenses_df$navn)),
-                                                                              selected = unique(as.character(licenses_df$navn)),
-                                                                              inline = F)
-                                                    ),
-                                                    column(8,
-                                                           formattableOutput(ns("licenses_table"))
-                                                    ),
-                                                    column(12,tags$hr())
-                                             )))
-                                  # )
+                           # Insert only the follow tab and contents if user belongs to the materialeforum group
+                           if ('MATERIALEFORUM' %in% ldap_usergroups) {
+                             tabPanel("Licenser", 
+                                             fluidRow(
+                                               column(12,
+                                                      column(2,
+                                                             h4("Afgrænsning"),
+                                                             #selectInput(ns("lic_fromyear"), "År:", unique(as.numeric(licenses_df$year))),
+                                                             #selectInput(ns("lic_statbank"), "Statistikbankens typer:", c("Seriepublikationer" = "serie","eBøger" = "ebooks","Multimedier" = "multimedia","Databaser" = "databaser")),
+                                                             selectInput(ns("lic_statbank"), "Statistikbankens typer:", unique(as.character(licenses_df$statbank))),
+                                                             selectInput(ns("lic_priskategori"), "Priskategori:", unique(as.character(licenses_df$pris))),
+                                                             selectInput(ns("lic_brugskategori"), "Brugskategori:", unique(as.character(licenses_df$brug))),
+                                                             radioButtons(ns("viztype"), "Graftype:", c("Linjer" = "lines", "Søjler" = "bar") ),
+                                                             xlsxDownloadUI(ns("edatabases2")),
+                                                             tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                                      ),
+                                                      column(10,
+                                                             h3("eRessource-licenser"),
+                                                             span("Data for de fleste licenser stammer fra ERMS (Consortiamanager), men tal for Digital Artikelservice og Mediastream leveres af Statsbiblioteket ("),
+                                                             a("www.statsbiblioteket.dk/digital-artikelservice/statistik",href = "https://www.statsbiblioteket.dk/digital-artikelservice/statistik", target="_blank" ),span(')'),
+                                                             span("og tal for Faktalink og Forfatterweb leveres af DBC ("),
+                                                             a("bibstats.dbc.dk", href = "https://bibstats.dbc.dk", target="_blank" ),span(')'),
+                                                             p('De talte "visninger" dækker over forskellige brugstyper. Dvs. der kan være tale om downloads eller andre typer af handlinger.'),
+                                                             p("Licenserne er forsøgt kategoriseret efter sammenlignelighed"),
+                                                             # Only show this panel if 'lines', i.e. 'scatterplot' is selected
+                                                             conditionalPanel(
+                                                               paste0("input['", ns("viztype"), "'] == 'lines'"), plotlyOutput(ns("lic_scatterplot"))
+                                                             ),
+                                                             # Only show this panel if 'bar', i.e. 'barplot' is selected
+                                                             conditionalPanel(
+                                                               paste0("input['", ns("viztype"), "'] == 'bar'"), plotlyOutput(ns("lic_barplot"))
+                                                             ),
+                                                             tags$br(),tags$br(),
+                                                             column(10,
+                                                                    tags$div(h4(htmlOutput(ns("lic_title1"))))
+                                                             )
+                                                      ),
+                                                      column(2,
+                                                             checkboxGroupInput(ns("lic_productselector"),
+                                                                                'Vælg eRessource:',
+                                                                                unique(as.character(licenses_df$navn)),
+                                                                                selected = unique(as.character(licenses_df$navn)),
+                                                                                inline = F)
+                                                      ),
+                                                      column(8,
+                                                             formattableOutput(ns("licenses_table"))
+                                                      ),
+                                                      column(12,tags$hr())
+                                               )))
+                           }
                 )))
       )
 }
 
 # SERVER
 edatabasesTabPanel <- function(input, output, session, data, tablename) {
-  
-  # Testing group permissions
-  output$username <- reactive({
-    x <- as.list(strsplit(Sys.getenv('SHINYPROXY_USERGROUPS'), ",")[[1]])     # convert comma separated string from env var into an R list
-    'WHITEBOOKREDAKTØRER' %in% x                                              # returns true (and so the enclosing function) if the env usergroup var contains whitebookredaktører
-  })
-  
-  outputOptions(output, "username", suspendWhenHidden = FALSE)    
-  
+    
   dbc_eres_stats_df <- reactive({
     dbc_eres_stats %>%
       mutate_at(vars(2), funs(isil2name(.))) %>%
@@ -147,7 +139,7 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
   
   # Render the plot
   output$dbc_eres_stats_plot <- renderPlotly({
-    colNames <- names(dbc_eres_stats_df())[-1:-5]                         # ie. get all colnames except the first thru the fifth
+    colNames <- names(dbc_eres_stats_df())[-1:-5]                             # ie. get all colnames except the first thru the fifth
     p <- plot_ly(dbc_eres_stats_df(), 
                  x = factor(month.abb[dbc_eres_stats_df()$maaned],levels=month.abb), 
                  y = as.formula(paste0("~`", names(dbc_eres_stats_df())[5],"`")), 
