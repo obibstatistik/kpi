@@ -47,5 +47,6 @@ color7 = c('rgb(68,68,68)')
 color8 = c('rgb(102,102,102)')
 color9 = c('rgb(192,57,83)')
 
-# Get the groups of the current user for authorization
+# Get the user name and user groups of the current user for authorization
+ldap_username <- Sys.getenv('SHINYPROXY_USERNAME')
 ldap_usergroups <- as.list(strsplit(Sys.getenv('SHINYPROXY_USERGROUPS'), ",")[[1]]) # converts comma separated string from env var into an R list
