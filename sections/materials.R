@@ -95,8 +95,23 @@ materialsTabPanelUI <- function(id) {
                                                           p("* I 2017 blev Borgernes Hus bygget, hvorfor udlånsmønstret var mærkbart anderledes end øvrige år.")
                                                    )
                                             )
-                                        )
-                                     )
+                                        ),
+                                     # Insert only the follow tab and contents if user belongs to the materialeforum group
+                                     if ('WHITEBOOKREDAKTØRER' %in% ldap_usergroups) {
+                                     column(12,
+                                            column(2,
+                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                            ),
+                                            column(10,
+                                                   h4("Interurbane udlån på OBB pr. måned"),
+                                                   p("Grafen viser det samlede interurbane udlån fra OBB til andre biblioteksvæsner, fordelt på år og måned."),
+                                                   column(8,
+                                                          tags$div( withSpinner(samedate_barchartOutput(ns('interurban_months_plot'))) )
+                                                   )
+                                             )
+                                       )
+                                    }
+                                )
                           ),
                        #   tabPanel("Timer", 
                        #           fluidRow(
@@ -126,8 +141,8 @@ materialsTabPanelUI <- function(id) {
                                                 p("Perioden kan vælges i venstre side. Default er et halvt år tilbage (182 dage)"),
                                                 withSpinner(plotlyOutput(ns("circ_join_plot"), height = "700px"))
                                          )
-                                  )
-                                )
+                                    )
+                               )
                        ),
                        tabPanel("Lån pr. besøg", 
                                 fluidRow(
@@ -193,6 +208,12 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
     AND to_char(transact_date,'MM-DD') <= to_char((SELECT max(transact_date) FROM cicero.udlaan_per_laanersegment), 'MM-DD')																					   
     GROUP BY aar
     ORDER BY aar,dato DESC")
+  comp_months_interurban <- dbGetQuery(con_dwh, "SELECT EXTRACT(YEAR FROM transact_date) aar, 
+    EXTRACT(MONTH FROM transact_date) maaned, 
+    SUM(antal) sum
+    FROM cicero.udlaan_per_laanersegment
+    WHERE cat ILIKE '%ibliotek%'
+    GROUP BY aar, maaned")
   cpv_df <- dbGetQuery(con, "select visits.branch,visits.dato,visits.sum visits,checkouts.sum checkouts from (
           select (
               case
@@ -278,6 +299,21 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   # Render barchart comparing whole and partial years for interlibrary loans
   output$interurban_samedate_plot <- renderSamedate_barchart({
     samedate_barchart(comp_years_interurban,curDate,sortx,frontColors,backColor,labelx,labely,tickNumY,showScaleY,barWidth,barsOffset)
+  })
+
+  # Render barchart comparing current and last year month for month
+  output$interurban_months_plot <- renderPlotly({
+    comp_months_interurban <- comp_months_interurban %>%
+      #filter(if(input$mainlibrary3 == 'Uden Hovedbiblioteket')  (location != 'Borgernes Hus') else TRUE) %>%
+      #select(date, count, location) %>%
+      #mutate(year = year(date)) %>%
+      #group_by(location, year) %>%
+      #summarise(sum = sum(count)) %>%
+      #spread(key = year, value = sum) %>%
+      #ungroup(.self)
+    plot_ly(comp_months_interurban, x = ~month, y = ~`this_year`, type = 'bar', name = 'this_year', marker = list(color = color1)) %>%
+      add_trace(y = ~`last_year`, name = 'last_year', marker = list(color = color2)) %>%
+      layout(autosize = TRUE, yaxis = list(title = 'Antal'), xaxis = list(title = ''), barmode = 'group')
   })
   
   # Whole years dataframe with branches for filtering main library
@@ -487,5 +523,7 @@ output$cpv_join_plot <- renderPlotly({
              yaxis = list(showgrid = FALSE, showline = FALSE, showticklabels = TRUE, title = "", type = "category"),
              xaxis = list(zeroline = FALSE, showline = FALSE, showticklabels = TRUE, domain = c(0,2), title = "", type = "line", showgrid = TRUE))
   })
+
+
   
 }
