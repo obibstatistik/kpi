@@ -66,7 +66,7 @@ dashboardPage(
       ),
       menuItem("Brugere", tabName = "users", icon = icon("users", lib="font-awesome")),
       menuItem("Personale", tabName = "personal", icon = icon("users", lib="font-awesome")),
-      menuItem("Borgerservice", tabName = "citizenservice", icon = icon("ban", lib="font-awesome")),
+      #menuItem("Borgerservice", tabName = "citizenservice", icon = icon("ban", lib="font-awesome")),
       menuItem("Datakilder", tabName = "datasources", icon = icon("database", lib="font-awesome"))#,
       #menuItem("Test", tabName = "test")
     )
