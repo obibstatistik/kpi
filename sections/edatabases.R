@@ -6,9 +6,6 @@ licenses_df <- dbGetQuery(con, "select navn,eressourcer.x_erms.endelig_pris_dkk 
                           from eressourcer.x_erms left join datamart.eressourcer_ddb_kategorier on datamart.eressourcer_ddb_kategorier.name_match_erms ilike '%'||eressourcer.x_erms.navn||'%'")
 dbDisconnect(con)
 
-# Necessary for testing outside shinyproxy env:
-#Sys.setenv('SHINYPROXY_USERGROUPS' = 'WHITEBOOKREDAKTØRER,TESTGROUP')
-
 # UI
 edatabasesTabPanelUI <- function(id) {
   

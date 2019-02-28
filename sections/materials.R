@@ -1,5 +1,6 @@
 # UI
 
+
 materialsTabPanelUI <- function(id) {
   
   ns <- NS(id)
@@ -96,8 +97,7 @@ materialsTabPanelUI <- function(id) {
                                                    )
                                             )
                                         ),
-                                     # Insert only the follow tab and contents if user belongs to the materialeforum group
-                                     if ('WHITEBOOKREDAKTØRER' %in% ldap_usergroups) {
+                                     column(12,tags$hr()),
                                      column(12,
                                             column(2,
                                                    tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
@@ -106,11 +106,10 @@ materialsTabPanelUI <- function(id) {
                                                    h4("Interurbane udlån på OBB pr. måned"),
                                                    p("Grafen viser det samlede interurbane udlån fra OBB til andre biblioteksvæsner, fordelt på år og måned."),
                                                    column(8,
-                                                          tags$div( withSpinner(samedate_barchartOutput(ns('interurban_months_plot'))) )
+                                                          tags$div( withSpinner(plotlyOutput(ns('interurban_months_plot'))) )
                                                    )
                                              )
                                        )
-                                    }
                                 )
                           ),
                        #   tabPanel("Timer", 
@@ -208,12 +207,20 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
     AND to_char(transact_date,'MM-DD') <= to_char((SELECT max(transact_date) FROM cicero.udlaan_per_laanersegment), 'MM-DD')																					   
     GROUP BY aar
     ORDER BY aar,dato DESC")
-  comp_months_interurban <- dbGetQuery(con_dwh, "SELECT EXTRACT(YEAR FROM transact_date) aar, 
-    EXTRACT(MONTH FROM transact_date) maaned, 
-    SUM(antal) sum
-    FROM cicero.udlaan_per_laanersegment
-    WHERE cat ILIKE '%ibliotek%'
-    GROUP BY aar, maaned")
+  comp_months_interurban <- dbGetQuery(con_dwh, "SELECT a.maaned,last_year,COALESCE(this_year,0) this_year
+    FROM
+    	(SELECT SUM(antal) last_year, EXTRACT(MONTH FROM transact_date) maaned 
+    	 FROM cicero.udlaan_per_laanersegment 
+    	 WHERE cat ILIKE '%ibliotek%' 
+    	 AND EXTRACT(YEAR FROM transact_date) = EXTRACT(YEAR FROM (now() - INTERVAL '1 year')) 
+    	 GROUP BY maaned) a
+    LEFT JOIN 																																		
+    	(SELECT SUM(antal) this_year, EXTRACT(MONTH FROM transact_date) maaned 
+    	 FROM cicero.udlaan_per_laanersegment 
+    	 WHERE cat ILIKE '%ibliotek%' 
+    	 AND EXTRACT(YEAR FROM transact_date) = EXTRACT(YEAR FROM now()) 
+    	 GROUP BY maaned) b
+    ON a.maaned = b.maaned")
   cpv_df <- dbGetQuery(con, "select visits.branch,visits.dato,visits.sum visits,checkouts.sum checkouts from (
           select (
               case
@@ -233,7 +240,6 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
               and registertime > '2019-01-08'
               group by location, dato
       ) visits
-      
       join (
           select branch, transact_date dato, sum(antal)
           from cicero.udlaan_per_opstillingsprofil
@@ -301,18 +307,13 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
     samedate_barchart(comp_years_interurban,curDate,sortx,frontColors,backColor,labelx,labely,tickNumY,showScaleY,barWidth,barsOffset)
   })
 
+  comp_months_interurban <- comp_months_interurban %>% mutate_at(vars(1),funs(kortemåneder(.)))
+  comp_months_interurban$maaned <- factor(comp_months_interurban$maaned, levels = c("jan","feb","mar","apr","maj","jun","jul","aug","sep","okt","nov","dec"))
+  
   # Render barchart comparing current and last year month for month
   output$interurban_months_plot <- renderPlotly({
-    comp_months_interurban <- comp_months_interurban %>%
-      #filter(if(input$mainlibrary3 == 'Uden Hovedbiblioteket')  (location != 'Borgernes Hus') else TRUE) %>%
-      #select(date, count, location) %>%
-      #mutate(year = year(date)) %>%
-      #group_by(location, year) %>%
-      #summarise(sum = sum(count)) %>%
-      #spread(key = year, value = sum) %>%
-      #ungroup(.self)
-    plot_ly(comp_months_interurban, x = ~month, y = ~`this_year`, type = 'bar', name = 'this_year', marker = list(color = color1)) %>%
-      add_trace(y = ~`last_year`, name = 'last_year', marker = list(color = color2)) %>%
+    plot_ly(comp_months_interurban, x = ~maaned, y = ~`this_year`, type = 'bar', name = year(now()), marker = list(color = color1)) %>%
+      add_trace(y = ~`last_year`, name = year(now()) -1 , marker = list(color = color2)) %>%
       layout(autosize = TRUE, yaxis = list(title = 'Antal'), xaxis = list(title = ''), barmode = 'group')
   })
   
