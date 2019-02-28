@@ -100,7 +100,8 @@ materialsTabPanelUI <- function(id) {
                                      column(12,tags$div( tags$hr(), class = "hidden-print" )),
                                      column(12,
                                             column(2,
-                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
+                                                   xlsxDownloadUI(ns("interurban_month"))
                                             ),
                                             column(10,
                                                    h4("Interurban-udlån fra OBB pr. måned"),
