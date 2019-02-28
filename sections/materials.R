@@ -31,7 +31,7 @@ materialsTabPanelUI <- function(id) {
                                                     p("* I 2017 blev Borgernes Hus bygget, hvorfor udlånsmønstret var mærkbart anderledes end øvrige år.")
                                                   )
                                            )
-                                      ),
+                                     ),
                                      column(12,tags$div( tags$hr(), class = "hidden-print" )),
                                      column(12,
                                             column(2,
@@ -86,29 +86,35 @@ materialsTabPanelUI <- function(id) {
                                                    tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                             ),
                                             column(10,
-                                                   h4("Samlet interurbane udlån på OBB"),
-                                                   p("Grafen viser årets interurban-udlån fra OBB til andre biblioteksvæsner sammenlignet med sidste år. Farvede søjler i forgrunden er år til dato, mens den grå søjle er sidste års samlede interurban-udlån."),
+                                                   h4("Interurban-udlån fra OBB"),
+                                                   p("Grafen viser årets interurban-udlån fra OBB til andre biblioteksvæsner sammenlignet med sidste år. Farvede søjler i forgrunden viser antal pr. år til dato, mens den grå søjle i baggrunden er sidste års samlede interurban-udlån."),
                                                    column(8,
                                                        tags$div( withSpinner(samedate_barchartOutput(ns('interurban_samedate_plot'))) )
                                                    ),
                                                    column(10,
-                                                          p("Udlånsstatistikken bygger på data fra Cicero. Der er ikke fuld gennemsigtighed i forhold til datakilden, hvorfor unøjagtigheder kan forekomme. Nyeste data har pt. en forsinkelse på tre døgn."),
-                                                          p("* I 2017 blev Borgernes Hus bygget, hvorfor udlånsmønstret var mærkbart anderledes end øvrige år.")
+                                                       p("* Bemærk at udlånsstatistikker bygger på data fra Cicero. Der er ikke fuld gennemsigtighed i forhold til datakilden, hvorfor unøjagtigheder kan forekomme."), 
+                                                       p("** Nyeste data har pt. en forsinkelse på tre døgn.")
                                                    )
                                             )
                                         ),
-                                     column(12,tags$hr()),
+                                     column(12,tags$div( tags$hr(), class = "hidden-print" )),
                                      column(12,
                                             column(2,
                                                    tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                             ),
                                             column(10,
-                                                   h4("Interurban-udlån på OBB pr. måned"),
+                                                   h4("Interurban-udlån fra OBB pr. måned"),
                                                    p("Grafen viser årets interurban-udlån fra OBB til andre biblioteksvæsner, fordelt på måned og sammenlignet med sidste år."),
                                                    column(8,
-                                                          tags$div( withSpinner(plotlyOutput(ns('interurban_months_plot'))) )
+                                                       tags$div( withSpinner(plotlyOutput(ns('interurban_months_plot'))) ),
+                                                       tags$br(),
+                                                       formattableOutput(ns("interurban_months_table"))
+                                                   ),
+                                                   column(10,
+                                                       p("* Bemærk at udlånsstatistikker bygger på data fra Cicero. Der er ikke fuld gennemsigtighed i forhold til datakilden, hvorfor unøjagtigheder kan forekomme."), 
+                                                       p("** Nyeste data har pt. en forsinkelse på tre døgn.")
                                                    )
-                                             )
+                                            )
                                        )
                                 )
                           ),
@@ -207,7 +213,8 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
     AND to_char(transact_date,'MM-DD') <= to_char((SELECT max(transact_date) FROM cicero.udlaan_per_laanersegment), 'MM-DD')																					   
     GROUP BY aar
     ORDER BY aar,dato DESC")
-  comp_months_interurban <- dbGetQuery(con_dwh, "SELECT a.maaned,last_year,COALESCE(this_year,0) this_year
+  #comp_months_interurban <- dbGetQuery(con_dwh, "SELECT a.maaned,last_year,COALESCE(this_year,0) this_year
+  comp_months_interurban <- dbGetQuery(con_dwh, "SELECT a.maaned,last_year, this_year
     FROM
     	(SELECT SUM(antal) last_year, EXTRACT(MONTH FROM transact_date) maaned 
     	 FROM cicero.udlaan_per_laanersegment 
@@ -307,15 +314,44 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
     samedate_barchart(comp_years_interurban,curDate,sortx,frontColors,backColor,labelx,labely,tickNumY,showScaleY,barWidth,barsOffset)
   })
 
-  comp_months_interurban <- comp_months_interurban %>% mutate_at(vars(1),funs(kortemåneder(.)))
-  comp_months_interurban$maaned <- factor(comp_months_interurban$maaned, levels = c("jan","feb","mar","apr","maj","jun","jul","aug","sep","okt","nov","dec"))
+  comp_months_interurban_shortnames <- comp_months_interurban %>% mutate_at(vars(1),funs(kortemåneder(.)))
+  comp_months_interurban_shortnames$maaned <- factor(comp_months_interurban_shortnames$maaned, levels = c("jan","feb","mar","apr","maj","jun","jul","aug","sep","okt","nov","dec"))
   
   # Render barchart comparing current and last year month for month
   output$interurban_months_plot <- renderPlotly({
-    plot_ly(comp_months_interurban, x = ~maaned, y = ~`this_year`, type = 'bar', name = year(now()), marker = list(color = color1)) %>%
+    comp_months_interurban_shortnames <- comp_months_interurban_shortnames %>%
+    mutate_at(vars(-1), funs(replace(., is.na(.), 0)))
+    plot_ly(comp_months_interurban_shortnames, x = ~maaned, y = ~`this_year`, type = 'bar', name = year(now()), marker = list(color = color1)) %>%
       add_trace(y = ~`last_year`, name = year(now()) -1 , marker = list(color = color2)) %>%
       layout(autosize = TRUE, yaxis = list(title = 'Antal'), xaxis = list(title = ''), barmode = 'group')
   })
+  
+  comp_months_interurban_longnames <- comp_months_interurban %>% mutate_at(vars(1),funs(danskemåneder(.)))
+  comp_months_interurban_longnames$maaned <- factor(comp_months_interurban_longnames$maaned, levels = c("Januar","Februar","Marts","April","Maj","Juni","Juli","August","September","Oktober","November","December"))
+  colnames(comp_months_interurban_longnames)[colnames(comp_months_interurban_longnames)=="this_year"] <- year(now())
+  colnames(comp_months_interurban_longnames)[colnames(comp_months_interurban_longnames)=="last_year"] <- year(now()) -1 
+  
+  # Reactive function wrapping dataframe for interlibrary monthly comparison table incl. Excel download below
+  interurban_month_tbl <- reactive({
+    comp_months_interurban_longnames %>%
+      mutate(akku1 = cumsum(.[[2]]), akku2 = cumsum(.[[3]]), mdr = percent(((.[[3]]-.[[2]])/(.[[2]])), digits = 0)) %>%
+      mutate(akk = percent((akku2-akku1)/akku1, digits = 0)) %>%
+      select(c(1,2,4,3,5,6,7)) %>%
+      mutate_at(vars(-1), funs(replace(., is.na(.), 0))) %>%
+      mutate_at(vars(c(-1,-6,-7)), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".", decimal.mark=","))) %>%
+      rename(Måned = maaned, Akkumuleret = akku1, "Akkumuleret " = akku2, 'Ændring pr. mdr.' = mdr, 'Ændring akkumuleret' = akk)
+  })
+  
+  # Checkouts two-year comparison table
+  output$interurban_months_table <- renderFormattable({
+    formattable(interurban_month_tbl(), list(
+      'Ændring pr. mdr.' = formatter("span", style = x ~ style(color = ifelse(x < 0 , color4, color1)), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x)),
+      'Ændring akkumuleret' = formatter("span", style = x ~ style(color = ifelse(x < 0 , color4, color1)), x ~ icontext(ifelse(x < 0, "arrow-down", "arrow-up"), x))
+    ))
+  })
+  
+  # Call Excel download function for tables 
+  callModule(xlsxDownload, "interurban_month", data = reactive(interurban_month_tbl()), name = "Interurban_udlån_fra_OBB")
   
   # Whole years dataframe with branches for filtering main library
   checkouts_whole_years_branches <- checkouts_all %>%
