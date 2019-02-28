@@ -87,7 +87,7 @@ materialsTabPanelUI <- function(id) {
                                             ),
                                             column(10,
                                                    h4("Samlet interurbane udlån på OBB"),
-                                                   p("Grafen viser det samlede interurbane udlån fra OBB til andre biblioteksvæsner, fordelt pr. år. De grå søjler er hele året, men farvede søjler i forgrunden er år til dato. Det er dermed muligt at sammenligne indeværende års udlån med de forrige."),
+                                                   p("Grafen viser årets interurban-udlån fra OBB til andre biblioteksvæsner sammenlignet med sidste år. Farvede søjler i forgrunden er år til dato, mens den grå søjle er sidste års samlede interurban-udlån."),
                                                    column(8,
                                                        tags$div( withSpinner(samedate_barchartOutput(ns('interurban_samedate_plot'))) )
                                                    ),
@@ -103,8 +103,8 @@ materialsTabPanelUI <- function(id) {
                                                    tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                             ),
                                             column(10,
-                                                   h4("Interurbane udlån på OBB pr. måned"),
-                                                   p("Grafen viser det samlede interurbane udlån fra OBB til andre biblioteksvæsner, fordelt på år og måned."),
+                                                   h4("Interurban-udlån på OBB pr. måned"),
+                                                   p("Grafen viser årets interurban-udlån fra OBB til andre biblioteksvæsner, fordelt på måned og sammenlignet med sidste år."),
                                                    column(8,
                                                           tags$div( withSpinner(plotlyOutput(ns('interurban_months_plot'))) )
                                                    )
