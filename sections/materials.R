@@ -119,15 +119,6 @@ materialsTabPanelUI <- function(id) {
                                        )
                                 )
                           ),
-                       #   tabPanel("Timer", 
-                       #           fluidRow(
-                       #             column(2, h4("Afgræns")),
-                       #             column(10,
-                       #                   plotlyOutput(ns("heat")),
-                       #                  tableOutput(ns('table'))
-                       #             )
-                       #           )
-                       #  ),
                        tabPanel("Cirkulation", 
                                 fluidRow(
                                   column(12,
@@ -175,13 +166,6 @@ materialsTabPanelUI <- function(id) {
                                   )
                                 )
                        )
-                          #,tabPanel("Data og dokumentation",
-                          #         fluidRow(
-                          #           column(12,
-                          #                  p("Dokumentation")
-                          #           )
-                          #         )  
-                          #)
                    ))))
 }
 
@@ -403,17 +387,6 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   # Call Excel download function for tables 
   callModule(xlsxDownload, "checkouts", data = reactive(checkouts_all_tbl()), name = "Udlån_på_OBB")
 
-  #udlaan_heat <- udlaan %>%
-  #  mutate(branch = ifelse(is.na(name), "Andet", name)) %>%
-  #  group_by(branch, hour) %>%
-  #  summarise(sum = sum(circulation_fact_count))
-  
-  #output$table <- renderTable(udlaan_heat)
-  
-  #output$heat <- renderPlotly({
-  #  plot_ly(x=udlaan_heat$hour ,y=udlaan_heat$branch ,z = udlaan_heat$sum, type = "heatmap")
-  #})
-  
   # Circulation numbers. Horizontal barchart
   # TODO tilføj søjlepar, med gennemsnit ligesom kbh. (gerne med to andre farver, så de fremhæves) + vælger til magasin vs. udlån
   
