@@ -6,6 +6,13 @@ licenses_df <- dbGetQuery(con, "select navn,eressourcer.x_erms.endelig_pris_dkk 
                           from eressourcer.x_erms left join datamart.eressourcer_ddb_kategorier on datamart.eressourcer_ddb_kategorier.name_match_erms ilike '%'||eressourcer.x_erms.navn||'%'")
 dbDisconnect(con)
 
+# # Necessary for testing outside shinyproxy env:
+# Sys.setenv('SHINYPROXY_USERGROUPS' = 'WHITEBOOKREDAKTØRER,TESTGROUP')
+# 
+# # Get the user name and user groups of the current user for authorization
+# ldap_username <- Sys.getenv('SHINYPROXY_USERNAME')
+# ldap_usergroups <- as.list(strsplit(Sys.getenv('SHINYPROXY_USERGROUPS'), ",")[[1]]) # converts comma separated string from env var into an R list
+
 # UI
 edatabasesTabPanelUI <- function(id) {
   
@@ -13,7 +20,7 @@ edatabasesTabPanelUI <- function(id) {
   
   tabItem(tabName = "edatabases",
           box(width = 12, solidHeader = TRUE, id = "edatabasesheader",
-              h3("eBaser"),
+              h3("Licenser"),
               img(src='icons/eressourcer_negativ_45x45.png', align = "right", height="46px")
           ),     
           fluidRow(
@@ -62,7 +69,7 @@ edatabasesTabPanelUI <- function(id) {
                                 )
                            ),
                            # Insert only the follow tab and contents if user belongs to the materialeforum group
-                           if ('MATERIALEFORUM' %in% ldap_usergroups) {
+                           # if ('MATERIALEFORUM' %in% ldap_usergroups) {
                              tabPanel("Licenser", 
                                              fluidRow(
                                                column(12,
@@ -110,7 +117,7 @@ edatabasesTabPanelUI <- function(id) {
                                                       ),
                                                       column(12,tags$hr())
                                                )))
-                           }
+                           # }
                 )))
       )
 }

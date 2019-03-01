@@ -1,6 +1,4 @@
 # UI
-
-
 materialsTabPanelUI <- function(id) {
   
   ns <- NS(id)
@@ -95,7 +93,7 @@ materialsTabPanelUI <- function(id) {
                                                        p("* Bemærk at udlånsstatistikker bygger på data fra Cicero. Der er ikke fuld gennemsigtighed i forhold til datakilden, hvorfor unøjagtigheder kan forekomme."), 
                                                        p("** Nyeste data har pt. en forsinkelse på tre døgn.")
                                                    )
-                                            )
+                                             )
                                         ),
                                      column(12,tags$div( tags$hr(), class = "hidden-print" )),
                                      column(12,
@@ -115,7 +113,7 @@ materialsTabPanelUI <- function(id) {
                                                        p("* Bemærk at udlånsstatistikker bygger på data fra Cicero. Der er ikke fuld gennemsigtighed i forhold til datakilden, hvorfor unøjagtigheder kan forekomme."), 
                                                        p("** Nyeste data har pt. en forsinkelse på tre døgn.")
                                                    )
-                                            )
+                                             )
                                        )
                                 )
                           ),
