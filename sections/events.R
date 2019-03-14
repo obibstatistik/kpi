@@ -172,11 +172,10 @@ eventsTabPanelUI <- function(id) {
           ),
           tabPanel(
             "Effekt",
-            conditionalPanel(
-              condition = "grepl(ldap_usergroups, whitebook)",
             fluidRow(
               column(
                 12,
+                p(ldap_usergroups),
                 h4("Top 5 - forhold deltagere / forberedelsestid"),
                 tableOutput(ns('top5')),
                 h4("Bund 5 - forhold deltagere / forberedelsestid"),
@@ -215,7 +214,6 @@ eventsTabPanelUI <- function(id) {
                 radarplotUI(ns(id = "bo"), branch = "Bolbro"),
                 radarplotUI(ns(id = "ho"), branch = "Holluf Pile")
               )
-            )
             )
           ), 
           tabPanel(
@@ -438,7 +436,7 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
     filter(year(start_dato) > 2018) %>%
     filter(!is.na(antal_deltagere),!is.na(forberedelsestid)) %>%
     mutate(ratio = antal_deltagere/forberedelsestid) %>%
-    mutate(start_dato = format(start_dato, "%Y %M %d"), slut_dato = format(slut_dato, "%Y %M %d"))
+    mutate(start_dato = format(start_dato, "%Y-%m-%d"), slut_dato = format(slut_dato, "%Y-%m-%d"))
     
   top5 <- toplast %>%  
     top_n(5, ratio) %>%
