@@ -1,3 +1,53 @@
+### Radarplot MODUL ###
+
+# UI
+radarplotUI <- function(id, branch) {
+  ns <- NS(id)
+  tagList(
+    column(3,
+      p(branch),
+      withSpinner(plotlyOutput(ns("radarplot")))
+    )
+  )
+}
+
+# SERVER
+radarplot <- function(input, output, session, data, branch) {
+
+  output$radarplot <- renderPlotly({
+  
+  print(branch)  
+    
+  data <- data %>% 
+    #filter(lokation %in% c('Bolbro bibliotek','Dalum bibliotek','Højby bibliotek','Korup bibliotek','Tarup bibliotek','Musikbiblioteket','Vollsmose bibliotek')) %>%
+    group_by(lokation) %>%
+    summarise(antal = n(), deltagere = mean(antal_deltagere), forberedelsestid = mean(forberedelsestid)) %>%
+    mutate(max_antal = max(antal), max_deltagere = max(deltagere), max_forberedelsestid = max(forberedelsestid)) %>%
+    mutate(norm_antal = antal/max_antal,norm_deltagere = deltagere/max_deltagere,norm_forberedelsestid = forberedelsestid/max_forberedelsestid) %>%
+    filter(startsWith(lokation, branch)) %>%
+    select(norm_antal, norm_deltagere, forberedelsestid)
+    
+  print(data)
+
+  plot_ly(
+    type = 'scatterpolar',
+    r = as.numeric(data[1,]),
+    theta = c('antal','deltagere','forberedelsestid'),
+    mode= "lines",
+    fill = 'toself'
+  ) %>%
+    layout(
+      polar = list(
+        radialaxis = list(
+          visible = T,
+          range = c(0,1)
+        )
+      ),
+      showlegend = F
+    )
+  })
+}
+
 # UI
 
 eventsTabPanelUI <- function(id) {
@@ -122,9 +172,15 @@ eventsTabPanelUI <- function(id) {
           ),
           tabPanel(
             "Effekt",
+            conditionalPanel(
+              condition = "grepl(ldap_usergroups, whitebook)",
             fluidRow(
               column(
                 12,
+                h4("Top 5 - forhold deltagere / forberedelsestid"),
+                tableOutput(ns('top5')),
+                h4("Bund 5 - forhold deltagere / forberedelsestid"),
+                tableOutput(ns('bottom5')),
                 h4("Forhold imellem forberedelse og deltagere"),
                 p("Grafen viser forholdet mellem forberedelsestid og antal deltagere fordelt på arrangementskategorier. Holdes musen henover det enkelte arrangement vises titel og specifikke data."),
                 p("OBS. Maks mulige forberedelsestid i indberetning er 999 minutter."),
@@ -147,11 +203,22 @@ eventsTabPanelUI <- function(id) {
                 column(
                   width = 10,
                   plotlyOutput(ns("eventsratioplot"))
-                )
+                ),
+                h4("Radar plots"),
+                radarplotUI(ns(id = "mus"), branch = "Musikbiblioteket"),
+                radarplotUI(ns(id = "kor"), branch = "Korup"),
+                radarplotUI(ns(id = "ta"), branch = "Tarup"),
+                radarplotUI(ns(id = "da"), branch = "Dalum"),
+                radarplotUI(ns(id = "hb"), branch = "Hovedbiblioteket"),
+                radarplotUI(ns(id = "vo"), branch = "Vollsmose"),
+                radarplotUI(ns(id = "hoj"), branch = "Højby"),
+                radarplotUI(ns(id = "bo"), branch = "Bolbro"),
+                radarplotUI(ns(id = "ho"), branch = "Holluf Pile")
               )
             )
-          )
-          , tabPanel(
+            )
+          ), 
+          tabPanel(
             "Dokumentation og data",
             xlsxDownloadUI(ns("events")),
             p("Opdateret: "), p(htmlOutput(ns("updateText")))
@@ -177,6 +244,14 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
   events_update <- dbGetQuery(con_dwh, "select obj_description('arrangementer.obib_arrangementer'::regclass)")
   dbDisconnect(con_dwh)
 
+  # test
+  output$table <- renderTable(
+    events %>% 
+      select(titel, start_dato) %>% 
+      mutate(tid = format(start_dato, "%Y-%m-%d %H:%M:%OS")) %>%
+      mutate(zone = as.POSIXct(start_dato, tz = "Europe/Berlin"))
+  )
+  
   # arrangementer pr aar #
   output$eventsyearplot <- renderPlotly({
     plot_ly(eventsyear, x = eventsyear$year, y = eventsyear$count, type = "bar", text = text, marker = list(color = color5))
@@ -352,8 +427,65 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
   })
 
   # data og dokumentation
+  events_xlsx <- events %>% mutate(start_dato = as.POSIXct(start_dato, tz = "Europe/Berlin"), slut_dato = as.POSIXct(slut_dato, tz = "Europe/Berlin"))
   callModule(xlsxDownload, "events", data = reactive(events), name = "Arrangementsdata")
   event_update_time <- substr(events_update[[1]], 98, 1000)
   output$updateText <- renderText(event_update_time)
+  
+  # top 5 & last 5
     
+  toplast <- events %>%
+    filter(year(start_dato) > 2018) %>%
+    filter(!is.na(antal_deltagere),!is.na(forberedelsestid)) %>%
+    mutate(ratio = antal_deltagere/forberedelsestid) %>%
+    mutate(start_dato = format(start_dato, "%Y %M %d"), slut_dato = format(slut_dato, "%Y %M %d"))
+    
+  top5 <- toplast %>%  
+    top_n(5, ratio) %>%
+    arrange(desc(ratio))
+  
+  output$top5 <- renderTable(top5 %>% select(titel, ratio, start_dato, slut_dato, antal_deltagere, forberedelsestid, type, kategori, arrangementstype))
+  
+  
+  bottom5 <- toplast %>%
+    top_n(-5, ratio) %>%
+    arrange(desc(ratio))
+
+  output$bottom5 <- renderTable(bottom5 %>% select(titel, ratio, start_dato, slut_dato, antal_deltagere, forberedelsestid, type, kategori, arrangementstype))
+  
+  # radar
+  
+  output$radar <- renderPlotly({
+    plot_ly(
+      type = 'scatterpolar',
+      r = c(39, 28, 8, 7, 28, 39),
+      theta = c('A','B','C', 'D', 'E', 'A'),
+      fill = 'toself'
+    ) %>%
+      layout(
+        polar = list(
+          radialaxis = list(
+            visible = T,
+            range = c(0,50)
+          )
+        ),
+        showlegend = F
+      )
+  })
+  
+  
+  #events <- events %>% 
+    #mutate(lokation = ifelse(startsWith(lokation, "Hovedbiblioteket"),"Hovedbiblioteket", .)) #%>%
+    #filter(lokation != c("Andet...", "odense city, , 5000","Kulturmaskinen, Farvergården 7, 5000 Odense C", "HF & VUC FYN Odense City Campus, 3. sal, U310, Kottesgade 6-8, 5000 Odense C"))
+  
+  callModule(radarplot, id = "mus", data = events, branch = 'Musikbiblioteket')
+  callModule(radarplot, id = "kor", data = events, branch = 'Korup bibliotek')
+  callModule(radarplot, id = "ta", data = events, branch = 'Tarup bibliotek')
+  callModule(radarplot, id = "da", data = events, branch = 'Dalum bibliotek')
+  callModule(radarplot, id = "hb", data = events, branch = 'Hovedbibliotek')
+  callModule(radarplot, id = "vo", data = events, branch = 'Vollsmose bibliotek')
+  callModule(radarplot, id = "hoj", data = events, branch = 'Højby bibliotek')
+  callModule(radarplot, id = "bo", data = events, branch = 'Bolbro bibliotek')
+  callModule(radarplot, id = "ho", data = events, branch = "Holluf Pile bibliotek")
+  
 }
