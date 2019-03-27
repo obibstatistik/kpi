@@ -182,6 +182,7 @@ citizenserviceTabPanel <-
         select(dato, gen_ventetid_min) %>%
         mutate(gen_ventetid_min = ifelse(is.na(gen_ventetid_min),0,gen_ventetid_min)) %>%
         mutate(month = month(dato), year = year(dato)) %>%
+        filter(year != 2016) %>%
         select(-dato) %>%
         group_by(month, year) %>%
         summarise(count = mean(gen_ventetid_min)) %>%
