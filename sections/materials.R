@@ -161,8 +161,8 @@ materialsTabPanelUI <- function(id) {
                                                 withSpinner(plotlyOutput(ns("cpv_join_plot"), height = "700px")),
                                                 p("Sammenlignet med filialerne vil Hovedbiblioteket have en større andel af udlånet, der ikke er udlån til besøgende, hvorfor udlån pr. besøg vil være relativit højt. Mange besøg af elever på kombibibliotekerne Holluf Pile og Højby bliver ikke talt i gaten og disse to lokationer vil ligeledes have et relativt højt udlån pr. besøg.")
                                          )
-                                  )
-                                )
+                                   )
+                             )
                        )
                    ))))
 }
@@ -175,7 +175,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
   con_dwh <- dbConnect(drv, dbname = dbname_dwh, host = host_dwh, port = port_dwh, user = user_dwh, password = password_dwh)
   #udlaan <- dbGetQuery(con, "SELECT name, hour, circulation_fact_count FROM cicero.udlaan_per_klokkeslaet")
   #max_date <- dbGetQuery(con, "select max(transact_date) max_date from cicero.udlaan_per_opstillingsprofil")
-  checkouts_all <- dbGetQuery(con, "SELECT extract(year from transact_date) aar,transact_date,branch,dep,sum(antal) antal
+  checkouts_all <- dbGetQuery(con_dwh, "SELECT extract(year from transact_date) aar,transact_date,branch,dep,sum(antal) antal
         from cicero.udlaan_per_opstillingsprofil
         where extract(year from (transact_date)) > extract(year from (current_date - interval '5 year'))
         group by aar,transact_date,branch,dep
