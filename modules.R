@@ -158,7 +158,7 @@ heatmapWeekTableUI <- function(id, title) {
                 NULL,
                 min = as.Date("2016-08-11","%Y-%m-%d"),
                 max = Sys.Date(),
-                value= c(as.Date("2016-08-11","%Y-%m-%d"),Sys.Date()),
+                value= c(as.Date("2018-09-01","%Y-%m-%d"),Sys.Date()),
                 step = 1,
                 timeFormat="%Y-%m-%d"),
     #uiOutput(ns("timeslider")), # se kommentar i server funktion
