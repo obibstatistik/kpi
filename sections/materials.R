@@ -360,8 +360,12 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
       filter(if(input$checkouts_mainlibrary_filter1 == 'Uden Hovedbiblioteket') (branch != 'Odense Hovedbibliotek') else TRUE) %>%
       group_by(aar) %>%
       summarise(sum = sum(sum))
+    
     plot_ly(checkouts_overview, x = checkouts_overview$aar, y = checkouts_overview$sum, type = 'bar', marker = list(color = color1)) %>%
-      layout(autosize = TRUE, yaxis = list(title = 'Antal'), xaxis = list(title = 'År', dtick = 1, autotick = FALSE, autorange="reversed"))
+      layout(separators = ',.', autosize = TRUE, 
+             yaxis = list(title = 'Antal udlån', exponentformat = 'none'), 
+             xaxis = list(title = 'År', dtick = 1, autotick = FALSE, autorange="reversed")
+      )
   })
   
    # Reactive function wrapping dataframe for checkouts two-year comparison table incl. Excel download below
