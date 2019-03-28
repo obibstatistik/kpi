@@ -74,7 +74,19 @@ materialsTabPanelUI <- function(id) {
                                                    withSpinner(formattableOutput(ns("checkouts_table")), proxy.height="400px")
                                             )
                                      ),
-                                     column(12,tags$div( tags$hr(), class = "hidden-print" ))                                   
+                                     column(12,tags$div( tags$hr(), class = "hidden-print" )),
+                                     column(12,
+                                            column(2,
+                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                            ),
+                                            column(10,
+                                                   h4("Årligt udlån fordelt på OBBs afdelinger"),
+                                                   p("Denne graf viser samlet udlån på OBB fordelt på år og afdeling."),
+                                                   p('Mindre anvendte afdelingsbetegnelser som fx "Pt. bortkommet","Skoler" og "Fjernlån" er grupperet som "Andet"'),
+                                                   p('Klik på signaturen til højre for at fjerne eller vise søjlerne for hver afdelingsbetegnelse.'),
+                                                   withSpinner(plotlyOutput(ns("checkouts_deps_plot")))
+                                            )
+                                     )
                                 )
                           ),
                           tabPanel("Interurban", 
@@ -207,7 +219,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
     LEFT JOIN 																																		
     	(SELECT SUM(antal) this_year, EXTRACT(MONTH FROM transact_date) maaned 
     	 FROM cicero.udlaan_per_laanersegment 
-    	 WHERE cat ILIKE '%ibliotek%' 
+    	 WHERE cat ILIKE '%ibliotek%'
     	 AND EXTRACT(YEAR FROM transact_date) = EXTRACT(YEAR FROM now()) 
     	 GROUP BY maaned) b
     ON a.maaned = b.maaned")
@@ -374,6 +386,34 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
       rename(Måned = month, Akkumuleret = akku1, "Akkumuleret " = akku2, 'Ændring pr. mdr.' = mdr, 'Ændring akkumuleret' = akk)
   })
 
+    # Render barchart comparing checkouts for different deps, mainly Børn/Voksen
+    output$checkouts_deps_plot <- renderPlotly({
+      checkouts_deps <- checkouts_all %>%
+        select(aar,dep,antal) %>%
+        filter(aar != year(now())) %>%
+        mutate(
+          dep = case_when(
+            dep == "Musik" ~ "Musik",
+            dep == "Børn" ~ "Børn",
+            dep == "Voksen" ~ "Voksen",
+            TRUE ~ "Andet"
+          ) 
+        ) %>%
+        group_by(aar, dep) %>%
+        summarise(sum = sum(antal)) %>%
+        spread(key = dep, value = sum) #%>%
+        #mutate_at(vars(-1), funs(replace(., is.na(.), 0)))
+      
+      plot_ly(checkouts_deps, x = ~aar, y = ~`Andet`, name = 'Andet', type = 'bar', marker = list(color = color4)) %>%
+        add_trace(y = ~`Musik`, name = 'Musik', marker = list(color = color3)) %>%
+        add_trace(y = ~`Børn`, name = 'Børn', marker = list(color = color2)) %>%
+        add_trace(y = ~`Voksen`, name = 'Voksen', marker = list(color = color1)) %>%
+        layout(separators = ',.', autosize = TRUE, barmode = 'group',
+               yaxis = list(title = 'Antal udlån', exponentformat = 'none'), 
+               xaxis = list(title = '', autorange="reversed")
+        )
+    })  
+    
   # Checkouts two-year comparison table
   output$checkouts_table <- renderFormattable({
     formattable(checkouts_all_tbl(), list(
