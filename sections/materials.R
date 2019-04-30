@@ -19,6 +19,9 @@ materialsTabPanelUI <- function(id) {
                                                   tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                            ),
                                            column(10,
+                                                  tags$div(
+                                                      HTML(paste(h2("N.B! Grundet et problem med Systematics statistikserver er seneste udlånsdata fra 8. april 2019",style="color:red")))
+                                                  ),
                                                   h4("Samlet udlån på OBB"),
                                                   p("Grafen viser det samlede udlån på OBB fordelt pr. år. De grå søjler er hele året, men farvede søjler i forgrunden er år til dato. Det er dermed muligt at sammenligne indeværende års udlån med de forrige."),
                                                   column(8,
@@ -95,6 +98,9 @@ materialsTabPanelUI <- function(id) {
                                             column(2,
                                                    tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                             ),
+                                            tags$div(
+                                              HTML(paste(h2("N.B! Grundet et problem med Systematics statistikserver er seneste udlånsdata fra 8. april 2019",style="color:red")))
+                                            ),
                                             column(10,
                                                    h4("Interurban-udlån fra OBB"),
                                                    p("Grafen viser årets interurban-udlån fra OBB til andre biblioteksvæsner sammenlignet med sidste år. Farvede søjler i forgrunden viser antal pr. år til dato, mens den grå søjle i baggrunden er sidste års samlede interurban-udlån."),
@@ -142,6 +148,9 @@ materialsTabPanelUI <- function(id) {
                                                 ),
                                                 tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                          ),
+                                         tags$div(
+                                           HTML(paste(h2("N.B! Grundet et problem med Systematics statistikserver er seneste udlånsdata fra 8. april 2019",style="color:red")))
+                                         ),
                                          column(10,height = "900px",
                                                 h4("Cirkulationstal fordelt på biblioteker og afdelingerne Børn/Voksen"),
                                                 p("Grafen viser cirkulationstallet, dvs. gennemsnitligt udlån pr. eksemplar over en given periode."),
@@ -163,6 +172,9 @@ materialsTabPanelUI <- function(id) {
                                                                separator = " - "
                                                 ),
                                                 tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                                         ),
+                                         tags$div(
+                                           HTML(paste(h2("N.B! Grundet et problem med Systematics statistikserver er seneste udlånsdata fra 8. april 2019",style="color:red")))
                                          ),
                                          column(10,height = "900px",
                                                 h4("Antal lån pr. besøg fordelt på biblioteker"),
@@ -406,13 +418,17 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
         group_by(aar, dep) %>%
         summarise(sum = sum(antal)) %>%
         spread(key = dep, value = sum) #%>%
+      
         #mutate_at(vars(-1), funs(replace(., is.na(.), 0)))
       
       plot_ly(checkouts_deps, x = ~aar, y = ~`Andet`, name = 'Andet', type = 'bar', marker = list(color = color4)) %>%
         add_trace(y = ~`Musik`, name = 'Musik', marker = list(color = color3)) %>%
         add_trace(y = ~`Børn`, name = 'Børn', marker = list(color = color2)) %>%
         add_trace(y = ~`Voksen`, name = 'Voksen', marker = list(color = color1)) %>%
+        # add_text(x=x, y=y, text=labs, hoverinfo='none', textposition = 'top', showlegend = FALSE, 
+        #          textfont=list(size=20, color="black")) %>%
         layout(separators = ',.', autosize = TRUE, barmode = 'group',
+               margin = list(b=100, l=100),
                yaxis = list(title = 'Antal udlån', exponentformat = 'none'), 
                xaxis = list(title = '', autorange="reversed")
         )
