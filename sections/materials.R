@@ -187,7 +187,24 @@ materialsTabPanelUI <- function(id) {
                                          )
                                    )
                              )
-                       )
+                        )
+                       #, tabPanel("Musikudlån", 
+                       #          fluidRow(
+                       #            column(12,
+                       #                   column(2,
+                       #                          tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+                       #                   ),
+                       #                   # tags$div(
+                       #                   #   HTML(paste(h2("N.B! Grundet et problem med Systematics statistikserver er seneste udlånsdata fra 8. april 2019",style="color:red")))
+                       #                   # ),
+                       #                   column(10,height = "900px",
+                       #                          h4("Musikudlån"),
+                       #                          p("Søjlediagrammet viser udlån fra afdeling Musik fordelt på år og lånertype."),
+                       #                          withSpinner(plotlyOutput(ns("musudl_stack_plot"), height = "700px"))
+                       #                   )
+                       #            )
+                       #          )
+                       # )
                    ))))
 }
 
@@ -221,6 +238,18 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
     GROUP BY aar
     ORDER BY aar,dato DESC")
   #comp_months_interurban <- dbGetQuery(con_dwh, "SELECT a.maaned,last_year,COALESCE(this_year,0) this_year
+  # comp_years_musudl <- dbGetQuery(con_dwh, "SELECT a.aar,biblioteker, andre
+  #   FROM
+  #   (SELECT SUM(antal) biblioteker, EXTRACT(YEAR FROM transact_date) aar 
+  #     FROM cicero.udlaan_per_laanersegment 
+  #     WHERE cat ILIKE '%ibliotek%' 
+  #     GROUP BY aar) a
+  #   LEFT JOIN 																																		
+  #   (SELECT SUM(antal) andre, EXTRACT(YEAR FROM transact_date) aar 
+  #     FROM cicero.udlaan_per_laanersegment 
+  #     WHERE cat NOT ILIKE '%ibliotek%'
+  #     GROUP BY aar) b
+  #   ON a.aar = b.aar")
   comp_months_interurban <- dbGetQuery(con_dwh, "SELECT a.maaned,last_year, this_year
     FROM
     	(SELECT SUM(antal) last_year, EXTRACT(MONTH FROM transact_date) maaned 
@@ -235,6 +264,7 @@ materialsTabPanel <- function(input, output, session, data, tablename) {
     	 AND EXTRACT(YEAR FROM transact_date) = EXTRACT(YEAR FROM now()) 
     	 GROUP BY maaned) b
     ON a.maaned = b.maaned")
+  
   cpv_df <- dbGetQuery(con, "select visits.branch,visits.dato,visits.sum visits,checkouts.sum checkouts from (
           select (
               case
@@ -593,6 +623,13 @@ output$cpv_join_plot <- renderPlotly({
              xaxis = list(zeroline = FALSE, showline = FALSE, showticklabels = TRUE, domain = c(0,2), title = "", type = "line", showgrid = TRUE))
   })
 
-
+  # # Render stacked barchart comparing lending to persons and libraries across years
+  # output$musudl_stack_plot <- renderPlotly({
+  #   comp_months_interurban_shortnames <- comp_months_interurban_shortnames %>%
+  #     mutate_at(vars(-1), funs(replace(., is.na(.), 0)))
+  #   plot_ly(comp_months_interurban_shortnames, x = ~maaned, y = ~`this_year`, type = 'bar', name = year(now()), marker = list(color = color1)) %>%
+  #     add_trace(y = ~`last_year`, name = year(now()) -1 , marker = list(color = color2)) %>%
+  #     layout(autosize = TRUE, yaxis = list(title = 'Antal'), xaxis = list(title = ''), barmode = 'stack')
+  # })
   
 }
