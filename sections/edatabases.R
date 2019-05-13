@@ -69,7 +69,7 @@ edatabasesTabPanelUI <- function(id) {
                                 )
                            ),
                            # Insert only the follow tab and contents if user belongs to the materialeforum group
-                           # if ('MATERIALEFORUM' %in% ldap_usergroups) {
+                           if ('MATERIALEFORUM' %in% ldap_usergroups) {
                              tabPanel("Licenser", 
                                              fluidRow(
                                                column(12,
@@ -117,7 +117,7 @@ edatabasesTabPanelUI <- function(id) {
                                                       ),
                                                       column(12,tags$hr())
                                                )))
-                           # }
+                           }
                 )))
       )
 }

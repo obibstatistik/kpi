@@ -48,8 +48,8 @@ color8 = c('rgb(102,102,102)')
 color9 = c('rgb(192,57,83)')
 
 # Necessary for testing outside shinyproxy env:
-Sys.setenv('SHINYPROXY_USERGROUPS' = 'WHITEBOOKREDAKTØRER,TESTGROUP')
+#Sys.setenv('SHINYPROXY_USERGROUPS' = 'WHITEBOOKREDAKTØRER,TESTGROUP')
 
 # Get the user name and user groups of the current user for authorization
-ldap_username <- Sys.getenv('SHINYPROXY_USERNAME')
-ldap_usergroups <- as.list(strsplit(Sys.getenv('SHINYPROXY_USERGROUPS'), ",")[[1]]) # converts comma separated string from env var into an R list
+#ldap_username <- Sys.getenv('SHINYPROXY_USERNAME')
+#ldap_usergroups <- as.list(strsplit(Sys.getenv('SHINYPROXY_USERGROUPS'), ",")[[1]]) # converts comma separated string from env var into an R list
