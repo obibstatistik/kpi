@@ -16,6 +16,9 @@ visitorsTabPanelUI <- function(id) {
                           tabPanel("Generelt",
                                    fluidRow(
                                      column(6,
+                                            tags$div(
+                                               HTML(paste(h3("N.B! Den ene af to gates i Borgernes Hus har ikke leveret data siden 9.maj. Besøgstal, der inkluderer denne, er derfor misvisende.",style="color:red")))
+                                            ),
                                             h4("Info"),
                                             p("Besøgstallet stemmer ikke fuldstændigt overens med de officielle besøgstal, da der fortages forskellige justeringer grundet specifikke forhold i OBB."),
                                             p("Der har været udfordringer med tælleren i Korup, hvilket bevirker, at der ikke er opsamlet besøgstal siden marts. Der arbejdes på at løse problemet."),
@@ -86,6 +89,9 @@ visitorsTabPanelUI <- function(id) {
                           tabPanel("Timer",
                                    fluidRow(
                                      column(6,
+                                            tags$div(
+                                              HTML(paste(h3("N.B! Den ene af to gates i Borgernes Hus har ikke leveret data siden 9.maj. Besøgstal, der inkluderer denne, er derfor misvisende.",style="color:red")))
+                                            ),
                                             h4("Info"),
                                             p("Visningen giver overblik over besøget på de enkelte lokationer for en given periode fordelt på timer."),
                                             p("Det er muligt at vælge lokationer til og fra for at sammenligne på tværs."),
