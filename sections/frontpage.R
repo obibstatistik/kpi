@@ -33,12 +33,10 @@ frontpageTabPanel <- function(input, output, session) {
   
   drv <- dbDriver("PostgreSQL")
   con_dwh <- dbConnect(drv, dbname = dbname_dwh, host = host_dwh, port = port_dwh, user = user_dwh, password = password_dwh)
-  con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
-  visitors_current_year <- dbGetQuery(con, paste0("SELECT sum(count) FROM people_counter WHERE direction = 'in' and extract(year from date) = ",current_year))
-  loans_current_year <- dbGetQuery(con, paste0("SELECT sum(antal) FROM cicero.udlaan_per_opstillingsprofil WHERE extract(year from (transact_date)) = ",current_year))
+  visitors_current_year <- dbGetQuery(con_dwh, paste0("SELECT sum(delta) FROM visitors.x_visitor_counter WHERE direction = 'In' AND delta < 26 and extract(year from registertime) = ",current_year))
+  loans_current_year <- dbGetQuery(con_dwh, paste0("SELECT sum(antal) FROM cicero.udlaan_per_opstillingsprofil WHERE extract(year from (transact_date)) = ",current_year))
   events_current_year <- dbGetQuery(con_dwh, paste0("SELECT count(*) FROM arrangementer.obib_arrangementer WHERE extract(year from start_dato) = ",current_year))
-  citizenservice_current_year <- dbGetQuery(con, paste0("SELECT count(*) as count FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' and extract(year from (\"Tid\")) = ",current_year))
-  dbDisconnect(con)
+  citizenservice_current_year <- dbGetQuery(con_dwh, paste0("SELECT count(*) as count FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' and extract(year from (\"Tid\")) = ",current_year))
   dbDisconnect(con_dwh)
   
   callModule(kpitile, id = "visitors", data = visitors_current_year)
