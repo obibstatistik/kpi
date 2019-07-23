@@ -61,7 +61,7 @@ dbDisconnect(con)
 dbDisconnect(con_dwh)
 
 # # Necessary for testing outside shinyproxy env:
-Sys.setenv('SHINYPROXY_USERGROUPS' = 'WHITEBOOKREDAKTØRER,TESTGROUP,MATERIALEFORUM')
+#Sys.setenv('SHINYPROXY_USERGROUPS' = 'WHITEBOOKREDAKTØRER,TESTGROUP,MATERIALEFORUM')
 # 
 # # Get the user name and user groups of the current user for authorization
 # ldap_username <- Sys.getenv('SHINYPROXY_USERNAME')
