@@ -210,11 +210,12 @@ materialsTabPanelUI <- function(id) {
                                          column(10,height = "900px",
                                                 h4("Musikudlån"),
                                                 p("Søjlediagrammet viser udlån fra afdeling Musik fordelt på år og lånertype."),
+                                                p("(Denne side vises kun for bestemte brugergrupper)"),
                                                 withSpinner(plotlyOutput(ns("musudl_stack_plot"), height = "700px"))
                                          )
-                                  )
+                                     )
                                 )
-                       )
+                            )
                         }
                    ))))
 }

@@ -1,17 +1,71 @@
 ### DB QUERIES ###
 drv <- dbDriver("PostgreSQL")
 con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
+con_dwh <- dbConnect(drv, dbname = dbname_dwh, host = host_dwh, port = port_dwh, user = user_dwh, password = password_dwh)
 dbc_eres_stats <- dbGetQuery(con, "SELECT * from dbc_eres_stats")
+# licenser_overblik <- dbGetQuery(con_dwh, "SELECT 'faktor' datakilde,eressource,aar,maaned,antal,kilde,bibliotek,rapport_dato::date FROM eressourcer.x_licenser_overblik")
 licenses_df <- dbGetQuery(con, "select navn,eressourcer.x_erms.endelig_pris_dkk endpris,product,downloads,soegninger,taelleaar,datamart.eressourcer_ddb_kategorier.pris,brug,statbank,erms
                           from eressourcer.x_erms left join datamart.eressourcer_ddb_kategorier on datamart.eressourcer_ddb_kategorier.name_match_erms ilike '%'||eressourcer.x_erms.navn||'%'")
+
+licenser_overblik <- dbGetQuery(con_dwh, "
+    SELECT 'DBC' datakilde,vendor eressource,aar,maaned,antal,vendor kilde,isil bibliotek,null::date rapport_dato
+     FROM eressourcer.x_forfatterweb_faktalink
+     WHERE stattype = 'visits'
+     UNION ALL
+    SELECT 'Faktor' datakilde,
+           eressource,aar,
+           case
+    	when maaned = 'Januar' then 1
+    	when maaned = 'Februar' then 2
+    	when maaned = 'Marts' then 3
+    	when maaned = 'April' then 4
+    	when maaned = 'Maj' then 5
+    	when maaned = 'Juni' then 6
+    	when maaned = 'Juli' then 7
+    	when maaned = 'August' then 8
+    	when maaned = 'September' then 9
+    	when maaned = 'Oktober' then 10
+    	when maaned = 'November' then 11
+    	when maaned = 'December' then 12
+    end maaned,
+    antal,
+    kilde,
+    bibliotek,
+    rapport_dato::date
+     FROM eressourcer.x_licenser_overblik
+     UNION ALL
+    SELECT 'DBC' datakilde, 'Filmstriben' eressource,
+     extract(year from dato) aar,
+     extract(month from dato) maaned,
+     count(*) antal,
+     'Filmstriben' kilde,
+     'Odense' bibliotek,
+     null::date rapport_dato
+     FROM eressourcer.x_filmstriben_forbrug
+     WHERE extract(year from dato) >= 2017
+     group by datakilde,eressource,aar,maaned,kilde,bibliotek,rapport_dato
+    UNION ALL
+    SELECT 'DBC' datakilde,
+     'Ereolen - ' || bogtype eressource,
+     extract(year from oprettet) aar,
+     extract(month from oprettet) maaned,
+     count(*) antal,
+     'eReolen' kilde,
+     'Odense' bibliotek,
+     null::date rapport_dato
+     FROM eressourcer.x_pubhub_udlaan
+     WHERE extract(year from oprettet) >= 2017
+     group by datakilde,eressource,aar,maaned,kilde,bibliotek,rapport_dato")
+
 dbDisconnect(con)
+dbDisconnect(con_dwh)
 
 # # Necessary for testing outside shinyproxy env:
-# Sys.setenv('SHINYPROXY_USERGROUPS' = 'WHITEBOOKREDAKTØRER,TESTGROUP')
+Sys.setenv('SHINYPROXY_USERGROUPS' = 'WHITEBOOKREDAKTØRER,TESTGROUP,MATERIALEFORUM')
 # 
 # # Get the user name and user groups of the current user for authorization
 # ldap_username <- Sys.getenv('SHINYPROXY_USERNAME')
-# ldap_usergroups <- as.list(strsplit(Sys.getenv('SHINYPROXY_USERGROUPS'), ",")[[1]]) # converts comma separated string from env var into an R list
+ldap_usergroups <- as.list(strsplit(Sys.getenv('SHINYPROXY_USERGROUPS'), ",")[[1]]) # converts comma separated string from env var into an R list
 
 # UI
 edatabasesTabPanelUI <- function(id) {
@@ -27,240 +81,155 @@ edatabasesTabPanelUI <- function(id) {
             column(12,
                    tabBox(width = 12,
                           id = "tabset45",
+                          # Insert only the follow tab and contents if user belongs to the materialeforum group
+                          if ('MATERIALEFORUM' %in% ldap_usergroups) {
                           tabPanel("Generelt", 
                                    fluidRow(
                                      column(12,
                                             column(2,
                                                    h4("Afgrænsning"),
                                                    tags$br(),
-                                                   selectInput(ns("eres_vendor"),"eRessource:", unique(dbc_eres_stats$vendor)),
-                                                   selectInput(ns("eres_stattype"),"Statistik:", c("Antal unikke besøgende" = "visits","Samlede antal handlinger" = "actions","Gennemsnitlig besøgstid i minutter" = "visit_length")),
-                                                   selectInput(ns("eres_aar"),"År:", unique(dbc_eres_stats$aar)),
-                                                   #selectInput(ns("eres_abs_vs_pro"),"Værditype", c("Absolutte tal","Procent af kommunens befolkning")),
-                                                   tags$br(),tags$br(),
-                                                   p("Vælg evt. andre CB'er eller København og Aarhus til sammenligning:"),
-                                                   checkboxGroupInput(ns("eres_isil"),
-                                                                      'Biblioteker:',
-                                                                      unique(as.character(isil2name(dbc_eres_stats$isil))),
-                                                                      selected = "Odense",
+                                                   selectInput(ns("old_erms_produkt"),"eRessource:",  sort(unique(licenser_overblik$eressource))),
+                                                   # selectInput(ns("old_erms_aar"),"År:", unique(licenser_overblik$aar)),
+                                                   checkboxGroupInput(ns("old_erms_aar"),
+                                                                      'År:',
+                                                                      sort(unique(as.character(licenser_overblik$aar))),
+                                                                      selected = as.character(max(licenser_overblik$aar)),
                                                                       inline = F),
-                                                   xlsxDownloadUI(ns("edatabases")),
+                                                   tags$br(),tags$br(),
+                                                   xlsxDownloadUI(ns("eres_produkt_xlsx")),
                                                    tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
-                                                   if ('WHITEBOOKREDAKTØRER' %in% ldap_usergroups) {
+                                                   if ('MATERIALEFORUM' %in% ldap_usergroups) {
                                                      tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Gem til pdf</a>'))
                                                    }
                                             ),
                                             column(10,
-                                                   h3("Faktalink og Forfatterweb"),
-                                                   span("Følgende statistik stammer fra"),a("https://bibstats.dbc.dk", href = "https://bibstats.dbc.dk", target="_blank" ),
-                                                   tags$br(),tags$br(),
-                                                   tags$div( h4(htmlOutput(ns("edatabases_title1"))),style = "text-align: center;" ),
-                                                   withSpinner(plotlyOutput(ns("dbc_eres_stats_plot"))),
-                                                   tags$br(),tags$br(),
-                                                   column(10,
-                                                       tags$div(h4(htmlOutput(ns("edatabases_title2")))),
-                                                       withSpinner(formattableOutput(ns("dbc_eres_faktalink_table")), proxy.height="150px"),
-                                                       tags$br(),tags$br(),
-                                                       tags$div(h4(htmlOutput(ns("edatabases_title3")))),
-                                                       withSpinner(formattableOutput(ns("dbc_eres_forfatterweb_table")), proxy.height="150px")
-                                                   )
-                                            )
-                                     )
-                                )
-                           ),
-                           # Insert only the follow tab and contents if user belongs to the materialeforum group
-                           if ('MATERIALEFORUM' %in% ldap_usergroups) {
-                             tabPanel("Licenser", 
-                                             fluidRow(
-                                               column(12,
-                                                      column(2,
-                                                             h4("Afgrænsning"),
-                                                             #selectInput(ns("lic_fromyear"), "År:", unique(as.numeric(licenses_df$year))),
-                                                             #selectInput(ns("lic_statbank"), "Statistikbankens typer:", c("Seriepublikationer" = "serie","eBøger" = "ebooks","Multimedier" = "multimedia","Databaser" = "databaser")),
-                                                             selectInput(ns("lic_statbank"), "Statistikbankens typer:", unique(as.character(licenses_df$statbank))),
-                                                             selectInput(ns("lic_priskategori"), "Priskategori:", unique(as.character(licenses_df$pris))),
-                                                             selectInput(ns("lic_brugskategori"), "Brugskategori:", unique(as.character(licenses_df$brug))),
-                                                             radioButtons(ns("viztype"), "Graftype:", c("Linjer" = "lines", "Søjler" = "bar") ),
-                                                             xlsxDownloadUI(ns("edatabases2")),
-                                                             tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
-                                                      ),
+                                                fluidRow(
+                                                    column(10,
+                                                           h3("Licenser, overblik"),
+                                                           span("Følgende statistik stammer fra"),a("bibstats.dbc.dk", href = "https://bibstats.dbc.dk", target="_blank" ),
+                                                           span(", fra"),a("Faktor", href = "https://faktor.nu/reports", target="_blank" ),
+                                                           span("samt"),a("Pubhub", href = "https://admin.puhub.dk", target="_blank" ),
+                                                           p('Y-aksens betegnelse "tilgange" dækker over eRessourcernes ret forskellige måder, at opgøre brug på. Begrebet dækker således både over downloads, visninger og lign.'),
+                                                           p('N.B! Tal, der stammer fra Faktor (hovedparten), har pt. (sommer 2019) fortsat beta status')
+                                                    )
+                                                ),
+                                                fluidRow(
+                                                    column(10,
+                                                           actionButton("button", "Uge", style='margin:10px;background-color:DeepSkyBlue;color:white;font-weight:bold;'),
+                                                           actionButton("button", "Måned", style='margin:10px;background-color:DeepSkyBlue;color:white;font-weight:bold;'),
+                                                           actionButton("button", "Kvartal", style='margin:10px;background-color:DeepSkyBlue;color:white;font-weight:bold;'),
+                                                           actionButton("button", "År", style='margin:10px;background-color:DeepSkyBlue;color:white;font-weight:bold;')
+                                                    )
+                                                ),
+                                                fluidRow(
                                                       column(10,
-                                                             h3("eRessource-licenser"),
-                                                             span("Data for de fleste licenser stammer fra ERMS (Consortiamanager), men tal for Digital Artikelservice og Mediastream leveres af Statsbiblioteket ("),
-                                                             a("www.statsbiblioteket.dk/digital-artikelservice/statistik",href = "https://www.statsbiblioteket.dk/digital-artikelservice/statistik", target="_blank" ),span(')'),
-                                                             span("og tal for Faktalink og Forfatterweb leveres af DBC ("),
-                                                             a("bibstats.dbc.dk", href = "https://bibstats.dbc.dk", target="_blank" ),span(')'),
-                                                             p('De talte "visninger" dækker over forskellige brugstyper. Dvs. der kan være tale om downloads eller andre typer af handlinger.'),
-                                                             p("Licenserne er forsøgt kategoriseret efter sammenlignelighed"),
-                                                             # Only show this panel if 'lines', i.e. 'scatterplot' is selected
-                                                             conditionalPanel(
-                                                               paste0("input['", ns("viztype"), "'] == 'lines'"), plotlyOutput(ns("lic_scatterplot"))
-                                                             ),
-                                                             # Only show this panel if 'bar', i.e. 'barplot' is selected
-                                                             conditionalPanel(
-                                                               paste0("input['", ns("viztype"), "'] == 'bar'"), plotlyOutput(ns("lic_barplot"))
-                                                             ),
+                                                             tags$br(),tags$br(),
+                                                             tags$div( h4(htmlOutput(ns("old_erms_dyn_title_1"))),style = "text-align: center;" ),
+                                                             tags$div( h5(htmlOutput(ns("old_erms_dyn_title_3"))),style = "text-align: center;" ),
+                                                             withSpinner(plotlyOutput(ns("old_erms_plot"))),
                                                              tags$br(),tags$br(),
                                                              column(10,
-                                                                    tags$div(h4(htmlOutput(ns("lic_title1"))))
+                                                                    tags$div(h4(htmlOutput(ns("old_erms_dyn_title_2")))),
+                                                                    tags$div(h5(htmlOutput(ns("old_erms_dyn_title_4")))),
+                                                                    withSpinner(formattableOutput(ns("old_erms_table")), proxy.height="150px")
                                                              )
-                                                      ),
-                                                      column(2,
-                                                             checkboxGroupInput(ns("lic_productselector"),
-                                                                                'Vælg eRessource:',
-                                                                                unique(as.character(licenses_df$navn)),
-                                                                                selected = unique(as.character(licenses_df$navn)),
-                                                                                inline = F)
-                                                      ),
-                                                      column(8,
-                                                             formattableOutput(ns("licenses_table"))
-                                                      ),
-                                                      column(12,tags$hr())
-                                               )))
-                           }
-                )))
-      )
+                                                      )
+                                                )
+                                            )
+                                     )
+                      ))
+                          }
+                            ))))
 }
 
 # SERVER
 edatabasesTabPanel <- function(input, output, session, data, tablename) {
-    
-  dbc_eres_stats_df <- reactive({
-    dbc_eres_stats %>%
-      mutate_at(vars(2), funs(isil2name(.))) %>%
-      filter(vendor == input$eres_vendor) %>%
-      filter(stattype == input$eres_stattype) %>%
-      filter(aar == input$eres_aar) %>%
-      filter(isil %in% input$eres_isil) %>%
-      select(isil,vendor,stattype,aar,maaned,antal) %>%
-      #mutate_at(vars(5), funs(danskemåneder(.))) %>%
-      group_by(maaned, isil) %>%
-      spread(key = isil, value = antal)
+  
+  # Ordn månederne efter deres normale rækkefølge, ikke alfabetet...
+  licenser_overblik$maaned <- factor(danskemåneder(licenser_overblik$maaned), levels = c("Januar","Februar","Marts","April","Maj","Juni","Juli","August","September","Oktober","November","December"))
+  
+  old_erms_df <- reactive({
+    licenser_overblik %>%
+     filter(eressource == input$old_erms_produkt) %>%
+    #mutate(aar = as.character(aar)) %>%
+    spread(key = aar, value = antal) %>%
+    #coalesce(as.data.frame(.),0) %>%
+    mutate_at(vars(-1:-6), funs(replace(., is.na(.), 0))) %>%
+    #select(aar %in% input$old_erms_aar)
+    select(datakilde,eressource,maaned,kilde,bibliotek,rapport_dato,input$old_erms_aar)
+    #select(datakilde,eressource,maaned,kilde,bibliotek,rapport_dato,c('2018','2019'))
   })
   
   # Call Excel download function for tables 
-  callModule(xlsxDownload, "edatabases", data = reactive(dbc_eres_stats_df()), name = "ebaser")
+  callModule(xlsxDownload, "edatabases", data = reactive(dbc_eres_stats_df()), name = "eressourcer_overblik")
   
   # Render the plot
-  output$dbc_eres_stats_plot <- renderPlotly({
-    colNames <- names(dbc_eres_stats_df())[-1:-5]                             # ie. get all colnames except the first thru the fifth
-    p <- plot_ly(dbc_eres_stats_df(), 
-                 x = factor(month.abb[dbc_eres_stats_df()$maaned],levels=month.abb), 
-                 y = as.formula(paste0("~`", names(dbc_eres_stats_df())[5],"`")), 
-                 type = 'bar', name = names(dbc_eres_stats_df())[5], 
-                 marker = list(color = color1)) 
-    len <- length(colNames)
-    for(i in 0:len){
-      trace <- colNames[i+1]
-      p <- p %>% add_trace(y = as.formula(paste0("~", trace)), 
-                           type = 'bar', 
-                           name = trace, 
-                           marker = list(color = colors[i+2]))
+  output$old_erms_plot <- renderPlotly({
+    
+    colNames <- names(old_erms_df())[-1:-6]      # ie. get all colnames except the first thru the sixth
+    len <- length(colNames)                      # the number of columns with years
+    years <- unique(licenser_overblik$aar)       # get list of the years in the dataframe for assigning persistent colors to the bars
+    aar1 = names(old_erms_df())[7]               # the columns having the data for each year start at column 7
+    h = which(years==aar1)                       # also needed for persistent colors
+    
+    p <- plot_ly(old_erms_df(),
+                 x = ~maaned, 
+                 y = as.formula(paste0("~`", aar1,"`")),
+                 type = 'bar',
+                 name = aar1,
+                 text = as.formula(paste0("~`", aar1,"`")),
+                 textposition = 'outside',
+                 marker = list(color = colors[h-1]),        # use the year's index in the year list to assign a persistent color
+                 hoverinfo='none'
+    )
+    
+    if( len > 1) {
+      for(i in 2:len){
+        trace <- colNames[i]
+        j = which(years==trace)
+        p <- p %>% add_trace(y = as.formula(paste0("~`", trace,"`")), 
+                             type = 'bar', 
+                             name = trace, 
+                             text = as.formula(paste0("~`", trace,"`")),
+                             textposition = 'outside',
+                             marker = list(color = colors[j-1]),       # use the year's index in the year list to assign a persistent color
+                             hoverinfo='none'
+        )
+      }
     }
-    if (input$eres_stattype == "visits") {titel <- "Besøgende"}
-    else if (input$eres_stattype == "actions") {titel <- "Handlinger"}
-    else if (input$eres_stattype == "visit_length") {titel <- "Minutter"}
-    p %>% layout(autosize = TRUE, yaxis = list(title = titel), xaxis = list(title = 'Måned', dtick = 1, autotick = FALSE), barmode = 'group')
+
+    p %>% layout(separators = ',.',
+                 autosize = TRUE,
+                 barmode = 'group',
+                 yaxis = list(title = 'Antal tilgange', exponentformat = 'none'),
+                 xaxis = list(title = 'Måned', dtick = 1, autotick = FALSE)
+                 )
+    
   })
   
-  # Create dynamic titles based on the filter choices
-  output$edatabases_title1 <- renderText(
-    paste0(case_when(input$eres_stattype == "visits" ~ "Antal unikke besøgende",
-                     input$eres_stattype == "actions" ~ "Samlede antal handlinger",
-                     input$eres_stattype == "visit_length" ~ "Gennemsnitlig besøgstid i minutter")," ",
-                     input$eres_aar," ", 
-                     input$eres_vendor))
-
-  output$edatabases_title2 <- renderText( paste0("Faktalink, Odense ",input$eres_aar) )
-  output$edatabases_title3 <- renderText( paste0("Forfatterweb, Odense ",input$eres_aar) )
-  
-  
-  dbc_eres_faktalink_table_df <- reactive({
-    dbc_eres_stats %>%
-      filter(aar == input$eres_aar) %>%
-      filter(isil == 746100) %>%
-      filter(vendor == 'Faktalink') %>%
-      select(stattype,aar,maaned,antal) %>%
-      mutate_at(vars(3), funs(danskemåneder(.))) %>%
-      mutate_at(vars(1), funs(eresstattypedansk(.))) %>%
-      group_by(stattype,maaned) %>%
-      summarise(antal = sum(antal)) %>%
-      spread(key = maaned, value = antal, fill = 0) %>%
-      select(stattype,Januar,Februar,Marts,April,Maj,Juni,Juli,August,September,Oktober,November,December) %>% # select is needed to maintain column ordering...
-      rename(statistik = stattype) %>%
-      adorn_totals(c("row","col"))
-  })
-  
-  output$dbc_eres_faktalink_table <- renderFormattable({ formattable(dbc_eres_faktalink_table_df()) })
-
-  dbc_eres_forfatterweb_table_df <- reactive({
-    dbc_eres_stats %>%
-      filter(aar == input$eres_aar) %>%
-      filter(isil == 746100) %>%
-      filter(vendor == 'Forfatterweb') %>%
-      select(stattype,aar,maaned,antal) %>%
-      mutate_at(vars(3), funs(danskemåneder(.))) %>%
-      mutate_at(vars(1), funs(eresstattypedansk(.))) %>%
-      group_by(stattype,maaned) %>%
-      summarise(antal = sum(antal)) %>%
-      spread(key = maaned, value = antal, fill = 0) %>%
-      select(stattype,Januar,Februar,Marts,April,Maj,Juni,Juli,August,September,Oktober,November,December) %>% # select is needed to maintain column ordering...
-      rename(statistik = stattype) %>%
-      adorn_totals(c("row","col"))
+  year_df <- reactive({
+    licenser_overblik %>%
+      filter(eressource == input$old_erms_produkt) %>%
+      filter(aar %in% input$old_erms_aar)
   })
     
-  output$dbc_eres_forfatterweb_table <- renderFormattable({ formattable(dbc_eres_forfatterweb_table_df()) })
+  # Create dynamic titles based on the filter choices (two outputs with the same value)
+  output$old_erms_dyn_title_1 <- output$old_erms_dyn_title_2 <- renderText( paste0(input$old_erms_produkt," ", toString(unique(year_df()$aar)) ) )
+  output$old_erms_dyn_title_3 <- output$old_erms_dyn_title_4 <- renderText( paste0("Kilde: ", unique(year_df()$kilde)," - Datakilde: ", toString(unique(year_df()$datakilde)), " - Rapportdato: ", toString(unique(year_df()$rapport_dato)) ) )
   
-  lic_data <- reactive({
-    licenses <- licenses_df %>%
-      #filter(taelleaar == input$lic_fromyear) %>%
-      filter(pris == input$lic_priskategori) %>%
-      filter(brug == input$lic_brugskategori) %>%
-      filter(statbank == input$lic_statbank) %>%
-      select(navn,taelleaar,downloads) %>%
-      # filter(produkt %in% input$lic_productselector) %>%
-      group_by(navn,taelleaar) %>%
-      summarise(downloads = sum(downloads)) #%>%
-    #mutate_at(vars(-1), funs(replace(., is.na(.), 0)))
+  erms_table_df <- reactive({
+    licenser_overblik %>%
+      filter(eressource == input$old_erms_produkt) %>%
+      select(aar,maaned,antal) %>%
+      spread(key = maaned, value = antal) %>%
+      filter(aar %in% input$old_erms_aar) %>%
+      mutate(aar = as.character(aar)) %>%
+      rename(.,År = aar) %>%
+      adorn_totals(c("col")) %>%
+      mutate_at(vars(c(-1)), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".", decimal.mark=",")))
   })
   
-  # Render the plot as a scatterplot
-  output$lic_scatterplot <- renderPlotly({
-    data <- lic_data() %>% spread(navn, downloads)   # the plot needs a spread (pivot) of produkt
-    colNames <- names(data)[-1]                         # ie. get all colnames except the first which is year or month or whatever
-    # cf. https://stackoverflow.com/questions/46583282/r-plotly-to-add-traces-conditionally-based-on-available-columns-in-dataframe                                
-    p <- plot_ly(data, x = ~taelleaar, type = 'scatter', mode = 'lines') 
-    for(trace in colNames){
-      p <- p %>% add_trace(y = as.formula(paste0("~`", trace, "`")), name = trace, mode = 'lines')   # add_trace(y = as.formula(paste0("~`", trace, "`")), name = trace)
-    }
-    p %>% layout(xaxis = list(title = '', autorange = 'reversed'), yaxis = list (title = 'Visninger'))
-  })
-  
-  # Render the plot as a barchart
-  output$lic_barplot <- renderPlotly({
-    data <- lic_data() %>% spread(navn, downloads) 
-    colNames <- names(data)[-1]
-    p <- plot_ly(data, x = ~taelleaar, type = 'bar') 
-    for(trace in colNames){
-      p <- p %>% add_trace(y = as.formula(paste0("~`", trace, "`")), name = trace, mode = 'bar')
-    }
-    p %>% layout(xaxis = list(title = '', autorange = 'reversed'), yaxis = list (title = 'Visninger'))
-  })
-  
-  # Create dynamic titles based on the filter choices
-  output$lic_title1 <- renderText(
-    paste0(input$lic_statbank," med ",
-           input$lic_priskategori,", ", 
-           input$lic_brugskategori, " brug")
-  )
-  
-  # Render the table
-  output$licenses_table <- renderFormattable({
-    data <- lic_data() %>% 
-      spread(taelleaar, downloads)  %>%     # the table needs a spread (pivot) of month
-      #mutate_at(vars(-1), funs(replace(., is.na(.), '-')))
-      mutate_at(vars(-1), funs(replace(., is.na(.), '0')))
-    formattable(data[,c(1,ncol(data):2)])
-  })
+  output$old_erms_table <- renderFormattable({ formattable(erms_table_df()) })
 }
 
