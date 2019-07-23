@@ -82,8 +82,8 @@ edatabasesTabPanelUI <- function(id) {
                    tabBox(width = 12,
                           id = "tabset45",
                           # Insert only the follow tab and contents if user belongs to the materialeforum group
-                          if ('MATERIALEFORUM' %in% ldap_usergroups) {
                           tabPanel("Generelt", 
+                                   if ('MATERIALEFORUM' %in% ldap_usergroups) {
                                    fluidRow(
                                      column(12,
                                             column(2,
@@ -138,8 +138,9 @@ edatabasesTabPanelUI <- function(id) {
                                                 )
                                             )
                                      )
-                      ))
+                      )
                           }
+                          )
                             ))))
 }
 
