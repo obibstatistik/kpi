@@ -8,7 +8,14 @@ licenses_df <- dbGetQuery(con, "select navn,eressourcer.x_erms.endelig_pris_dkk 
                           from eressourcer.x_erms left join datamart.eressourcer_ddb_kategorier on datamart.eressourcer_ddb_kategorier.name_match_erms ilike '%'||eressourcer.x_erms.navn||'%'")
 
 licenser_overblik <- dbGetQuery(con_dwh, "
-    SELECT 'DBC' datakilde,vendor eressource,aar,maaned,antal,vendor kilde,isil bibliotek,null::date rapport_dato
+SELECT 
+      case
+    when maaned in (1,2,3) then 'Q1'
+		when maaned in (4,5,6) then 'Q2'
+		when maaned in (7,8,9) then 'Q3'
+		when maaned in (10,11,12) then 'Q4'
+	end kvartal, * FROM (
+	SELECT 'DBC' datakilde,vendor eressource,aar,maaned,antal,vendor kilde,isil bibliotek,null::date rapport_dato
      FROM eressourcer.x_forfatterweb_faktalink
      WHERE stattype = 'visits'
      UNION ALL
@@ -55,7 +62,7 @@ licenser_overblik <- dbGetQuery(con_dwh, "
      null::date rapport_dato
      FROM eressourcer.x_pubhub_udlaan
      WHERE extract(year from oprettet) >= 2017
-     group by datakilde,eressource,aar,maaned,kilde,bibliotek,rapport_dato")
+     group by datakilde,eressource,aar,maaned,kilde,bibliotek,rapport_dato) a")
 
 dbDisconnect(con)
 dbDisconnect(con_dwh)
@@ -115,33 +122,39 @@ edatabasesTabPanelUI <- function(id) {
                                                     )
                                                 ),
                                                 fluidRow(
-                                                    column(10,
-                                                           actionButton("button", "Uge", style='margin:10px;background-color:DeepSkyBlue;color:white;font-weight:bold;'),
-                                                           actionButton("button", "Måned", style='margin:10px;background-color:DeepSkyBlue;color:white;font-weight:bold;'),
-                                                           actionButton("button", "Kvartal", style='margin:10px;background-color:DeepSkyBlue;color:white;font-weight:bold;'),
-                                                           actionButton("button", "År", style='margin:10px;background-color:DeepSkyBlue;color:white;font-weight:bold;')
-                                                    )
+                                                    # column(10, #style='float:right;',
+                                                    #        actionButton("button", "Uge", style='margin:10px;background-color:DeepSkyBlue;color:white;font-weight:bold;float:right;'),
+                                                    #        actionButton("button", "Måned", style='margin:10px;background-color:DeepSkyBlue;color:white;font-weight:bold;float:right;'),
+                                                    #        actionButton("button", "Kvartal", style='margin:10px;background-color:DeepSkyBlue;color:white;font-weight:bold;float:right;'),
+                                                    #        actionButton("button", "År", style='margin:10px;background-color:DeepSkyBlue;color:white;font-weight:bold;float:right;')
+                                                    # )
                                                 ),
                                                 fluidRow(
                                                       column(10,
                                                              tags$br(),tags$br(),
                                                              tags$div( h4(htmlOutput(ns("old_erms_dyn_title_1"))),style = "text-align: center;" ),
                                                              tags$div( h5(htmlOutput(ns("old_erms_dyn_title_3"))),style = "text-align: center;" ),
+                                                             # conditionalPanel(
+                                                             #   paste0("input['", ns("viztype"), "'] == 'maaned'"), plotlyOutput(ns("lic_scatterplot"))
+                                                             # ),
+                                                             # conditionalPanel(
+                                                             #   paste0("input['", ns("viztype"), "'] == 'aar'"), plotlyOutput(ns("lic_barplot"))
+                                                             # ),
                                                              withSpinner(plotlyOutput(ns("old_erms_plot"))),
                                                              tags$br(),tags$br(),
-                                                             column(10,
+                                                             column(12,
                                                                     tags$div(h4(htmlOutput(ns("old_erms_dyn_title_2")))),
                                                                     tags$div(h5(htmlOutput(ns("old_erms_dyn_title_4")))),
                                                                     withSpinner(formattableOutput(ns("old_erms_table")), proxy.height="150px")
                                                              )
                                                       )
                                                 )
-                                            )
-                                     )
-                      )
-                          }
-                          )
-                            ))))
+                                          )
+                                    )
+                              )
+                        }
+                  )
+            ))))
 }
 
 # SERVER
@@ -150,16 +163,16 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
   # Ordn månederne efter deres normale rækkefølge, ikke alfabetet...
   licenser_overblik$maaned <- factor(danskemåneder(licenser_overblik$maaned), levels = c("Januar","Februar","Marts","April","Maj","Juni","Juli","August","September","Oktober","November","December"))
   
+  sum_key <- 'kvartal'
+  
   old_erms_df <- reactive({
     licenser_overblik %>%
-     filter(eressource == input$old_erms_produkt) %>%
-    #mutate(aar = as.character(aar)) %>%
+    filter(eressource == input$old_erms_produkt) %>%
+    group_by_(sum_key, 'datakilde','eressource','aar','kilde','bibliotek','rapport_dato') %>% 
+    summarise(antal = sum(antal)) %>%
     spread(key = aar, value = antal) %>%
-    #coalesce(as.data.frame(.),0) %>%
     mutate_at(vars(-1:-6), funs(replace(., is.na(.), 0))) %>%
-    #select(aar %in% input$old_erms_aar)
-    select(datakilde,eressource,maaned,kilde,bibliotek,rapport_dato,input$old_erms_aar)
-    #select(datakilde,eressource,maaned,kilde,bibliotek,rapport_dato,c('2018','2019'))
+    select(datakilde,eressource,`sum_key`,kilde,bibliotek,rapport_dato,input$old_erms_aar)
   })
   
   # Call Excel download function for tables 
@@ -175,7 +188,8 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
     h = which(years==aar1)                       # also needed for persistent colors
     
     p <- plot_ly(old_erms_df(),
-                 x = ~maaned, 
+                 # x = ~maaned, 
+                 x = as.formula(paste0("~`", sum_key,"`")),
                  y = as.formula(paste0("~`", aar1,"`")),
                  type = 'bar',
                  name = aar1,
@@ -199,12 +213,12 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
         )
       }
     }
-
+    p %>% config(displayModeBar = F, showLink = F)
     p %>% layout(separators = ',.',
                  autosize = TRUE,
                  barmode = 'group',
                  yaxis = list(title = 'Antal tilgange', exponentformat = 'none'),
-                 xaxis = list(title = 'Måned', dtick = 1, autotick = FALSE)
+                 xaxis = list(title = sum_key, dtick = 1, autotick = FALSE)
                  )
     
   })

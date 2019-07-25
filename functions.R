@@ -1,7 +1,6 @@
 source("global.R")
 
 # konverter biblioteksnummer til kommunens navn
-
 isil2name <- function(x){
   isil <- case_when(
     as.character(x) == "746100" ~ "Odense",
