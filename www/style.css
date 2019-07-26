@@ -2,6 +2,12 @@
   width: 7.1429%;
 }
 
+#edatabases-old_erms_radio_btns .radio {
+  appearance: button;
+  -moz-appearance: button;
+  -webkit-appearance: button;
+}
+
 .plotteren {
   width: 1600px;
 }
