@@ -1,11 +1,16 @@
 #edatabases-old_erms_table td {
   width: 7.1429%;
 }
-
+/*
 #edatabases-old_erms_radio_btns .radio {
   appearance: button;
   -moz-appearance: button;
   -webkit-appearance: button;
+}
+*/
+
+.btn .btn-secondary {
+  background-color: blue;
 }
 
 .plotteren {

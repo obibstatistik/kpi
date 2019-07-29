@@ -123,7 +123,26 @@ edatabasesTabPanelUI <- function(id) {
                                                 ),
                                                 fluidRow(
                                                   column(10,
-                                                      radioButtons( ns("old_erms_radio_btns"), "", c("Årlig" = "yr", "Halvårlig" = "halvaar", "Kvartalsvis" = "kvartal", "Månedlig" = "maaned") )
+                                                         # https://stackoverflow.com/questions/33662033/shiny-how-to-make-reactive-value-initialize-with-default-value
+                                                        tags$head(tags$script(HTML(paste0("$(document).on('click', '.needed', function () {
+                                                                    Shiny.onInputChange('", ns("last_btn"), "',this.id);
+                                                                 });")))),         
+                                                         # Custom bootstrapped radiobuttons:
+                                                         HTML('<div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                                                <label class="btn btn-secondary active needed" id="yr">
+                                                                  <input type="radio" name="options" id="first" autocomplete="off" checked>Årlig
+                                                                </label>
+                                                                <label class="btn btn-secondary needed" id="halvaar">
+                                                                  <input type="radio" name="options" id="second" autocomplete="off">Halvårlig
+                                                                </label>
+                                                                <label class="btn btn-secondary needed" id="kvartal">
+                                                                  <input type="radio" name="options" id="third" autocomplete="off">Kvartalsvis
+                                                                </label>
+                                                                <label class="btn btn-secondary needed" id="maaned">
+                                                                  <input type="radio" name="options" id="save" autocomplete="off">Månedlig
+                                                                </label>
+                                                               </div>')
+                                                      # ,radioButtons( ns("old_erms_radio_btns"), "", c("Årlig" = "yr", "Halvårlig" = "halvaar", "Kvartalsvis" = "kvartal", "Månedlig" = "maaned") )
                                                   )
                                                 ),
                                                 fluidRow(
@@ -145,15 +164,25 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
   
   # Ordn månederne efter deres normale rækkefølge, ikke alfabetet...
   licenser_overblik$maaned <- factor(danskemåneder(licenser_overblik$maaned), levels = c("Januar","Februar","Marts","April","Maj","Juni","Juli","August","September","Oktober","November","December"))
+
+  hat <- 'yr'
+  
+  observeEvent(input$last_btn, {
+    hat <- input$last_btn
+  })
   
   old_erms_df <- reactive({
     licenser_overblik %>%
     filter(eressource == input$old_erms_produkt) %>%
-    group_by_(input$old_erms_radio_btns, 'datakilde','eressource','aar','kilde','bibliotek','rapport_dato') %>% 
+    #group_by_(input$old_erms_radio_btns, 'datakilde','eressource','aar','kilde','bibliotek','rapport_dato') %>% 
+    # group_by_(input$last_btn, 'datakilde','eressource','aar','kilde','bibliotek','rapport_dato') %>% 
+    group_by_(hat, 'datakilde','eressource','aar','kilde','bibliotek','rapport_dato') %>% 
     summarise(antal = sum(antal)) %>%
     spread(key = aar, value = antal) %>%
     mutate_at(vars(-1:-6), funs(replace(., is.na(.), 0))) %>%
-    select(datakilde,eressource,input$old_erms_radio_btns,kilde,bibliotek,rapport_dato,input$old_erms_aar)
+    # select(datakilde,eressource,input$old_erms_radio_btns,kilde,bibliotek,rapport_dato,input$old_erms_aar)
+    # select(datakilde,eressource,input$last_btn,kilde,bibliotek,rapport_dato,input$old_erms_aar)
+    select(datakilde,eressource,hat,kilde,bibliotek,rapport_dato,input$old_erms_aar)
   })
   
   # Call Excel download function for tables 
@@ -169,7 +198,9 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
     h = which(years==aar1)                       # also needed for persistent colors
     
     p <- plot_ly(old_erms_df(),
-                 x = as.formula(paste0("~`", input$old_erms_radio_btns,"`")),
+                 # x = as.formula(paste0("~`", input$old_erms_radio_btns,"`")),
+                 # x = as.formula(paste0("~`", input$last_btn,"`")),
+                 x = as.formula(paste0("~`", hat,"`")),
                  y = as.formula(paste0("~`", aar1,"`")),
                  type = 'bar',
                  name = aar1,
