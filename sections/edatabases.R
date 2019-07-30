@@ -1,6 +1,7 @@
 ### DB QUERIES ###
 drv <- dbDriver("PostgreSQL")
 con_dwh <- dbConnect(drv, dbname = dbname_dwh, host = host_dwh, port = port_dwh, user = user_dwh, password = password_dwh)
+#tablecomment <- dbGetQuery(con, paste0("select obj_description('",schema,".", table, "'::regclass)"))
 
 licenser_overblik <- dbGetQuery(con_dwh, "
 SELECT 
@@ -107,12 +108,16 @@ edatabasesTabPanelUI <- function(id) {
                                                                       selected = as.character(max(licenser_overblik$aar)),
                                                                       inline = F),
                                                    tags$br(),tags$br(),
-                                                   xlsxDownloadUI(ns("eres_produkt_xlsx")),
+                                                   xlsxDownloadUI(ns("licenser_overblik")),
                                                    tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                             ),
                                             column(10,
                                                 fluidRow(
                                                     column(10,
+                                                           tags$head(
+                                                             # Style the error message when no year is checked off
+                                                             tags$style(HTML("#shiny-tab-edatabases .shiny-output-error-validation { color: black; font-size: 20px; }"))
+                                                           ),
                                                            h3("Licenser, overblik"),
                                                            span("Følgende statistik stammer fra"),a("bibstats.dbc.dk", href = "https://bibstats.dbc.dk", target="_blank" ),
                                                            span(", fra"),a("Faktor", href = "https://faktor.nu/reports", target="_blank" ),
@@ -125,8 +130,12 @@ edatabasesTabPanelUI <- function(id) {
                                                   column(10,
                                                         # Duelling action buttons (only one active at a time, like radio buttons)
                                                         div(
+                                                          # uiOutput(ns("yr-btn")),
+                                                          # uiOutput(ns("halvaar-btn")),
+                                                          # uiOutput(ns("halvaar-btn")),
+                                                          # uiOutput(ns("maaned-btn"))
                                                           actionButton(ns("yr"), "Årlig"),
-                                                          actionButton(ns("halvaar"), "Halvårlig"), 
+                                                          actionButton(ns("halvaar"), "Halvårlig"),
                                                           actionButton(ns("kvartal"), "Kvartalsvis"),
                                                           actionButton(ns("maaned"), "Månedlig")
                                                         , style="float:right")
@@ -151,33 +160,70 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
   
   # Ordn månederne efter deres normale rækkefølge, ikke alfabetet...
   licenser_overblik$maaned <- factor(danskemåneder(licenser_overblik$maaned), levels = c("Januar","Februar","Marts","April","Maj","Juni","Juli","August","September","Oktober","November","December"))
-  # 
-  # observeEvent(input$last_btn, {
-  #   print(input$last_btn)
-  # })
-  
-  # onclick("btn", info(date()))
 
   # mechanics for the duelling buttons, cf. https://shiny.rstudio.com/articles/action-buttons.html
-  v <- reactiveValues(data = 'yr')  # create reactive var with default value before the user clicks a button
+  # further styling stuff so the active button stays active despite falling out of focus: https://stackoverflow.com/questions/34574199/render-dueling-buttons-as-active-in-shiny
+  v <- reactiveValues(data = 'maaned'
+                      # ,yr_btn_class = "btn-default", 
+                      # halvaar_btn_class = "btn-default", 
+                      # kvartal_btn_class = "btn-default", 
+                      # maaned_btn_class = "btn-primary"
+                      )  # create reactive var with default value before the user clicks a button
   
   observeEvent(input$yr, {
     v$data <- 'yr'
+    # v$yr_btn_class <- "btn-primary"
+    # v$halvaar_btn_class <- "btn-default"
+    # v$kvartal_btn_class <- "btn-default"
+    # v$maaned_btn_class <- "btn-default"
   })
   
   observeEvent(input$halvaar, {
     v$data <- 'halvaar'
+    # v$yr_btn_class <- "btn-default"
+    # v$halvaar_btn_class <- "btn-primary"
+    # v$kvartal_btn_class <- "btn-default"
+    # v$maaned_btn_class <- "btn-default"
   })  
   
   observeEvent(input$kvartal, {
     v$data <- 'kvartal'
+    # v$yr_btn_class <- "btn-default"
+    # v$halvaar_btn_class <- "btn-default"
+    # v$kvartal_btn_class <- "btn-primary"
+    # v$maaned_btn_class <- "btn-default"
   })
   
   observeEvent(input$maaned, {
     v$data <- 'maaned'
+    # v$yr_btn_class <- "btn-default"
+    # v$halvaar_btn_class <- "btn-default"
+    # v$kvartal_btn_class <- "btn-default"
+    # v$maaned_btn_class <- "btn-primary"
   })  
-    
+  
+  # output$yr <- renderUI({
+  #   actionButton("yr", "yr-btn", class=v$yr_btn_class)
+  # })
+  # 
+  # output$halvaar <- renderUI({
+  #   actionButton("halvaar", "halvaar-btn", class=v$halvaar_btn_class)
+  # })
+  # 
+  # output$kvartal <- renderUI({
+  #   actionButton("kvartal", "kvartal-btn", class=v$kvartal_btn_class)
+  # })
+  # 
+  # output$maaned <- renderUI({
+  #   actionButton("maaned", "maaned-btn", class=v$maaned_btn_class)
+  # })
+
+  
   old_erms_df <- reactive({
+    # Show error if a year is not checked off
+    validate(
+      need(input$old_erms_aar != "", "VÆLG MINDST ÈT ÅR I VENSTREMENUEN")
+    )
     licenser_overblik %>%
     filter(eressource == input$old_erms_produkt) %>%
     #group_by_(input$old_erms_radio_btns, 'datakilde','eressource','aar','kilde','bibliotek','rapport_dato') %>% 
@@ -191,60 +237,59 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
     # select(datakilde,eressource,ifelse(!is.character(input$last_btn),'yr',input$last_btn),kilde,bibliotek,rapport_dato,input$old_erms_aar)
     # select(datakilde,eressource,ifelse(is.character(input$last_btn),yr,yr),kilde,bibliotek,rapport_dato,input$old_erms_aar)
   })
-  
-  # Call Excel download function for tables 
-  callModule(xlsxDownload, "edatabases", data = reactive(dbc_eres_stats_df()), name = "eressourcer_overblik")
-  
-  # Render the plot
-  output$old_erms_plot <- renderPlotly({
-    
-    colNames <- names(old_erms_df())[-1:-6]      # ie. get all colnames except the first thru the sixth
-    len <- length(colNames)                      # the number of columns with years
-    years <- unique(licenser_overblik$aar)       # get list of the years in the dataframe for assigning persistent colors to the bars
-    aar1 = names(old_erms_df())[7]               # the columns having the data for each year start at column 7
-    h = which(years==aar1)                       # also needed for persistent colors
-    
-    p <- plot_ly(old_erms_df(),
-                 # x = as.formula(paste0("~`", input$old_erms_radio_btns,"`")),
-                 x = as.formula(paste0("~`", v$data,"`")),
-                 # x = as.formula(paste0("~`", input$last_btn,"`")),
-                 y = as.formula(paste0("~`", aar1,"`")),
-                 type = 'bar',
-                 name = aar1,
-                 text = as.formula(paste0("~`", aar1,"`")),
-                 textposition = 'outside',
-                 marker = list(color = colors[h-1]),        # use the year's index in the year list to assign a persistent color to years
-                 hoverinfo='none'
-    )
-    
-    if( len > 1) {
-      for(i in 2:len){
-        trace <- colNames[i]
-        j = which(years==trace)
-        p <- p %>% add_trace(y = as.formula(paste0("~`", trace,"`")), 
-                             type = 'bar', 
-                             name = trace, 
-                             text = as.formula(paste0("~`", trace,"`")),
-                             textposition = 'outside',
-                             marker = list(color = colors[j-1]),
-                             hoverinfo='none'
+
+      output$old_erms_plot <- renderPlotly({
+        colNames <- names(old_erms_df())[-1:-6]      # ie. get all colnames except the first thru the sixth
+        len <- length(colNames)                      # the number of columns with years
+        years <- unique(licenser_overblik$aar)       # get list of the years in the dataframe for assigning persistent colors to the bars
+        aar1 = names(old_erms_df())[7]               # the columns having the data for each year start at column 7
+        h = which(years==aar1)                       # also needed for persistent colors
+        
+        p <- plot_ly(old_erms_df(),
+                     # x = as.formula(paste0("~`", input$old_erms_radio_btns,"`")),
+                     x = as.formula(paste0("~`", v$data,"`")),
+                     # x = as.formula(paste0("~`", input$last_btn,"`")),
+                     y = as.formula(paste0("~`", aar1,"`")),
+                     type = 'bar',
+                     name = aar1,
+                     text = as.formula(paste0("~`", aar1,"`")),
+                     textposition = 'outside',
+                     marker = list(color = colors[h-1]),        # use the year's index in the year list to assign a persistent color to years
+                     hoverinfo='none'
         )
-      }
-    }
-    p %>% config(displayModeBar = F, showLink = F)
-    p %>% layout(separators = ',.',
-                 autosize = TRUE,
-                 barmode = 'group',
-                 yaxis = list(title = 'Antal tilgange', exponentformat = 'none'),
-                 xaxis = list(title = "", dtick = 1, autotick = FALSE)
-                 # xaxis = list(title = input$old_erms_radio_btns, dtick = 1, autotick = FALSE)
-                 )
-  })
-  
+        
+        if( len > 1) {
+          for(i in 2:len){
+            trace <- colNames[i]
+            j = which(years==trace)
+            p <- p %>% add_trace(y = as.formula(paste0("~`", trace,"`")), 
+                                 type = 'bar', 
+                                 name = trace, 
+                                 text = as.formula(paste0("~`", trace,"`")),
+                                 textposition = 'outside',
+                                 marker = list(color = colors[j-1]),
+                                 hoverinfo='none'
+            )
+          }
+        }
+        p %>% config(displayModeBar = F, showLink = F)
+        p %>% layout(separators = ',.',
+                     autosize = TRUE,
+                     barmode = 'group',
+                     yaxis = list(title = 'Antal tilgange', exponentformat = 'none'),
+                     xaxis = list(title = "", dtick = 1, autotick = FALSE)
+                     # xaxis = list(title = input$old_erms_radio_btns, dtick = 1, autotick = FALSE)
+                     )
+      })
+      
   year_df <- reactive({
+    # Show error if a year is not checked off
+    validate(
+      need(input$old_erms_aar != "", "")
+    )
     licenser_overblik %>%
-      filter(eressource == input$old_erms_produkt) %>%
-      filter(aar %in% input$old_erms_aar)
+    filter(eressource == input$old_erms_produkt) %>%
+    filter(aar %in% input$old_erms_aar)
   })
   
   # Create dynamic titles based on the filter choices (two outputs with the same value)
@@ -252,16 +297,23 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
   output$old_erms_dyn_title_3 <- output$old_erms_dyn_title_4 <- renderText( paste0("Kilde: ", unique(year_df()$kilde)," - Datakilde: ", toString(unique(year_df()$datakilde)), " - Rapportdato: ", toString(unique(year_df()$rapport_dato)) ) )
   
   erms_table_df <- reactive({
+    # Show error if a year is not checked off
+    validate(
+      need(input$old_erms_aar != "", "")
+    )
     licenser_overblik %>%
-      filter(eressource == input$old_erms_produkt) %>%
-      select(aar,maaned,antal) %>%
-      spread(key = maaned, value = antal) %>%
-      filter(aar %in% input$old_erms_aar) %>%
-      mutate(aar = as.character(aar)) %>%
-      rename(.,År = aar) %>%
-      adorn_totals(c("col")) %>%
-      mutate_at(vars(c(-1)), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".", decimal.mark=",")))
+    filter(eressource == input$old_erms_produkt) %>%
+    select(aar,maaned,antal) %>%
+    spread(key = maaned, value = antal) %>%
+    filter(aar %in% input$old_erms_aar) %>%
+    mutate(aar = as.character(aar)) %>%
+    rename(.,År = aar) %>%
+    adorn_totals(c("col")) %>%
+    mutate_at(vars(c(-1)), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".", decimal.mark=",")))
   })
+  
+  # Call Excel download function for tables 
+  callModule(xlsxDownload, "licenser_overblik", data = reactive(erms_table_df()), name = "eRessourcer_licenser_overblik")
   
   output$old_erms_table <- renderFormattable({ formattable(erms_table_df()) })
 }
