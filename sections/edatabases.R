@@ -181,7 +181,7 @@ edatabasesTabPanelUI <- function(id) {
                                                            h3("Licenser, overblik"),
                                                            span("Følgende statistik stammer fra"),a("bibstats.dbc.dk", href = "https://bibstats.dbc.dk", target="_blank" ),
                                                            span(", fra"),a("Faktor", href = "https://faktor.nu/reports", target="_blank" ),
-                                                           span("samt"),a("Pubhub", href = "https://admin.puhub.dk", target="_blank" ),
+                                                           span("samt"),a("Pubhub", href = "https://admin.pubhub.dk", target="_blank" ),
                                                            p('Y-aksens betegnelse "tilgange" dækker over eRessourcernes ret forskellige måder, at opgøre brug på. Begrebet dækker således både over downloads, visninger og lign.'),
                                                            p('N.B! Tal, der stammer fra Faktor (hovedparten), har pt. (sommer 2019) fortsat beta status')
                                                     )
@@ -233,7 +233,7 @@ edatabasesTabPanelUI <- function(id) {
                                               ),
                                               column(5,
                                                       h3("Udgifter, andele"),
-                                                      span("Følgende statistik stammer fra"),a("bibstats.dbc.dk", href = "https://bibstats.dbc.dk", target="_blank" ),
+                                                      tags$br(),tags$br(),
                                                       withSpinner(plotlyOutput(ns("mainstream_cost_pie"))),
                                                       tags$br(),tags$br()
                                               ),
@@ -263,25 +263,23 @@ edatabasesTabPanelUI <- function(id) {
                                               ),
                                               column(10,
                                                      h3("Film udlån, fysiske vs. Filmstriben"),
-                                                     span("Følgende statistik stammer fra"),a("bibstats.dbc.dk", href = "https://bibstats.dbc.dk", target="_blank" ),
+                                                     tags$br(),tags$br(),
                                                      withSpinner(plotlyOutput(ns("mainstream_loan_phys_vs_eres"))),
-                                                     div(
-                                                       p('N.B! Tal, der stammer fra Faktor (hovedparten), har pt. (sommer 2019) fortsat beta status')
-                                                     )
+                                                     tags$br(),tags$br(),tags$br(),tags$br()
                                               )
                                        ),
                                        column(12,
                                               column(2,
                                                      h4("Afgrænsning"),
                                                      tags$br(),
-                                                     selectInput(ns("old_erms_produkt2"),"eRessource:",  sort(unique(licenser_overblik$eressource))),
-                                                     checkboxGroupInput(ns("old_erms_aar2"),
+                                                     selectInput(ns("mainstream_mattype"),"eRessource:", c('E-bog','Film' = 'film','Lydbog','Podcast','Alle')),
+                                                     checkboxGroupInput(ns("mainstream_aar"),
                                                                         'År:',
-                                                                        sort(unique(as.character(licenser_overblik$aar))),
-                                                                        selected = as.character(max(licenser_overblik$aar)),
+                                                                        sort(unique(lubridate::year(mainstream_eres$laan_dato))),
+                                                                        selected = as.character(max(lubridate::year(mainstream_eres$laan_dato))),
                                                                         inline = F),
                                                      tags$br(),tags$br(),
-                                                     xlsxDownloadUI(ns("licenser_overblik2")),
+                                                     xlsxDownloadUI(ns("mainstream_udgifter_xlsx")),
                                                      tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                                               ),
                                               column(10,
@@ -291,33 +289,31 @@ edatabasesTabPanelUI <- function(id) {
                                                                 # Style the error message when no year is checked off
                                                                 tags$style(HTML("#shiny-tab-edatabases .shiny-output-error-validation { color: black; font-size: 20px; }"))
                                                               ),
-                                                              h3("Licenser, udgifter"),
-                                                              span("Følgende statistik stammer fra"),a("bibstats.dbc.dk", href = "https://bibstats.dbc.dk", target="_blank" ),
-                                                              span("samt"),a("Pubhub", href = "https://admin.puhub.dk", target="_blank" )
+                                                              tags$div( h3(htmlOutput(ns("mainstream_dyn_title_1")))),
+                                                              span("Følgende statistik stammer fra"),a("conman.dbc.dk/filmstriben", href = "https://conman.dbc.dk/filmstriben", target="_blank" ),
+                                                              span("samt"),a("Pubhub", href = "https://admin.pubhub.dk", target="_blank" )
                                                        )
                                                      ),
                                                      fluidRow(
                                                        column(10,
                                                               # Duelling action buttons (only one active at a time, like radio buttons)
                                                               div(
-                                                                actionButton(ns("yr2"), "Årlig"),
-                                                                actionButton(ns("halvaar2"), "Halvårlig"),
-                                                                actionButton(ns("kvartal2"), "Kvartalsvis"),
-                                                                actionButton(ns("maaned2"), "Månedlig")
+                                                                actionButton(ns("aar_ms"), "Årlig"),
+                                                                actionButton(ns("halvaar_ms"), "Halvårlig"),
+                                                                actionButton(ns("kvartal_ms"), "Kvartalsvis"),
+                                                                actionButton(ns("maaned_ms"), "Månedlig"),
+                                                                actionButton(ns("uge_ms"), "Ugentlig")
                                                                 , style="float:right")
                                                        )
                                                      ),
                                                      fluidRow(
                                                        column(10,
                                                               tags$br(),tags$br(),
-                                                              tags$div( h4(htmlOutput(ns("old_erms_dyn_title_1b"))),style = "text-align: center;" ),
-                                                              tags$div( h5(htmlOutput(ns("old_erms_dyn_title_3b"))),style = "text-align: center;" ),
-                                                              withSpinner(plotlyOutput(ns("old_erms_plotb"))),
+                                                              withSpinner(plotlyOutput(ns("mainstream_plot"))),
                                                               tags$br(),tags$br(),
+                                                              tags$div( h3(htmlOutput(ns("mainstream_dyn_title_2")))),
                                                               column(12,
-                                                                     tags$div(h4(htmlOutput(ns("old_erms_dyn_title_2b")))),
-                                                                     tags$div(h5(htmlOutput(ns("old_erms_dyn_title_4b")))),
-                                                                     withSpinner(formattableOutput(ns("old_erms_table2")), proxy.height="150px")
+                                                                     withSpinner(formattableOutput(ns("mainstream_table")), proxy.height="150px")
                                                               ))))
                                               )
                                        )
@@ -575,27 +571,111 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
             )
   })
   
-  # mainstream_cost_reac <- reactive({
-  #   mainstream_eres %>%
-  #     mutate(filmstriben = replace_na(filmstriben, 0)) %>%
-  #     mutate(fysiske = replace_na(fysiske, 0)) %>%
-  #     filter( dato >= input$dateRange_phys_vs_eres[1] & dato <= input$dateRange_phys_vs_eres[2]) %>%
-  #     mutate(aar = lubridate::year(dato)) %>%
-  #     mutate(maaned = lubridate::month(dato)) %>%
-  #     mutate(uge = lubridate::isoweek(dato)) %>%
-  #     group_by_(input$phys_vs_eres_periode) %>%
-  #     summarise(fysiske = sum(fysiske),filmstriben = sum(filmstriben))
-  #   #spread(key = aar, value = antal) %>%
-  #   #mutate_at(vars(-1:-6), funs(replace(., is.na(.), 0))) %>%
-  #   #select(datakilde,eressource,v$data,kilde,bibliotek,rapport_dato,input$old_erms_aar)
-  # })
+  mainstream_eres <- mainstream_eres %>% mutate(maaned = lubridate::month(laan_dato))
+  mainstream_eres$maaned <- factor(danskemåneder(mainstream_eres$maaned), levels = c("Januar","Februar","Marts","April","Maj","Juni","Juli","August","September","Oktober","November","December"))
+
+  p <- reactiveValues(data = 'maaned'
+  )  # create reactive var with default value before the user clicks a button
   
+  observeEvent(input$yr_ms, {
+    p$data <- 'aar'
+  })
   
-  # output$betjeninger <- renderTable(
-  #   betjeninger <- betjeninger %>% 
-  #     filter(dato > input$queue_date_range[1] & dato < input$queue_date_range[2]) %>%
-  #     mutate(gen_ventetid_min = ifelse(is.na(gen_ventetid_min), 0, gen_ventetid_min), gen_behandlingstid_min = ifelse(is.na(gen_behandlingstid_min), 0, gen_behandlingstid_min)) %>%
-  #     group_by(kø) %>%
-  #     summarise('Antal betjeninger' = sum(antal), 'Antal unikke betjeninger' = sum(unik_antal), 'Gennemsnitlig ventetid (min.)' = mean(gen_ventetid_min), 'Gennemsnitlig betjeningstid (min.)' = mean(gen_behandlingstid_min))
-  # )
+  observeEvent(input$halvaar_ms, {
+    p$data <- 'halvaar'
+  })  
+  
+  observeEvent(input$kvartal_ms, {
+    p$data <- 'kvartal'
+  })
+  
+  observeEvent(input$maaned_ms, {
+    p$data <- 'maaned'
+  })  
+  
+  observeEvent(input$uge_ms, {
+    p$data <- 'uge'
+  }) 
+  
+  mainstream_cost_reac <- reactive({
+   mainstream_eres %>%
+      # validate(
+      #   need(input$mainstream_aar != "", "VÆLG MINDST ÈT ÅR I VENSTREMENUEN")
+      # )
+      filter(mattype == input$mainstream_mattype) %>%
+      mutate(uge = paste0("uge ",formatC(lubridate::isoweek(laan_dato),width=2,format="d",flag="0"))) %>%    # formatC() is used to leftpad weeknumbers so they sort properly
+      mutate(kvartal = paste0(lubridate::quarter(laan_dato),".kvartal")) %>%
+      mutate(halvaar = paste0(ifelse(lubridate::quarter(laan_dato) <= 2,1,2 ),".halvår")) %>%
+      mutate(aar = lubridate::year(laan_dato)) %>%
+      # group_by_('maaned','mattype','aar') %>%
+      group_by_(p$data,'mattype','aar') %>%
+      summarise(udgifter = sum(omkostninger)) %>%
+      spread(key = aar, value = udgifter) %>%
+      mutate_at(vars(-1:-2), funs(replace(., is.na(.), 0))) %>%
+      select(p$data,mattype,as.character(input$mainstream_aar))
+      # select('maaned',mattype,'2012')
+  })
+  
+  output$mainstream_plot <- renderPlotly({
+    colNames <- names(mainstream_cost_reac())[-1:-2]      # ie. get all colnames except the first and second
+    len <- length(colNames)                               # the number of columns with years
+    years <- unique(lubridate::year(mainstream_eres$laan_dato))           # get list of the years in the dataframe for assigning persistent colors to the bars
+    aar1 = names(mainstream_cost_reac())[3]               # the columns having the data for each year starting at column 7
+    h = which(years==aar1)                                # also needed for persistent colors
+    
+    p <- plot_ly(mainstream_cost_reac(),
+                 x = as.formula(paste0("~`", p$data,"`")),
+                 y = as.formula(paste0("~`", aar1,"`")),
+                 type = 'bar',
+                 name = aar1,
+                 # text = as.formula(paste0("~`", aar1,"`")),
+                 # textposition = 'outside',
+                 marker = list(color = colors[h])        # use the year's index in the year list to assign a persistent color to years
+                 #, hoverinfo='none'
+    )
+    
+    if( len > 1) {
+      for(i in 2:len){
+        trace <- colNames[i]
+        j = which(years==trace)
+        p <- p %>% add_trace(y = as.formula(paste0("~`", trace,"`")), 
+                             type = 'bar', 
+                             name = trace, 
+                             # text = as.formula(paste0("~`", trace,"`")),
+                             # textposition = 'outside',
+                             marker = list(color = colors[j])
+                             # ,hoverinfo='none'
+        )
+      }
+    }
+    p %>% config(displayModeBar = F, showLink = F)
+    p %>% layout(separators = ',.',
+                 autosize = TRUE,
+                 barmode = 'group',
+                 yaxis = list(title = '', exponentformat = 'none', ticksuffix = 'kr.',hoverformat = '.2f'),
+                 xaxis = list(title = "", dtick = 1, autotick = FALSE)
+    )
+  })
+  
+  ##### TEST-TABLE ######
+  output$mainstream_table <- renderFormattable({ 
+    formattable(mainstream_cost_reac() %>%
+                  mutate_at(vars(c(-1:-2)), 
+                            funs(paste0(format(round(as.numeric(.), 2), nsmall=2, big.mark=".", decimal.mark=","),' kr.'))
+               ) %>% ungroup() %>% select(p$data,as.character(input$mainstream_aar))
+    )
+  })
+  
+  # Create dynamic titles based on the filter choices (two outputs with the same value)
+  output$mainstream_dyn_title_1 <- renderText( 
+                                      paste0( "Mainstream-licenser, ",
+                                              switch(p$data, uge = 'ugentlige', maaned = 'månedlige', kvartal = 'kvartalsvise', halvaar = 'halvårlige', aar = 'årlige'),
+                                              " udgifter ",
+                                              toString(input$mainstream_aar) 
+                                      ) 
+                                   )
+  
+  output$mainstream_dyn_title_2 <- renderText( paste0("Udgifter til ", toString(input$mainstream_mattype)) )
+  
+  callModule(xlsxDownload, "mainstream_udgifter_xlsx", data = reactive(mainstream_cost_reac()), name = "mainstream_licenser_udgifter")
 }
