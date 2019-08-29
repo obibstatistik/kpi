@@ -164,20 +164,25 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
 
   drv <- dbDriver("PostgreSQL")
   con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
+  con_dwh <- dbConnect(drv, dbname = dbname_dwh, host = host_dwh, port = port_dwh, user = user_dwh, password = password_dwh)
   
   visitors_p1 <- dbGetQuery(con, "SELECT date, location, count FROM public.people_counter WHERE date<'2017-04-06' ORDER BY date desc")
   visitors_p2 <- dbGetQuery(con, "SELECT date_trunc('day', registertime)::date as date, location, sum(delta) as count FROM public.visitor_counter WHERE direction = 'In' and ref>0 GROUP BY date, location")
   visitors <- visitors_p1 %>% union_all(visitors_p2)
   
   visitors_hours <- dbGetQuery(con, "SELECT * FROM datamart.visitors_per_hour")  
-  dbDisconnect(con)
+  
 
   output$test <- renderTable(visitors)
   
+  visitors_per_day <- dbGetQuery(con_dwh, "SELECT date, location, visitor_count as count FROM visitors.visitors_per_day")
+  visitors_per_year <- dbGetQuery(con_dwh, "SELECT * FROM visitors.visitors_per_year") 
+  
+  dbDisconnect(con)
   ### ###
   
   # basic calculation
-  visitors2 <- visitors %>%
+  visitors2 <- visitors_per_day %>%
     mutate(year = year(date)) %>%
     select(year, date, count) %>%
     group_by(year, date) %>%
@@ -226,22 +231,20 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
 
   # visitors total plot#
   output$visitsplotall <- renderPlotly({
-    visitsoverview <- visitors %>%
-      select(date, count, location) %>%
+    visitsoverview <- visitors_per_year %>%
       mutate(year = year(date)) %>%
       filter(year != as.integer(format(Sys.Date(), "%Y"))) %>%
       filter(if(input$mainlibrary == 'Uden Hovedbiblioteket')  (location != 'hb') else TRUE) %>%
       group_by(year) %>%
-      summarise(sum = sum(count)) 
+      summarise(sum = sum(visitor_count)) 
     plot_ly(visitsoverview, x = visitsoverview$year, y = visitsoverview$sum, type = 'bar', marker = list(color = color2)) %>%
-      #layout(yaxis = list(title = 'Antal'), xaxis = list(title = 'År', dtick = 1, autotick = FALSE))
       layout(autosize = TRUE, yaxis = list(title = 'Antal'), xaxis = list(title = 'År', dtick = 1, autotick = FALSE, autorange="reversed"))
   })
-
+  
   # visitors table details
   
   visitors_table <-reactive({
-    visitors <- visitors %>%
+    visitors <- visitors_per_day %>%
       select(date, count, location) %>%
       filter(if(input$mainlibrary2 == 'Uden Hovedbiblioteket')  (location != 'hb') else TRUE) %>%
       mutate(month = month(date)) %>%
@@ -272,20 +275,22 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   #callModule(csvDownload, "visitors_table", data = visitors_table(), name = "visitors")
   callModule(xlsxDownload, "visitors_table", data = reactive(visitors_table()), name = "visitors")
   
-  # visitors branch plot #
-  visitors1 <- visitors %>%
+  #visitors branch plot #
+  visitors1 <- visitors_per_day %>%
     mutate(
       location = case_when(
-        visitors$location == "bo" ~ "Bolbro",
-        visitors$location == "vo" ~ "Vollsmose",
-        visitors$location == "da" ~ "Dalum",
-        visitors$location == "ta" ~ "Tarup",
-        visitors$location == "hb" ~ "Borgernes Hus",
-        visitors$location == "lok" ~ "Historiens Hus",
-        visitors$location == "hoj" ~ "Højby",
-        visitors$location == "ho" ~ "Holluf Pile",
-        visitors$location == "kor" ~ "Korup",
-        visitors$location == "mus" ~ "Musikbiblioteket"
+        location == "bo" ~ "Bolbro",
+        location == "vo" ~ "Vollsmose",
+        location == "da" ~ "Dalum",
+        location == "ta" ~ "Tarup",
+        location == "hb" ~ "Borgernes Hus",
+        location == "lok" ~ "Historiens Hus",
+        location == "hoj" ~ "Højby",
+        location == "ho" ~ "Holluf Pile",
+        location == "kor" ~ "Korup",
+        location == "mus" ~ "Musikbiblioteket",
+        is.na(location) ~ "nope",
+        TRUE ~ as.character(location)
       ) 
     )
   
@@ -298,7 +303,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
       summarise(sum = sum(count)) %>%
       spread(key = year, value = sum) %>%
       ungroup(.self) %>%
-      mutate(`2014` = `2014`/`2016`, `2015` = `2015`/`2016`, `2017` = `2017`/`2016`, `2018` = `2018`/`2016`, `2016` = 1 ) 
+      mutate(`2014` = `2014`/`2016`, `2015` = `2015`/`2016`, `2017` = `2017`/`2016`, `2018` = `2018`/`2016`, `2019` = `2019`/`2016`, `2016` = 1 ) 
     } 
     else {visitorsbranch <- visitors1 %>%
       filter(if(input$mainlibrary3 == 'Uden Hovedbiblioteket')  (location != 'Borgernes Hus') else TRUE) %>%
@@ -320,19 +325,21 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
     if (input$norm == "norm") {visitorsbranch2 <- visitors1 %>%
       filter(if(input$mainlibrary3 == 'Uden Hovedbiblioteket')  (location != 'Borgernes Hus') else TRUE) %>%
       select(date, count, location) %>%
-      mutate(year = year(date)) %>%  
+      mutate(year = year(date)) %>%
+      filter(year != as.integer(format(Sys.Date(), "%Y"))) %>%
       group_by(location, year) %>%
       summarise(sum = sum(count)) %>%
       spread(key = year, value = sum) %>%
       rename(Bibliotek = location) %>%
-      mutate(`2014` = `2014`/`2016`, `2015` = `2015`/`2016`, `2017` = `2017`/`2016`, `2018` = `2018`/`2016`, `2016` = 1) #%>%
+      mutate(`2014` = `2014`/`2016`, `2015` = `2015`/`2016`, `2017` = `2017`/`2016`, `2018` = `2018`/`2016`, `2019` = `2019`/`2016`, `2016` = 1) #%>%
       #mutate_at(vars(-1), funs(replace(., is.na(.), 0))) #%>%
       #mutate_at(vars(c(1,2,3,4,5)), funs(replace(., is.na(.), 0))) 
     } 
     else {visitorsbranch2 <- visitors1 %>%
       filter(if(input$mainlibrary3 == 'Uden Hovedbiblioteket')  (location != 'Borgernes Hus') else TRUE) %>%
       select(date, count, location) %>%
-      mutate(year = year(date)) %>%  
+      mutate(year = year(date)) %>%
+      filter(year != as.integer(format(Sys.Date(), "%Y"))) %>%
       group_by(location, year) %>%
       summarise(sum = sum(count)) %>%
       spread(key = year, value = sum) %>%

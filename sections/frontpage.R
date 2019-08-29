@@ -33,7 +33,7 @@ frontpageTabPanel <- function(input, output, session) {
   
   drv <- dbDriver("PostgreSQL")
   con_dwh <- dbConnect(drv, dbname = dbname_dwh, host = host_dwh, port = port_dwh, user = user_dwh, password = password_dwh)
-  visitors_current_year <- dbGetQuery(con_dwh, paste0("SELECT sum(delta) FROM visitors.x_visitor_counter WHERE direction = 'In' AND delta < 26 and extract(year from registertime) = ",current_year))
+  visitors_current_year <- dbGetQuery(con_dwh, paste0("SELECT sum(visitor_count) FROM visitors.visitors_per_day where extract(year from date) = ",current_year))
   loans_current_year <- dbGetQuery(con_dwh, paste0("SELECT sum(antal) FROM cicero.udlaan_per_opstillingsprofil WHERE extract(year from (transact_date)) = ",current_year))
   events_current_year <- dbGetQuery(con_dwh, paste0("SELECT count(*) FROM arrangementer.obib_arrangementer WHERE extract(year from start_dato) = ",current_year))
   citizenservice_current_year <- dbGetQuery(con_dwh, paste0("SELECT count(*) as count FROM borgerservice.x_betjeninger WHERE \"Lokation\" = 'Borgerservice Odense' and extract(year from (\"Tid\")) = ",current_year))
