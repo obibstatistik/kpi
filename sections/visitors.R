@@ -179,6 +179,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   visitors_per_year <- dbGetQuery(con_dwh, "SELECT * FROM visitors.visitors_per_year") 
   
   dbDisconnect(con)
+  dbDisconnect(con_dwh)
   ### ###
   
   # basic calculation
