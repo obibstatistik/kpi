@@ -170,7 +170,7 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   visitors_p2 <- dbGetQuery(con, "SELECT date_trunc('day', registertime)::date as date, location, sum(delta) as count FROM public.visitor_counter WHERE direction = 'In' and ref>0 GROUP BY date, location")
   visitors <- visitors_p1 %>% union_all(visitors_p2)
   
-  visitors_hours <- dbGetQuery(con, "SELECT * FROM datamart.visitors_per_hour")  
+  visitors_hours <- dbGetQuery(con_dwh, "SELECT * FROM visitors.visitors_per_hour")  
   
 
   output$test <- renderTable(visitors)
