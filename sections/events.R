@@ -134,7 +134,7 @@ eventsTabPanelUI <- function(id) {
                   column(
                     2,
                     h4("Afgræns pr. år"),
-                    selectInput(ns("year"), "", c("2018", "2017", "2016", "2015", "2014", "2013", "Alle")),
+                    selectInput(ns("year"), "", c("2019","2018", "2017", "2016", "2015", "2014", "Alle")),
                     tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
                   ),
                   column(
@@ -170,52 +170,52 @@ eventsTabPanelUI <- function(id) {
               )
             )
           ),
-          tabPanel(
-            "Effekt",
-            fluidRow(
-              column(
-                12,
-                p(ldap_usergroups),
-                h4("Top 5 - forhold deltagere / forberedelsestid"),
-                tableOutput(ns('top5')),
-                h4("Bund 5 - forhold deltagere / forberedelsestid"),
-                tableOutput(ns('bottom5')),
-                h4("Forhold imellem forberedelse og deltagere"),
-                p("Grafen viser forholdet mellem forberedelsestid og antal deltagere fordelt på arrangementskategorier. Holdes musen henover det enkelte arrangement vises titel og specifikke data."),
-                p("OBS. Maks mulige forberedelsestid i indberetning er 999 minutter."),
-                p("Ved at klikke én gang på en arrangementstype fravælges denne i visningen. Ved at dobbeltklikke på en arrangementstype vises kun denne."),
-                column(
-                  2,
-                  # selectInput(ns("effectyear"), "",c('Alle','2013','2014','2015','2016','2017','2018')),
-                  h4("Afgræns"),
-                  checkboxGroupInput(ns("effectyear"),
-                    label = "Vælg år:",
-                    selected = list("Alle", "2013", "2014", "2015", "2016", "2017", "2018"),
-                    choices = list("Alle", "2013", "2014", "2015", "2016", "2017", "2018")
-                  ),
-                  # ,radioButtons(ns("yakse"), "Vælg Y akse:",
-                  #             c("Forberedelsestid" = "forberedelsestid",
-                  #               "ID" = "id")
-                  # ),
-                  tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
-                ),
-                column(
-                  width = 10,
-                  plotlyOutput(ns("eventsratioplot"))
-                ),
-                h4("Radar plots"),
-                radarplotUI(ns(id = "mus"), branch = "Musikbiblioteket"),
-                radarplotUI(ns(id = "kor"), branch = "Korup"),
-                radarplotUI(ns(id = "ta"), branch = "Tarup"),
-                radarplotUI(ns(id = "da"), branch = "Dalum"),
-                radarplotUI(ns(id = "hb"), branch = "Hovedbiblioteket"),
-                radarplotUI(ns(id = "vo"), branch = "Vollsmose"),
-                radarplotUI(ns(id = "hoj"), branch = "Højby"),
-                radarplotUI(ns(id = "bo"), branch = "Bolbro"),
-                radarplotUI(ns(id = "ho"), branch = "Holluf Pile")
-              )
-            )
-          ), 
+          # tabPanel(
+          #   "Effekt",
+          #   fluidRow(
+          #     column(
+          #       12,
+          #       p(ldap_usergroups),
+          #       h4("Top 5 - forhold deltagere / forberedelsestid"),
+          #       tableOutput(ns('top5')),
+          #       h4("Bund 5 - forhold deltagere / forberedelsestid"),
+          #       tableOutput(ns('bottom5')),
+          #       h4("Forhold imellem forberedelse og deltagere"),
+          #       p("Grafen viser forholdet mellem forberedelsestid og antal deltagere fordelt på arrangementskategorier. Holdes musen henover det enkelte arrangement vises titel og specifikke data."),
+          #       p("OBS. Maks mulige forberedelsestid i indberetning er 999 minutter."),
+          #       p("Ved at klikke én gang på en arrangementstype fravælges denne i visningen. Ved at dobbeltklikke på en arrangementstype vises kun denne."),
+          #       column(
+          #         2,
+          #         # selectInput(ns("effectyear"), "",c('Alle','2013','2014','2015','2016','2017','2018')),
+          #         h4("Afgræns"),
+          #         checkboxGroupInput(ns("effectyear"),
+          #           label = "Vælg år:",
+          #           selected = list("Alle", "2013", "2014", "2015", "2016", "2017", "2018"),
+          #           choices = list("Alle", "2013", "2014", "2015", "2016", "2017", "2018")
+          #         ),
+          #         # ,radioButtons(ns("yakse"), "Vælg Y akse:",
+          #         #             c("Forberedelsestid" = "forberedelsestid",
+          #         #               "ID" = "id")
+          #         # ),
+          #         tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>'))
+          #       ),
+          #       column(
+          #         width = 10,
+          #         plotlyOutput(ns("eventsratioplot"))
+          #       ),
+          #       h4("Radar plots"),
+          #       radarplotUI(ns(id = "mus"), branch = "Musikbiblioteket"),
+          #       radarplotUI(ns(id = "kor"), branch = "Korup"),
+          #       radarplotUI(ns(id = "ta"), branch = "Tarup"),
+          #       radarplotUI(ns(id = "da"), branch = "Dalum"),
+          #       radarplotUI(ns(id = "hb"), branch = "Hovedbiblioteket"),
+          #       radarplotUI(ns(id = "vo"), branch = "Vollsmose"),
+          #       radarplotUI(ns(id = "hoj"), branch = "Højby"),
+          #       radarplotUI(ns(id = "bo"), branch = "Bolbro"),
+          #       radarplotUI(ns(id = "ho"), branch = "Holluf Pile")
+          #     )
+          #   )
+          # ), 
           tabPanel(
             "Dokumentation og data",
             xlsxDownloadUI(ns("events")),
@@ -280,6 +280,7 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
       add_trace(y = ~ `2016`, name = "2016", marker = list(color = color4)) %>%
       add_trace(y = ~ `2017`, name = "2017", marker = list(color = color5)) %>%
       add_trace(y = ~ `2018`, name = "2018", marker = list(color = color6)) %>%
+      add_trace(y = ~ `2019`, name = "2019", marker = list(color = color7)) %>%
       layout(yaxis = list(title = "Antal"), xaxis = list(title = "Måned"), autosize = T, barmode = "group")
   })
 
@@ -295,6 +296,7 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
       add_trace(y = ~ `2016`, name = "2016", marker = list(color = color4)) %>%
       add_trace(y = ~ `2017`, name = "2017", marker = list(color = color5)) %>%
       add_trace(y = ~ `2018`, name = "2018", marker = list(color = color6)) %>%
+      add_trace(y = ~ `2019`, name = "2019", marker = list(color = color7)) %>%
       layout(yaxis = list(title = "Antal"), xaxis = list(title = "Måned"), autosize = T, barmode = "group")
   })
 
@@ -311,6 +313,7 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
       add_trace(y = ~ `2016`, name = "2016", marker = list(color = color4)) %>%
       add_trace(y = ~ `2017`, name = "2017", marker = list(color = color5)) %>%
       add_trace(y = ~ `2018`, name = "2018", marker = list(color = color6)) %>%
+      add_trace(y = ~ `2019`, name = "2019", marker = list(color = color7)) %>%
       layout(autosize = T, separators = ",.", barmode = "group", xaxis = list(tickmode = "linear", title = "Arrangementstype"), yaxis = list(title = "Antal deltagere", separatethousands = TRUE, exponentformat = "none"))
   })
 
@@ -340,7 +343,7 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
 
     if (input$year == "Alle") {
       eventsmaalgruppe <- eventsmaalgruppe %>%
-        filter(year %in% c("2013", "2014", "2015", "2016", "2017")) %>%
+        filter(year %in% c("2013", "2014", "2015", "2016", "2017", "2018", "201p")) %>%
         group_by(maalgruppe) %>%
         summarise(count = sum(count)) %>%
         mutate(colors = if_else(maalgruppe == "Voksne", color1, color2))

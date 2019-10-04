@@ -111,10 +111,7 @@ online_odensebibTabPanel <- function(input, output, session) {
   udlaan <- dbGetQuery(con, "SELECT extract(year from transact_date) as aar, extract(month from transact_date) as maaned, sum(antal) as sum_udlaan from cicero.udlaan_per_opstillingsprofil where extract(year from (transact_date)) > extract(year from (current_date - interval '5 year')) group by aar, maaned order by aar desc, maaned desc")
   dbDisconnect(con)
   dbDisconnect(con_dwh)
-  
-  
-  
-  
+
   # sites
   
   #sites <- sites %>% select("Organisation" = titel, "URL" = url)
@@ -123,10 +120,10 @@ online_odensebibTabPanel <- function(input, output, session) {
   # pageviews
   
   ga_pageviews_month <- ga_pageviews %>%
-    mutate(pv2018 = ifelse(aar == "2018", pageviews, 0), pv2017 = ifelse(aar == "2017", pageviews, 0), pv2016 = ifelse(aar == "2016", pageviews, 0), pv2015 = ifelse(aar == "2015", pageviews, 0)) %>%
-    select(maaned,pv2015,pv2016,pv2017,pv2018) %>%
+    mutate(pv2019 = ifelse(aar == "2019", pageviews, 0), pv2018 = ifelse(aar == "2018", pageviews, 0), pv2017 = ifelse(aar == "2017", pageviews, 0), pv2016 = ifelse(aar == "2016", pageviews, 0), pv2015 = ifelse(aar == "2015", pageviews, 0)) %>%
+    select(maaned,pv2015,pv2016,pv2017,pv2018,pv2019) %>%
     group_by(maaned) %>%
-    summarise(v2018 = sum(pv2018), v2017 = sum(pv2017), v2016 = sum(pv2016), v2015 = sum(pv2015))
+    summarise(v2019 = sum(pv2019), v2018 = sum(pv2018), v2017 = sum(pv2017), v2016 = sum(pv2016), v2015 = sum(pv2015))
   is.na(ga_pageviews) <- !ga_pageviews
   
   ga_pageviews_year <- ga_pageviews %>%
@@ -139,6 +136,7 @@ online_odensebibTabPanel <- function(input, output, session) {
         add_trace(y = ~v2016, name = '2016', marker = list(color = color2)) %>%
         add_trace(y = ~v2017, name = '2017', marker = list(color = color3)) %>%
         add_trace(y = ~v2018, name = '2018', marker = list(color = color4)) %>%
+        add_trace(y = ~v2019, name = '2019', marker = list(color = color5)) %>%
         layout(showlegend = T, separators=",.", xaxis = list(tickmode="linear", title = "Måned"), yaxis = list(title = "Antal", separatethousands = TRUE, exponentformat='none'))  
     else
       plot_ly(ga_pageviews_year, x = ga_pageviews_year$aar, y = ga_pageviews_year$pageviews, type = 'bar', marker = list(color = color2)) %>%

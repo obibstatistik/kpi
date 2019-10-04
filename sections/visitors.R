@@ -16,9 +16,9 @@ visitorsTabPanelUI <- function(id) {
                           tabPanel("Generelt",
                                    fluidRow(
                                      column(6,
-                                            tags$div(
-                                               HTML(paste(h3("N.B! Den ene af to gates i Borgernes Hus har ikke leveret data siden 9.maj. Besøgstal, der inkluderer denne, er derfor misvisende.",style="color:red")))
-                                            ),
+                                            # tags$div(
+                                            #    HTML(paste(h3("N.B! Den ene af to gates i Borgernes Hus har ikke leveret data siden 9.maj. Besøgstal, der inkluderer denne, er derfor misvisende.",style="color:red")))
+                                            # ),
                                             h4("Info"),
                                             p("Besøgstallet stemmer ikke fuldstændigt overens med de officielle besøgstal, da der fortages forskellige justeringer grundet specifikke forhold i OBB."),
                                             p("Der har været udfordringer med tælleren i Korup, hvilket bevirker, at der ikke er opsamlet besøgstal siden marts. Der arbejdes på at løse problemet."),
@@ -89,9 +89,9 @@ visitorsTabPanelUI <- function(id) {
                           tabPanel("Timer",
                                    fluidRow(
                                      column(6,
-                                            tags$div(
-                                              HTML(paste(h3("N.B! Den ene af to gates i Borgernes Hus har ikke leveret data siden 9.maj. Besøgstal, der inkluderer denne, er derfor misvisende.",style="color:red")))
-                                            ),
+                                            # tags$div(
+                                            #   HTML(paste(h3("N.B! Den ene af to gates i Borgernes Hus har ikke leveret data siden 9.maj. Besøgstal, der inkluderer denne, er derfor misvisende.",style="color:red")))
+                                            # ),
                                             h4("Info"),
                                             p("Visningen giver overblik over besøget på de enkelte lokationer for en given periode fordelt på timer."),
                                             p("Det er muligt at vælge lokationer til og fra for at sammenligne på tværs."),
@@ -332,8 +332,8 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
       summarise(sum = sum(count)) %>%
       spread(key = year, value = sum) %>%
       rename(Bibliotek = location) %>%
-      mutate(`2014` = `2014`/`2016`, `2015` = `2015`/`2016`, `2017` = `2017`/`2016`, `2018` = `2018`/`2016`, `2019` = `2019`/`2016`, `2016` = 1) #%>%
-      #mutate_at(vars(-1), funs(replace(., is.na(.), 0))) #%>%
+      mutate(`2014` = `2014`/`2016`, `2015` = `2015`/`2016`, `2017` = `2017`/`2016`, `2018` = `2018`/`2016`, `2019` = `2019`/`2016`, `2016` = 1) %>%
+    mutate_at(vars(c(-1)), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".", decimal.mark=","))) #%>%
       #mutate_at(vars(c(1,2,3,4,5)), funs(replace(., is.na(.), 0))) 
     } 
     else {visitorsbranch2 <- visitors1 %>%
@@ -344,8 +344,8 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
       group_by(location, year) %>%
       summarise(sum = sum(count)) %>%
       spread(key = year, value = sum) %>%
-      rename(Bibliotek = location) #%>%
-      #mutate_at(vars(-1), funs(replace(., is.na(.), 0))) #%>%
+      rename(Bibliotek = location) %>%
+      mutate_at(vars(c(-1)), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".", decimal.mark=","))) #%>%
       #mutate_at(vars(c(1,2,3,4,5)), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".")))
     }
   })
@@ -380,7 +380,8 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
     if (input$numberpercent == "percent")
       visitors_hours <- visitors_hours %>%
         filter(location %in% input$visitors_hours_library) %>%
-        filter(visit_date_hour > input$daterange_visitors_hours_library[1] & visit_date_hour < input$daterange_visitors_hours_library[2]) %>%
+        filter(visit_date_hour >= input$daterange_visitors_hours_library[1]) %>%
+        filter(visit_date_hour < input$daterange_visitors_hours_library[2]) %>% 
         select(visit_date_hour, location, count) %>%
         mutate(tid = hour(visit_date_hour)) %>%
         filter(tid > input$range[1] & tid < input$range[2]) %>%
@@ -394,7 +395,8 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
     else 
       visitors_hours <- visitors_hours %>%
         filter(location %in% input$visitors_hours_library) %>%
-        filter(visit_date_hour > input$daterange_visitors_hours_library[1] & visit_date_hour < input$daterange_visitors_hours_library[2]) %>%
+        filter(visit_date_hour >= input$daterange_visitors_hours_library[1]) %>%
+        filter(visit_date_hour < input$daterange_visitors_hours_library[2]) %>% 
         select(visit_date_hour, location, count) %>%
         mutate(tid = hour(visit_date_hour)) %>%
         filter(tid > input$range[1] & tid < input$range[2]) %>%
