@@ -163,22 +163,12 @@ visitorsTabPanelUI <- function(id) {
 visitorsTabPanel <- function(input, output, session, data, tablename) {
 
   drv <- dbDriver("PostgreSQL")
-  con <- dbConnect(drv, dbname = dbname, host = host, port = port, user = user, password = password)
   con_dwh <- dbConnect(drv, dbname = dbname_dwh, host = host_dwh, port = port_dwh, user = user_dwh, password = password_dwh)
   
-  visitors_p1 <- dbGetQuery(con, "SELECT date, location, count FROM public.people_counter WHERE date<'2017-04-06' ORDER BY date desc")
-  visitors_p2 <- dbGetQuery(con, "SELECT date_trunc('day', registertime)::date as date, location, sum(delta) as count FROM public.visitor_counter WHERE direction = 'In' and ref>0 GROUP BY date, location")
-  visitors <- visitors_p1 %>% union_all(visitors_p2)
-  
-  visitors_hours <- dbGetQuery(con_dwh, "SELECT * FROM visitors.visitors_per_hour")  
-  
-
-  output$test <- renderTable(visitors)
-  
-  visitors_per_day <- dbGetQuery(con_dwh, "SELECT date, location, visitor_count as count FROM visitors.visitors_per_day")
   visitors_per_year <- dbGetQuery(con_dwh, "SELECT * FROM visitors.visitors_per_year") 
-  
-  dbDisconnect(con)
+  visitors_per_day <- dbGetQuery(con_dwh, "SELECT date, location, visitor_count as count FROM visitors.visitors_per_day")
+  visitors_hours <- dbGetQuery(con_dwh, "SELECT * FROM visitors.visitors_per_hour")  
+
   dbDisconnect(con_dwh)
   ### ###
   
@@ -203,13 +193,13 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   visitors4 <- visitors2 %>%
     filter(if_else(date < '2015-11-17', month(date) == month(Sys.Date()), date == Sys.Date()-1 | date == Sys.Date() - years(1)-1 | date == Sys.Date() - years(2)-1 | date == Sys.Date() - years(3)-1 )) %>%
     mutate(date = if_else(date < '2015-11-17', date + (day(Sys.Date())-2), date, NULL)) %>% #sets dates of old data to current day of month 
-    mutate(count = if_else(date < '2015-11-17', count*(mday(date)/days_in_month(Sys.Date())), count)) %>% #calculates count of old data to fraction of month gone
+    #mutate(count = if_else(date < '2015-11-17', count*(mday(date)/days_in_month(Sys.Date())), count)) %>% #calculates count of old data to fraction of month gone
     mutate(date = format(as.POSIXct(date, tz = "GMT", format, tryFormats = c("%Y-%m-%d %H:%M:%OS"), optional = FALSE)))  
   
   visitors6 <- rbind(visitors3, visitors4)
   visitors6 <- visitors6 %>%
-    arrange(year, desc(date))
- 
+   arrange(year, desc(date))
+
   curDate <- format(Sys.Date()-1, format="%Y-%m-%d") # the matching date you want data from, across all the years on the x-axis
   sortx <- "desc"         # controls direction of the sorting of the years on the x-axis
   frontColors <- colors # this vector turns into a javascript array
@@ -223,11 +213,11 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   fontSizeY <- ""
   barWidth <- 0.8    # This is a percentage. 1 means no gap between bars (i.e. 100%)
   barsOffset <- 10
-  
+
   output$whity <- renderSamedate_barchart({
     samedate_barchart(visitors6,curDate,sortx,frontColors,backColor,labelx,labely,tickNumY,showScaleY,barWidth,barsOffset)
   })
-  
+
   output$visitors_stack_table <- renderFormattable({formattable(visitors6)})
 
   # visitors total plot#
