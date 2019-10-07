@@ -121,7 +121,7 @@ visitorsTabPanelUI <- function(id) {
                                                 paste0("input['", ns("smooth"), "']"),
                                                 dateRangeInput(ns("daterange2_visitors_hours_library"),
                                                                label = 'Vælg dato periode 2',
-                                                               start = 0, end = 0,
+                                                               start = Sys.Date() - 90, end = Sys.Date(),
                                                                separator = " - "
                                                 )
                                               ),
@@ -367,37 +367,75 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
     )
   
   visitors_per_hour <- reactive({
-    if (input$numberpercent == "percent")
-      visitors_hours <- visitors_hours %>%
-        filter(location %in% input$visitors_hours_library) %>%
-        filter(visit_date_hour >= input$daterange_visitors_hours_library[1]) %>%
-        filter(visit_date_hour < input$daterange_visitors_hours_library[2]) %>% 
-        select(visit_date_hour, location, count) %>%
-        mutate(tid = hour(visit_date_hour)) %>%
-        filter(tid > input$range[1] & tid < input$range[2]) %>%
-        select(-visit_date_hour) %>%
-        group_by(location, tid) %>%
-        summarise(sum = sum(count)) %>%
-        spread(key = location, value = sum) %>%
-        adorn_totals("row") %>%
-        mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
-        mutate_at(vars(-tid), funs(ifelse( is.na(.), NA, procenten((. / sum(.)*2)))))
-    else 
-      visitors_hours <- visitors_hours %>%
-        filter(location %in% input$visitors_hours_library) %>%
-        filter(visit_date_hour >= input$daterange_visitors_hours_library[1]) %>%
-        filter(visit_date_hour < input$daterange_visitors_hours_library[2]) %>% 
-        select(visit_date_hour, location, count) %>%
-        mutate(tid = hour(visit_date_hour)) %>%
-        filter(tid > input$range[1] & tid < input$range[2]) %>%
-        select(-visit_date_hour) %>%
-        group_by(location, tid) %>%
-        summarise(sum = sum(count)) %>%
-        spread(key = location, value = sum) %>%
-        adorn_totals("row") %>%
-        mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
-        mutate_at(vars(-tid), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".", decimal.mark=",")))
-  })
+    
+    if(input$daterange_visitors_hours_library[1] != input$daterange_visitors_hours_library[2]) {
+    
+      if (input$numberpercent == "percent")
+        visitors_hours <- visitors_hours %>%
+          filter(location %in% input$visitors_hours_library) %>%
+          filter(visit_date_hour >= input$daterange_visitors_hours_library[1]) %>%
+          filter(visit_date_hour < input$daterange_visitors_hours_library[2]) %>% 
+          select(visit_date_hour, location, count) %>%
+          mutate(tid = hour(visit_date_hour)) %>%
+          filter(tid > input$range[1] & tid < input$range[2]) %>%
+          select(-visit_date_hour) %>%
+          group_by(location, tid) %>%
+          summarise(sum = sum(count)) %>%
+          spread(key = location, value = sum) %>%
+          adorn_totals("row") %>%
+          mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
+          mutate_at(vars(-tid), funs(ifelse( is.na(.), NA, procenten((. / sum(.)*2)))))
+      else 
+        visitors_hours <- visitors_hours %>%
+          filter(location %in% input$visitors_hours_library) %>%
+          filter(visit_date_hour >= input$daterange_visitors_hours_library[1]) %>%
+          filter(visit_date_hour < input$daterange_visitors_hours_library[2]) %>% 
+          select(visit_date_hour, location, count) %>%
+          mutate(tid = hour(visit_date_hour)) %>%
+          filter(tid > input$range[1] & tid < input$range[2]) %>%
+          select(-visit_date_hour) %>%
+          group_by(location, tid) %>%
+          summarise(sum = sum(count)) %>%
+          spread(key = location, value = sum) %>%
+          adorn_totals("row") %>%
+          mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
+          mutate_at(vars(-tid), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".", decimal.mark=",")))
+      
+    }
+    
+    else {
+      if (input$numberpercent == "percent")
+        visitors_hours <- visitors_hours %>%
+          filter(location %in% input$visitors_hours_library) %>%
+          filter(visit_date_hour >= input$daterange_visitors_hours_library[1]) %>%
+          select(visit_date_hour, location, count) %>%
+          mutate(tid = hour(visit_date_hour)) %>%
+          filter(tid > input$range[1] & tid < input$range[2]) %>%
+          select(-visit_date_hour) %>%
+          group_by(location, tid) %>%
+          summarise(sum = sum(count)) %>%
+          spread(key = location, value = sum) %>%
+          adorn_totals("row") %>%
+          mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
+          mutate_at(vars(-tid), funs(ifelse( is.na(.), NA, procenten((. / sum(.)*2)))))
+      else 
+        visitors_hours <- visitors_hours %>%
+          filter(location %in% input$visitors_hours_library) %>%
+          filter(visit_date_hour >= input$daterange_visitors_hours_library[1]) %>%
+          select(visit_date_hour, location, count) %>%
+          mutate(tid = hour(visit_date_hour)) %>%
+          filter(tid > input$range[1] & tid < input$range[2]) %>%
+          select(-visit_date_hour) %>%
+          group_by(location, tid) %>%
+          summarise(sum = sum(count)) %>%
+          spread(key = location, value = sum) %>%
+          adorn_totals("row") %>%
+          mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
+          mutate_at(vars(-tid), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".", decimal.mark=",")))
+    }
+    
+    
+    })
   
   output$visitors_per_hours_table <- renderFormattable({
     formattable(visitors_per_hour())
@@ -406,7 +444,10 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
   #callModule(csvDownload, "csv_visitors_per_hour", data = visitors_per_hour(), name = "visitors_per_hour")
   callModule(xlsxDownload, "csv_visitors_per_hour", data = reactive(visitors_per_hour()), name = "visitors_per_hour")
     
-  output$visitors_per_hours_table2<- renderFormattable({
+  visitors_per_hour2 <- reactive({
+    
+    if(input$daterange2_visitors_hours_library[1] != input$daterange2_visitors_hours_library[2]) {
+    
     if (input$numberpercent == "percent")  
       visitors_hours <- visitors_hours %>%
         filter(location %in% input$visitors_hours_library) %>%
@@ -433,7 +474,41 @@ visitorsTabPanel <- function(input, output, session, data, tablename) {
         spread(key = location, value = sum) %>%
         mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
         mutate_at(vars(-tid), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".", decimal.mark=",")))
-    formattable(visitors_hours)
+    }
+    
+    else {
+      if (input$numberpercent == "percent")  
+        visitors_hours <- visitors_hours %>%
+          filter(location %in% input$visitors_hours_library) %>%
+          filter(visit_date_hour >= input$daterange2_visitors_hours_library[1]) %>%
+          select(visit_date_hour, location, count) %>%
+          mutate(tid = hour(visit_date_hour)) %>%
+          filter(tid > input$range[1] & tid < input$range[2]) %>%
+          select(-visit_date_hour) %>%
+          group_by(location, tid) %>%
+          summarise(sum = sum(count)) %>%
+          spread(key = location, value = sum) %>%
+          mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
+          mutate_at(vars(-tid), funs(ifelse( is.na(.), NA, procenten((. / sum(.))))))
+      else
+        visitors_hours <- visitors_hours %>%
+          filter(location %in% input$visitors_hours_library) %>%
+          filter(visit_date_hour >= input$daterange2_visitors_hours_library[1]) %>%
+          select(visit_date_hour, location, count) %>%
+          mutate(tid = hour(visit_date_hour)) %>%
+          filter(tid > input$range[1] & tid < input$range[2]) %>%
+          select(-visit_date_hour) %>%
+          group_by(location, tid) %>%
+          summarise(sum = sum(count)) %>%
+          spread(key = location, value = sum) %>%
+          mutate_at(vars(-tid), funs(replace(., is.na(.), 0))) %>%
+          mutate_at(vars(-tid), funs(format(round(as.numeric(.), 0), nsmall=0, big.mark=".", decimal.mark=",")))
+    }
+    
+    })
+  
+  output$visitors_per_hours_table2 <- renderFormattable({
+    formattable(visitors_per_hour2())
   })
   
 }
