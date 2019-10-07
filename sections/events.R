@@ -113,6 +113,7 @@ eventsTabPanelUI <- function(id) {
                 12,
                 tags$div(HTML('<a id="print-checkouts" class="btn btn-default btn-print" onclick="printDiv.call(this,event,\'.col-sm-12\',\'700px\')"><i class="fa fa-print"></i> Print denne sektion</a>')),
                 h4("Deltagere pr. år fordelt på arrangementstype"),
+                selectInput(ns("year_partipants_per_eventtype"), "", c("Alle", "2019","2018", "2017", "2016", "2015", "2014")),
                 withSpinner(plotlyOutput(ns("test2")))
                 # ,plotlyOutput(ns("test3"))
               )
@@ -230,26 +231,21 @@ eventsTabPanelUI <- function(id) {
 # SERVER
 
 eventsTabPanel <- function(input, output, session, data, tablename) {
+  
   drv <- dbDriver("PostgreSQL")
   con_dwh <- dbConnect(drv, dbname = dbname_dwh, host = host_dwh, port = port_dwh, user = user_dwh, password = password_dwh)
+  
   events <- dbGetQuery(con_dwh, "SELECT * FROM arrangementer.obib_arrangementer")
-  eventsmaalgruppe <- dbGetQuery(con_dwh, "select extract(year from start_dato) as year, maalgruppe, count(*) from arrangementer.obib_arrangementer group by maalgruppe, year")
+  eventsmaalgruppe <- dbGetQuery(con_dwh, "select extract(year from start_dato) as year, maalgruppe, count(*) from arrangementer.obib_arrangementer where extract(year from start_dato) > 2012 group by maalgruppe, year order by year")
   eventsyear <- dbGetQuery(con_dwh, "select extract(year from start_dato) as year, count(*) from arrangementer.obib_arrangementer where extract(year from start_dato) > 2012 group by year order by year")
   eventsdeltagere <- dbGetQuery(con_dwh, "select sum(antal_deltagere), extract(year from start_dato) as year from arrangementer.obib_arrangementer where extract(year from start_dato) > 2012 group by year order by year")
-  eventssted <- dbGetQuery(con_dwh, "select lokation, extract(year from start_dato) as year, count(*) from arrangementer.obib_arrangementer group by lokation, year")
-  eventskategori <- dbGetQuery(con_dwh, "select kategori, extract(year from start_dato) as year, count(*) from arrangementer.obib_arrangementer group by kategori, year")
+  eventssted <- dbGetQuery(con_dwh, "select lokation, extract(year from start_dato) as year, count(*) from arrangementer.obib_arrangementer where extract(year from start_dato) > 2012 group by lokation, year order by year")
+  eventskategori <- dbGetQuery(con_dwh, "select kategori, extract(year from start_dato) as year, count(*) from arrangementer.obib_arrangementer where extract(year from start_dato) > 2012 group by kategori, year order by year")
   eventsratio <- dbGetQuery(con_dwh, "select titel, arrangementstype, antal_deltagere as deltagere, forberedelsestid from arrangementer.obib_arrangementer where arrangementstype != ''")
   events_update <- dbGetQuery(con_dwh, "select obj_description('arrangementer.obib_arrangementer'::regclass)")
+  
   dbDisconnect(con_dwh)
 
-  # test
-  output$table <- renderTable(
-    events %>% 
-      select(titel, start_dato) %>% 
-      mutate(tid = format(start_dato, "%Y-%m-%d %H:%M:%OS")) %>%
-      mutate(zone = as.POSIXct(start_dato, tz = "Europe/Berlin"))
-  )
-  
   # arrangementer pr aar #
   output$eventsyearplot <- renderPlotly({
     plot_ly(eventsyear, x = eventsyear$year, y = eventsyear$count, type = "bar", text = text, marker = list(color = color5))
@@ -302,58 +298,73 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
 
   # deltagere pr aar fordelt på arrangementstype
   output$test2 <- renderPlotly({
-    events <- events %>%
-      mutate(aar = year(start_dato)) %>%
-      group_by(aar, arrangementstype) %>%
-      summarise(count = sum(antal_deltagere)) %>%
-      spread(aar, count)
-    plot_ly(events, x = events$arrangementstype, y = ~ `2013`, name = "2013", type = "bar", text = text, marker = list(color = color1)) %>%
-      add_trace(y = ~ `2014`, name = "2014", marker = list(color = color2)) %>%
-      add_trace(y = ~ `2015`, name = "2015", marker = list(color = color3)) %>%
-      add_trace(y = ~ `2016`, name = "2016", marker = list(color = color4)) %>%
-      add_trace(y = ~ `2017`, name = "2017", marker = list(color = color5)) %>%
-      add_trace(y = ~ `2018`, name = "2018", marker = list(color = color6)) %>%
-      add_trace(y = ~ `2019`, name = "2019", marker = list(color = color7)) %>%
-      layout(autosize = T, separators = ",.", barmode = "group", xaxis = list(tickmode = "linear", title = "Arrangementstype"), yaxis = list(title = "Antal deltagere", separatethousands = TRUE, exponentformat = "none"))
-  })
+    
+    if (input$year_partipants_per_eventtype != "Alle") {
+      events <- events %>%
+        filter(year(start_dato) == input$year_partipants_per_eventtype)
+    }
 
-  # #deltagere pr maaned fordelt på arrangementstype
-  # output$test3 <- renderPlotly({
-  #   events <- events %>%
-  #     mutate(maaned = month(dato)) %>%
-  #     group_by(maaned, arrangementstype) %>%
-  #     summarise(count = sum(deltagere)) %>%
-  #     spread(maaned, count)
-  #   plot_ly(events, x = events$arrangementstype, y = ~`Teater`, name = 'Teater', type = 'bar', text = text, marker = list(color = color1)) %>%
-  #     add_trace(y = ~`Musik`, name = 'Musik', marker = list(color = color2)) %>%
-  #     #add_trace(y = ~`2015`, name = '2015', marker = list(color = color3)) %>%
-  #     #add_trace(y = ~`2016`, name = '2016', marker = list(color = color4)) %>%
-  #     #add_trace(y = ~`2017`, name = '2017', marker = list(color = color5)) %>%
-  #     #add_trace(y = ~`2018`, name = '2018', marker = list(color = color6)) %>%
-  #     layout(separators=",.", barmode = 'group', xaxis = list(tickmode="linear", title = "Arrangementstype"), yaxis = list(title = "Antal deltagere", separatethousands = TRUE, exponentformat='none'))
-  # })
+    if (input$year_partipants_per_eventtype == "Alle") {
+      events <- events %>%
+        mutate(aar = year(start_dato)) %>%
+        group_by(aar, arrangementstype) %>%
+        summarise(count = sum(antal_deltagere)) %>%
+        spread(aar, count)
+      plot_ly(events, x = events$arrangementstype, y = ~ `2013`, name = "2013", type = "bar", text = text, marker = list(color = color1)) %>%
+        add_trace(y = ~ `2014`, name = "2014", marker = list(color = color2)) %>%
+        add_trace(y = ~ `2015`, name = "2015", marker = list(color = color3)) %>%
+        add_trace(y = ~ `2016`, name = "2016", marker = list(color = color4)) %>%
+        add_trace(y = ~ `2017`, name = "2017", marker = list(color = color5)) %>%
+        add_trace(y = ~ `2018`, name = "2018", marker = list(color = color6)) %>%
+        add_trace(y = ~ `2019`, name = "2019", marker = list(color = color7)) %>%
+        layout(autosize = T, separators = ",.", barmode = "group", xaxis = list(tickmode = "linear", title = "Arrangementstype"), yaxis = list(title = "Antal deltagere", separatethousands = TRUE, exponentformat = "none"))
+    }
+    else {
+      events <- events %>%
+        mutate(aar = year(start_dato)) %>%
+        group_by(aar, arrangementstype) %>%
+        summarise(count = sum(antal_deltagere))
+      plot_ly(events, x = events$arrangementstype, y = ~count, name = "2019", type = "bar", text = text, marker = list(color = color1)) %>%
+        layout(autosize = T, separators = ",.", barmode = "group", xaxis = list(tickmode = "linear", title = "Arrangementstype"), yaxis = list(title = "Antal deltagere", separatethousands = TRUE, exponentformat = "none"))
+      
+    }
+    
+    
+  }
+  
+  )
 
-  # målgruppe #
+  ### TYPE ###
+  
+  # Målgruppe #
   output$eventsmaalgruppeplot <- renderPlotly({
+    
+    # Clean up na values
+    eventsmaalgruppe <- eventsmaalgruppe %>% 
+      group_by(year, maalgruppe) %>%
+      summarise(count = sum(count))
+    
+    # Data if "Alle" is selected
     if (input$year != "Alle") {
       eventsmaalgruppe <- eventsmaalgruppe %>%
         filter(year == input$year) %>%
         mutate(colors = if_else(maalgruppe == "Voksne", color1, color2))
     }
 
+    # Data if year is selected
     if (input$year == "Alle") {
       eventsmaalgruppe <- eventsmaalgruppe %>%
-        filter(year %in% c("2013", "2014", "2015", "2016", "2017", "2018", "201p")) %>%
+        filter(year %in% c("2013", "2014", "2015", "2016", "2017", "2018", "2019")) %>%
         group_by(maalgruppe) %>%
         summarise(count = sum(count)) %>%
         mutate(colors = if_else(maalgruppe == "Voksne", color1, color2))
     }
+    
+    # Plot
     plot_ly(eventsmaalgruppe,
       labels = ~ maalgruppe,
       values = ~ count,
-      # text = percent, # denne og følgende linje runder procenterne af, så de er uden decimaler
       text = ~ paste(round((count / sum(count)) * 100, 0), "%", sep = ""), # denne og følgende linje runder procenterne af, så de er uden decimaler
-      # text = ~paste(sum(which(year)),"%",sep=""), # denne og følgende linje runder procenterne af, så de er uden decimaler. Kunne dog ikke bare bruge sum(count) som andre steder, da Børn og Voksen ikke udgør 100% til sammen
       textinfo = "text",
       textfont = list(color = "#FFFFFF"),
       marker = list(colors = colors, line = list(color = "#FFFFFF", width = 1))
@@ -366,35 +377,6 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
       )
   })
 
-  # sted #
-  eventssted <- eventssted %>%
-    mutate(
-      sted = case_when(
-        eventssted$lokation == "Tarup bibliotek" ~ "Tarup Bibliotek",
-        eventssted$lokation == "Dalum bibliotek" ~ "Dalum Bibliotek",
-        eventssted$lokation == "Hovedbiblioteket - Voksen" ~ "Hovedbiblioteket",
-        eventssted$lokation == "Hovedbiblioteket - Børn" ~ "Hovedbiblioteket",
-        eventssted$lokation == "Hovedbiblioteket - Opsøgende" ~ "Hovedbiblioteket",
-        eventssted$lokation == "Holluf Pile bibliotek" ~ "Holluf Pile Bibliotek",
-        eventssted$lokation == "Korup bibliotek" ~ "Korup Bibliotek",
-        eventssted$lokation == "Højby bibliotek" ~ "Højby Bibliotek",
-        eventssted$lokation == "Bolbro bibliotek" ~ "Bolbro Bibliotek",
-        eventssted$lokation == "Vollsmose bibliotek" ~ "Vollsmose Bibliotek",
-        eventssted$lokation == "Musikbiblioteket" ~ "Musikbiblioteket",
-        eventssted$lokation == "lokalhistorisk" ~ "Historiens Hus",
-        eventssted$lokation == "Næsby bibliotek" ~ "Næsby Bibliotek",
-        eventssted$lokation == "Andet..." ~ "Andet"
-      )
-    )
-
-  output$eventsstedplot <- renderPlotly({
-    if (input$year != "Alle") {
-      eventssted <- eventssted %>% filter(year == input$year)
-    }
-    plot_ly(eventssted, x = eventssted$sted, y = eventssted$count, type = "bar", text = text, marker = list(color = color1)) %>%
-      layout(autosize = T, margin = list(b = 125), xaxis = list(title = ""), yaxis = list(title = ""))
-  })
-
   # kategori #
   output$eventskategoriplot <- renderPlotly({
     if (input$year != "Alle") {
@@ -402,6 +384,39 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
     }
     plot_ly(eventskategori, x = eventskategori$kategori, y = eventskategori$count, type = "bar", text = text, marker = list(color = color1)) %>%
       layout(autosize = T, xaxis = list(title = ""), yaxis = list(title = ""))
+  })
+
+  # sted #
+
+  output$eventsstedplot <- renderPlotly({
+    
+    eventssted <- eventssted %>%
+      mutate(
+        sted = case_when(
+          eventssted$lokation == "Tarup bibliotek" ~ "Tarup Bibliotek",
+          eventssted$lokation == "Dalum bibliotek" ~ "Dalum Bibliotek",
+          eventssted$lokation == "Hovedbiblioteket - Voksen" ~ "Hovedbiblioteket",
+          eventssted$lokation == "Hovedbiblioteket - Børn" ~ "Hovedbiblioteket",
+          eventssted$lokation == "Hovedbiblioteket - Opsøgende" ~ "Hovedbiblioteket",
+          eventssted$lokation == "Holluf Pile bibliotek" ~ "Holluf Pile Bibliotek",
+          eventssted$lokation == "Korup bibliotek" ~ "Korup Bibliotek",
+          eventssted$lokation == "Højby bibliotek" ~ "Højby Bibliotek",
+          eventssted$lokation == "Bolbro bibliotek" ~ "Bolbro Bibliotek",
+          eventssted$lokation == "Vollsmose bibliotek" ~ "Vollsmose Bibliotek",
+          eventssted$lokation == "Musikbiblioteket" ~ "Musikbiblioteket",
+          eventssted$lokation == "lokalhistorisk" ~ "Historiens Hus",
+          eventssted$lokation == "Næsby bibliotek" ~ "Næsby Bibliotek",
+          eventssted$lokation == "Andet..." ~ "Andet",
+          is.na(eventssted$lokation) ~ "Andet",
+          TRUE ~ "Andet"
+        )
+      )
+    
+    if (input$year != "Alle") {
+      eventssted <- eventssted %>% filter(year == input$year)
+    }
+    plot_ly(eventssted, x = eventssted$sted, y = eventssted$count, type = "bar", text = text, marker = list(color = color1)) %>%
+      layout(autosize = T, margin = list(b = 125), xaxis = list(title = ""), yaxis = list(title = ""))
   })
 
   # arrangementstype
@@ -415,7 +430,9 @@ eventsTabPanel <- function(input, output, session, data, tablename) {
     plot_ly(events, x = events$arrangementstype, y = events$count, type = "bar", text = text, marker = list(color = color1)) %>%
       layout(autosize = T, separators = ",.", xaxis = list(tickmode = "linear", title = "Arrangementstype"), yaxis = list(title = "Antal deltagere", separatethousands = TRUE, exponentformat = "none"))
   })
-
+  
+  ### RATIO ### 
+  
   # ratio #
   output$eventsratioplot <- renderPlotly({
     if (input$effectyear != "Alle") {
