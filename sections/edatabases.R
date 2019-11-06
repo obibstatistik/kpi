@@ -635,7 +635,7 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
     )
     
     if( len > 1) {
-      for(i in 2:len){
+      for(i in 1:len){
         trace <- colNames[i]
         j = which(years==trace)
         p <- p %>% add_trace(y = as.formula(paste0("~`", trace,"`")), 
@@ -672,7 +672,7 @@ edatabasesTabPanel <- function(input, output, session, data, tablename) {
                                               switch(p$data, uge = 'ugentlige', maaned = 'månedlige', kvartal = 'kvartalsvise', halvaar = 'halvårlige', aar = 'årlige'),
                                               " udgifter ",
                                               toString(input$mainstream_aar) 
-                                      ) 
+                                      )
                                    )
   
   output$mainstream_dyn_title_2 <- renderText( paste0("Udgifter til ", toString(input$mainstream_mattype)) )
