@@ -55,7 +55,7 @@ dbDisconnect(con_dwh)
 
 
 # # Necessary for testing outside shinyproxy env:
-Sys.setenv('SHINYPROXY_USERGROUPS' = 'TGHFGHDFGH')
+#Sys.setenv('SHINYPROXY_USERGROUPS' = 'TGHFGHDFGH')
 # Sys.setenv('SHINYPROXY_USERGROUPS' = 'WHITEBOOKREDAKTØRER,TESTGROUP,MATERIALEFORUM,DIGITALFORMIDLING')
 # 
 # # Get the user name and user groups of the current user for authorization
