@@ -159,7 +159,7 @@ indoor_climateTabPanelUI <- function(id) {
                    tabBox(width = 12,
                           id = "tabset22",
                           tabPanel("I dag",
-                              if ('DIGITALFORMIDLING' %in% ldap_usergroups) {
+                               if ('DIGITALFORMIDLING' %in% ldap_usergroups || 'WHITEBOOKREDAKTØRER' %in% ldap_usergroups) {
                                    fluidRow(
                                      column(12,
                                             column(2,
@@ -240,7 +240,7 @@ indoor_climateTabPanelUI <- function(id) {
                               }
                           ),
                           tabPanel("Drill down",
-                              if ('DIGITALFORMIDLING' %in% ldap_usergroups) {
+                              if ('DIGITALFORMIDLING' %in% ldap_usergroups || 'WHITEBOOKREDAKTØRER' %in% ldap_usergroups) {
                                    fluidRow(
                                      column(12,height = "900px",
                                             column(2,height = "900px",
