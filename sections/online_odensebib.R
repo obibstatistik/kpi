@@ -101,7 +101,7 @@ online_odensebibTabPanel <- function(input, output, session) {
   con_dwh <- dbConnect(drv, dbname = dbname_dwh, host = host_dwh, port = port_dwh, user = user_dwh, password = password_dwh)
   ga_pageviews <- dbGetQuery(con, "SELECT * FROM datamart.ga_pageviews where pageviews > 0")
   ga_device <- dbGetQuery(con, "select device, sum(users) as users from datamart.ga_device group by device")
-  ga_top10 <- dbGetQuery(con, "SELECT title, pageviews FROM datamart.ga_top10 order by pageviews desc limit 11 offset 1")
+  ga_top10 <- dbGetQuery(con, "SELECT title, pageviews FROM datamart.ga_top10 order by pageviews desc limit 21 offset 1")
   ga_browser <- dbGetQuery(con, "select browser, to_date(yearmonth::text, 'YYYYMM') as datoen, pageviews from datamart.ga_browser")
   ga_language <- dbGetQuery(con, "select language, to_date(yearmonth::text, 'YYYYMM') as datoen, pageviews from datamart.ga_language")
   #ga_path <- dbGetQuery(con, "SELECT * FROM datamart.ga_path")
@@ -120,10 +120,10 @@ online_odensebibTabPanel <- function(input, output, session) {
   # pageviews
   
   ga_pageviews_month <- ga_pageviews %>%
-    mutate(pv2019 = ifelse(aar == "2019", pageviews, 0), pv2018 = ifelse(aar == "2018", pageviews, 0), pv2017 = ifelse(aar == "2017", pageviews, 0), pv2016 = ifelse(aar == "2016", pageviews, 0), pv2015 = ifelse(aar == "2015", pageviews, 0)) %>%
-    select(maaned,pv2015,pv2016,pv2017,pv2018,pv2019) %>%
+    mutate(pv2019 = ifelse(aar == "2019", pageviews, 0), pv2018 = ifelse(aar == "2018", pageviews, 0), pv2017 = ifelse(aar == "2017", pageviews, 0)) %>%
+    select(maaned,pv2017,pv2018,pv2019) %>%
     group_by(maaned) %>%
-    summarise(v2019 = sum(pv2019), v2018 = sum(pv2018), v2017 = sum(pv2017), v2016 = sum(pv2016), v2015 = sum(pv2015))
+    summarise(v2019 = sum(pv2019), v2018 = sum(pv2018), v2017 = sum(pv2017))
   is.na(ga_pageviews) <- !ga_pageviews
   
   ga_pageviews_year <- ga_pageviews %>%
@@ -132,9 +132,7 @@ online_odensebibTabPanel <- function(input, output, session) {
     
   output$plot1 <- renderPlotly({
     if(input$pageviews_x_axis == "Måned") 
-      plot_ly(ga_pageviews_month, x = factor(month.abb[ga_pageviews_month$maaned],levels=month.abb), y = ~v2015 , type = "bar", name = '2015', marker = list(color = color1)) %>%
-        add_trace(y = ~v2016, name = '2016', marker = list(color = color2)) %>%
-        add_trace(y = ~v2017, name = '2017', marker = list(color = color3)) %>%
+      plot_ly(ga_pageviews_month, x = factor(month.abb[ga_pageviews_month$maaned],levels=month.abb), y = ~v2017 , type = "bar", name = '2017', marker = list(color = color1)) %>%
         add_trace(y = ~v2018, name = '2018', marker = list(color = color4)) %>%
         add_trace(y = ~v2019, name = '2019', marker = list(color = color5)) %>%
         layout(showlegend = T, separators=",.", xaxis = list(tickmode="linear", title = "Måned"), yaxis = list(title = "Antal", separatethousands = TRUE, exponentformat='none'))  
